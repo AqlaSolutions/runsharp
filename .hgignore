@@ -1,0 +1,6 @@
+# using glob syntax
+syntax: glob
+
+# ignore build products
+bin/**
+obj/**

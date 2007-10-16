@@ -1,0 +1,112 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{C835BB75-7955-4315-B52C-FA59E25219F4}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TriAxis.RunSharp</RootNamespace>
+    <AssemblyName>TriAxis.RunSharp</AssemblyName>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'CodeAnalysis|AnyCPU' ">
+    <OutputPath>bin\CodeAnalysis\</OutputPath>
+    <DefineConstants>TRACE;CODE_ANALYSIS</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ArrayUtils.cs" />
+    <Compile Include="AssemblyGen.cs" />
+    <Compile Include="BranchSet.cs" />
+    <Compile Include="CodeGen.Statements.cs" />
+    <Compile Include="ConstructorGen.cs" />
+    <Compile Include="Conversion.cs" />
+    <Compile Include="EventGen.cs" />
+    <Compile Include="Exp.cs" />
+    <Compile Include="FieldGen.cs" />
+    <Compile Include="Operands\NewDelegate.cs" />
+    <Compile Include="Operands\OverloadableOperation.cs" />
+    <Compile Include="Operands\NewArray.cs" />
+    <Compile Include="Static.cs" />
+    <Compile Include="Utils.cs" />
+    <Compile Include="TypeInfo.cs" />
+    <Compile Include="MethodGen.cs" />
+    <Compile Include="Operands\ArrayAccess.cs" />
+    <Compile Include="Operands\ArrayLength.cs" />
+    <Compile Include="Operands\Assignment.cs" />
+    <Compile Include="Operands\Cast.cs" />
+    <Compile Include="Operands\Conditional.cs" />
+    <Compile Include="Operands\EnumLiteral.cs" />
+    <Compile Include="Operands\Field.cs" />
+    <Compile Include="Operands\DecimalLiteral.cs" />
+    <Compile Include="Operands\DoubleLiteral.cs" />
+    <Compile Include="Operands\FloatLiteral.cs" />
+    <Compile Include="Operands\InitializedArray.cs" />
+    <Compile Include="Operands\IntLiteral.cs" />
+    <Compile Include="Operands\Invocation.cs" />
+    <Compile Include="Operands\LongLiteral.cs" />
+    <Compile Include="Operands\NewObject.cs" />
+    <Compile Include="Operands\PostfixOperation.cs" />
+    <Compile Include="Operands\PrefixOperation.cs" />
+    <Compile Include="Operands\Property.cs" />
+    <Compile Include="Operands\SimpleOperation.cs" />
+    <Compile Include="Operands\StringLiteral.cs" />
+    <Compile Include="Operands\TypeLiteral.cs" />
+    <Compile Include="Operator.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="CodeGen.cs" />
+    <Compile Include="CodeGen.Helpers.cs" />
+    <Compile Include="Operand.cs" />
+    <Compile Include="Properties\Messages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Messages.resx</DependentUpon>
+    </Compile>
+    <Compile Include="PropertyGen.cs" />
+    <Compile Include="OverloadResolver.cs" />
+    <Compile Include="TypeGen.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Messages.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
