@@ -71,7 +71,6 @@ namespace TriAxis.RunSharp
 		MethodGen commonCtor = null;
 		ConstructorGen staticCtor = null;
 		List<CodeGen> codeBlocks = new List<CodeGen>();
-		List<MethodGen> implCandidates = new List<MethodGen>();
 		List<TypeGen> nestedTypes = new List<TypeGen>();
 		List<InterfaceImplEntry> implementations = new List<InterfaceImplEntry>();
 		List<IMemberInfo> constructors = new List<IMemberInfo>();
@@ -233,7 +232,7 @@ namespace TriAxis.RunSharp
 				mthVis = mthVirt = mthFlags = 0;
 
 			fldVis = fldFlags = 0;
-			typeVirt = typeVirt = typeFlags = 0;
+			typeVis = typeVirt = typeFlags = 0;
 			implFlags = 0;
 		}
 		#endregion
