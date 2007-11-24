@@ -60,6 +60,17 @@ namespace TriAxis.RunSharp
 			return newArray;
 		}
 
+		public static T[] Combine<T>(T item, T[] array)
+		{
+			if (array == null || array.Length == 0)
+				return new T[] { item };
+
+			T[] newArray = new T[array.Length + 1];
+			newArray[0] = item;
+			array.CopyTo(newArray, 1);
+			return newArray;
+		}
+
 		public static Type[] GetTypes(ParameterInfo[] paramInfos)
 		{
 			if (paramInfos == null)
