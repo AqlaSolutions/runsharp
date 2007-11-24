@@ -205,6 +205,33 @@ namespace TriAxis.RunSharp.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This method cannot be used on an instance method DynamicMethodGen.
+        /// </summary>
+        internal static string ErrDynamicMethodInstance {
+            get {
+                return ResourceManager.GetString("ErrDynamicMethodInstance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The DynamicMethod hasn&apos;t been completed yet.
+        /// </summary>
+        internal static string ErrDynamicMethodNotCompleted {
+            get {
+                return ResourceManager.GetString("ErrDynamicMethodNotCompleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This method can be used only on an instance method DynamicMethodGen.
+        /// </summary>
+        internal static string ErrDynamicMethodNotInstance {
+            get {
+                return ResourceManager.GetString("ErrDynamicMethodNotInstance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Else() called without a matching If().
         /// </summary>
         internal static string ErrElseWithoutIf {
@@ -588,6 +615,15 @@ namespace TriAxis.RunSharp.Properties {
         internal static string ErrTypeAlreadyCompleted {
             get {
                 return ResourceManager.GetString("ErrTypeAlreadyCompleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The provided type must be a delegate type.
+        /// </summary>
+        internal static string ErrTypeMustBeDelegate {
+            get {
+                return ResourceManager.GetString("ErrTypeMustBeDelegate", resourceCulture);
             }
         }
         

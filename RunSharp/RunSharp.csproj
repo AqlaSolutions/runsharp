@@ -49,6 +49,7 @@
     <Compile Include="CodeGen.Statements.cs" />
     <Compile Include="ConstructorGen.cs" />
     <Compile Include="Conversion.cs" />
+    <Compile Include="DynamicMethodGen.cs" />
     <Compile Include="EventGen.cs" />
     <Compile Include="Exp.cs" />
     <Compile Include="FieldGen.cs" />

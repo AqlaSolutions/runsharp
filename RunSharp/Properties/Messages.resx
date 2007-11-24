@@ -165,6 +165,15 @@
   <data name="ErrDuplicateCase" xml:space="preserve">
     <value>The case with same value has already been defined</value>
   </data>
+  <data name="ErrDynamicMethodInstance" xml:space="preserve">
+    <value>This method cannot be used on an instance method DynamicMethodGen</value>
+  </data>
+  <data name="ErrDynamicMethodNotCompleted" xml:space="preserve">
+    <value>The DynamicMethod hasn't been completed yet</value>
+  </data>
+  <data name="ErrDynamicMethodNotInstance" xml:space="preserve">
+    <value>This method can be used only on an instance method DynamicMethodGen</value>
+  </data>
   <data name="ErrElseWithoutIf" xml:space="preserve">
     <value>Else() called without a matching If()</value>
   </data>
@@ -293,6 +302,9 @@
   </data>
   <data name="ErrTypeAlreadyCompleted" xml:space="preserve">
     <value>Type is already completed</value>
+  </data>
+  <data name="ErrTypeMustBeDelegate" xml:space="preserve">
+    <value>The provided type must be a delegate type</value>
   </data>
   <data name="ErrTypeNotCompleted" xml:space="preserve">
     <value>The type hasn't been completed yet</value>

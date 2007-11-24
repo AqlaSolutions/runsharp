@@ -78,6 +78,25 @@ namespace TriAxis.RunSharp
 				Console.WriteLine("<<< END {0}", testName);
 				Console.WriteLine();
 			}
+
+			// dynamic method examples
+			DynamicMethodExamples();
 		}
+
+		#region Dynamic Method examples
+		static void DynamicMethodExamples()
+		{
+			DynamicMethodGen dmg = DynamicMethodGen.Static(typeof(Program)).Method(typeof(void), typeof(string));
+			dmg.Code.WriteLine("Hello {0}!", dmg.Code.Arg(0, "name"));
+			DynamicMethod dm = dmg.GetCompletedDynamicMethod(true);
+
+			// reflection-style invocation
+			dm.Invoke(null, new object[] { "Dynamic Method" });
+
+			// delegate invocation
+			Action<string> hello = (Action<string>)dm.CreateDelegate(typeof(Action<string>));
+			hello("Delegate");
+		}
+		#endregion
 	}
 }
