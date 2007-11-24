@@ -51,7 +51,7 @@ namespace TriAxis.RunSharp
 		ConstructorGen cg;
 		bool chainCalled = false;
 		bool reachable = true;
-		bool hasRetVar = false;
+		bool hasRetVar = false, hasRetLabel = false;
 		LocalBuilder retVar = null;
 		Label retLabel;
 		Stack<Block> blocks = new Stack<Block>();
@@ -176,6 +176,14 @@ namespace TriAxis.RunSharp
 			hasRetVar = true;
 		}
 
+		public bool IsCompleted
+		{
+			get
+			{
+				return blocks.Count == 0 && !reachable && hasRetVar == hasRetLabel;
+			}
+		}
+
 		internal void Complete()
 		{
 			if (blocks.Count > 0)
@@ -189,12 +197,13 @@ namespace TriAxis.RunSharp
 					Return();
 			}
 
-			if (hasRetVar)
+			if (hasRetVar && !hasRetLabel)
 			{
 				il.MarkLabel(retLabel);
 				if (retVar != null)
 					il.Emit(OpCodes.Ldloc, retVar);
 				il.Emit(OpCodes.Ret);
+				hasRetLabel = true;
 			}
 		}
 
