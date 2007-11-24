@@ -31,6 +31,7 @@ namespace TriAxis.RunSharp
 {
 	using Operands;
 
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords", Justification = "There is no better name for this.")]
 	public static class Static
 	{
 		public static Operand Field(Type type, string name)
