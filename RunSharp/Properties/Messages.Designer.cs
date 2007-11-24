@@ -592,6 +592,15 @@ namespace TriAxis.RunSharp.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The type hasn&apos;t been completed yet.
+        /// </summary>
+        internal static string ErrTypeNotCompleted {
+            get {
+                return ResourceManager.GetString("ErrTypeNotCompleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Variable used without having been initialized.
         /// </summary>
         internal static string ErrUninitializedVarAccess {

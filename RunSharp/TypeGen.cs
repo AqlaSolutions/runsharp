@@ -570,6 +570,30 @@ namespace TriAxis.RunSharp
 		}
 		#endregion
 
+		public Type GetCompletedType()
+		{
+			return GetCompletedType(false);
+		}
+
+		public Type GetCompletedType(bool completeIfNeeded)
+		{
+			if (type != null)
+				return type;
+
+			if (completeIfNeeded)
+			{
+				Complete();
+				return type;
+			}
+
+			throw new InvalidOperationException(Properties.Messages.ErrTypeNotCompleted);
+		}
+
+		public bool IsCompleted
+		{
+			get { return type != null; }
+		}
+
 		public void Complete()
 		{
 			if (type != null)

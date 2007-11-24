@@ -294,6 +294,9 @@
   <data name="ErrTypeAlreadyCompleted" xml:space="preserve">
     <value>Type is already completed</value>
   </data>
+  <data name="ErrTypeNotCompleted" xml:space="preserve">
+    <value>The type hasn't been completed yet</value>
+  </data>
   <data name="ErrUninitializedVarAccess" xml:space="preserve">
     <value>Variable used without having been initialized</value>
   </data>
