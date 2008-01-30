@@ -57,6 +57,10 @@ namespace TriAxis.RunSharp
 			Examples.Events.GenEvents1,
 			Examples.ExplicitImplementation.GenExplicit2,
 			Examples.BreakContinue.GenBreakContinue,
+
+            // BUG #1864084
+            Examples.Bugs.ValueTypeVirtual.GenOriginalTest,
+            Examples.Bugs.ValueTypeVirtual.GenExtendedTest
 		};
 
 		static void Main(string[] args)
@@ -73,8 +77,16 @@ namespace TriAxis.RunSharp
 				gen(asm);
 				asm.Save();
 				Console.WriteLine("=== RUN {0}", testName);
-				AppDomain.CurrentDomain.ExecuteAssembly(name, null,
-					new string[] { "A", "B", "C", "D" });
+                try
+                {
+                    AppDomain.CurrentDomain.ExecuteAssembly(name, null,
+                        new string[] { "A", "B", "C", "D" });
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("!!! UNHANDLED EXCEPTION");
+                    Console.WriteLine(e);
+                }
 				Console.WriteLine("<<< END {0}", testName);
 				Console.WriteLine();
 			}

@@ -395,7 +395,13 @@ namespace TriAxis.RunSharp
 			MethodInfo mi = mth as MethodInfo;
 			if (mi != null)
 			{
-				il.Emit((((object)target != null && target.SuppressVirtual) || mi.IsStatic) ? OpCodes.Call : OpCodes.Callvirt, mi);
+				bool suppressVirtual = ((object)target != null && target.SuppressVirtual) || mi.IsStatic;
+
+				if (!suppressVirtual && (object)target != null && target.Type.IsValueType && mi.IsVirtual)
+				{
+					il.Emit(OpCodes.Constrained, target.Type);
+				}
+				il.Emit(suppressVirtual ? OpCodes.Call : OpCodes.Callvirt, mi);
 				return;
 			}
 
