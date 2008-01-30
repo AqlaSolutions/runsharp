@@ -195,7 +195,7 @@ namespace TriAxis.RunSharp
 				return null;
 
 			Operand op = operandOrLiteral as Operand;
-			if (op != null)
+			if ((object)op != null)
 				return op;
 
 			Type type = operandOrLiteral as Type;
