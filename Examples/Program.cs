@@ -28,6 +28,7 @@ using System.Text;
 using System.IO;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Diagnostics;
 
 namespace TriAxis.RunSharp
 {
@@ -35,36 +36,60 @@ namespace TriAxis.RunSharp
 	{
 		delegate void Generator(AssemblyGen ag);
 
-		static Generator[] examples = { 
-			Examples.HelloWorld.GenHello1,
-			Examples.HelloWorld.GenHello3,
-			Examples.CommandLine.GenCmdLine2,
-			Examples.Arrays.GenArrays,
-			Examples.Properties.GenPerson,
-			Examples.Properties.GenShapeTest,
-			Examples.Versioning.GenVersioning,
-			Examples.CollectionClasses.GenTokens2,
-			Examples.Structs.GenStruct1,
-			Examples.Structs.GenStruct2,
-			Examples.Indexers.GenIndexer,
-			Examples.IndexedProperties.GenIndexedProperty,
-			Examples.Conversions.GenConversion,
-			Examples.Conversions.GenStructConversion,
-			Examples.OperatorOverloading.GenComplex,
-			Examples.OperatorOverloading.GenDbBool,
-			Examples.Delegates.GenBookstore,
-			Examples.Delegates.GenCompose,
-			Examples.Events.GenEvents1,
-			Examples.ExplicitImplementation.GenExplicit2,
-			Examples.BreakContinue.GenBreakContinue,
+		static Generator[] examples 
+		{
+			get
+			{
+				List<Generator> list = new List<Generator>();
 
-            // BUG #1864084
-            Examples.Bugs.ValueTypeVirtual.GenOriginalTest,
-            Examples.Bugs.ValueTypeVirtual.GenExtendedTest
-		};
+				foreach (Type t in typeof(Program).Assembly.GetTypes())
+				{
+					foreach (MethodInfo mi in t.GetMethods(BindingFlags.Public | BindingFlags.Static))
+					{
+						ParameterInfo[] pi = mi.GetParameters();
+
+						if (pi.Length == 1 && pi[0].ParameterType == typeof(AssemblyGen))
+						{
+							list.Add((Generator)Delegate.CreateDelegate(typeof(Generator), mi, true));
+						}
+					}
+				}
+
+				list.Sort(delegate(Generator g1, Generator g2)
+				{
+					int fileCompare = string.Compare(GetSourceFile(g1), GetSourceFile(g2), true);
+
+					if (fileCompare != 0)
+						return fileCompare;
+
+					return string.Compare(g1.Method.Name, g2.Method.Name, true);
+				});
+
+				return list.ToArray();
+			}
+		}
+
+		static string GetSourceFile(Generator g)
+		{
+			// this is an ugly hack, but there seems to be no easy way to retrieve source file
+			// from a method
+			try
+			{
+				g(null);
+			}
+			catch (NullReferenceException e)
+			{
+				StackTrace st = new StackTrace(e, true);
+				return st.GetFrame(0).GetFileName();
+			}
+
+			return null;
+		}
 
 		static void Main(string[] args)
 		{
+			bool noexe = args.Length > 0 && args[0] == "/noexe";
+
 			string exePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "out");
 			Directory.CreateDirectory(exePath);
 
@@ -72,16 +97,30 @@ namespace TriAxis.RunSharp
 			{
 				string testName = gen.Method.DeclaringType.FullName + "." + gen.Method.Name;
 				Console.WriteLine(">>> GEN {0}", testName);
-				string name = Path.Combine(exePath, testName + ".exe");
+				string name = noexe ? testName : Path.Combine(exePath, testName + ".exe");
 				AssemblyGen asm = new AssemblyGen(name);
 				gen(asm);
-				asm.Save();
+				if (!noexe)	asm.Save();
 				Console.WriteLine("=== RUN {0}", testName);
                 try
                 {
-                    AppDomain.CurrentDomain.ExecuteAssembly(name, null,
-                        new string[] { "A", "B", "C", "D" });
-                }
+					if (noexe)
+					{
+						Type entryType = asm.GetAssembly().EntryPoint.DeclaringType;
+						MethodInfo entryMethod = entryType.GetMethod(asm.GetAssembly().EntryPoint.Name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
+						object[] entryArgs = null;
+						if (entryMethod.GetParameters().Length == 1)
+						{
+							entryArgs = new object[] { new string[] { "A", "B", "C", "D" } };
+						}
+						entryMethod.Invoke(null, entryArgs);
+					}
+					else
+					{
+						AppDomain.CurrentDomain.ExecuteAssembly(name, null,
+							new string[] { "A", "B", "C", "D" });
+					}
+				}
                 catch (Exception e)
                 {
                     Console.WriteLine("!!! UNHANDLED EXCEPTION");

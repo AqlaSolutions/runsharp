@@ -226,6 +226,12 @@ namespace TriAxis.RunSharp
 				asm.Save(Path.GetFileName(fileName));
 		}
 
+		public Assembly GetAssembly()
+		{
+			Complete();
+			return asm;
+		}
+
 		public void Complete()
 		{
 			foreach (TypeGen tg in types)
