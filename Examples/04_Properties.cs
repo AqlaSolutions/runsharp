@@ -28,7 +28,7 @@ using System.Text;
 
 namespace TriAxis.RunSharp.Examples
 {
-	class Properties
+	class _04_Properties
 	{
 		// example based on the MSDN Properties Sample (person.cs)
 		public static void GenPerson(AssemblyGen ag)

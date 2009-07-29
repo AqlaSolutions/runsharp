@@ -28,7 +28,7 @@ using System.Text;
 
 namespace TriAxis.RunSharp.Examples
 {
-	static class Conversions
+	static class _10_Conversions
 	{
 		// example based on the MSDN User-Defined Conversions Sample (conversion.cs)
 		public static void GenConversion(AssemblyGen ag)

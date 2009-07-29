@@ -28,7 +28,7 @@ using System.Text;
 
 namespace TriAxis.RunSharp.Examples
 {
-	static class CollectionClasses
+	static class _06_CollectionClasses
 	{
 		// example based on the MSDN Collection Classes Sample (tokens2.cs)
 		public static void GenTokens2(AssemblyGen ag)

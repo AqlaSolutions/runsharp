@@ -28,7 +28,7 @@ using System.Text;
 
 namespace TriAxis.RunSharp.Examples
 {
-	static class BreakContinue
+	static class A1_BreakContinue
 	{
 		public static void GenBreakContinue(AssemblyGen ag)
 		{

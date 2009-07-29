@@ -28,7 +28,7 @@ using System.Text;
 
 namespace TriAxis.RunSharp.Examples
 {
-	static class Arrays
+	static class _03_Arrays
 	{
 		// example based on the MSDN Arrays Sample (arrays.cs)
 		public static void GenArrays(AssemblyGen ag)

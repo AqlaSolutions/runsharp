@@ -32,7 +32,7 @@ using System.Text;
 
 namespace TriAxis.RunSharp.Examples.Bugs
 {
-    static class ValueTypeVirtual
+    static class X1864084_ValueTypeVirtual
     {
         public static void GenOriginalTest(AssemblyGen ag)
         {

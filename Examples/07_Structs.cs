@@ -28,7 +28,7 @@ using System.Text;
 
 namespace TriAxis.RunSharp.Examples
 {
-	static class Structs
+	static class _07_Structs
 	{
 		// example based on the MSDN Structs Sample (struct1.cs)
 		public static void GenStruct1(AssemblyGen ag)

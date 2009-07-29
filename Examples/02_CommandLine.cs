@@ -28,9 +28,10 @@ using System.Text;
 
 namespace TriAxis.RunSharp.Examples
 {
-	static class CommandLine
+	static class _02_CommandLine
 	{
 		// example based on the MSDN Command Line Parameters Sample (CmdLine2.cs)
+		[TestArguments("arg1", "arg2", "arg3", "arg4")]
 		public static void GenCmdLine2(AssemblyGen ag)
 		{
 			TypeGen CommandLine2 = ag.Public.Class("CommandLine2");

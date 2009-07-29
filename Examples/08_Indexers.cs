@@ -29,9 +29,10 @@ using System.IO;
 
 namespace TriAxis.RunSharp.Examples
 {
-	static class Indexers
+	static class _08_Indexers
 	{
 		// example based on the MSDN Indexers Sample (indexer.cs)
+		[TestArguments("indexertest.txt")]
 		public static void GenIndexer(AssemblyGen ag)
 		{
 			// Class to provide access to a large file

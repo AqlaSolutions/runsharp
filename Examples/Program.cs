@@ -28,15 +28,27 @@ using System.Text;
 using System.IO;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Diagnostics;
 
 namespace TriAxis.RunSharp
 {
+	[AttributeUsage(AttributeTargets.Method)]
+	class TestArgumentsAttribute : Attribute
+	{
+		string[] args;
+
+		public TestArgumentsAttribute(params string[] args)
+		{
+			this.args = args;
+		}
+
+		public string[] Arguments { get { return args; } }
+	}
+
 	class Program
 	{
 		delegate void Generator(AssemblyGen ag);
 
-		static Generator[] examples 
+		static Generator[] examples
 		{
 			get
 			{
@@ -57,33 +69,35 @@ namespace TriAxis.RunSharp
 
 				list.Sort(delegate(Generator g1, Generator g2)
 				{
-					int fileCompare = string.Compare(GetSourceFile(g1), GetSourceFile(g2), true);
+					int cmp = string.Compare(g1.Method.DeclaringType.Namespace, g2.Method.DeclaringType.Namespace, true);
 
-					if (fileCompare != 0)
-						return fileCompare;
+					if (cmp == 0)
+					{
+						cmp = string.Compare(g1.Method.DeclaringType.Name.TrimStart('_'), g2.Method.DeclaringType.Name.TrimStart('_'), true);
 
-					return string.Compare(g1.Method.Name, g2.Method.Name, true);
+						if (cmp == 0)
+							cmp = string.Compare(g1.Method.Name, g2.Method.Name, true);
+					}
+
+					return cmp;
 				});
 
 				return list.ToArray();
 			}
 		}
 
-		static string GetSourceFile(Generator g)
+		static string GetTestName(Generator g)
 		{
-			// this is an ugly hack, but there seems to be no easy way to retrieve source file
-			// from a method
-			try
-			{
-				g(null);
-			}
-			catch (NullReferenceException e)
-			{
-				StackTrace st = new StackTrace(e, true);
-				return st.GetFrame(0).GetFileName();
-			}
+			Type declType = g.Method.DeclaringType;
+			return declType.Namespace + "." + declType.Name.TrimStart('_') + "." + g.Method.Name;
+		}
 
-			return null;
+		static string[] GetTestArguments(Generator g)
+		{
+			TestArgumentsAttribute taa = Attribute.GetCustomAttribute(g.Method, typeof(TestArgumentsAttribute)) as TestArgumentsAttribute;
+			if (taa == null)
+				return null;
+			return taa.Arguments;
 		}
 
 		static void Main(string[] args)
@@ -95,7 +109,7 @@ namespace TriAxis.RunSharp
 
 			foreach (Generator gen in examples)
 			{
-				string testName = gen.Method.DeclaringType.FullName + "." + gen.Method.Name;
+				string testName = GetTestName(gen);
 				Console.WriteLine(">>> GEN {0}", testName);
 				string name = noexe ? testName : Path.Combine(exePath, testName + ".exe");
 				AssemblyGen asm = new AssemblyGen(name);
@@ -111,14 +125,14 @@ namespace TriAxis.RunSharp
 						object[] entryArgs = null;
 						if (entryMethod.GetParameters().Length == 1)
 						{
-							entryArgs = new object[] { new string[] { "A", "B", "C", "D" } };
+							entryArgs = new object[] { GetTestArguments(gen) };
 						}
 						entryMethod.Invoke(null, entryArgs);
 					}
 					else
 					{
 						AppDomain.CurrentDomain.ExecuteAssembly(name, null,
-							new string[] { "A", "B", "C", "D" });
+							GetTestArguments(gen));
 					}
 				}
                 catch (Exception e)

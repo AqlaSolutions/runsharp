@@ -28,7 +28,7 @@ using System.Text;
 
 namespace TriAxis.RunSharp.Examples
 {
-	static class ExplicitImplementation
+	static class _14_ExplicitImplementation
 	{
 		// example based on the MSDN Explicit Interface Implementation Sample (explicit.cs)
 		public static void GenExplicit2(AssemblyGen ag)

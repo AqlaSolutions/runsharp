@@ -28,7 +28,7 @@ using System.Text;
 
 namespace TriAxis.RunSharp.Examples
 {
-	class Versioning
+	class _05_Versioning
 	{
 		// example based on the MSDN Versioning Sample (versioning.cs)
 		public static void GenVersioning(AssemblyGen ag)

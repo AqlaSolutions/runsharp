@@ -28,7 +28,7 @@ using System.Text;
 
 namespace TriAxis.RunSharp.Examples
 {
-	class Delegates
+	class _12_Delegates
 	{
 		// example based on the MSDN Delegates Sample (bookstore.cs)
 		public static void GenBookstore(AssemblyGen ag)

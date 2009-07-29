@@ -28,7 +28,7 @@ using System.Text;
 
 namespace TriAxis.RunSharp.Examples
 {
-	static class HelloWorld
+	static class _01_HelloWorld
 	{
 		// example based on the MSDN Hello World Sample (Hello1.cs)
 		public static void GenHello1(AssemblyGen ag)
@@ -43,6 +43,7 @@ namespace TriAxis.RunSharp.Examples
 		}
 
 		// example based on the MSDN Hello World Sample (Hello3.cs)
+		[TestArguments("arg1", "arg2", "arg3", "arg4")]
 		public static void GenHello3(AssemblyGen ag)
 		{
 			TypeGen Hello3 = ag.Public.Class("Hello3");

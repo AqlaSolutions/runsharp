@@ -28,7 +28,7 @@ using System.Text;
 
 namespace TriAxis.RunSharp.Examples
 {
-	class Events
+	class _13_Events
 	{
 		// example based on the MSDN Events Sample (events1.cs)
 		public static void GenEvents1(AssemblyGen ag)

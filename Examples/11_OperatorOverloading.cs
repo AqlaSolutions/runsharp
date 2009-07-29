@@ -28,7 +28,7 @@ using System.Text;
 
 namespace TriAxis.RunSharp.Examples
 {
-	static class OperatorOverloading
+	static class _11_OperatorOverloading
 	{
 		// example based on the MSDN Operator Overloading Sample (complex.cs)
 		public static void GenComplex(AssemblyGen ag)

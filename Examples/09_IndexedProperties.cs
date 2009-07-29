@@ -28,7 +28,7 @@ using System.Text;
 
 namespace TriAxis.RunSharp.Examples
 {
-	static class IndexedProperties
+	static class _09_IndexedProperties
 	{
 		// example based on the MSDN Indexed Properties Sample (indexedproperty.cs)
 		public static void GenIndexedProperty(AssemblyGen ag)
