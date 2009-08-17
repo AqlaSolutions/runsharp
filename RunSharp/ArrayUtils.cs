@@ -30,6 +30,11 @@ using System.Reflection.Emit;
 
 namespace TriAxis.RunSharp
 {
+	static class EmptyArray<T>
+	{
+		public static readonly T[] Instance = { };
+	}
+
 	static class ArrayUtils
 	{
 		public static bool Equals(object[] array1, object[] array2)
@@ -80,6 +85,19 @@ namespace TriAxis.RunSharp
 			for (int i = 0; i < types.Length; i++)
 				types[i] = paramInfos[i].ParameterType;
 			return types;
+		}
+
+		public static T[] ToArray<T>(ICollection<T> collection)
+		{
+			if (collection == null)
+				return null;
+
+			if (collection.Count == 0)
+				return EmptyArray<T>.Instance;
+
+			T[] array = new T[collection.Count];
+			collection.CopyTo(array, 0);
+			return array;
 		}
 	}
 }
