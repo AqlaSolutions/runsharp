@@ -4,3 +4,7 @@ syntax: glob
 # ignore build products
 bin/**
 obj/**
+
+# ignore user settings
+*.suo
+*.user
