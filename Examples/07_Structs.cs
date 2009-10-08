@@ -41,7 +41,7 @@ namespace TriAxis.RunSharp.Examples
 
 				PropertyGen X = SimpleStruct.Public.Property(typeof(int), "X");
 				{
-					X.Getter().Code.Return(xval);
+					X.Getter().GetCode().Return(xval);
 					g = X.Setter();
 					{
 						g.If(g.PropertyValue() < 100);
@@ -85,14 +85,14 @@ namespace TriAxis.RunSharp.Examples
 
 			TypeGen TestClass = ag.Class("TestClass");
 			{
-				CodeGen g = TestClass.Public.Static.Method(typeof(void), "structtaker", TheStruct);
+				CodeGen g = TestClass.Public.Static.Method(typeof(void), "structtaker").Parameter(TheStruct, "s");
 				{
-					g.Assign(g.Arg(0, "s").Field("x"), 5);
+					g.Assign(g.Arg("s").Field("x"), 5);
 				}
 
-				g = TestClass.Public.Static.Method(typeof(void), "classtaker", TheClass);
+				g = TestClass.Public.Static.Method(typeof(void), "classtaker").Parameter(TheClass, "c");
 				{
-					g.Assign(g.Arg(0, "c").Field("x"), 5);
+					g.Assign(g.Arg("c").Field("x"), 5);
 				}
 
 				g = TestClass.Public.Static.Method(typeof(void), "Main");

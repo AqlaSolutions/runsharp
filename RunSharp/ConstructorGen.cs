@@ -30,95 +30,78 @@ using System.Reflection.Emit;
 
 namespace TriAxis.RunSharp
 {
-	public sealed class ConstructorGen : ICodeGenContext
+	public sealed class ConstructorGen : RoutineGen<ConstructorGen>
 	{
-		TypeGen owner;
 		MethodAttributes attributes;
-		Type[] parameterTypes;
 		ConstructorBuilder cb;
-		CodeGen code;
+		MethodImplAttributes implFlags;
 
-		internal ConstructorBuilder ConstructorBuilder { get { return cb; } }
-
-		internal ConstructorGen(TypeGen owner, MethodAttributes attributes, Type[] parameterTypes, MethodImplAttributes implFlags)
+		internal ConstructorBuilder GetConstructorBuilder()
 		{
-			this.owner = owner;
-			this.attributes = attributes;
-			this.parameterTypes = parameterTypes;
-			this.cb = owner.TypeBuilder.DefineConstructor(attributes | MethodAttributes.HideBySig, IsStatic ? CallingConventions.Standard : CallingConventions.HasThis, parameterTypes);
-			if (implFlags != 0)
-				cb.SetImplementationFlags(implFlags);
-
-			if ((implFlags & MethodImplAttributes.Runtime) == 0)
-			{
-				this.code = new CodeGen(this);
-				owner.AddCodeBlock(code);
-			}
+			LockSignature();
+			return cb;
 		}
 
-		public string Name { get { return IsStatic ? ".cctor" : ".ctor"; } }
-		public TypeGen Type { get { return owner; } }
-		public CodeGen Code { get { return code; } }
+		internal ConstructorGen(TypeGen owner, MethodAttributes attributes, MethodImplAttributes implFlags)
+			: base(owner, null)
+		{
+			this.attributes = attributes;
+			this.implFlags = implFlags;
 
-		public bool IsStatic
+			owner.RegisterForCompletion(this);
+		}
+
+		protected override void CreateMember()
+		{
+			this.cb = Owner.TypeBuilder.DefineConstructor(attributes | MethodAttributes.HideBySig, IsStatic ? CallingConventions.Standard : CallingConventions.HasThis, ParameterTypes);
+			if (implFlags != 0)
+				cb.SetImplementationFlags(implFlags);
+		}
+
+		protected override void RegisterMember()
+		{
+			Owner.Register(this);
+		}
+
+		public TypeGen Type { get { return Owner; } }
+
+		#region RoutineGen concrete implementation
+
+		public override string Name
+		{
+			get { return IsStatic ? ".cctor" : ".ctor"; }
+		}
+
+		protected internal override bool IsStatic
 		{
 			get { return (attributes & MethodAttributes.Static) != 0; }
 		}
 
-		#region ICodeGenContext Members
+		protected internal override bool IsOverride
+		{
+			get { return false; }
+		}
 
-		ILGenerator ICodeGenContext.GetILGenerator()
+		protected override bool HasCode
+		{
+			get { return (implFlags & MethodImplAttributes.Runtime) == 0; }
+		}
+
+		protected override ILGenerator GetILGenerator()
 		{
 			return cb.GetILGenerator();
 		}
 
-		Type ICodeGenContext.OwnerType
+		protected override ParameterBuilder DefineParameter(int position, ParameterAttributes attributes, string parameterName)
 		{
-			get { return owner.TypeBuilder; }
+			return cb.DefineParameter(position, attributes, parameterName);
 		}
 
-		MemberInfo IMemberInfo.Member
+		protected override MemberInfo Member
 		{
 			get { return cb; }
 		}
 
-		public Type ReturnType
-		{
-			get { return typeof(void); }
-		}
-
-		public Type[] ParameterTypes
-		{
-			get { return parameterTypes; }
-		}
-
-		// TODO: params support
-		bool IMemberInfo.IsParameterArray
-		{
-			get { return false; }
-		}
-
-		bool IMemberInfo.IsOverride
-		{
-			get { return false; }
-		}
-
-		void ICodeGenContext.DefineParameterName(int index, string name)
-		{
-			if (index < 0 || index >= parameterTypes.Length)
-				throw new ArgumentOutOfRangeException("index");
-
-			cb.DefineParameter(1 + index, ParameterAttributes.None, name);
-		}
 		#endregion
-
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2225:OperatorOverloadsHaveNamedAlternates", Justification = "CodeGen can be retrieved using the Code property")]
-		public static implicit operator CodeGen(ConstructorGen cg)
-		{
-			if (cg == null)
-				return null;
-
-			return cg.code;
-		}
 	}
 }

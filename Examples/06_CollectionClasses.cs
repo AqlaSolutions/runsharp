@@ -37,9 +37,12 @@ namespace TriAxis.RunSharp.Examples
 			{
 				FieldGen elements = Tokens.Private.Field(typeof(string[]), "elements");
 
-				CodeGen g = Tokens.Constructor(typeof(string), typeof(char[]));
+				CodeGen g = Tokens.Constructor()
+					.Parameter(typeof(string), "source")
+					.Parameter(typeof(char[]), "delimiters")
+					;
 				{
-					g.Assign(elements, g.Arg(0, "source").Invoke("Split", g.Arg(1, "delimiters")));
+					g.Assign(elements, g.Arg("source").Invoke("Split", g.Arg("delimiters")));
 				}
 
 				// Inner class implements IEnumerator interface:
@@ -49,9 +52,9 @@ namespace TriAxis.RunSharp.Examples
 					FieldGen position = TokenEnumerator.Field(typeof(int), "position", -1);
 					FieldGen t = TokenEnumerator.Field(Tokens, "t");
 
-					g = TokenEnumerator.Public.Constructor(Tokens);
+					g = TokenEnumerator.Public.Constructor().Parameter(Tokens, "tokens");
 					{
-						g.Assign(t, g.Arg(0));
+						g.Assign(t, g.Arg("tokens"));
 					}
 
 					g = TokenEnumerator.Public.Method(typeof(bool), "MoveNext");

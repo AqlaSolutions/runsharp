@@ -30,40 +30,44 @@ using System.Reflection.Emit;
 
 namespace TriAxis.RunSharp
 {
-	public sealed class MethodGen : ICodeGenContext
+	public sealed class MethodGen : RoutineGen<MethodGen>
 	{
-		TypeGen owner;
 		string name;
 		MethodAttributes attributes;
-		Type returnType;
-		Type[] parameterTypes;
 		MethodBuilder mb;
-		CodeGen code;
+		MethodImplAttributes implFlags;
+		Type interfaceType;
 
-		internal MethodBuilder MethodBuilder { get { return mb; } }
-
-		internal MethodGen(TypeGen owner, string name, MethodAttributes attributes, Type returnType, Type[] parameterTypes, MethodImplAttributes implFlags)
+		internal MethodBuilder GetMethodBuilder()
 		{
-			this.owner = owner;
-			this.name = name;
-			this.attributes = attributes;
-			this.returnType = returnType;
-			this.parameterTypes = parameterTypes;
-
-			this.attributes = owner.PreprocessAttributes(this, attributes);
-
-			this.mb = owner.TypeBuilder.DefineMethod(name, this.attributes | MethodAttributes.HideBySig, IsStatic ? CallingConventions.Standard : CallingConventions.HasThis, returnType, parameterTypes);
-			if (implFlags != 0)
-				mb.SetImplementationFlags(implFlags);
-
-			if (!IsAbstract && (implFlags & MethodImplAttributes.Runtime) == 0)
-			{
-				this.code = new CodeGen(this);
-				owner.AddCodeBlock(code);
-			}
+			LockSignature(); 
+			return mb;
 		}
 
-		public CodeGen Code { get { return code; } }
+		internal MethodGen(TypeGen owner, string name, MethodAttributes attributes, Type returnType, MethodImplAttributes implFlags)
+			: base(owner, returnType)
+		{
+			this.name = name;
+			this.attributes = owner.PreprocessAttributes(this, attributes);
+			this.implFlags = implFlags;
+		}
+
+		protected override void CreateMember()
+		{
+			string methodName = name;
+
+			if (interfaceType != null)
+				methodName = interfaceType + "." + name;
+
+			this.mb = Owner.TypeBuilder.DefineMethod(methodName, this.attributes | MethodAttributes.HideBySig, IsStatic ? CallingConventions.Standard : CallingConventions.HasThis, ReturnType, ParameterTypes);
+			if (implFlags != 0)
+				mb.SetImplementationFlags(implFlags);
+		}
+
+		protected override void RegisterMember()
+		{
+			Owner.Register(this);
+		}
 
 		public bool IsPublic
 		{
@@ -75,12 +79,20 @@ namespace TriAxis.RunSharp
 			get { return (attributes & MethodAttributes.Abstract) != 0; }
 		}
 
-		public bool IsStatic
+		internal Type ImplementedInterface
+		{
+			get { return interfaceType; }
+			set { interfaceType = value; }
+		}
+
+		#region RoutineGen concrete implementation
+
+		protected internal override bool IsStatic
 		{
 			get { return (attributes & MethodAttributes.Static) != 0; }
 		}
 
-		public bool IsOverride
+		protected internal override bool IsOverride
 		{
 			get
 			{
@@ -88,65 +100,36 @@ namespace TriAxis.RunSharp
 			}
 		}
 
-		public string Name
+		public override string Name
 		{
 			get { return name; }
 		}
 
-		#region ICodeGenContext Members
+		protected override bool HasCode
+		{
+			get { return !IsAbstract && (implFlags & MethodImplAttributes.Runtime) == 0; }
+		}
 
-		ILGenerator ICodeGenContext.GetILGenerator()
+		protected override ILGenerator GetILGenerator()
 		{
 			return mb.GetILGenerator();
 		}
 
-		MemberInfo IMemberInfo.Member
+		protected override ParameterBuilder DefineParameter(int position, ParameterAttributes attributes, string parameterName)
+		{
+			return mb.DefineParameter(position, attributes, parameterName);
+		}
+
+		protected override MemberInfo Member
 		{
 			get { return mb; }
 		}
 
-		Type ICodeGenContext.OwnerType
-		{
-			get { return owner.TypeBuilder; }
-		}
-
-		public Type ReturnType
-		{
-			get { return returnType; }
-		}
-
-		public Type[] ParameterTypes
-		{
-			get { return parameterTypes; }
-		}
-
-		// TODO: params support
-		bool IMemberInfo.IsParameterArray
-		{
-			get { return false; }
-		}
-
-		void ICodeGenContext.DefineParameterName(int index, string name)
-		{
-			if (index < 0 || index >= parameterTypes.Length)
-				throw new ArgumentOutOfRangeException("index");
-
-			mb.DefineParameter(1 + index, ParameterAttributes.None, name);
-		}
 		#endregion
-
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2225:OperatorOverloadsHaveNamedAlternates", Justification = "CodeGen can be retrieved using the Code property")]
-		public static implicit operator CodeGen(MethodGen mg)
-		{
-			if (mg == null)
-				return null;
-
-			return mg.code;
-		}
-
+		
 		public override string ToString()
 		{
-			return owner.ToString() + "." + name;
+			return OwnerType.ToString() + "." + name;
 		}
 	}
 }

@@ -136,40 +136,9 @@ namespace TriAxis.RunSharp
 			return tg;
 		}
 
-		public TypeGen Delegate(Type returnType, string name)
+		public DelegateGen Delegate(Type returnType, string name)
 		{
-			return Delegate(returnType, name);
-		}
-
-		public TypeGen Delegate(Type returnType, string name, params Type[] parameterTypes)
-		{
-			TypeGen tg = new TypeGen(this, Qualify(name), (attrs | TypeAttributes.Sealed) & ~(TypeAttributes.Abstract | TypeAttributes.BeforeFieldInit), typeof(MulticastDelegate), Type.EmptyTypes);
-			ImplementDelegate(tg, returnType, parameterTypes);
-			return tg;
-		}
-
-		internal static void ImplementDelegate(TypeGen tg, Type returnType, Type[] parameterTypes)
-		{
-			ConstructorBuilder cb = tg.Public.RuntimeImpl.Constructor(typeof(object), typeof(IntPtr)).ConstructorBuilder;
-			cb.SetImplementationFlags(MethodImplAttributes.Runtime | MethodImplAttributes.Managed);
-			cb.DefineParameter(1, ParameterAttributes.None, "object");
-			cb.DefineParameter(2, ParameterAttributes.None, "method");
-			
-			Type[] asyncParams = new Type[parameterTypes.Length + 2];
-			parameterTypes.CopyTo(asyncParams, 0);
-			asyncParams[parameterTypes.Length] = typeof(AsyncCallback);
-			asyncParams[parameterTypes.Length + 1] = typeof(object);
-			MethodBuilder mb = tg.Public.Virtual.RuntimeImpl.Method(typeof(IAsyncResult), "BeginInvoke", asyncParams).MethodBuilder;
-			mb.SetImplementationFlags(MethodImplAttributes.Runtime | MethodImplAttributes.Managed);
-			mb.DefineParameter(parameterTypes.Length + 1, ParameterAttributes.None, "callback");
-			mb.DefineParameter(parameterTypes.Length + 2, ParameterAttributes.None, "object");
-
-			mb = tg.Public.Virtual.RuntimeImpl.Method(returnType, "EndInvoke", typeof(IAsyncResult)).MethodBuilder;
-			mb.SetImplementationFlags(MethodImplAttributes.Runtime | MethodImplAttributes.Managed);
-			mb.DefineParameter(1, ParameterAttributes.None, "result");
-
-			mb = tg.Public.Virtual.RuntimeImpl.Method(returnType, "Invoke", parameterTypes).MethodBuilder;
-			mb.SetImplementationFlags(MethodImplAttributes.Runtime | MethodImplAttributes.Managed);
+			return new DelegateGen(this, Qualify(name), returnType, (attrs | TypeAttributes.Sealed) & ~(TypeAttributes.Abstract | TypeAttributes.BeforeFieldInit));
 		}
 		#endregion
 
