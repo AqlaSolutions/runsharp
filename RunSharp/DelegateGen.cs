@@ -23,6 +23,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 
@@ -34,6 +35,7 @@ namespace TriAxis.RunSharp
 		string name;
 		TypeAttributes attrs;
 		TypeGen delegateType;
+		List<AttributeGen> customAttributes;
 
 		public DelegateGen(AssemblyGen owner, string name, Type returnType, TypeAttributes attrs)
 			: base(returnType)
@@ -58,6 +60,32 @@ namespace TriAxis.RunSharp
 
 			return delegateType;
 		}
+
+		#region Custom Attributes
+
+		public DelegateGen Attribute(AttributeType type)
+		{
+			BeginAttribute(type);
+			return this;
+		}
+
+		public DelegateGen Attribute(AttributeType type, params object[] args)
+		{
+			BeginAttribute(type, args);
+			return this;
+		}
+
+		public AttributeGen<DelegateGen> BeginAttribute(AttributeType type)
+		{
+			return BeginAttribute(type, EmptyArray<object>.Instance);
+		}
+
+		public AttributeGen<DelegateGen> BeginAttribute(AttributeType type, params object[] args)
+		{
+			return AttributeGen<DelegateGen>.CreateAndAdd(this, ref customAttributes, AttributeTargets.Delegate, type, args);
+		}
+
+		#endregion
 
 		TypeGen ImplementDelegate()
 		{
@@ -85,6 +113,8 @@ namespace TriAxis.RunSharp
 				.CopyParameters(Parameters)
 				.GetMethodBuilder();
 			mb.SetImplementationFlags(MethodImplAttributes.Runtime | MethodImplAttributes.Managed);
+
+			AttributeGen.ApplyList(ref customAttributes, tg.TypeBuilder.SetCustomAttribute);
 
 			return tg;
 		}

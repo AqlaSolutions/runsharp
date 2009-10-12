@@ -162,6 +162,16 @@ namespace TriAxis.RunSharp
 			get { return false; }
 		}
 
+		protected override AttributeTargets AttributeTarget
+		{
+			get { throw new InvalidOperationException(Properties.Messages.ErrDynamicMethodNoCustomAttrs); }
+		}
+
+		protected override void SetCustomAttribute(CustomAttributeBuilder cab)
+		{
+			throw new InvalidOperationException(Properties.Messages.ErrDynamicMethodNoCustomAttrs);
+		}
+
 		#endregion
 	}
 }

@@ -30,13 +30,14 @@ using System.Reflection.Emit;
 
 namespace TriAxis.RunSharp
 {
-	public sealed class FieldGen : Operand, IMemberInfo
+	public sealed class FieldGen : Operand, IMemberInfo, IDelayedCompletion
 	{
 		TypeGen owner;
 		FieldAttributes attrs;
 		string name;
 		Type type;
 		FieldBuilder fb;
+		List<AttributeGen> customAttributes = new List<AttributeGen>();
 
 		internal FieldGen(TypeGen owner, string name, Type type, FieldAttributes attrs)
 		{
@@ -46,6 +47,7 @@ namespace TriAxis.RunSharp
 			this.type = type;
 
 			fb = owner.TypeBuilder.DefineField(name, type, attrs);
+			owner.RegisterForCompletion(this);
 		}
 
 		public override Type Type
@@ -58,6 +60,32 @@ namespace TriAxis.RunSharp
 
 		public string Name { get { return name; } }
 		public bool IsStatic { get { return (attrs & FieldAttributes.Static) != 0; } }
+
+		#region Custom Attributes
+
+		public FieldGen Attribute(AttributeType type)
+		{
+			BeginAttribute(type);
+			return this;
+		}
+
+		public FieldGen Attribute(AttributeType type, params object[] args)
+		{
+			BeginAttribute(type, args);
+			return this;
+		}
+
+		public AttributeGen<FieldGen> BeginAttribute(AttributeType type)
+		{
+			return BeginAttribute(type, EmptyArray<object>.Instance);
+		}
+
+		public AttributeGen<FieldGen> BeginAttribute(AttributeType type, params object[] args)
+		{
+			return AttributeGen<FieldGen>.CreateAndAdd(this, ref customAttributes, AttributeTargets.Field, type, args);
+		}
+
+		#endregion
 
 		internal override void EmitGet(CodeGen g)
 		{
@@ -134,6 +162,15 @@ namespace TriAxis.RunSharp
 		bool IMemberInfo.IsOverride
 		{
 			get { return false; }
+		}
+
+		#endregion
+
+		#region IDelayedCompletion Members
+
+		void IDelayedCompletion.Complete()
+		{
+			AttributeGen.ApplyList(ref customAttributes, fb.SetCustomAttribute);
 		}
 
 		#endregion

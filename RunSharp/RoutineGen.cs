@@ -23,6 +23,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 
@@ -33,6 +34,7 @@ namespace TriAxis.RunSharp
 		TypeGen owner;
 		Type ownerType;
 		CodeGen code;
+		List<AttributeGen> customAttributes;
 
 		protected RoutineGen(TypeGen owner, Type returnType)
 			: base(returnType)
@@ -91,9 +93,35 @@ namespace TriAxis.RunSharp
 		
 		protected abstract bool HasCode { get; }
 		protected abstract MemberInfo Member { get; }
+
+		protected abstract AttributeTargets AttributeTarget { get; }
+		protected abstract void SetCustomAttribute(CustomAttributeBuilder cab);
 		#endregion
 
-		#region IRoutineGen Members
+		#region Custom Attributes
+
+		public T Attribute(AttributeType type)
+		{
+			BeginAttribute(type);
+			return typedThis;
+		}
+
+		public T Attribute(AttributeType type, params object[] args)
+		{
+			BeginAttribute(type, args);
+			return typedThis;
+		}
+
+		public AttributeGen<T> BeginAttribute(AttributeType type)
+		{
+			return BeginAttribute(type, EmptyArray<object>.Instance);
+		}
+
+		public AttributeGen<T> BeginAttribute(AttributeType type, params object[] args)
+		{
+			return AttributeGen<T>.CreateAndAdd(typedThis, ref customAttributes, AttributeTarget, type, args);
+		}
+
 		#endregion
 
 		#region IRequiresCompletion Members
@@ -111,6 +139,8 @@ namespace TriAxis.RunSharp
 			{
 				GetCode().Complete();
 			}
+
+			AttributeGen.ApplyList(ref customAttributes, SetCustomAttribute);
 		}
 
 		#endregion

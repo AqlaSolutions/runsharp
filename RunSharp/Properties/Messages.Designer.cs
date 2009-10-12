@@ -142,6 +142,33 @@ namespace TriAxis.RunSharp.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Value for attribute field &apos;{0}&apos; has already been defined.
+        /// </summary>
+        internal static string ErrAttributeMultiField {
+            get {
+                return ResourceManager.GetString("ErrAttributeMultiField", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Value for attribute property &apos;{0}&apos; has already been defined.
+        /// </summary>
+        internal static string ErrAttributeMultiProperty {
+            get {
+                return ResourceManager.GetString("ErrAttributeMultiProperty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot set value for read-only attribute property &apos;{0}&apos;.
+        /// </summary>
+        internal static string ErrAttributeReadOnlyProperty {
+            get {
+                return ResourceManager.GetString("ErrAttributeReadOnlyProperty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Argument passed by reference must have exactly the same type as the formal argument.
         /// </summary>
         internal static string ErrByRefTypeMismatch {
@@ -210,6 +237,15 @@ namespace TriAxis.RunSharp.Properties {
         internal static string ErrDynamicMethodInstance {
             get {
                 return ResourceManager.GetString("ErrDynamicMethodInstance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dynamic methods cannot have custom attributes.
+        /// </summary>
+        internal static string ErrDynamicMethodNoCustomAttrs {
+            get {
+                return ResourceManager.GetString("ErrDynamicMethodNoCustomAttrs", resourceCulture);
             }
         }
         

@@ -42,7 +42,7 @@ namespace TriAxis.RunSharp
 		ParameterGen returnParameter;
 		ParameterGenCollection parameters = new ParameterGenCollection();
 		bool signatureComplete;
-		readonly T typedThis;
+		internal readonly T typedThis;
 
 		internal SignatureGen(Type returnType)
 		{

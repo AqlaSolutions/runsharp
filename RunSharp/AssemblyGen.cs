@@ -37,6 +37,8 @@ namespace TriAxis.RunSharp
 		AssemblyBuilder asm;
 		ModuleBuilder mod;
 		List<TypeGen> types = new List<TypeGen>();
+		List<AttributeGen> assemblyAttributes;
+		List<AttributeGen> moduleAttributes;
 		string ns = null;
 
 		internal AssemblyBuilder AssemblyBuilder { get { return asm; } }
@@ -92,6 +94,54 @@ namespace TriAxis.RunSharp
 		public AssemblyGen Abstract { get { attrs |= TypeAttributes.Abstract; return this; } }
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		public AssemblyGen NoBeforeFieldInit { get { attrs |= TypeAttributes.BeforeFieldInit; return this; } }
+		#endregion
+
+		#region Custom Attributes
+
+		public AssemblyGen Attribute(AttributeType type)
+		{
+			BeginAttribute(type);
+			return this;
+		}
+
+		public AssemblyGen Attribute(AttributeType type, params object[] args)
+		{
+			BeginAttribute(type, args);
+			return this;
+		}
+
+		public AttributeGen<AssemblyGen> BeginAttribute(AttributeType type)
+		{
+			return BeginAttribute(type, EmptyArray<object>.Instance);
+		}
+
+		public AttributeGen<AssemblyGen> BeginAttribute(AttributeType type, params object[] args)
+		{
+			return AttributeGen<AssemblyGen>.CreateAndAdd(this, ref assemblyAttributes, AttributeTargets.Assembly, type, args);
+		}
+
+		public AssemblyGen ModuleAttribute(AttributeType type)
+		{
+			BeginModuleAttribute(type);
+			return this;
+		}
+
+		public AssemblyGen ModuleAttribute(AttributeType type, params object[] args)
+		{
+			BeginModuleAttribute(type, args);
+			return this;
+		}
+
+		public AttributeGen<AssemblyGen> BeginModuleAttribute(AttributeType type)
+		{
+			return BeginModuleAttribute(type, EmptyArray<object>.Instance);
+		}
+
+		public AttributeGen<AssemblyGen> BeginModuleAttribute(AttributeType type, params object[] args)
+		{
+			return AttributeGen<AssemblyGen>.CreateAndAdd(this, ref moduleAttributes, AttributeTargets.Module, type, args);
+		}
+
 		#endregion
 
 		#region Types
@@ -205,6 +255,9 @@ namespace TriAxis.RunSharp
 		{
 			foreach (TypeGen tg in types)
 				tg.Complete();
+
+			AttributeGen.ApplyList(ref assemblyAttributes, asm.SetCustomAttribute);
+			AttributeGen.ApplyList(ref moduleAttributes, mod.SetCustomAttribute);
 		}
 		#endregion
 	}

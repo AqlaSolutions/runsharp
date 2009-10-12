@@ -30,7 +30,7 @@ using System.Reflection.Emit;
 
 namespace TriAxis.RunSharp
 {
-	public sealed class PropertyGen : Operand, IMemberInfo
+	public sealed class PropertyGen : Operand, IMemberInfo, IDelayedCompletion
 	{
 		TypeGen owner;
 		MethodAttributes attrs;
@@ -39,6 +39,7 @@ namespace TriAxis.RunSharp
 		ParameterGenCollection indexParameters = new ParameterGenCollection();
 		PropertyBuilder pb;
 		Type interfaceType;
+		List<AttributeGen> customAttributes;
 
 		MethodGen getter, setter;
 
@@ -57,6 +58,7 @@ namespace TriAxis.RunSharp
 				indexParameters.Lock();
 
 				pb = owner.TypeBuilder.DefineProperty(interfaceType == null ? name : interfaceType.FullName + "." + name, PropertyAttributes.None, type, indexParameters.TypeArray);
+				owner.RegisterForCompletion(this);
 			}
 		}
 
@@ -94,6 +96,32 @@ namespace TriAxis.RunSharp
 
 			return setter;
 		}
+
+		#region Custom Attributes
+
+		public PropertyGen Attribute(AttributeType type)
+		{
+			BeginAttribute(type);
+			return this;
+		}
+
+		public PropertyGen Attribute(AttributeType type, params object[] args)
+		{
+			BeginAttribute(type, args);
+			return this;
+		}
+
+		public AttributeGen<PropertyGen> BeginAttribute(AttributeType type)
+		{
+			return BeginAttribute(type, EmptyArray<object>.Instance);
+		}
+
+		public AttributeGen<PropertyGen> BeginAttribute(AttributeType type, params object[] args)
+		{
+			return AttributeGen<PropertyGen>.CreateAndAdd(this, ref customAttributes, AttributeTargets.Property, type, args);
+		}
+
+		#endregion
 
 		#region Index parameter definition
 		public ParameterGen BeginIndex(Type type, string name)
@@ -169,6 +197,15 @@ namespace TriAxis.RunSharp
 		bool IMemberInfo.IsParameterArray
 		{
 			get { return indexParameters.Count > 0 && indexParameters[indexParameters.Count - 1].IsParameterArray; }
+		}
+
+		#endregion
+
+		#region IDelayedCompletion Members
+
+		void IDelayedCompletion.Complete()
+		{
+			AttributeGen.ApplyList(ref customAttributes, pb.SetCustomAttribute);
 		}
 
 		#endregion

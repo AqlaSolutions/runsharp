@@ -45,6 +45,9 @@
   <ItemGroup>
     <Compile Include="ArrayUtils.cs" />
     <Compile Include="AssemblyGen.cs" />
+    <Compile Include="AttributeGen.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="BranchSet.cs" />
     <Compile Include="SignatureGen.cs" />
     <Compile Include="CodeGen.Statements.cs" />

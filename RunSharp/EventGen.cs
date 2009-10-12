@@ -30,7 +30,7 @@ using System.Reflection.Emit;
 
 namespace TriAxis.RunSharp
 {
-	public sealed class EventGen : Operand, IMemberInfo
+	public sealed class EventGen : Operand, IMemberInfo, IDelayedCompletion
 	{
 		TypeGen owner;
 		MethodAttributes attrs;
@@ -38,6 +38,7 @@ namespace TriAxis.RunSharp
 		string name;
 		EventBuilder eb;
 		FieldGen handler = null;
+		List<AttributeGen> customAttributes;
 
 		MethodGen adder, remover;
 
@@ -49,6 +50,7 @@ namespace TriAxis.RunSharp
 			this.attrs = mthAttr;
 
 			eb = owner.TypeBuilder.DefineEvent(name, EventAttributes.None, type);
+			owner.RegisterForCompletion(this);
 		}
 
 		public MethodGen AddMethod()
@@ -106,10 +108,12 @@ namespace TriAxis.RunSharp
 			return this;
 		}
 
-		public void Complete()
+		void IDelayedCompletion.Complete()
 		{
 			if ((adder == null) != (remover == null))
 				throw new InvalidOperationException(Properties.Messages.ErrInvalidEventAccessors);
+
+			AttributeGen.ApplyList(ref customAttributes, eb.SetCustomAttribute);
 		}
 
 		internal override void EmitGet(CodeGen g)
@@ -138,6 +142,32 @@ namespace TriAxis.RunSharp
 				return type;
 			}
 		}
+
+		#region Custom Attributes
+
+		public EventGen Attribute(AttributeType type)
+		{
+			BeginAttribute(type);
+			return this;
+		}
+
+		public EventGen Attribute(AttributeType type, params object[] args)
+		{
+			BeginAttribute(type, args);
+			return this;
+		}
+
+		public AttributeGen<EventGen> BeginAttribute(AttributeType type)
+		{
+			return BeginAttribute(type, EmptyArray<object>.Instance);
+		}
+
+		public AttributeGen<EventGen> BeginAttribute(AttributeType type, params object[] args)
+		{
+			return AttributeGen<EventGen>.CreateAndAdd(this, ref customAttributes, AttributeTargets.Event, type, args);
+		}
+
+		#endregion
 
 		#region IMemberInfo Members
 

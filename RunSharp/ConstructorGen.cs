@@ -102,6 +102,16 @@ namespace TriAxis.RunSharp
 			get { return cb; }
 		}
 
+		protected override AttributeTargets AttributeTarget
+		{
+			get { return AttributeTargets.Constructor; }
+		}
+
+		protected override void SetCustomAttribute(CustomAttributeBuilder cab)
+		{
+			cb.SetCustomAttribute(cab);
+		}
+
 		#endregion
 	}
 }

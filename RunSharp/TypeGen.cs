@@ -89,6 +89,7 @@ namespace TriAxis.RunSharp
 		List<IMemberInfo> properties = new List<IMemberInfo>();
 		List<IMemberInfo> events = new List<IMemberInfo>();
 		List<IMemberInfo> methods = new List<IMemberInfo>();
+		List<AttributeGen> customAttributes = new List<AttributeGen>();
 		string indexerName;
 		
 		internal TypeBuilder TypeBuilder { get { return tb; } }
@@ -161,6 +162,11 @@ namespace TriAxis.RunSharp
 		{
 			definitionQueue.Add(routine);
 			completionQueue.Add(routine);
+		}
+
+		internal void RegisterForCompletion(IDelayedCompletion completion)
+		{
+			completionQueue.Add(completion);
 		}
 
 		#region Modifiers
@@ -247,6 +253,41 @@ namespace TriAxis.RunSharp
 			typeVis = typeVirt = typeFlags = 0;
 			implFlags = 0;
 		}
+		#endregion
+
+		#region Custom Attributes
+
+		public TypeGen Attribute(AttributeType type)
+		{
+			BeginAttribute(type);
+			return this;
+		}
+
+		public TypeGen Attribute(AttributeType type, params object[] args)
+		{
+			BeginAttribute(type, args);
+			return this;
+		}
+
+		public AttributeGen<TypeGen> BeginAttribute(AttributeType type)
+		{
+			return BeginAttribute(type, EmptyArray<object>.Instance);
+		}
+
+		public AttributeGen<TypeGen> BeginAttribute(AttributeType type, params object[] args)
+		{
+			AttributeTargets target = AttributeTargets.Class;
+
+			if (baseType == null)
+				target = AttributeTargets.Interface;
+			else if (baseType == typeof(ValueType))
+				target = AttributeTargets.Struct;
+			else
+				target = AttributeTargets.Class;
+
+			return AttributeGen<TypeGen>.CreateAndAdd(this, ref customAttributes, target, type, args);
+		}
+
 		#endregion
 
 		#region Members
@@ -636,6 +677,8 @@ namespace TriAxis.RunSharp
 					new object[] { indexerName });
 				tb.SetCustomAttribute(cab);
 			}
+
+			AttributeGen.ApplyList(ref customAttributes, tb.SetCustomAttribute);
 
 			type = tb.CreateType();
 

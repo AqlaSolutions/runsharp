@@ -333,4 +333,16 @@
   <data name="ErrParamUnknown" xml:space="preserve">
     <value>Unknown parameter: {0}</value>
   </data>
+  <data name="ErrAttributeMultiField" xml:space="preserve">
+    <value>Value for attribute field '{0}' has already been defined</value>
+  </data>
+  <data name="ErrAttributeMultiProperty" xml:space="preserve">
+    <value>Value for attribute property '{0}' has already been defined</value>
+  </data>
+  <data name="ErrAttributeReadOnlyProperty" xml:space="preserve">
+    <value>Cannot set value for read-only attribute property '{0}'</value>
+  </data>
+  <data name="ErrDynamicMethodNoCustomAttrs" xml:space="preserve">
+    <value>Dynamic methods cannot have custom attributes</value>
+  </data>
 </root>

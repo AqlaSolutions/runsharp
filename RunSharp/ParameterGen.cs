@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Reflection.Emit;
 
 namespace TriAxis.RunSharp
 {
@@ -36,6 +37,7 @@ namespace TriAxis.RunSharp
 		ParameterAttributes attributes = ParameterAttributes.None;
 		string name;
 		bool va;
+		internal List<AttributeGen> customAttributes;
 
 		internal ParameterGen(ParameterGenCollection owner, int position, Type parameterType, ParameterAttributes attributes, string name, bool va)
 		{
@@ -53,9 +55,36 @@ namespace TriAxis.RunSharp
 		public ParameterAttributes ParameterAttributes { get { return attributes; } }
 		internal bool IsParameterArray { get { return va; } }
 
+		#region Custom Attributes
+
+		public ParameterGen Attribute(AttributeType type)
+		{
+			BeginAttribute(type);
+			return this;
+		}
+
+		public ParameterGen Attribute(AttributeType type, params object[] args)
+		{
+			BeginAttribute(type, args);
+			return this;
+		}
+
+		public AttributeGen<ParameterGen> BeginAttribute(AttributeType type)
+		{
+			return BeginAttribute(type, EmptyArray<object>.Instance);
+		}
+
+		public AttributeGen<ParameterGen> BeginAttribute(AttributeType type, params object[] args)
+		{
+			return AttributeGen<ParameterGen>.CreateAndAdd(this, ref customAttributes, position == 0 ? AttributeTargets.ReturnValue : AttributeTargets.Parameter, type, args);
+		}
+
+		#endregion
+
 		internal void Complete(ISignatureGen sig)
 		{
-			sig.DefineParameter(position, attributes, name);
+			ParameterBuilder pb = sig.DefineParameter(position, attributes, name);
+			AttributeGen.ApplyList(ref customAttributes, pb.SetCustomAttribute);
 		}
 	}
 
@@ -68,6 +97,32 @@ namespace TriAxis.RunSharp
 		{
 			this.context = context;
 		}
+
+		#region Custom Attributes
+
+		public new ParameterGen<TOuterContext> Attribute(AttributeType type)
+		{
+			BeginAttribute(type);
+			return this;
+		}
+
+		public new ParameterGen<TOuterContext> Attribute(AttributeType type, params object[] args)
+		{
+			BeginAttribute(type, args);
+			return this;
+		}
+
+		public new AttributeGen<ParameterGen<TOuterContext>> BeginAttribute(AttributeType type)
+		{
+			return BeginAttribute(type, EmptyArray<object>.Instance);
+		}
+
+		public new AttributeGen<ParameterGen<TOuterContext>> BeginAttribute(AttributeType type, params object[] args)
+		{
+			return AttributeGen<ParameterGen<TOuterContext>>.CreateAndAdd(this, ref customAttributes, AttributeTargets.Delegate, type, args);
+		}
+
+		#endregion
 
 		public TOuterContext End()
 		{

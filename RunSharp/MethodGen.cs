@@ -125,6 +125,16 @@ namespace TriAxis.RunSharp
 			get { return mb; }
 		}
 
+		protected override AttributeTargets AttributeTarget
+		{
+			get { return AttributeTargets.Constructor; }
+		}
+
+		protected override void SetCustomAttribute(CustomAttributeBuilder cab)
+		{
+			mb.SetCustomAttribute(cab);
+		}
+
 		#endregion
 		
 		public override string ToString()
