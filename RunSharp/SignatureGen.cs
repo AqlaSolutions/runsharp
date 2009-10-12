@@ -80,7 +80,7 @@ namespace TriAxis.RunSharp
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		public T Params { get { return SetModifier(ParamModifier.Params); } }
 
-		public ParameterGen BeginParameter(Type type, string name)
+		public ParameterGen<T> BeginParameter(Type type, string name)
 		{
 			ParameterAttributes attrs = 0;
 			bool va = false;
@@ -100,7 +100,7 @@ namespace TriAxis.RunSharp
 					break;
 			}
 
-			ParameterGen pgen = new ParameterGen(parameters, parameters.Count + 1, type, attrs, name, va);
+			ParameterGen<T> pgen = new ParameterGen<T>(typedThis, parameters, parameters.Count + 1, type, attrs, name, va);
 			parameters.Add(pgen);
 			paramMod = ParamModifier.None;
 			return pgen;

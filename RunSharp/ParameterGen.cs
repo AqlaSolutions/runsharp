@@ -59,6 +59,22 @@ namespace TriAxis.RunSharp
 		}
 	}
 
+	public class ParameterGen<TOuterContext> : ParameterGen
+	{
+		TOuterContext context;
+
+		internal ParameterGen(TOuterContext context, ParameterGenCollection owner, int position, Type parameterType, ParameterAttributes attributes, string name, bool va)
+			: base(owner, position, parameterType, attributes, name, va)
+		{
+			this.context = context;
+		}
+
+		public TOuterContext End()
+		{
+			return context;
+		}
+	}
+
 	class ParameterGenCollection : IList<ParameterGen>
 	{
 		ParameterGen[] array = EmptyArray<ParameterGen>.Instance;
