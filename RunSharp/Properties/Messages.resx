@@ -318,4 +318,31 @@
   <data name="ErrVoidMethodReturningValue" xml:space="preserve">
     <value>Cannot return value from a void method</value>
   </data>
+  <data name="ErrMultiParamModifier" xml:space="preserve">
+    <value>Only one parameter modifier is allowed out of [Ref, Out, Params]</value>
+  </data>
+  <data name="ErrNoCodeAllowed" xml:space="preserve">
+    <value>Cannot emit code for an abstract or runtime-provided method</value>
+  </data>
+  <data name="ErrParamArrayMustBeLast" xml:space="preserve">
+    <value>The parameter array must be the last parameter defined</value>
+  </data>
+  <data name="ErrParamArrayNotArray" xml:space="preserve">
+    <value>The parameter array must be defined using an array type</value>
+  </data>
+  <data name="ErrParamUnknown" xml:space="preserve">
+    <value>Unknown parameter: {0}</value>
+  </data>
+  <data name="ErrAttributeMultiField" xml:space="preserve">
+    <value>Value for attribute field '{0}' has already been defined</value>
+  </data>
+  <data name="ErrAttributeMultiProperty" xml:space="preserve">
+    <value>Value for attribute property '{0}' has already been defined</value>
+  </data>
+  <data name="ErrAttributeReadOnlyProperty" xml:space="preserve">
+    <value>Cannot set value for read-only attribute property '{0}'</value>
+  </data>
+  <data name="ErrDynamicMethodNoCustomAttrs" xml:space="preserve">
+    <value>Dynamic methods cannot have custom attributes</value>
+  </data>
 </root>

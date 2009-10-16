@@ -30,33 +30,53 @@ using System.Reflection.Emit;
 
 namespace TriAxis.RunSharp
 {
-	public sealed class PropertyGen : Operand, IMemberInfo
+	public sealed class PropertyGen : Operand, IMemberInfo, IDelayedCompletion
 	{
 		TypeGen owner;
 		MethodAttributes attrs;
 		Type type;
 		string name;
-		Type[] indexTypes;
+		ParameterGenCollection indexParameters = new ParameterGenCollection();
 		PropertyBuilder pb;
+		Type interfaceType;
+		List<AttributeGen> customAttributes;
 
 		MethodGen getter, setter;
 
-		internal PropertyGen(TypeGen owner, MethodAttributes attrs, Type type, string name, Type[] indexTypes)
+		internal PropertyGen(TypeGen owner, MethodAttributes attrs, Type type, string name)
 		{
 			this.owner = owner;
 			this.attrs = attrs;
 			this.type = type;
 			this.name = name;
-			this.indexTypes = indexTypes;
-			pb = owner.TypeBuilder.DefineProperty(name, PropertyAttributes.None, type, indexTypes);
+		}
+
+		void LockSignature()
+		{
+			if (pb == null)
+			{
+				indexParameters.Lock();
+
+				pb = owner.TypeBuilder.DefineProperty(interfaceType == null ? name : interfaceType.FullName + "." + name, PropertyAttributes.None, type, indexParameters.TypeArray);
+				owner.RegisterForCompletion(this);
+			}
+		}
+
+		internal Type ImplementedInterface
+		{
+			get { return interfaceType; }
+			set { interfaceType = value; }
 		}
 
 		public MethodGen Getter()
 		{
 			if (getter == null)
 			{
-				getter = new MethodGen(owner, "get_" + name, attrs | MethodAttributes.SpecialName, type, indexTypes, 0);
-				pb.SetGetMethod(getter.MethodBuilder);
+				LockSignature();
+				getter = new MethodGen(owner, "get_" + name, attrs | MethodAttributes.SpecialName, type, 0);
+				getter.ImplementedInterface = interfaceType;
+				getter.CopyParameters(indexParameters);
+				pb.SetGetMethod(getter.GetMethodBuilder());
 			}
 
 			return getter;
@@ -66,12 +86,57 @@ namespace TriAxis.RunSharp
 		{
 			if (setter == null)
 			{
-				setter = new MethodGen(owner, "set_" + name, attrs | MethodAttributes.SpecialName, typeof(void), ArrayUtils.Combine(indexTypes, type), 0);
-				pb.SetSetMethod(setter.MethodBuilder);
+				LockSignature();
+				setter = new MethodGen(owner, "set_" + name, attrs | MethodAttributes.SpecialName, typeof(void), 0);
+				setter.ImplementedInterface = interfaceType;
+				setter.CopyParameters(indexParameters);
+				setter.UncheckedParameter(type, "value");
+				pb.SetSetMethod(setter.GetMethodBuilder());
 			}
 
 			return setter;
 		}
+
+		#region Custom Attributes
+
+		public PropertyGen Attribute(AttributeType type)
+		{
+			BeginAttribute(type);
+			return this;
+		}
+
+		public PropertyGen Attribute(AttributeType type, params object[] args)
+		{
+			BeginAttribute(type, args);
+			return this;
+		}
+
+		public AttributeGen<PropertyGen> BeginAttribute(AttributeType type)
+		{
+			return BeginAttribute(type, EmptyArray<object>.Instance);
+		}
+
+		public AttributeGen<PropertyGen> BeginAttribute(AttributeType type, params object[] args)
+		{
+			return AttributeGen<PropertyGen>.CreateAndAdd(this, ref customAttributes, AttributeTargets.Property, type, args);
+		}
+
+		#endregion
+
+		#region Index parameter definition
+		public ParameterGen BeginIndex(Type type, string name)
+		{
+			ParameterGen pgen = new ParameterGen(indexParameters, indexParameters.Count + 1, type, 0, name, false);
+			indexParameters.Add(pgen);
+			return pgen;
+		}
+
+		public PropertyGen Index(Type type, string name)
+		{
+			BeginIndex(type, name);
+			return this;
+		}
+		#endregion
 
 		public bool IsAbstract { get { return (attrs & MethodAttributes.Abstract) != 0; } }
 		public bool IsOverride { get { return Utils.IsOverride(attrs); } }
@@ -84,14 +149,14 @@ namespace TriAxis.RunSharp
 			if (getter == null)
 				base.EmitGet(g);
 
-			if (indexTypes.Length != 0)
+			if (indexParameters.Count != 0)
 				throw new InvalidOperationException(Properties.Messages.ErrMissingPropertyIndex);
 
 			if (!IsStatic && (g.Context.IsStatic || g.Context.OwnerType != owner.TypeBuilder))
 				throw new InvalidOperationException(Properties.Messages.ErrInvalidPropertyContext);
 
 			g.IL.Emit(OpCodes.Ldarg_0);
-			g.EmitCallHelper(getter.MethodBuilder, null);
+			g.EmitCallHelper(getter.GetMethodBuilder(), null);
 		}
 
 		internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
@@ -99,7 +164,7 @@ namespace TriAxis.RunSharp
 			if (setter == null)
 				base.EmitSet(g, value, allowExplicitConversion);
 
-			if (indexTypes.Length != 0)
+			if (indexParameters.Count != 0)
 				throw new InvalidOperationException(Properties.Messages.ErrMissingPropertyIndex);
 
 			if (!IsStatic && (g.Context.IsStatic || g.Context.OwnerType != owner.TypeBuilder))
@@ -107,7 +172,7 @@ namespace TriAxis.RunSharp
 
 			g.IL.Emit(OpCodes.Ldarg_0);
 			g.EmitGetHelper(value, Type, allowExplicitConversion);
-			g.EmitCallHelper(setter.MethodBuilder, null);
+			g.EmitCallHelper(setter.GetMethodBuilder(), null);
 		}
 
 		public override Type Type { get { return type; } }
@@ -126,13 +191,21 @@ namespace TriAxis.RunSharp
 
 		Type[] IMemberInfo.ParameterTypes
 		{
-			get { return indexTypes; }
+			get { return indexParameters.TypeArray; }
 		}
 
 		bool IMemberInfo.IsParameterArray
 		{
-			// TODO
-			get { return false; }
+			get { return indexParameters.Count > 0 && indexParameters[indexParameters.Count - 1].IsParameterArray; }
+		}
+
+		#endregion
+
+		#region IDelayedCompletion Members
+
+		void IDelayedCompletion.Complete()
+		{
+			AttributeGen.ApplyList(ref customAttributes, pb.SetCustomAttribute);
 		}
 
 		#endregion

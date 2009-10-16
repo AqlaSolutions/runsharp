@@ -30,7 +30,7 @@ using System.Reflection.Emit;
 
 namespace TriAxis.RunSharp
 {
-	public sealed class EventGen : Operand, IMemberInfo
+	public sealed class EventGen : Operand, IMemberInfo, IDelayedCompletion
 	{
 		TypeGen owner;
 		MethodAttributes attrs;
@@ -38,6 +38,7 @@ namespace TriAxis.RunSharp
 		string name;
 		EventBuilder eb;
 		FieldGen handler = null;
+		List<AttributeGen> customAttributes;
 
 		MethodGen adder, remover;
 
@@ -49,14 +50,21 @@ namespace TriAxis.RunSharp
 			this.attrs = mthAttr;
 
 			eb = owner.TypeBuilder.DefineEvent(name, EventAttributes.None, type);
+			owner.RegisterForCompletion(this);
 		}
 
 		public MethodGen AddMethod()
 		{
+			return AddMethod("handler");
+		}
+
+		public MethodGen AddMethod(string parameterName)
+		{
 			if (adder == null)
 			{
-				adder = new MethodGen(owner, "add_" + name, attrs | MethodAttributes.SpecialName, typeof(void), new Type[] { type }, 0);
-				eb.SetAddOnMethod(adder.MethodBuilder);
+				adder = new MethodGen(owner, "add_" + name, attrs | MethodAttributes.SpecialName, typeof(void), 0);
+				adder.Parameter(type, parameterName);
+				eb.SetAddOnMethod(adder.GetMethodBuilder());
 			}
 
 			return adder;
@@ -64,10 +72,16 @@ namespace TriAxis.RunSharp
 
 		public MethodGen RemoveMethod()
 		{
+			return RemoveMethod("handler");
+		}
+
+		public MethodGen RemoveMethod(string parameterName)
+		{
 			if (remover == null)
 			{
-				remover = new MethodGen(owner, "remove_" + name, attrs | MethodAttributes.SpecialName, typeof(void), new Type[] { type }, 0);
-				eb.SetRemoveOnMethod(remover.MethodBuilder);
+				remover = new MethodGen(owner, "remove_" + name, attrs | MethodAttributes.SpecialName, typeof(void), 0);
+				remover.Parameter(type, parameterName);
+				eb.SetRemoveOnMethod(remover.GetMethodBuilder());
 			}
 
 			return remover;
@@ -83,21 +97,23 @@ namespace TriAxis.RunSharp
 					handler = owner.Private.Field(type, name);
 
 				CodeGen g = AddMethod();
-				g.AssignAdd(handler, g.Arg(0, "handler"));
-				adder.MethodBuilder.SetImplementationFlags(MethodImplAttributes.IL | MethodImplAttributes.Managed | MethodImplAttributes.Synchronized);
+				g.AssignAdd(handler, g.Arg("handler"));
+				adder.GetMethodBuilder().SetImplementationFlags(MethodImplAttributes.IL | MethodImplAttributes.Managed | MethodImplAttributes.Synchronized);
 
 				g = RemoveMethod();
-				g.AssignSubtract(handler, g.Arg(0, "handler"));
-				remover.MethodBuilder.SetImplementationFlags(MethodImplAttributes.IL | MethodImplAttributes.Managed | MethodImplAttributes.Synchronized);
+				g.AssignSubtract(handler, g.Arg("handler"));
+				remover.GetMethodBuilder().SetImplementationFlags(MethodImplAttributes.IL | MethodImplAttributes.Managed | MethodImplAttributes.Synchronized);
 			};
 				
 			return this;
 		}
 
-		public void Complete()
+		void IDelayedCompletion.Complete()
 		{
 			if ((adder == null) != (remover == null))
 				throw new InvalidOperationException(Properties.Messages.ErrInvalidEventAccessors);
+
+			AttributeGen.ApplyList(ref customAttributes, eb.SetCustomAttribute);
 		}
 
 		internal override void EmitGet(CodeGen g)
@@ -126,6 +142,32 @@ namespace TriAxis.RunSharp
 				return type;
 			}
 		}
+
+		#region Custom Attributes
+
+		public EventGen Attribute(AttributeType type)
+		{
+			BeginAttribute(type);
+			return this;
+		}
+
+		public EventGen Attribute(AttributeType type, params object[] args)
+		{
+			BeginAttribute(type, args);
+			return this;
+		}
+
+		public AttributeGen<EventGen> BeginAttribute(AttributeType type)
+		{
+			return BeginAttribute(type, EmptyArray<object>.Instance);
+		}
+
+		public AttributeGen<EventGen> BeginAttribute(AttributeType type, params object[] args)
+		{
+			return AttributeGen<EventGen>.CreateAndAdd(this, ref customAttributes, AttributeTargets.Event, type, args);
+		}
+
+		#endregion
 
 		#region IMemberInfo Members
 
@@ -179,7 +221,7 @@ namespace TriAxis.RunSharp
 
 			public override MethodInfo GetAddMethod(bool nonPublic)
 			{
-				return eg.adder == null ? null : eg.adder.MethodBuilder;
+				return eg.adder == null ? null : eg.adder.GetMethodBuilder();
 			}
 
 			public override MethodInfo GetRaiseMethod(bool nonPublic)
@@ -189,7 +231,7 @@ namespace TriAxis.RunSharp
 
 			public override MethodInfo GetRemoveMethod(bool nonPublic)
 			{
-				return eg.remover == null ? null : eg.remover.MethodBuilder;
+				return eg.remover == null ? null : eg.remover.GetMethodBuilder();
 			}
 
 			public override Type DeclaringType

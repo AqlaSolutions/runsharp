@@ -210,7 +210,7 @@ namespace TriAxis.RunSharp
 
 			// when the chain continues to base, we also need to call the common constructor
 			il.Emit(OpCodes.Ldarg_0);
-			il.Emit(OpCodes.Call, cg.Type.CommonConstructor().MethodBuilder);
+			il.Emit(OpCodes.Call, cg.Type.CommonConstructor().GetMethodBuilder());
 		}
 		#endregion
 

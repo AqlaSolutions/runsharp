@@ -151,8 +151,8 @@ namespace TriAxis.RunSharp
 		#region Dynamic Method examples
 		static void DynamicMethodExamples()
 		{
-			DynamicMethodGen dmg = DynamicMethodGen.Static(typeof(Program)).Method(typeof(void), typeof(string));
-			dmg.Code.WriteLine("Hello {0}!", dmg.Code.Arg(0, "name"));
+			DynamicMethodGen dmg = DynamicMethodGen.Static(typeof(Program)).Method(typeof(void)).Parameter(typeof(string), "name");
+			dmg.GetCode().WriteLine("Hello {0}!", dmg.GetCode().Arg("name"));
 			DynamicMethod dm = dmg.GetCompletedDynamicMethod(true);
 
 			// reflection-style invocation
