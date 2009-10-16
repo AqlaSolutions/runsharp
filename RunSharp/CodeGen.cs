@@ -34,14 +34,12 @@ namespace TriAxis.RunSharp
 {
 	using Operands;
 
-	interface ICodeGenContext : IMemberInfo
+	interface ICodeGenContext : IMemberInfo, ISignatureGen, IDelayedDefinition, IDelayedCompletion
 	{
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Typical implementation invokes XxxBuilder.GetILGenerator() which is a method as well.")]
 		ILGenerator GetILGenerator();
 
 		Type OwnerType { get; }
-
-		void DefineParameterName(int index, string name);
 	}
 
 	public partial class CodeGen
@@ -62,13 +60,8 @@ namespace TriAxis.RunSharp
 		internal CodeGen(ICodeGenContext context)
 		{
 			this.context = context;
+			this.cg = context as ConstructorGen;
 			il = context.GetILGenerator();
-		}
-
-		internal CodeGen(ConstructorGen cg)
-			: this((ICodeGenContext)cg)
-		{
-			this.cg = cg;
 		}
 
 		/*public static CodeGen CreateDynamicMethod(string name, Type returnType, params Type[] parameterTypes, Type owner, bool skipVisibility)
@@ -112,21 +105,10 @@ namespace TriAxis.RunSharp
 			return new _Arg(_ThisOffset + parameterTypes.Length - 1, parameterTypes[parameterTypes.Length - 1]);
 		}
 
-		public Operand Arg(int index)
+		public Operand Arg(string name)
 		{
-			Type[] parameterTypes = context.ParameterTypes;
-
-			if (index < 0 || index >= parameterTypes.Length)
-				throw new ArgumentOutOfRangeException("index", Properties.Messages.ErrArgIndexOutOfRange);
-
-			return new _Arg(_ThisOffset + index, parameterTypes[index]);
-		}
-
-		public Operand Arg(int index, string name)
-		{
-			Operand op = Arg(index);
-			context.DefineParameterName(index, name);
-			return op;
+			ParameterGen param = context.GetParameterByName(name);
+			return new _Arg(_ThisOffset + param.Position - 1, param.Type);
 		}
 		#endregion
 

@@ -45,21 +45,25 @@ namespace TriAxis.RunSharp.Examples
 					FieldGen document = WordCollection.ReadOnly.Field(Document, "document");	// The containing document
 					Operand document_TextArray = document.Field("TextArray");	// example of a saved expression - it is always re-evaluated when used
 
-					g = WordCollection.Internal.Constructor(Document);
+					g = WordCollection.Internal.Constructor().Parameter(Document, "d");
 					{
-						g.Assign(document, g.Arg(0, "d"));
+						g.Assign(document, g.Arg("d"));
 					}
 
 					// Helper function -- search character array "text", starting at
 					// character "begin", for word number "wordCount." Returns false
 					// if there are less than wordCount words.Sets "start" and
 					// length" to the position and length of the word within text:
-					// remark: there is no equivalent to 'out' in RunSharp, only 'ref' can be used
-					g = WordCollection.Private.Method(typeof(bool), "GetWord", typeof(char[]), typeof(int), typeof(int),
-						typeof(int).MakeByRefType(), typeof(int).MakeByRefType());
+					g = WordCollection.Private.Method(typeof(bool), "GetWord")
+						.Parameter(typeof(char[]), "text")
+						.Parameter(typeof(int), "begin")
+						.Parameter(typeof(int), "wordCount")
+						.Out.Parameter(typeof(int), "start")
+						.Out.Parameter(typeof(int), "length")
+						;
 					{
-						Operand text = g.Arg(0, "text"), begin = g.Arg(1, "begin"), wordCount = g.Arg(2, "wordCount"),
-							start = g.Arg(3, "start"), length = g.Arg(4, "length");
+						Operand text = g.Arg("text"), begin = g.Arg("begin"), wordCount = g.Arg("wordCount"),
+							start = g.Arg("start"), length = g.Arg("length");
 
 						Operand end = g.Local(text.ArrayLength());
 						Operand count = g.Local(0);
@@ -103,11 +107,11 @@ namespace TriAxis.RunSharp.Examples
 					}
 
 					// Indexer to get and set words of the containing document:
-					PropertyGen Item = WordCollection.Public.Indexer(typeof(string), typeof(int));
+					PropertyGen Item = WordCollection.Public.Indexer(typeof(string)).Index(typeof(int), "index");
 					{
 						g = Item.Getter();
 						{
-							Operand index = g.Arg(0, "index");
+							Operand index = g.Arg("index");
 
 							Operand start = g.Local(0), length = g.Local(0);
 
@@ -123,7 +127,7 @@ namespace TriAxis.RunSharp.Examples
 						}
 						g = Item.Setter();
 						{
-							Operand index = g.Arg(0, "index");
+							Operand index = g.Arg("index");
 							Operand value = g.PropertyValue();
 
 							Operand start = g.Local(0), length = g.Local(0);
@@ -185,21 +189,21 @@ namespace TriAxis.RunSharp.Examples
 					FieldGen document = CharacterCollection.ReadOnly.Field(Document, "document");	// The containing document
 					Operand document_TextArray = document.Field("TextArray");
 
-					g = CharacterCollection.Internal.Constructor(Document);
+					g = CharacterCollection.Internal.Constructor().Parameter(Document, "d");
 					{
-						g.Assign(document, g.Arg(0, "d"));
+						g.Assign(document, g.Arg("d"));
 					}
 
 					// Indexer to get and set characters in the containing document:
-					PropertyGen Item = CharacterCollection.Public.Indexer(typeof(char), typeof(int));
+					PropertyGen Item = CharacterCollection.Public.Indexer(typeof(char)).Index(typeof(int), "index");
 					{
 						g = Item.Getter();
 						{
-							g.Return(document_TextArray[g.Arg(0, "index")]);
+							g.Return(document_TextArray[g.Arg("index")]);
 						}
 						g = Item.Setter();
 						{
-							g.Assign(document_TextArray[g.Arg(0, "index")], g.PropertyValue());
+							g.Assign(document_TextArray[g.Arg("index")], g.PropertyValue());
 						}
 					}
 
@@ -215,9 +219,9 @@ namespace TriAxis.RunSharp.Examples
 				FieldGen Words = Document.Public.ReadOnly.Field(WordCollection, "Words");
 				FieldGen Characters = Document.Public.ReadOnly.Field(CharacterCollection, "Characters");
 
-				g = Document.Public.Constructor(typeof(string));
+				g = Document.Public.Constructor().Parameter(typeof(string), "initialText");
 				{
-					g.Assign(TextArray, g.Arg(0, "initialText").Invoke("ToCharArray"));
+					g.Assign(TextArray, g.Arg("initialText").Invoke("ToCharArray"));
 					g.Assign(Words, Exp.New(WordCollection, g.This()));
 					g.Assign(Characters, Exp.New(CharacterCollection, g.This()));
 				}
