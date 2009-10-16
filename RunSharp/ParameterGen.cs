@@ -84,7 +84,11 @@ namespace TriAxis.RunSharp
 		internal void Complete(ISignatureGen sig)
 		{
 			ParameterBuilder pb = sig.DefineParameter(position, attributes, name);
-			AttributeGen.ApplyList(ref customAttributes, pb.SetCustomAttribute);
+
+			if (customAttributes != null && pb != null)
+			{
+				AttributeGen.ApplyList(ref customAttributes, pb.SetCustomAttribute);
+			}
 		}
 	}
 
