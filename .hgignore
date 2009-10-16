@@ -1,0 +1,13 @@
+# using glob syntax
+syntax: glob
+
+# ignore build products
+bin/**
+obj/**
+
+# ignore user settings
+*.suo
+*.user
+
+# ignore mono temporary project
+*.sln.proj
