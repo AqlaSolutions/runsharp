@@ -38,7 +38,7 @@ namespace TriAxis.RunSharp.Examples
 			using (ag.Namespace("MyCollections"))
 			{
 				// A delegate type for hooking up change notifications.
-				ChangedEventHandler = ag.Delegate(typeof(void), "ChangedEventHandler", typeof(object), typeof(EventArgs));
+				ChangedEventHandler = ag.Delegate(typeof(void), "ChangedEventHandler").Parameter(typeof(object), "sender").Parameter(typeof(EventArgs), "e");
 
 				// A class that works just like ArrayList, but sends event
 				// notifications whenever the list changes.
@@ -49,20 +49,20 @@ namespace TriAxis.RunSharp.Examples
 					EventGen Changed = ListWithChangedEvent.Public.Event(ChangedEventHandler, "Changed");
 
 					// Invoke the Changed event; called whenever list changes
-					CodeGen g = ListWithChangedEvent.Protected.Virtual.Method(typeof(void), "OnChanged", typeof(EventArgs));
+					CodeGen g = ListWithChangedEvent.Protected.Virtual.Method(typeof(void), "OnChanged").Parameter(typeof(EventArgs), "e");
 					{
 						g.If(Changed != null);
 						{
-							g.InvokeDelegate(Changed, g.This(), g.Arg(0, "e"));
+							g.InvokeDelegate(Changed, g.This(), g.Arg("e"));
 						}
 						g.End();
 					}
 
 					// Override some of the methods that can change the list;
 					// invoke event after each
-					g = ListWithChangedEvent.Public.Override.Method(typeof(int), "Add", typeof(object));
+					g = ListWithChangedEvent.Public.Override.Method(typeof(int), "Add").Parameter(typeof(object), "value");
 					{
-						Operand i = g.Local(g.Base().Invoke("Add", g.Arg(0, "value")));
+						Operand i = g.Local(g.Base().Invoke("Add", g.Arg("value")));
 						g.Invoke(g.This(), "OnChanged", Static.Field(typeof(EventArgs), "Empty"));
 						g.Return(i);
 					}
@@ -73,9 +73,9 @@ namespace TriAxis.RunSharp.Examples
 						g.Invoke(g.This(), "OnChanged", Static.Field(typeof(EventArgs), "Empty"));
 					}
 
-					g = ListWithChangedEvent.Public.Override.Indexer(typeof(object), typeof(int)).Setter();
+					g = ListWithChangedEvent.Public.Override.Indexer(typeof(object)).Index(typeof(int), "index").Setter();
 					{
-						g.Assign(g.Base()[g.Arg(0, "index")], g.PropertyValue());
+						g.Assign(g.Base()[g.Arg("index")], g.PropertyValue());
 						g.Invoke(g.This(), "OnChanged", Static.Field(typeof(EventArgs), "Empty"));
 					}
 				}
@@ -88,14 +88,14 @@ namespace TriAxis.RunSharp.Examples
 					FieldGen List = EventListener.Field(ListWithChangedEvent, "List");
 
 					// This will be called whenever the list changes.
-					CodeGen g = EventListener.Private.Method(typeof(void), "ListChanged", typeof(object), typeof(EventArgs));
+					CodeGen g = EventListener.Private.Method(typeof(void), "ListChanged").Parameter(typeof(object), "sender").Parameter(typeof(EventArgs), "eventArgs");
 					{
 						g.WriteLine("This is called when the event fires.");
 					}
 
-					g = EventListener.Public.Constructor(ListWithChangedEvent);
+					g = EventListener.Public.Constructor().Parameter(ListWithChangedEvent, "list");
 					{
-						g.Assign(List, g.Arg(0, "list"));
+						g.Assign(List, g.Arg("list"));
 						// Add "ListChanged" to the Changed event on "List".
 						g.SubscribeEvent(List, "Changed", Exp.NewDelegate(ChangedEventHandler, g.This(), "ListChanged"));
 					}

@@ -29,14 +29,11 @@ using System.Reflection.Emit;
 
 namespace TriAxis.RunSharp
 {
-	public sealed class DynamicMethodGen : ICodeGenContext
+	public sealed class DynamicMethodGen : RoutineGen<DynamicMethodGen>
 	{
 		Attributes attrs;
-		Type returnType;
-		Type[] parameterTypes;
 		DynamicMethod dm;
-		CodeGen code;
-
+		
 		public static Attributes Static(Type owner)
 		{
 			return new Attributes(owner, false);
@@ -81,37 +78,37 @@ namespace TriAxis.RunSharp
 				return this;
 			}
 
-			public DynamicMethodGen Method(Type returnType, params Type[] parameterTypes)
+			public DynamicMethodGen Method(Type returnType)
 			{
-				return new DynamicMethodGen(this, returnType, parameterTypes);
+				return new DynamicMethodGen(this, returnType);
 			}
 		}
-		
-		private DynamicMethodGen(Attributes attrs, Type returnType, Type[] parameterTypes)
+
+		private DynamicMethodGen(Attributes attrs, Type returnType)
+			: base(attrs.ownerType, returnType)
 		{
 			this.attrs = attrs;
-			this.returnType = returnType;
-			this.parameterTypes = parameterTypes;
 
 			if (attrs.asInstance)
-				parameterTypes = ArrayUtils.Combine(attrs.ownerType, parameterTypes);
-
-			if (attrs.ownerType != null)
-				this.dm = new DynamicMethod(attrs.name, returnType, parameterTypes, attrs.ownerType, attrs.skipVisibility);
-			else
-				this.dm = new DynamicMethod(attrs.name, returnType, parameterTypes, attrs.ownerModule, attrs.skipVisibility);
-
-			if (attrs.asInstance)
-				this.dm.DefineParameter(1, ParameterAttributes.None, "this");
-
-			this.code = new CodeGen(this);
+				Parameter(attrs.ownerType, "this");
 		}
 
-		public CodeGen Code { get { return code; } }
+		protected override void CreateMember()
+		{
+			if (attrs.ownerType != null)
+				this.dm = new DynamicMethod(attrs.name, ReturnType, ParameterTypes, attrs.ownerType, attrs.skipVisibility);
+			else
+				this.dm = new DynamicMethod(attrs.name, ReturnType, ParameterTypes, attrs.ownerModule, attrs.skipVisibility);
+		}
 
-		public bool IsCompleted { get { return code.IsCompleted; } }
+		protected override void RegisterMember()
+		{
+			// nothing to register
+		}
 
-		public void Complete() { code.Complete(); }
+		public bool IsCompleted { get { return !(SignatureComplete && GetCode().IsCompleted); } }
+
+		public void Complete() { GetCode().Complete(); }
 
 		public DynamicMethod GetCompletedDynamicMethod()
 		{
@@ -121,70 +118,58 @@ namespace TriAxis.RunSharp
 		public DynamicMethod GetCompletedDynamicMethod(bool completeIfNeeded)
 		{
 			if (completeIfNeeded)
-				code.Complete();
-			else if (!code.IsCompleted)
+				Complete();
+			else if (!IsCompleted)
 				throw new InvalidOperationException(Properties.Messages.ErrDynamicMethodNotCompleted);
 
 			return dm;
 		}
 
-		#region ICodeGenContext Members
+		#region RoutineGen concrete implementation
 
-		ILGenerator ICodeGenContext.GetILGenerator()
+		protected override bool HasCode
+		{
+			get { return true; }
+		}
+
+		protected override ILGenerator GetILGenerator()
 		{
 			return dm.GetILGenerator();
 		}
 
-		Type ICodeGenContext.OwnerType
+		protected override ParameterBuilder DefineParameter(int position, ParameterAttributes attributes, string parameterName)
 		{
-			get { return attrs.ownerType; }
+			return dm.DefineParameter(position, attributes, parameterName);
 		}
 
-		void ICodeGenContext.DefineParameterName(int index, string name)
-		{
-			if (attrs.asInstance)
-				index++;
-
-			dm.DefineParameter(index + 1, ParameterAttributes.None, name);
-		}
-
-		#endregion
-
-		#region IMemberInfo Members
-
-		MemberInfo IMemberInfo.Member
+		protected override MemberInfo Member
 		{
 			get { return dm; }
 		}
 
-		string IMemberInfo.Name
+		public override string Name
 		{
 			get { return attrs.name; }
 		}
 
-		Type IMemberInfo.ReturnType
-		{
-			get { return returnType; }
-		}
-
-		Type[] IMemberInfo.ParameterTypes
-		{
-			get { return parameterTypes; }
-		}
-
-		bool IMemberInfo.IsParameterArray
-		{
-			get { return false; }
-		}
-
-		bool IMemberInfo.IsStatic
+		protected internal override bool IsStatic
 		{
 			get { return !attrs.asInstance; }
 		}
 
-		bool IMemberInfo.IsOverride
+		protected internal override bool IsOverride
 		{
 			get { return false; }
+		}
+
+		protected override AttributeTargets AttributeTarget
+		{
+			get { throw new InvalidOperationException(Properties.Messages.ErrDynamicMethodNoCustomAttrs); }
+		}
+
+		protected override void SetCustomAttribute(CustomAttributeBuilder cab)
+		{
+			throw new InvalidOperationException(Properties.Messages.ErrDynamicMethodNoCustomAttrs);
 		}
 
 		#endregion

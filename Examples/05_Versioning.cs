@@ -35,33 +35,33 @@ namespace TriAxis.RunSharp.Examples
 		{
 			TypeGen MyBase = ag.Public.Class("MyBase");
 			{
-				MyBase.Public.Virtual.Method(typeof(string), "Meth1").Code
+				MyBase.Public.Virtual.Method(typeof(string), "Meth1").GetCode()
 					.Return("MyBase-Meth1");
 
-				MyBase.Public.Virtual.Method(typeof(string), "Meth2").Code
+				MyBase.Public.Virtual.Method(typeof(string), "Meth2").GetCode()
 					.Return("MyBase-Meth2");
 
-				MyBase.Public.Virtual.Method(typeof(string), "Meth3").Code
+				MyBase.Public.Virtual.Method(typeof(string), "Meth3").GetCode()
 					.Return("MyBase-Meth3");
 			}
 
 			TypeGen MyDerived = ag.Class("MyDerived", MyBase);
 			{
 				// Overrides the virtual method Meth1 using the override keyword:
-				MyDerived.Public.Override.Method(typeof(string), "Meth1").Code
+				MyDerived.Public.Override.Method(typeof(string), "Meth1").GetCode()
 					.Return("MyDerived-Meth1");
 
 				// Explicitly hide the virtual method Meth2 using the new
 				// keyword:
 				// remark: new is not supported/required in RunSharp
-				MyDerived.Public.Method(typeof(string), "Meth2").Code
+				MyDerived.Public.Method(typeof(string), "Meth2").GetCode()
 					 .Return("MyDerived-Meth2");
 
 				// Because no keyword is specified in the following declaration
 				// a warning will be issued to alert the programmer that 
 				// the method hides the inherited member MyBase.Meth3():
 				// remark: this warning is not supported in RunSharp
-				MyDerived.Public.Method(typeof(string), "Meth3").Code
+				MyDerived.Public.Method(typeof(string), "Meth3").GetCode()
 					 .Return("MyDerived-Meth3");
 
 				CodeGen g = MyDerived.Public.Static.Method(typeof(void), "Main");

@@ -37,9 +37,9 @@ namespace TriAxis.RunSharp.Examples
 			{
 				FieldGen value = RomanNumeral.Private.Field(typeof(int), "value");
 
-				CodeGen g = RomanNumeral.Public.Constructor(typeof(int));
+				CodeGen g = RomanNumeral.Public.Constructor().Parameter(typeof(int), "value");
 				{
-					g.Assign(value, g.Arg(0, "value"));
+					g.Assign(value, g.Arg("value"));
 				}
 
 				// Declare a conversion from an int to a RomanNumeral. Note the
@@ -50,13 +50,13 @@ namespace TriAxis.RunSharp.Examples
 					// Note that because RomanNumeral is declared as a struct, 
 					// calling new on the struct merely calls the constructor 
 					// rather than allocating an object on the heap:
-					g.Return(Exp.New(RomanNumeral, g.Arg(0, "value")));
+					g.Return(Exp.New(RomanNumeral, g.Arg("value")));
 				}
 
 				// Declare an explicit conversion from a RomanNumeral to an int:
-				g = RomanNumeral.Public.ExplicitConversionTo(typeof(int));
+				g = RomanNumeral.Public.ExplicitConversionTo(typeof(int), "roman");
 				{
-					g.Return(g.Arg(0, "roman").Field("value"));
+					g.Return(g.Arg("roman").Field("value"));
 				}
 
 				// Declare an implicit conversion from a RomanNumeral to 
@@ -100,14 +100,14 @@ namespace TriAxis.RunSharp.Examples
 			{
 				FieldGen value = BinaryNumeral.Private.Field(typeof(int), "value");
 
-				CodeGen g = BinaryNumeral.Public.Constructor(typeof(int));
+				CodeGen g = BinaryNumeral.Public.Constructor().Parameter(typeof(int), "value");
 				{
-					g.Assign(value, g.Arg(0, "value"));
+					g.Assign(value, g.Arg("value"));
 				}
 
 				g = BinaryNumeral.Public.ImplicitConversionFrom(typeof(int));
 				{
-					g.Return(Exp.New(BinaryNumeral, g.Arg(0, "value")));
+					g.Return(Exp.New(BinaryNumeral, g.Arg("value")));
 				}
 
 				g = BinaryNumeral.Public.ImplicitConversionTo(typeof(string));
@@ -115,9 +115,9 @@ namespace TriAxis.RunSharp.Examples
 					g.Return("Conversion not yet implemented");
 				}
 
-				g = BinaryNumeral.Public.ExplicitConversionTo(typeof(int));
+				g = BinaryNumeral.Public.ExplicitConversionTo(typeof(int), "binary");
 				{
-					g.Return(g.Arg(0, "binary").Field("value"));
+					g.Return(g.Arg("binary").Field("value"));
 				}
 			}
 
@@ -125,24 +125,24 @@ namespace TriAxis.RunSharp.Examples
 			{
 				FieldGen value = RomanNumeral.Private.Field(typeof(int), "value");
 
-				CodeGen g = RomanNumeral.Public.Constructor(typeof(int));
+				CodeGen g = RomanNumeral.Public.Constructor().Parameter(typeof(int), "value");
 				{
-					g.Assign(value, g.Arg(0, "value"));
+					g.Assign(value, g.Arg("value"));
 				}
 
 				g = RomanNumeral.Public.ImplicitConversionFrom(typeof(int));
 				{
-					g.Return(Exp.New(RomanNumeral, g.Arg(0, "value")));
+					g.Return(Exp.New(RomanNumeral, g.Arg("value")));
 				}
 
-				g = RomanNumeral.Public.ImplicitConversionFrom(BinaryNumeral);
+				g = RomanNumeral.Public.ImplicitConversionFrom(BinaryNumeral, "binary");
 				{
-					g.Return(Exp.New(RomanNumeral, g.Arg(0, "binary").Cast(typeof(int))));
+					g.Return(Exp.New(RomanNumeral, g.Arg("binary").Cast(typeof(int))));
 				}
 
-				g = RomanNumeral.Public.ExplicitConversionTo(typeof(int));
+				g = RomanNumeral.Public.ExplicitConversionTo(typeof(int), "roman");
 				{
-					g.Return(g.Arg(0, "roman").Field("value"));
+					g.Return(g.Arg("roman").Field("value"));
 				}
 
 				g = RomanNumeral.Public.ImplicitConversionTo(typeof(string));

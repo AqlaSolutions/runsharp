@@ -54,10 +54,13 @@ namespace TriAxis.RunSharp.Examples
 				FieldGen lengthInches = Box.Field(typeof(float), "lengthInches");
 				FieldGen widthInches = Box.Field(typeof(float), "widthInches");
 
-				CodeGen g = Box.Public.Constructor(typeof(float), typeof(float));
+				CodeGen g = Box.Public.Constructor()
+					.Parameter(typeof(float), "length")
+					.Parameter(typeof(float), "width")
+					;
 				{
-					g.Assign(lengthInches, g.Arg(0, "length"));
-					g.Assign(widthInches, g.Arg(0, "width"));
+					g.Assign(lengthInches, g.Arg("length"));
+					g.Assign(widthInches, g.Arg("width"));
 				}
 				// Explicitly implement the members of IEnglishDimensions:
 				g = Box.MethodImplementation(IEnglishDimensions, typeof(float), "Length");
