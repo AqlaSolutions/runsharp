@@ -43,9 +43,9 @@ namespace TriAxis.RunSharp.Examples
 				// used to access the file.
 
 				// Create a new FileByteArray encapsulating a particular file.
-				CodeGen g = FileByteArray.Public.Constructor(typeof(string));
+				CodeGen g = FileByteArray.Public.Constructor().Parameter(typeof(string), "fileName");
 				{
-					g.Assign(stream, Exp.New(typeof(FileStream), g.Arg(0, "fileName"), FileMode.Open));
+					g.Assign(stream, Exp.New(typeof(FileStream), g.Arg("fileName"), FileMode.Open));
 				}
 
 				// Close the stream. This should be the last thing done
@@ -57,13 +57,13 @@ namespace TriAxis.RunSharp.Examples
 				}
 
 				// Indexer to provide read/write access to the file.
-				PropertyGen Item = FileByteArray.Public.Indexer(typeof(byte), typeof(long));	// long is a 64-bit integer
+				PropertyGen Item = FileByteArray.Public.Indexer(typeof(byte)).Index(typeof(long), "index");	// long is a 64-bit integer
 				{
 					// Read one byte at offset index and return it.
 					g = Item.Getter();
 					{
 						Operand buffer = g.Local(Exp.NewArray(typeof(byte), 1));
-						g.Invoke(stream, "Seek", g.Arg(0, "index"), SeekOrigin.Begin);
+						g.Invoke(stream, "Seek", g.Arg("index"), SeekOrigin.Begin);
 						g.Invoke(stream, "Read", buffer, 0, 1);
 						g.Return(buffer[0]);
 					}
@@ -71,13 +71,13 @@ namespace TriAxis.RunSharp.Examples
 					g = Item.Setter();
 					{
 						Operand buffer = g.Local(Exp.NewInitializedArray(typeof(byte), g.PropertyValue()));
-						g.Invoke(stream, "Seek", g.Arg(0, "index"), SeekOrigin.Begin);
+						g.Invoke(stream, "Seek", g.Arg("index"), SeekOrigin.Begin);
 						g.Invoke(stream, "Write", buffer, 0, 1);
 					}
 				}
 
 				// Get the total length of the file.
-				FileByteArray.Public.Property(typeof(long), "Length").Getter().Code
+				FileByteArray.Public.Property(typeof(long), "Length").Getter().GetCode()
 					.Return(stream.Invoke("Seek", 0, SeekOrigin.End));
 			}
 
@@ -85,9 +85,9 @@ namespace TriAxis.RunSharp.Examples
 			// Reverses the bytes in a file.
 			TypeGen Reverse = ag.Public.Class("Reverse");
 			{
-				CodeGen g = Reverse.Public.Static.Method(typeof(void), "Main", typeof(string[]));
+				CodeGen g = Reverse.Public.Static.Method(typeof(void), "Main").Parameter(typeof(string[]), "args");
 				{
-					Operand args = g.Arg(0, "args");
+					Operand args = g.Arg("args");
 
 					// Check for arguments.
 					g.If(args.ArrayLength() != 1);

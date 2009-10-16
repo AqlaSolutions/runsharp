@@ -46,17 +46,21 @@ namespace TriAxis.RunSharp.Examples
 					FieldGen Price = Book.Public.Field(typeof(decimal), "Price");      // Price of the book.
 					FieldGen Paperback = Book.Public.Field(typeof(bool), "Paperback"); // Is it paperback?
 
-					CodeGen g = Book.Public.Constructor(typeof(string), typeof(string), typeof(decimal), typeof(bool));
+					CodeGen g = Book.Public.Constructor()
+						.Parameter(typeof(string), "title")
+						.Parameter(typeof(string), "author")
+						.Parameter(typeof(decimal), "price")
+						.Parameter(typeof(bool), "paperBack");
 					{
-						g.Assign(Title, g.Arg(0, "title"));
-						g.Assign(Author, g.Arg(1, "author"));
-						g.Assign(Price, g.Arg(2, "price"));
-						g.Assign(Paperback, g.Arg(3, "paperBack"));
+						g.Assign(Title, g.Arg("title"));
+						g.Assign(Author, g.Arg("author"));
+						g.Assign(Price, g.Arg("price"));
+						g.Assign(Paperback, g.Arg("paperBack"));
 					}
 				}
 
 				// Declare a delegate type for processing a book:
-				ProcessBookDelegate = ag.Public.Delegate(typeof(void), "ProcessBookDelegate", Book);
+				ProcessBookDelegate = ag.Public.Delegate(typeof(void), "ProcessBookDelegate").Parameter(Book, "book");
 
 				// Maintains a book database.
 				BookDB = ag.Public.Class("BookDB");
@@ -65,19 +69,24 @@ namespace TriAxis.RunSharp.Examples
 					FieldGen list = BookDB.Field(typeof(ArrayList), "list", Exp.New(typeof(ArrayList)));
 
 					// Add a book to the database:
-					CodeGen g = BookDB.Public.Method(typeof(void), "AddBook", typeof(string), typeof(string), typeof(decimal), typeof(bool));
+					CodeGen g = BookDB.Public.Method(typeof(void), "AddBook")
+						.Parameter(typeof(string), "title")
+						.Parameter(typeof(string), "author")
+						.Parameter(typeof(decimal), "price")
+						.Parameter(typeof(bool), "paperBack")
+						;
 					{
-						g.Invoke(list, "Add", Exp.New(Book, g.Arg(0, "title"), g.Arg(1, "author"), g.Arg(2, "price"), g.Arg(3, "paperBack")));
+						g.Invoke(list, "Add", Exp.New(Book, g.Arg("title"), g.Arg("author"), g.Arg("price"), g.Arg("paperBack")));
 					}
 
 					// Call a passed-in delegate on each paperback book to process it: 
-					g = BookDB.Public.Method(typeof(void), "ProcessPaperbackBooks", ProcessBookDelegate);
+					g = BookDB.Public.Method(typeof(void), "ProcessPaperbackBooks").Parameter(ProcessBookDelegate, "processBook");
 					{
 						Operand b = g.ForEach(Book, list);
 						{
 							g.If(b.Field("Paperback"));
 							{
-								g.InvokeDelegate(g.Arg(0, "processBook"), b);
+								g.InvokeDelegate(g.Arg("processBook"), b);
 							}
 							g.End();
 						}
@@ -95,10 +104,10 @@ namespace TriAxis.RunSharp.Examples
 					FieldGen countBooks = PriceTotaller.Field(typeof(int), "countBooks", 0);
 					FieldGen priceBooks = PriceTotaller.Field(typeof(decimal), "priceBooks", 0.0m);
 
-					CodeGen g = PriceTotaller.Internal.Method(typeof(void), "AddBookToTotal", Book);
+					CodeGen g = PriceTotaller.Internal.Method(typeof(void), "AddBookToTotal").Parameter(Book, "book");
 					{
 						g.AssignAdd(countBooks, 1);
-						g.AssignAdd(priceBooks, g.Arg(0, "book").Field("Price"));
+						g.AssignAdd(priceBooks, g.Arg("book").Field("Price"));
 					}
 
 					g = PriceTotaller.Internal.Method(typeof(decimal), "AveragePrice");
@@ -111,15 +120,15 @@ namespace TriAxis.RunSharp.Examples
 				TypeGen Test = ag.Class("Test");
 				{
 					// Print the title of the book.
-					CodeGen g = Test.Static.Method(typeof(void), "PrintTitle", Book);
+					CodeGen g = Test.Static.Method(typeof(void), "PrintTitle").Parameter(Book, "book");
 					{
-						g.WriteLine("   {0}", g.Arg(0, "book").Field("Title"));
+						g.WriteLine("   {0}", g.Arg("book").Field("Title"));
 					}
 
 					// Initialize the book database with some test books:
-					g = Test.Static.Method(typeof(void), "AddBooks", BookDB);
+					g = Test.Static.Method(typeof(void), "AddBooks").Parameter(BookDB, "bookDB");
 					{
-						Operand bookDB = g.Arg(0, "bookDB");
+						Operand bookDB = g.Arg("bookDB");
 
 						g.Invoke(bookDB, "AddBook", "The C Programming Language",
 						  "Brian W. Kernighan and Dennis M. Ritchie", 19.95m, true);
@@ -161,18 +170,18 @@ namespace TriAxis.RunSharp.Examples
 		// example based on the MSDN Delegates Sample (compose.cs)
 		public static void GenCompose(AssemblyGen ag)
 		{
-			TypeGen MyDelegate = ag.Delegate(typeof(void), "MyDelegate", typeof(string));
+			TypeGen MyDelegate = ag.Delegate(typeof(void), "MyDelegate").Parameter(typeof(string), "string");
 
 			TypeGen MyClass = ag.Class("MyClass");
 			{
-				CodeGen g = MyClass.Public.Static.Method(typeof(void), "Hello", typeof(string));
+				CodeGen g = MyClass.Public.Static.Method(typeof(void), "Hello").Parameter(typeof(string), "s");
 				{
-					g.WriteLine("  Hello, {0}!", g.Arg(0, "s"));
+					g.WriteLine("  Hello, {0}!", g.Arg("s"));
 				}
 
-				g = MyClass.Public.Static.Method(typeof(void), "Goodbye", typeof(string));
+				g = MyClass.Public.Static.Method(typeof(void), "Goodbye").Parameter(typeof(string), "s");
 				{
-					g.WriteLine("  Goodbye, {0}!", g.Arg(0, "s"));
+					g.WriteLine("  Goodbye, {0}!", g.Arg("s"));
 				}
 
 				g = MyClass.Public.Static.Method(typeof(void), "Main");

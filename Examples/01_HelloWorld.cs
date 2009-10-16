@@ -48,11 +48,11 @@ namespace TriAxis.RunSharp.Examples
 		{
 			TypeGen Hello3 = ag.Public.Class("Hello3");
 			{
-				CodeGen g = Hello3.Public.Static.Method(typeof(void), "Main", typeof(string[]));
+				CodeGen g = Hello3.Public.Static.Method(typeof(void), "Main").Parameter(typeof(string[]), "args");
 				{
-					Operand args = g.Arg(0, "args");
+					Operand args = g.Arg("args");
 					g.WriteLine("Hello, World!");
-					g.WriteLine("You entered the following {0} command line arguments:", 
+					g.WriteLine("You entered the following {0} command line arguments:",
 						args.ArrayLength());
 					Operand i = g.Local();
 					g.For(i.Assign(0), i < args.ArrayLength(), i.Increment());

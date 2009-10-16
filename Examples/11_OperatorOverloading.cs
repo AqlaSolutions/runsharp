@@ -38,18 +38,21 @@ namespace TriAxis.RunSharp.Examples
 				FieldGen real = Complex.Public.Field(typeof(int), "real");
 				FieldGen imaginary = Complex.Public.Field(typeof(int), "imaginary");
 
-				CodeGen g = Complex.Public.Constructor(typeof(int), typeof(int));
+				CodeGen g = Complex.Public.Constructor()
+					.Parameter(typeof(int), "real")
+					.Parameter(typeof(int), "imaginary")
+					;
 				{
-					g.Assign(real, g.Arg(0, "real"));
-					g.Assign(imaginary, g.Arg(1, "imaginary"));
+					g.Assign(real, g.Arg("real"));
+					g.Assign(imaginary, g.Arg("imaginary"));
 				}
 
 				// Declare which operator to overload (+), the types 
 				// that can be added (two Complex objects), and the 
 				// return type (Complex):
-				g = Complex.Operator(Operator.Add, Complex, Complex, Complex);
+				g = Complex.Operator(Operator.Add, Complex, Complex, "c1", Complex, "c2");
 				{
-					Operand c1 = g.Arg(0, "c1"), c2 = g.Arg(1, "c2");
+					Operand c1 = g.Arg("c1"), c2 = g.Arg("c2");
 					g.Return(Exp.New(Complex, c1.Field("real") + c2.Field("real"), c1.Field("imaginary") + c2.Field("imaginary")));
 				}
 
@@ -85,9 +88,9 @@ namespace TriAxis.RunSharp.Examples
 				FieldGen value = DBBool.Field(typeof(int), "value");
 
 				// Private constructor. The value parameter must be -1, 0, or 1:
-				CodeGen g = DBBool.Constructor(typeof(int));
+				CodeGen g = DBBool.Constructor().Parameter(typeof(int), "value");
 				{
-					g.Assign(value, g.Arg(0, "value"));
+					g.Assign(value, g.Arg("value"));
 				}
 
 				// The three possible DBBool values:
@@ -97,18 +100,18 @@ namespace TriAxis.RunSharp.Examples
 
 				// Implicit conversion from bool to DBBool. Maps true to 
 				// DBBool.dbTrue and false to DBBool.dbFalse:
-				g = DBBool.ImplicitConversionFrom(typeof(bool));
+				g = DBBool.ImplicitConversionFrom(typeof(bool), "x");
 				{
-					Operand x = g.Arg(0, "x");
+					Operand x = g.Arg("x");
 					g.Return(x.Conditional(dbTrue, dbFalse));
 				}
 
 				// Explicit conversion from DBBool to bool. Throws an 
 				// exception if the given DBBool is dbNull, otherwise returns
 				// true or false:
-				g = DBBool.ExplicitConversionTo(typeof(bool));
+				g = DBBool.ExplicitConversionTo(typeof(bool), "x");
 				{
-					Operand x = g.Arg(0, "x");
+					Operand x = g.Arg("x");
 					g.If(x.Field("value") == 0);
 					{
 						g.Throw(Exp.New(typeof(InvalidOperationException)));
@@ -120,9 +123,9 @@ namespace TriAxis.RunSharp.Examples
 
 				// Equality operator. Returns dbNull if either operand is dbNull, 
 				// otherwise returns dbTrue or dbFalse:
-				g = DBBool.Operator(Operator.Equality, DBBool, DBBool, DBBool);
+				g = DBBool.Operator(Operator.Equality, DBBool, DBBool, "x", DBBool, "y");
 				{
-					Operand x = g.Arg(0, "x"), y = g.Arg(1, "y");
+					Operand x = g.Arg("x"), y = g.Arg("y");
 					g.If(x.Field("value") == 0 || y.Field("value") == 0);
 					{
 						g.Return(dbNull);
@@ -134,9 +137,9 @@ namespace TriAxis.RunSharp.Examples
 
 				// Inequality operator. Returns dbNull if either operand is
 				// dbNull, otherwise returns dbTrue or dbFalse:
-				g = DBBool.Operator(Operator.Inequality, DBBool, DBBool, DBBool);
+				g = DBBool.Operator(Operator.Inequality, DBBool, DBBool, "x", DBBool, "y");
 				{
-					Operand x = g.Arg(0, "x"), y = g.Arg(1, "y");
+					Operand x = g.Arg("x"), y = g.Arg("y");
 					g.If(x.Field("value") == 0 || y.Field("value") == 0);
 					{
 						g.Return(dbNull);
@@ -149,48 +152,48 @@ namespace TriAxis.RunSharp.Examples
 				// Logical negation operator. Returns dbTrue if the operand is 
 				// dbFalse, dbNull if the operand is dbNull, or dbFalse if the
 				// operand is dbTrue:
-				g = DBBool.Operator(Operator.LogicalNot, DBBool, DBBool);
+				g = DBBool.Operator(Operator.LogicalNot, DBBool, DBBool, "x");
 				{
-					Operand x = g.Arg(0, "x");
+					Operand x = g.Arg("x");
 					g.Return(Exp.New(DBBool, -x.Field("value")));
 				}
 
 				// Logical AND operator. Returns dbFalse if either operand is 
 				// dbFalse, dbNull if either operand is dbNull, otherwise dbTrue:
-				g = DBBool.Operator(Operator.And, DBBool, DBBool, DBBool);
+				g = DBBool.Operator(Operator.And, DBBool, DBBool, "x", DBBool, "y");
 				{
-					Operand x = g.Arg(0, "x"), y = g.Arg(1, "y");
+					Operand x = g.Arg("x"), y = g.Arg("y");
 					g.Return(Exp.New(DBBool, (x.Field("value") < y.Field("value")).Conditional(x.Field("value"), y.Field("value"))));
 				}
 
 				// Logical OR operator. Returns dbTrue if either operand is 
 				// dbTrue, dbNull if either operand is dbNull, otherwise dbFalse:
-				g = DBBool.Operator(Operator.Or, DBBool, DBBool, DBBool);
+				g = DBBool.Operator(Operator.Or, DBBool, DBBool, "x", DBBool, "y");
 				{
-					Operand x = g.Arg(0, "x"), y = g.Arg(1, "y");
+					Operand x = g.Arg("x"), y = g.Arg("y");
 					g.Return(Exp.New(DBBool, (x.Field("value") > y.Field("value")).Conditional(x.Field("value"), y.Field("value"))));
 				}
 
 				// Definitely true operator. Returns true if the operand is 
 				// dbTrue, false otherwise:
-				g = DBBool.Operator(Operator.True, typeof(bool), DBBool);
+				g = DBBool.Operator(Operator.True, typeof(bool), DBBool, "x");
 				{
-					Operand x = g.Arg(0, "x");
+					Operand x = g.Arg("x");
 					g.Return(x.Field("value") > 0);
 				}
 
 				// Definitely false operator. Returns true if the operand is 
 				// dbFalse, false otherwise:
-				g = DBBool.Operator(Operator.False, typeof(bool), DBBool);
+				g = DBBool.Operator(Operator.False, typeof(bool), DBBool, "x");
 				{
-					Operand x = g.Arg(0, "x");
+					Operand x = g.Arg("x");
 					g.Return(x.Field("value") < 0);
 				}
 
 				// Overload the conversion from DBBool to string:
-				g = DBBool.ImplicitConversionTo(typeof(string));
+				g = DBBool.ImplicitConversionTo(typeof(string), "x");
 				{
-					Operand x = g.Arg(0, "x");
+					Operand x = g.Arg("x");
 
 					g.Return((x.Field("value") > 0).Conditional("dbTrue",
 						(x.Field("value") < 0).Conditional("dbFalse",
@@ -198,11 +201,11 @@ namespace TriAxis.RunSharp.Examples
 				}
 
 				// Override the Object.Equals(object o) method:
-				g = DBBool.Public.Override.Method(typeof(bool), "Equals", typeof(object));
+				g = DBBool.Public.Override.Method(typeof(bool), "Equals").Parameter(typeof(object), "o");
 				{
 					g.Try();
 					{
-						g.Return((g.This() == g.Arg(0, "o").Cast(DBBool)).Cast(typeof(bool)));
+						g.Return((g.This() == g.Arg("o").Cast(DBBool)).Cast(typeof(bool)));
 					}
 					g.CatchAll();
 					{

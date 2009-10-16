@@ -81,9 +81,9 @@ namespace TriAxis.RunSharp.Examples
 
 				PropertyGen Id = Shape.Public.SimpleProperty(myId, "Id");
 
-				CodeGen g = Shape.Public.Constructor(typeof(string));
+				CodeGen g = Shape.Public.Constructor().Parameter(typeof(string), "s");
 				{
-					g.Assign(Id, g.Arg(0, "s"));	// calling the set accessor of the Id property
+					g.Assign(Id, g.Arg("s"));	// calling the set accessor of the Id property
 				}
 
 				// Area is a read-only property - only a get accessor is needed:
@@ -101,10 +101,10 @@ namespace TriAxis.RunSharp.Examples
 			{
 				FieldGen mySide = Square.Private.Field(typeof(int), "mySide");
 
-				CodeGen g = Square.Public.Constructor(typeof(int), typeof(string));
+				CodeGen g = Square.Public.Constructor().Parameter(typeof(int), "side").Parameter(typeof(string), "id");
 				{
-					g.InvokeBase(g.Arg(1, "id"));
-					g.Assign(mySide, g.Arg(0, "side"));
+					g.InvokeBase(g.Arg("id"));
+					g.Assign(mySide, g.Arg("side"));
 				}
 
 				PropertyGen Area = Square.Public.Override.Property(typeof(double), "Area");
@@ -119,10 +119,10 @@ namespace TriAxis.RunSharp.Examples
 			{
 				FieldGen myRadius = Circle.Private.Field(typeof(int), "myRadius");
 
-				CodeGen g = Circle.Public.Constructor(typeof(int), typeof(string));
+				CodeGen g = Circle.Public.Constructor().Parameter(typeof(int), "radius").Parameter(typeof(string), "id");
 				{
-					g.InvokeBase(g.Arg(1, "id"));
-					g.Assign(myRadius, g.Arg(0, "radius"));
+					g.InvokeBase(g.Arg("id"));
+					g.Assign(myRadius, g.Arg("radius"));
 				}
 
 				PropertyGen Area = Circle.Public.Override.Property(typeof(double), "Area");
@@ -138,11 +138,15 @@ namespace TriAxis.RunSharp.Examples
 				FieldGen myWidth = Rectangle.Private.Field(typeof(int), "myWidth");
 				FieldGen myHeight = Rectangle.Private.Field(typeof(int), "myHeight");
 
-				CodeGen g = Rectangle.Public.Constructor(typeof(int), typeof(int), typeof(string));
+				CodeGen g = Rectangle.Public.Constructor()
+					.Parameter(typeof(int), "width")
+					.Parameter(typeof(int), "height")
+					.Parameter(typeof(string), "id")
+					;
 				{
-					g.InvokeBase(g.Arg(2, "id"));
-					g.Assign(myWidth, g.Arg(0, "width"));
-					g.Assign(myHeight, g.Arg(1, "height"));
+					g.InvokeBase(g.Arg("id"));
+					g.Assign(myWidth, g.Arg("width"));
+					g.Assign(myHeight, g.Arg("height"));
 				}
 
 				PropertyGen Area = Rectangle.Public.Override.Property(typeof(double), "Area");
