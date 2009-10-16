@@ -208,6 +208,9 @@ namespace TriAxis.RunSharp
 
 			Type t = operandOrLiteral.GetType();
 
+			if (t.IsEnum)
+				return new EnumLiteral((Enum)operandOrLiteral);
+
 			if (t.IsPrimitive)
 			{
 				if (t == typeof(int))
