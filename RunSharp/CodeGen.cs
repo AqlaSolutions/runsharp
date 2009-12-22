@@ -53,6 +53,8 @@ namespace TriAxis.RunSharp
 		LocalBuilder retVar = null;
 		Label retLabel;
 		Stack<Block> blocks = new Stack<Block>();
+		Dictionary<string, Label> Labels = new Dictionary<string, Label>();
+		Dictionary<string, Operand> NamedLocals = new Dictionary<string, Operand>();
 
 		internal ILGenerator IL { get { return il; } }
 		internal ICodeGenContext Context { get { return context; } }
@@ -395,6 +397,63 @@ namespace TriAxis.RunSharp
 					return true;
 				}
 			}
+		}
+
+		public Operand this[string localName] // Named locals support. 
+		{
+			get
+			{
+				Operand target;
+				if (!NamedLocals.TryGetValue(localName, out target))
+					throw new InvalidOperationException(Properties.Messages.ErrUninitializedVarAccess);
+				return target;
+			}
+			set
+			{
+				Operand target;
+				if (NamedLocals.TryGetValue(localName, out target))
+					// run in statement form; C# left-to-right evaluation semantics "just work"
+					Assign(target, value);
+				else
+					NamedLocals.Add(localName, Local(value));
+			}
+		}
+
+		/// <summary>
+		/// DO NOT USE THIS. Declare a label with a compile-time value, not a run-time value.
+		/// </summary>
+		/// <param name="operand"></param>
+		public void Label(Operand operand, bool soValuesDontCoerceToOperand)
+		{
+			throw new InvalidOperationException("we use computed gotos only!");
+		}
+
+		/// <summary>
+		/// DO NOT USE THIS. Declare a label with a compile-time value, not a run-time value.
+		/// </summary>
+		/// <param name="operand"></param>
+		public void Goto(Operand operand, bool soValuesDontCoerceToOperand)
+		{
+			throw new InvalidOperationException("we use computed gotos only!");
+		}
+		
+		// stringified object for convenience when generating label names from integral types
+		public void Label(object labelNameObject)
+		{
+			var labelName = labelNameObject.ToString();
+			Label label;
+			if (!Labels.TryGetValue(labelName, out label))
+				Labels.Add(labelName, label = IL.DefineLabel());
+			IL.MarkLabel(label);
+		}
+
+		public void Goto(object labelNameObject)
+		{
+			var labelName = labelNameObject.ToString();
+			Label label;
+			if (!Labels.TryGetValue(labelName, out label))
+				Labels.Add(labelName, label = IL.DefineLabel());
+			IL.Emit(OpCodes.Br, label);
 		}
 	}
 }
