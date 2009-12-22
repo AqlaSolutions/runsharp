@@ -419,37 +419,16 @@ namespace TriAxis.RunSharp
 			}
 		}
 
-		/// <summary>
-		/// DO NOT USE THIS. Declare a label with a compile-time value, not a run-time value.
-		/// </summary>
-		/// <param name="operand"></param>
-		public void Label(Operand operand, bool soValuesDontCoerceToOperand)
+		public void Label(string labelName)
 		{
-			throw new InvalidOperationException("we use computed gotos only!");
-		}
-
-		/// <summary>
-		/// DO NOT USE THIS. Declare a label with a compile-time value, not a run-time value.
-		/// </summary>
-		/// <param name="operand"></param>
-		public void Goto(Operand operand, bool soValuesDontCoerceToOperand)
-		{
-			throw new InvalidOperationException("we use computed gotos only!");
-		}
-		
-		// stringified object for convenience when generating label names from integral types
-		public void Label(object labelNameObject)
-		{
-			string labelName = labelNameObject.ToString();
 			Label label;
 			if (!Labels.TryGetValue(labelName, out label))
 				Labels.Add(labelName, label = IL.DefineLabel());
 			IL.MarkLabel(label);
 		}
 
-		public void Goto(object labelNameObject)
+		public void Goto(string labelName)
 		{
-			string labelName = labelNameObject.ToString();
 			Label label;
 			if (!Labels.TryGetValue(labelName, out label))
 				Labels.Add(labelName, label = IL.DefineLabel());
