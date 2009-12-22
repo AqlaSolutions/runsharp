@@ -440,7 +440,7 @@ namespace TriAxis.RunSharp
 		// stringified object for convenience when generating label names from integral types
 		public void Label(object labelNameObject)
 		{
-			var labelName = labelNameObject.ToString();
+			string labelName = labelNameObject.ToString();
 			Label label;
 			if (!Labels.TryGetValue(labelName, out label))
 				Labels.Add(labelName, label = IL.DefineLabel());
@@ -449,7 +449,7 @@ namespace TriAxis.RunSharp
 
 		public void Goto(object labelNameObject)
 		{
-			var labelName = labelNameObject.ToString();
+			string labelName = labelNameObject.ToString();
 			Label label;
 			if (!Labels.TryGetValue(labelName, out label))
 				Labels.Add(labelName, label = IL.DefineLabel());
