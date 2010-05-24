@@ -157,7 +157,7 @@
     <value>Specific chained constructor can be invoked only as the first statement in a constructor</value>
   </data>
   <data name="ErrConstructorOnlyCall" xml:space="preserve">
-    <value>This method can be called only for constructor code</value>
+    <value>This method can be called only for instance constructor code</value>
   </data>
   <data name="ErrCustomEventFieldAccess" xml:space="preserve">
     <value>Event with custom accessors cannot be accessed as a field</value>
