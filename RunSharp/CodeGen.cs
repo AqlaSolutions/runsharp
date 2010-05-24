@@ -63,6 +63,11 @@ namespace TriAxis.RunSharp
 		{
 			this.context = context;
 			this.cg = context as ConstructorGen;
+
+			if (cg != null && cg.IsStatic)
+				// #14 - cg is relevant for instance constructors - it wreaks havoc in a static constructor
+				cg = null;
+
 			il = context.GetILGenerator();
 		}
 
