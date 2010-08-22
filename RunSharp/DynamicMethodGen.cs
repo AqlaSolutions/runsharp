@@ -29,7 +29,7 @@ using System.Reflection.Emit;
 
 namespace TriAxis.RunSharp
 {
-	public sealed class DynamicMethodGen : RoutineGen<DynamicMethodGen>
+	public sealed class DynamicMethodGen : RoutineGen<DynamicMethodGen>, ICodeGenContext
 	{
 		Attributes attrs;
 		DynamicMethod dm;
@@ -170,6 +170,15 @@ namespace TriAxis.RunSharp
 		protected override void SetCustomAttribute(CustomAttributeBuilder cab)
 		{
 			throw new InvalidOperationException(Properties.Messages.ErrDynamicMethodNoCustomAttrs);
+		}
+
+		#endregion
+
+		#region ICodeGenContext Members
+
+		bool ICodeGenContext.SupportsScopes
+		{
+			get { return false; }
 		}
 
 		#endregion

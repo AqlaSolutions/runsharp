@@ -40,6 +40,7 @@ namespace TriAxis.RunSharp
 		ILGenerator GetILGenerator();
 
 		Type OwnerType { get; }
+		bool SupportsScopes { get; }
 	}
 
 	public partial class CodeGen

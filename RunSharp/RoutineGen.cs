@@ -204,5 +204,14 @@ namespace TriAxis.RunSharp
 		}
 
 		#endregion
+
+		#region ICodeGenContext Members
+
+		bool ICodeGenContext.SupportsScopes
+		{
+			get { return true; }
+		}
+
+		#endregion
 	}
 }

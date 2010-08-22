@@ -615,7 +615,8 @@ namespace TriAxis.RunSharp
 			{
 				if (!hasScope)
 				{
-					g.il.BeginScope();
+					if (g.context.SupportsScopes)
+						g.il.BeginScope();
 					hasScope = true;
 				}
 			}
@@ -624,7 +625,8 @@ namespace TriAxis.RunSharp
 			{
 				if (hasScope)
 				{
-					g.il.EndScope();
+					if (g.context.SupportsScopes)
+						g.il.EndScope();
 					hasScope = false;
 				}
 			}
