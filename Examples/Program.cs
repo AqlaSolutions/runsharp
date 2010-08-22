@@ -152,7 +152,18 @@ namespace TriAxis.RunSharp
 		static void DynamicMethodExamples()
 		{
 			DynamicMethodGen dmg = DynamicMethodGen.Static(typeof(Program)).Method(typeof(void)).Parameter(typeof(string), "name");
-			dmg.GetCode().WriteLine("Hello {0}!", dmg.GetCode().Arg("name"));
+			CodeGen g = dmg.GetCode();
+			g.Try();
+			{
+				Operand name = g.Local(typeof(string), g.Arg("name"));
+				g.WriteLine("Hello {0}!", name);
+			}
+			g.CatchAll();
+			{
+				g.WriteLine("Error");
+			}
+			g.End();
+
 			DynamicMethod dm = dmg.GetCompletedDynamicMethod(true);
 
 			// reflection-style invocation
