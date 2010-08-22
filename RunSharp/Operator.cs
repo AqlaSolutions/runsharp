@@ -317,6 +317,9 @@ namespace TriAxis.RunSharp
 
 		static IMemberInfo[] CmpEnumSpecific(Operand[] args)
 		{
+			if ((object)args[0] == null || (object)args[1] == null)	// if any of the operands is null, it can't be an enum
+				return stdNone;
+
 			Type t1 = args[0].Type, t2 = args[1].Type;
 
 			if (t1 != t2 || t1 == null || !t1.IsEnum)	// if both types are not the same enum, no operator can be valid
