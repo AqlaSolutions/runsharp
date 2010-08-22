@@ -51,6 +51,7 @@
     <Compile Include="A2_Attributes.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Bugs\X17_IsNull.cs" />
     <Compile Include="Bugs\X14_StaticConstructor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
