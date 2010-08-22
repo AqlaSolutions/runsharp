@@ -41,21 +41,10 @@ namespace TriAxis.RunSharp
 			OpCodes.Blt, OpCodes.Blt_Un, OpCodes.Bgt, OpCodes.Bgt_Un,
 			OpCodes.Ble, OpCodes.Ble_Un, OpCodes.Bge, OpCodes.Bge_Un);
 
-		public static readonly BranchSet Short = new BranchSet(
-			OpCodes.Brtrue_S, OpCodes.Brfalse_S, OpCodes.Beq_S, OpCodes.Bne_Un_S, 
-			OpCodes.Blt_S, OpCodes.Blt_Un_S, OpCodes.Bgt_S, OpCodes.Bgt_Un_S,
-			OpCodes.Ble_S, OpCodes.Ble_Un_S, OpCodes.Bge_S, OpCodes.Bge_Un_S);
-
 		public static readonly BranchSet Inverse = new BranchSet(
 			OpCodes.Brfalse, OpCodes.Brtrue, OpCodes.Bne_Un, OpCodes.Beq,
 			OpCodes.Bge, OpCodes.Bge_Un, OpCodes.Ble, OpCodes.Ble_Un,
 			OpCodes.Bgt, OpCodes.Bgt_Un, OpCodes.Blt, OpCodes.Blt_Un);
-
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "Provided for symmetry, might be used in the future")]
-		public static readonly BranchSet InverseShort = new BranchSet(
-			OpCodes.Brfalse_S, OpCodes.Brtrue_S, OpCodes.Bne_Un_S, OpCodes.Beq_S,
-			OpCodes.Bge_S, OpCodes.Bge_Un_S, OpCodes.Ble_S, OpCodes.Ble_Un_S,
-			OpCodes.Bgt_S, OpCodes.Bgt_Un_S, OpCodes.Bge_S, OpCodes.Bge_Un_S);
 
 		public readonly OpCode brTrue, brFalse, brEq, brNe, brLt, brLtUn, brGt, brGtUn, brLe, brLeUn, brGe, brGeUn;
 

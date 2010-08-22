@@ -49,9 +49,9 @@ namespace TriAxis.RunSharp.Operands
 			Label lbTrue = g.IL.DefineLabel();
 			Label lbFalse = g.IL.DefineLabel();
 
-			cond.EmitBranch(g, BranchSet.Short, lbTrue);
+			cond.EmitBranch(g, BranchSet.Normal, lbTrue);
 			ifFalse.EmitGet(g);
-			g.IL.Emit(OpCodes.Br_S, lbFalse);
+			g.IL.Emit(OpCodes.Br, lbFalse);
 			g.IL.MarkLabel(lbTrue);
 			ifTrue.EmitGet(g);
 			g.IL.MarkLabel(lbFalse);
