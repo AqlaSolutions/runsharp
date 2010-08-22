@@ -81,7 +81,8 @@ namespace TriAxis.RunSharp
 			{
 				lock (cache)
 				{
-					if (cache[t].Target == this || cache[t].Target == null)
+					WeakReference wr;
+					if (cache.TryGetValue(t, out wr) && (wr.Target == this || wr.Target == null))
 						cache.Remove(t);
 				}
 			}
