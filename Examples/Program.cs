@@ -24,155 +24,178 @@
 
 using System;
 using System.Collections.Generic;
+using System.Security;
+using System.Security.Permissions;
+using System.Security.Policy;
 using System.Text;
 using System.IO;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Threading;
 
 namespace TriAxis.RunSharp
 {
-	[AttributeUsage(AttributeTargets.Method)]
-	class TestArgumentsAttribute : Attribute
-	{
-		string[] args;
+    [AttributeUsage(AttributeTargets.Method)]
+    class TestArgumentsAttribute : Attribute
+    {
+        string[] args;
 
-		public TestArgumentsAttribute(params string[] args)
-		{
-			this.args = args;
-		}
+        public TestArgumentsAttribute(params string[] args)
+        {
+            this.args = args;
+        }
 
-		public string[] Arguments { get { return args; } }
-	}
+        public string[] Arguments { get { return args; } }
+    }
 
-	class Program
-	{
-		delegate void Generator(AssemblyGen ag);
+    public class Program
+    {
+        delegate void Generator(AssemblyGen ag);
 
-		static Generator[] examples
-		{
-			get
-			{
-				List<Generator> list = new List<Generator>();
+        static Generator[] examples
+        {
+            get
+            {
+                List<Generator> list = new List<Generator>();
 
-				foreach (Type t in typeof(Program).Assembly.GetTypes())
-				{
-					foreach (MethodInfo mi in t.GetMethods(BindingFlags.Public | BindingFlags.Static))
-					{
-						ParameterInfo[] pi = mi.GetParameters();
+                foreach (Type t in typeof(Program).Assembly.GetTypes())
+                {
+                    foreach (MethodInfo mi in t.GetMethods(BindingFlags.Public | BindingFlags.Static))
+                    {
+                        ParameterInfo[] pi = mi.GetParameters();
 
-						if (pi.Length == 1 && pi[0].ParameterType == typeof(AssemblyGen))
-						{
-							list.Add((Generator)Delegate.CreateDelegate(typeof(Generator), mi, true));
-						}
-					}
-				}
+                        if (pi.Length == 1 && pi[0].ParameterType == typeof(AssemblyGen)/* && (mi.Name == "GenCmdLine2")*/)
+                        {
+                            list.Add((Generator)Delegate.CreateDelegate(typeof(Generator), mi, true));
+                        }
+                    }
+                }
 
-				list.Sort(delegate(Generator g1, Generator g2)
-				{
-					int cmp = string.Compare(g1.Method.DeclaringType.Namespace, g2.Method.DeclaringType.Namespace, true);
+                list.Sort(delegate(Generator g1, Generator g2)
+                {
+                    int cmp = string.Compare(g1.Method.DeclaringType.Namespace, g2.Method.DeclaringType.Namespace, true);
 
-					if (cmp == 0)
-					{
-						cmp = string.Compare(g1.Method.DeclaringType.Name.TrimStart('_'), g2.Method.DeclaringType.Name.TrimStart('_'), true);
+                    if (cmp == 0)
+                    {
+                        cmp = string.Compare(g1.Method.DeclaringType.Name.TrimStart('_'), g2.Method.DeclaringType.Name.TrimStart('_'), true);
 
-						if (cmp == 0)
-							cmp = string.Compare(g1.Method.Name, g2.Method.Name, true);
-					}
+                        if (cmp == 0)
+                            cmp = string.Compare(g1.Method.Name, g2.Method.Name, true);
+                    }
 
-					return cmp;
-				});
+                    return cmp;
+                });
 
-				return list.ToArray();
-			}
-		}
+                return list.ToArray();
+            }
+        }
 
-		static string GetTestName(Generator g)
-		{
-			Type declType = g.Method.DeclaringType;
-			return declType.Namespace + "." + declType.Name.TrimStart('_') + "." + g.Method.Name;
-		}
+        static string GetTestName(Generator g)
+        {
+            Type declType = g.Method.DeclaringType;
+            return declType.Namespace + "." + declType.Name.TrimStart('_') + "." + g.Method.Name;
+        }
 
-		static string[] GetTestArguments(Generator g)
-		{
-			TestArgumentsAttribute taa = Attribute.GetCustomAttribute(g.Method, typeof(TestArgumentsAttribute)) as TestArgumentsAttribute;
-			if (taa == null)
-				return null;
-			return taa.Arguments;
-		}
+        static string[] GetTestArguments(Generator g)
+        {
+            TestArgumentsAttribute taa = Attribute.GetCustomAttribute(g.Method, typeof(TestArgumentsAttribute)) as TestArgumentsAttribute;
+            if (taa == null)
+                return null;
+            return taa.Arguments;
+        }
 
-		static void Main(string[] args)
-		{
-			bool noexe = args.Length > 0 && args[0] == "/noexe";
+        public static void Main(string[] args)
+        {
+            bool noexe = !((args != null) && args.Length > 0 && args[0] == "/exe");
+            string exePath = string.Empty;
+            if (!noexe)
+            {
+                exePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "out");
+                Directory.CreateDirectory(exePath);
+            }
 
-			string exePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "out");
-			Directory.CreateDirectory(exePath);
-
-			foreach (Generator gen in examples)
-			{
-				string testName = GetTestName(gen);
-				Console.WriteLine(">>> GEN {0}", testName);
-				string name = noexe ? testName : Path.Combine(exePath, testName + ".exe");
-				AssemblyGen asm = new AssemblyGen(name);
-				gen(asm);
-				if (!noexe)	asm.Save();
-				Console.WriteLine("=== RUN {0}", testName);
+            foreach (Generator gen in examples)
+            {
+                string testName = GetTestName(gen);
+                Console.WriteLine(">>> GEN {0}", testName);
+                string name = noexe ? testName : Path.Combine(exePath, testName + ".exe");
+                AssemblyGen asm;
+                asm = noexe ? new AssemblyGen(Thread.GetDomain(), new AssemblyName(name),
+                                                                    AssemblyBuilderAccess.Run, null, false)
+                            : new AssemblyGen(name);
+                gen(asm);
+                if (!noexe)
+                    asm.Save();
+                Console.WriteLine("=== RUN {0}", testName);
                 try
                 {
-					if (noexe)
-					{
-						Type entryType = asm.GetAssembly().EntryPoint.DeclaringType;
-						MethodInfo entryMethod = entryType.GetMethod(asm.GetAssembly().EntryPoint.Name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
-						object[] entryArgs = null;
-						if (entryMethod.GetParameters().Length == 1)
-						{
-							entryArgs = new object[] { GetTestArguments(gen) };
-						}
-						entryMethod.Invoke(null, entryArgs);
-					}
-					else
-					{
-						AppDomain.CurrentDomain.ExecuteAssembly(name, null,
-							GetTestArguments(gen));
-					}
-				}
+                    if (noexe)
+                    {
+                        Type entryType = ((TypeBuilder)asm.GetAssembly().EntryPoint.DeclaringType).CreateType();
+                        //Console.WriteLine("x2");
+                        MethodInfo entryMethod = entryType.GetMethod(asm.GetAssembly().EntryPoint.Name, BindingFlags.Public | BindingFlags.Static);
+                        //Console.WriteLine("x3");
+                        object[] entryArgs = null;
+                        if (entryMethod.GetParameters().Length == 1)
+                        {
+                            //Console.WriteLine("x4");
+                            entryArgs = new object[] { GetTestArguments(gen) };
+                        }
+                        //Console.WriteLine("x5");
+                        entryMethod.Invoke(null, entryArgs);
+                        //Console.WriteLine("x6");
+                    }
+                    else
+                    {
+                        AppDomain.CurrentDomain.ExecuteAssembly(name, null, GetTestArguments(gen));
+                    }
+                }
                 catch (Exception e)
                 {
                     Console.WriteLine("!!! UNHANDLED EXCEPTION");
                     Console.WriteLine(e);
+                    e = e.InnerException;
+                    while (e != null)
+                    {
+                        Console.WriteLine(e);
+                        e = e.InnerException;
+                    }
                 }
-				Console.WriteLine("<<< END {0}", testName);
-				Console.WriteLine();
-			}
+                Console.WriteLine("<<< END {0}", testName);
+                Console.WriteLine();
+                //Console.ReadLine();
+            }
 
-			// dynamic method examples
-			DynamicMethodExamples();
-		}
+            // dynamic method examples
+            DynamicMethodExamples();
+        }
 
-		#region Dynamic Method examples
-		static void DynamicMethodExamples()
-		{
-			DynamicMethodGen dmg = DynamicMethodGen.Static(typeof(Program)).Method(typeof(void)).Parameter(typeof(string), "name");
-			CodeGen g = dmg.GetCode();
-			g.Try();
-			{
-				Operand name = g.Local(typeof(string), g.Arg("name"));
-				g.WriteLine("Hello {0}!", name);
-			}
-			g.CatchAll();
-			{
-				g.WriteLine("Error");
-			}
-			g.End();
+        #region Dynamic Method examples
+        static void DynamicMethodExamples()
+        {
+            DynamicMethodGen dmg = DynamicMethodGen.Static(typeof(Program)).Method(typeof(void)).Parameter(typeof(string), "name");
+            CodeGen g = dmg.GetCode();
+            g.Try();
+            {
+                Operand name = g.Local(typeof(string), g.Arg("name"));
+                g.WriteLine("Hello {0}!", name);
+            }
+            g.CatchAll();
+            {
+                g.WriteLine("Error");
+            }
+            g.End();
+            DynamicMethod dm = dmg.GetCompletedDynamicMethod(true);
 
-			DynamicMethod dm = dmg.GetCompletedDynamicMethod(true);
 
-			// reflection-style invocation
-			dm.Invoke(null, new object[] { "Dynamic Method" });
+            // reflection-style invocation
+            dm.Invoke(null, new object[] { "Dynamic Method" });
 
-			// delegate invocation
-			Action<string> hello = (Action<string>)dm.CreateDelegate(typeof(Action<string>));
-			hello("Delegate");
-		}
-		#endregion
-	}
+            // delegate invocation
+            Action<string> hello = (Action<string>)dm.CreateDelegate(typeof(Action<string>));
+
+            hello("Delegate");
+        }
+        #endregion
+    }
 }

@@ -42,16 +42,30 @@ namespace TriAxis.RunSharp
 
 		MethodGen adder, remover;
 
-		internal EventGen(TypeGen owner, string name, Type type, MethodAttributes mthAttr)
+	    private Type interfaceType;
+
+	    internal EventGen(TypeGen owner, string name, Type type, MethodAttributes mthAttr)
 		{
 			this.owner = owner;
 			this.name = name;
 			this.type = type;
 			this.attrs = mthAttr;
-
-			eb = owner.TypeBuilder.DefineEvent(name, EventAttributes.None, type);
-			owner.RegisterForCompletion(this);
 		}
+
+        void LockSignature()
+        {
+            if (eb == null)
+            {
+                eb = owner.TypeBuilder.DefineEvent(interfaceType == null ? name : interfaceType.FullName + "." + name, EventAttributes.None, type);
+                owner.RegisterForCompletion(this);
+            }
+        }
+
+        internal Type ImplementedInterface
+        {
+            get { return interfaceType; }
+            set { interfaceType = value; }
+        }
 
 		public MethodGen AddMethod()
 		{
@@ -62,7 +76,9 @@ namespace TriAxis.RunSharp
 		{
 			if (adder == null)
 			{
+			    LockSignature();
 				adder = new MethodGen(owner, "add_" + name, attrs | MethodAttributes.SpecialName, typeof(void), 0);
+			    adder.ImplementedInterface = interfaceType;
 				adder.Parameter(type, parameterName);
 				eb.SetAddOnMethod(adder.GetMethodBuilder());
 			}
@@ -79,8 +95,10 @@ namespace TriAxis.RunSharp
 		{
 			if (remover == null)
 			{
+			    LockSignature();
 				remover = new MethodGen(owner, "remove_" + name, attrs | MethodAttributes.SpecialName, typeof(void), 0);
-				remover.Parameter(type, parameterName);
+			    remover.ImplementedInterface = interfaceType;
+                remover.Parameter(type, parameterName);
 				eb.SetRemoveOnMethod(remover.GetMethodBuilder());
 			}
 

@@ -240,7 +240,7 @@ namespace TriAxis.RunSharp.Examples
 
 			TypeGen Test = ag.Class("Test");
 			{
-				CodeGen g = Test.Static.Method(typeof(void), "Main");
+				CodeGen g = Test.Public.Static.Method(typeof(void), "Main");
 				{
 					Operand a = g.Local(DBBool), b = g.Local(DBBool);
 					g.Assign(a, Static.Field(DBBool, "dbTrue"));

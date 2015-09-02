@@ -28,26 +28,69 @@ using System.Text;
 
 namespace TriAxis.RunSharp.Examples
 {
-	static class _02_CommandLine
-	{
-		// example based on the MSDN Command Line Parameters Sample (CmdLine2.cs)
-		[TestArguments("arg1", "arg2", "arg3", "arg4")]
-		public static void GenCmdLine2(AssemblyGen ag)
-		{
-			TypeGen CommandLine2 = ag.Public.Class("CommandLine2");
-			{
-				CodeGen g = CommandLine2.Public.Static.Method(typeof(void), "Main").Parameter(typeof(string[]), "args");
-				{
-					Operand args = g.Arg("args");
-					g.WriteLine("Number of command line parameters = {0}",
-						args.Property("Length"));
-					Operand s = g.ForEach(typeof(string), args);
-					{
-						g.WriteLine(s);
-					}
-					g.End();
-				}
-			}
-		}
-	}
+    public class CmdLineTestClass
+    {
+        int value = 5;
+        public int GetValue()
+        {
+            return value;
+        }
+        public static CmdLineTestClass Default = new CmdLineTestClass();
+    }
+    static class _02_CommandLine
+    {
+        // example based on the MSDN Command Line Parameters Sample (CmdLine2.cs)
+        [TestArguments("arg1", "arg2", "arg3", "arg4")]
+        public static void GenCmdLine2(AssemblyGen ag)
+        {
+            TypeGen CommandLine3 = ag.Public.Class("CommandLine3");
+            {
+                CodeGen g = CommandLine3.Public.Method(typeof(void), "Main3").Parameter(typeof(string[]), "args");
+                {
+                    Operand args = g.Arg("args");
+                    g.WriteLine("Number of command line 3 parameters = {0}",
+                        args.Property("Length"));
+                    Operand s = g.ForEach(typeof(string), args);
+                    {
+                        g.WriteLine(s);
+                    }
+                    g.End();
+                    g.WriteLine(g.This().Invoke("GetType").Property("BaseType").Property("Name"));
+
+                    Operand inst = Static.Field(typeof(CmdLineTestClass), "Default");
+                    g.WriteLine(inst.Invoke("GetValue"));
+                    //inst.Field("value").Assign(2);
+                    /*g.Assign(inst.Field("value"), 2);
+                    g.WriteLine(inst.Invoke("GetValue"));*/
+
+                }
+
+
+                CommandLine3.Public.CommonConstructor();
+            }
+
+            TypeGen CommandLine2 = ag.Public.Class("CommandLine2");
+            {
+                CodeGen g = CommandLine2.Public.Static.Method(typeof(void), "Main").Parameter(typeof(string[]), "args");
+                {
+                    //g.Invoke(CommandLine3, "Main3", g.Arg("args"));
+                    Operand cl = g.Local(Exp.New(CommandLine3));
+                    g.WriteLine(0);
+                    g.Invoke(cl, "Main3", g.Arg("args"));
+                    Operand args = g.Arg("args");
+                    g.WriteLine("Number of command line parameters = {0}",
+                        args.Property("Length"));
+                    Operand s = g.ForEach(typeof(string), args);
+                    {
+                        g.WriteLine(s);
+                    }
+                    g.End();
+
+
+                }
+            }
+
+
+        }
+    }
 }

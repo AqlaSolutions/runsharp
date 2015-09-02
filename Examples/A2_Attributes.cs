@@ -52,7 +52,7 @@ namespace TriAxis.RunSharp.Examples
 				.Attribute(typeof(System.ComponentModel.DescriptionAttribute), "Test class")
 				;
 
-			tg.Static.Method(typeof(void), "Main")
+			tg.Public.Static.Method(typeof(void), "Main")
 				.BeginAttribute(MyAttribute).Set("TestProperty", 3).End()
 				;
 

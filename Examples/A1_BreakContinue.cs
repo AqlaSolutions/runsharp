@@ -32,7 +32,7 @@ namespace TriAxis.RunSharp.Examples
 	{
 		public static void GenBreakContinue(AssemblyGen ag)
 		{
-			CodeGen g = ag.Class("Test").Static.Method(typeof(void), "Main");
+			CodeGen g = ag.Class("Test").Public.Static.Method(typeof(void), "Main");
 
 			g.WriteLine("Break test:");
 			Operand i = g.Local();

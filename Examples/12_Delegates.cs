@@ -141,7 +141,7 @@ namespace TriAxis.RunSharp.Examples
 					}
 
 					// Execution starts here.
-					g = Test.Static.Method(typeof(void), "Main");
+					g = Test.Public.Static.Method(typeof(void), "Main");
 					{
 						Operand bookDB = g.Local(Exp.New(BookDB));
 

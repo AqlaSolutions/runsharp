@@ -133,8 +133,11 @@ namespace TriAxis.RunSharp
 
 			foreach (Type t in interfaces)
 			{
-				foreach (IMemberInfo mi in TypeInfo.GetMethods(t))
-					implementations.Add(new InterfaceImplEntry(mi));
+                foreach (Type @interface in TypeInfo.SearchInterfaces(t))
+			    {
+                    foreach (IMemberInfo mi in TypeInfo.GetMethods(@interface))
+                        implementations.Add(new InterfaceImplEntry(mi));
+			    }
 			}
 		}
 
@@ -559,6 +562,13 @@ namespace TriAxis.RunSharp
 			ResetAttrs();
 			return tg;
 		}
+
+        public DelegateGen Delegate(Type returnType, string name)
+        {
+            DelegateGen dg = new DelegateGen(this, name, returnType, (typeVis | typeVirt | typeFlags | TypeAttributes.Class | TypeAttributes.Sealed) ^ TypeAttributes.BeforeFieldInit);
+            ResetAttrs();
+            return dg;
+        }   
 		#endregion
 
 		#region Interface implementations
@@ -597,6 +607,18 @@ namespace TriAxis.RunSharp
 			pg.ImplementedInterface = interfaceType;
 			return pg;
 		}
+
+        public EventGen EventImplementation(Type interfaceType, Type eventHandlerType, string name)
+        {
+            if (tb.IsInterface)
+                throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoExplicitImpl);
+
+            EventGen eg = new EventGen(this, name, eventHandlerType,
+                MethodAttributes.Private | MethodAttributes.NewSlot | MethodAttributes.Virtual | MethodAttributes.Final);
+            eg.ImplementedInterface = interfaceType;
+            return eg;
+        }
+
 		#endregion
 
 		public Type GetCompletedType()

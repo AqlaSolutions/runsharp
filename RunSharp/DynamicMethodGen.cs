@@ -29,158 +29,171 @@ using System.Reflection.Emit;
 
 namespace TriAxis.RunSharp
 {
-	public sealed class DynamicMethodGen : RoutineGen<DynamicMethodGen>, ICodeGenContext
-	{
-		Attributes attrs;
-		DynamicMethod dm;
-		
-		public static Attributes Static(Type owner)
-		{
-			return new Attributes(owner, false);
-		}
+    public sealed class DynamicMethodGen : RoutineGen<DynamicMethodGen>, ICodeGenContext
+    {
+        Attributes attrs;
+        DynamicMethod dm;
 
-		public static Attributes Static(Module owner)
-		{
-			return new Attributes(owner);
-		}
+        public static Attributes Static(Type owner)
+        {
+            return new Attributes(owner, false);
+        }
 
-		public static Attributes Instance(Type owner)
-		{
-			return new Attributes(owner, false);
-		}
+        public static Attributes Static(Module owner)
+        {
+            return new Attributes(owner);
+        }
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible", Justification = "The type has to be public, but would be useless outside of this class")]
-		public sealed class Attributes
-		{
-			internal string name = "";
-			internal bool skipVisibility;
-			internal Type ownerType;
-			internal Module ownerModule;
-			internal bool asInstance;
+        public static Attributes Instance(Type owner)
+        {
+            return new Attributes(owner, false);
+        }
 
-			internal Attributes(Type owner, bool asInstance)
-			{
-				this.ownerType = owner;
-				this.asInstance = asInstance;
-			}
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible", Justification = "The type has to be public, but would be useless outside of this class")]
+        public sealed class Attributes
+        {
+            internal string name = "";
+            internal bool skipVisibility;
+            internal Type ownerType;
+            internal Module ownerModule;
+            internal bool asInstance;
 
-			internal Attributes(Module owner)
-			{
-				this.ownerModule = owner;
-			}
+            internal Attributes(Type owner, bool asInstance)
+            {
+                this.ownerType = owner;
+                this.asInstance = asInstance;
+            }
 
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			public Attributes NoVisibilityChecks { get { skipVisibility = true; return this; } }
+            internal Attributes(Module owner)
+            {
+                this.ownerModule = owner;
+            }
 
-			public Attributes WithName(string name)
-			{
-				this.name = name;
-				return this;
-			}
+            [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+            public Attributes NoVisibilityChecks { get { skipVisibility = true; return this; } }
 
-			public DynamicMethodGen Method(Type returnType)
-			{
-				return new DynamicMethodGen(this, returnType);
-			}
-		}
+            public Attributes WithName(string name)
+            {
+                this.name = name;
+                return this;
+            }
 
-		private DynamicMethodGen(Attributes attrs, Type returnType)
-			: base(attrs.ownerType, returnType)
-		{
-			this.attrs = attrs;
+            public DynamicMethodGen Method(Type returnType)
+            {
+                return new DynamicMethodGen(this, returnType);
+            }
+        }
 
-			if (attrs.asInstance)
-				Parameter(attrs.ownerType, "this");
-		}
+        private DynamicMethodGen(Attributes attrs, Type returnType)
+            : base(attrs.ownerType, returnType)
+        {
+            this.attrs = attrs;
 
-		protected override void CreateMember()
-		{
-			if (attrs.ownerType != null)
-				this.dm = new DynamicMethod(attrs.name, ReturnType, ParameterTypes, attrs.ownerType, attrs.skipVisibility);
-			else
-				this.dm = new DynamicMethod(attrs.name, ReturnType, ParameterTypes, attrs.ownerModule, attrs.skipVisibility);
-		}
+            if (attrs.asInstance)
+                Parameter(attrs.ownerType, "this");
+        }
 
-		protected override void RegisterMember()
-		{
-			// nothing to register
-		}
+        protected override void CreateMember()
+        {
+            if (attrs.ownerType != null)
+                try
+                {
+                    this.dm = new DynamicMethod(attrs.name, ReturnType, ParameterTypes, attrs.ownerType, attrs.skipVisibility);
+                }
+                catch
+                {
+                    this.dm = new DynamicMethod(attrs.name, ReturnType, ParameterTypes, attrs.ownerType, false);
+                }
+            else
+                try
+                {
+                    this.dm = new DynamicMethod(attrs.name, ReturnType, ParameterTypes, attrs.ownerModule, attrs.skipVisibility);
+                }
+                catch
+                {
+                    this.dm = new DynamicMethod(attrs.name, ReturnType, ParameterTypes, attrs.ownerModule, false);
+                }
+        }
 
-		public bool IsCompleted { get { return !(SignatureComplete && GetCode().IsCompleted); } }
+        protected override void RegisterMember()
+        {
+            // nothing to register
+        }
 
-		public void Complete() { GetCode().Complete(); }
+        public bool IsCompleted { get { return !(SignatureComplete && GetCode().IsCompleted); } }
 
-		public DynamicMethod GetCompletedDynamicMethod()
-		{
-			return GetCompletedDynamicMethod(false);
-		}
+        public void Complete() { GetCode().Complete(); }
 
-		public DynamicMethod GetCompletedDynamicMethod(bool completeIfNeeded)
-		{
-			if (completeIfNeeded)
-				Complete();
-			else if (!IsCompleted)
-				throw new InvalidOperationException(Properties.Messages.ErrDynamicMethodNotCompleted);
+        public DynamicMethod GetCompletedDynamicMethod()
+        {
+            return GetCompletedDynamicMethod(false);
+        }
 
-			return dm;
-		}
+        public DynamicMethod GetCompletedDynamicMethod(bool completeIfNeeded)
+        {
+            if (completeIfNeeded)
+                Complete();
+            else if (!IsCompleted)
+                throw new InvalidOperationException(Properties.Messages.ErrDynamicMethodNotCompleted);
 
-		#region RoutineGen concrete implementation
+            return dm;
+        }
 
-		protected override bool HasCode
-		{
-			get { return true; }
-		}
+        #region RoutineGen concrete implementation
 
-		protected override ILGenerator GetILGenerator()
-		{
-			return dm.GetILGenerator();
-		}
+        protected override bool HasCode
+        {
+            get { return true; }
+        }
 
-		protected override ParameterBuilder DefineParameter(int position, ParameterAttributes attributes, string parameterName)
-		{
-			return dm.DefineParameter(position, attributes, parameterName);
-		}
+        protected override ILGenerator GetILGenerator()
+        {
+            return dm.GetILGenerator();
+        }
 
-		protected override MemberInfo Member
-		{
-			get { return dm; }
-		}
+        protected override ParameterBuilder DefineParameter(int position, ParameterAttributes attributes, string parameterName)
+        {
+            return dm.DefineParameter(position, attributes, parameterName);
+        }
 
-		public override string Name
-		{
-			get { return attrs.name; }
-		}
+        protected override MemberInfo Member
+        {
+            get { return dm; }
+        }
 
-		protected internal override bool IsStatic
-		{
-			get { return !attrs.asInstance; }
-		}
+        public override string Name
+        {
+            get { return attrs.name; }
+        }
 
-		protected internal override bool IsOverride
-		{
-			get { return false; }
-		}
+        protected internal override bool IsStatic
+        {
+            get { return !attrs.asInstance; }
+        }
 
-		protected override AttributeTargets AttributeTarget
-		{
-			get { throw new InvalidOperationException(Properties.Messages.ErrDynamicMethodNoCustomAttrs); }
-		}
+        protected internal override bool IsOverride
+        {
+            get { return false; }
+        }
 
-		protected override void SetCustomAttribute(CustomAttributeBuilder cab)
-		{
-			throw new InvalidOperationException(Properties.Messages.ErrDynamicMethodNoCustomAttrs);
-		}
+        protected override AttributeTargets AttributeTarget
+        {
+            get { throw new InvalidOperationException(Properties.Messages.ErrDynamicMethodNoCustomAttrs); }
+        }
 
-		#endregion
+        protected override void SetCustomAttribute(CustomAttributeBuilder cab)
+        {
+            throw new InvalidOperationException(Properties.Messages.ErrDynamicMethodNoCustomAttrs);
+        }
 
-		#region ICodeGenContext Members
+        #endregion
 
-		bool ICodeGenContext.SupportsScopes
-		{
-			get { return false; }
-		}
+        #region ICodeGenContext Members
 
-		#endregion
-	}
+        bool ICodeGenContext.SupportsScopes
+        {
+            get { return false; }
+        }
+        #endregion
+    }
 }

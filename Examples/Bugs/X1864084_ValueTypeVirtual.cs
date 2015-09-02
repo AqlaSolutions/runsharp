@@ -38,7 +38,7 @@ namespace TriAxis.RunSharp.Examples.Bugs
         {
             TypeGen Test = ag.Class("Test");
             {
-                CodeGen g = Test.Static.Method(typeof(void), "Main");
+                CodeGen g = Test.Public.Static.Method(typeof(void), "Main");
                 {
                     Operand value = g.Local(typeof(int), 3);
                     g.WriteLine("Hash code of {0} is {1}", value, value.Invoke("GetHashCode"));
@@ -50,7 +50,7 @@ namespace TriAxis.RunSharp.Examples.Bugs
         {
             TypeGen Test = ag.Struct("Test");
 			{
-				CodeGen g = Test.Static.Method(typeof(void), "Main");
+				CodeGen g = Test.Public.Static.Method(typeof(void), "Main");
 				{
 					// test calling virtual member directly on a literal
 					// g.Local(Operand.FromObject(3).Invoke("GetHashCode"));
