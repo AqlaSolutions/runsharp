@@ -1,6 +1,0 @@
-#!/bin/sh
-
-cd "`dirname "$0"`"
-xbuild RunSharp.sln /p:Platform="Any CPU" "$@"
-cd -
-

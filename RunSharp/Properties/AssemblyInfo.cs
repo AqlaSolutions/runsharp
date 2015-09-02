@@ -58,7 +58,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("0.1.2.0")]
 [assembly: AssemblyFileVersion("0.1.2.0")]
 
-[assembly: CLSCompliant(true)]
+//[assembly: CLSCompliant(true)]
 
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, Execution = true)]
 [assembly: ReflectionPermission(SecurityAction.RequestMinimum, ReflectionEmit = true)]

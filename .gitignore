@@ -1,0 +1,12 @@
+
+/**/bin/
+/**/obj/
+
+# ignore user settings
+*.suo
+*.user
+
+# ignore mono temporary project
+*.sln.proj
+
+/.vs/

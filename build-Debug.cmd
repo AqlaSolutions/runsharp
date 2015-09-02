@@ -1,1 +1,0 @@
-@%~dp0\build.cmd /p:Configuration=Debug

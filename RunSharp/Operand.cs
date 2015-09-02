@@ -114,7 +114,7 @@ namespace TriAxis.RunSharp
 		}
 
 		[DebuggerHidden]
-		[CLSCompliant(false)]
+		//[CLSCompliant(false)]
 		public static implicit operator Operand(sbyte value)
 		{
 			return new IntLiteral(typeof(sbyte), value);
@@ -127,7 +127,7 @@ namespace TriAxis.RunSharp
 		}
 
 		[DebuggerHidden]
-		[CLSCompliant(false)]
+		//[CLSCompliant(false)]
 		public static implicit operator Operand(ushort value)
 		{
 			return new IntLiteral(typeof(ushort), value);
@@ -146,7 +146,7 @@ namespace TriAxis.RunSharp
 		}
 
 		[DebuggerHidden]
-		[CLSCompliant(false)]
+		//[CLSCompliant(false)]
 		public static implicit operator Operand(uint value)
 		{
 			return new IntLiteral(typeof(uint), unchecked((int)value));
@@ -159,7 +159,7 @@ namespace TriAxis.RunSharp
 		}
 
 		[DebuggerHidden]
-		[CLSCompliant(false)]
+		//[CLSCompliant(false)]
 		public static implicit operator Operand(ulong value)
 		{
 			return new LongLiteral(typeof(ulong), unchecked((long)value));
