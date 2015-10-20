@@ -41,6 +41,9 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="IKVM.Reflection">
+      <HintPath>..\lib\IKVM.Reflection.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
@@ -50,6 +53,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="BranchSet.cs" />
+    <Compile Include="IKVM\CompilerContext.cs" />
+    <Compile Include="IKVM\Local.cs" />
     <Compile Include="SignatureGen.cs" />
     <Compile Include="CodeGen.Statements.cs" />
     <Compile Include="ConstructorGen.cs" />

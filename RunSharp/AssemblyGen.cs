@@ -222,7 +222,7 @@ namespace TriAxis.RunSharp
 		{
 			this.access = access;
 			this.fileName = fileName;
-
+            
 			if (fileName == null && (access & AssemblyBuilderAccess.Save) != 0)
 				throw new ArgumentNullException("fileName", Properties.Messages.ErrAsmMissingSaveFile);
 
