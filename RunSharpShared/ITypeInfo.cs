@@ -41,7 +41,7 @@ using System.Reflection.Emit;
 
 namespace TriAxis.RunSharp
 {
-    interface ITypeInfo
+    public interface ITypeInfo
     {
         ITypeMapper TypeMapper { get; }
         void RegisterProvider(Type t, ITypeInfoProvider prov);

@@ -78,8 +78,9 @@ namespace TriAxis.RunSharp
 	    readonly ApplicableFunction _ctor;
 		Dictionary<PropertyInfo, object> _namedProperties;
 		Dictionary<FieldInfo, object> _namedFields;
+	    readonly ITypeMapper _typeMapper;
 
-		internal AttributeGen(AttributeTargets target, AttributeType attributeType, object[] args)
+		internal AttributeGen(AttributeTargets target, AttributeType attributeType, object[] args, ITypeMapper typeMapper)
 		{
 			if (args != null)
 			{
@@ -92,8 +93,9 @@ namespace TriAxis.RunSharp
 			// TODO: target validation
 
 			_attributeType = attributeType;
+		    _typeMapper = typeMapper;
 
-			Operand[] argOperands;
+		    Operand[] argOperands;
 			if (args == null || args.Length == 0)
 			{
 				_args = EmptyArray<object>.Instance;
@@ -109,12 +111,12 @@ namespace TriAxis.RunSharp
 				}
 			}
 
-			_ctor = TypeInfo.FindConstructor(attributeType, argOperands);
+			_ctor = _typeMapper.TypeInfo.FindConstructor(attributeType, argOperands);
 		}
         
         static bool IsValidAttributeParamType(Type t)
 		{
-		    return t != null && (t.IsPrimitive || t.IsEnum || typeof(Type).IsAssignableFrom(t) || t.FullName == typeof(string).FullName);
+		    return t != null && (t.IsPrimitive || t.IsEnum || Helpers.IsAssignableFrom(typeof(Type), t) || t.FullName == typeof(string).FullName);
 		}
 
 		static bool IsSingleDimensionalZeroBasedArray(Array a)
@@ -145,7 +147,7 @@ namespace TriAxis.RunSharp
 		{
 			CheckValue(value);
 
-			FieldInfo fi = (FieldInfo)TypeInfo.FindField(_attributeType, name, false).Member;
+			FieldInfo fi = (FieldInfo)_typeMapper.TypeInfo.FindField(_attributeType, name, false).Member;
 
 			SetFieldIntl(fi, value);
 			return this;
@@ -170,7 +172,7 @@ namespace TriAxis.RunSharp
 		{
 			CheckValue(value);
 
-			PropertyInfo pi = (PropertyInfo)TypeInfo.FindProperty(_attributeType, name, null, false).Method.Member;
+			PropertyInfo pi = (PropertyInfo)_typeMapper.TypeInfo.FindProperty(_attributeType, name, null, false).Method.Member;
 
 			SetPropertyIntl(pi, value);
 			return this;
@@ -200,7 +202,7 @@ namespace TriAxis.RunSharp
 
 			for (Type t = _attributeType; t != null; t = t.BaseType)
 			{
-				foreach (IMemberInfo mi in TypeInfo.GetFields(t))
+				foreach (IMemberInfo mi in _typeMapper.TypeInfo.GetFields(t))
 				{
 					if (mi.Name == name && !mi.IsStatic)
 					{
@@ -209,7 +211,7 @@ namespace TriAxis.RunSharp
 					}
 				}
 
-				ApplicableFunction af = OverloadResolver.Resolve(TypeInfo.Filter(TypeInfo.GetProperties(t), name, false, false, false), Operand.EmptyArray);
+				ApplicableFunction af = OverloadResolver.Resolve(_typeMapper.TypeInfo.Filter(_typeMapper.TypeInfo.GetProperties(t), name, false, false, false), _typeMapper, Operand.EmptyArray);
 				if (af != null)
 				{
 					SetPropertyIntl((PropertyInfo)af.Method.Member, value);
@@ -260,15 +262,15 @@ namespace TriAxis.RunSharp
 	{
 	    readonly TOuterContext _context;
 
-		internal AttributeGen(TOuterContext context, AttributeTargets target, AttributeType attributeType, object[] args)
-			: base(target, attributeType, args)
+		internal AttributeGen(TOuterContext context, AttributeTargets target, AttributeType attributeType, object[] args, ITypeMapper typeMapper)
+			: base(target, attributeType, args, typeMapper)
 		{
 			_context = context;
 		}
 
-		internal static AttributeGen<TOuterContext> CreateAndAdd(TOuterContext context, ref List<AttributeGen> list, AttributeTargets target, AttributeType attributeType, object[] args)
+		internal static AttributeGen<TOuterContext> CreateAndAdd(TOuterContext context, ref List<AttributeGen> list, AttributeTargets target, AttributeType attributeType, object[] args, ITypeMapper typeMapper)
 		{
-			AttributeGen<TOuterContext> ag = new AttributeGen<TOuterContext>(context, target, attributeType, args);
+			AttributeGen<TOuterContext> ag = new AttributeGen<TOuterContext>(context, target, attributeType, args, typeMapper);
 			if (list == null)
 				list = new List<AttributeGen>();
 			list.Add(ag);

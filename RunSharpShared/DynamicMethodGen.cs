@@ -90,14 +90,14 @@ namespace TriAxis.RunSharp
                 return this;
             }
 
-            public DynamicMethodGen Method(Type returnType)
+            public DynamicMethodGen Method(Type returnType, ITypeMapper typeMapper)
             {
-                return new DynamicMethodGen(this, returnType);
+                return new DynamicMethodGen(this, returnType, typeMapper);
             }
         }
 
-        private DynamicMethodGen(Attributes attrs, Type returnType)
-            : base(attrs.ownerType, returnType)
+        private DynamicMethodGen(Attributes attrs, Type returnType, ITypeMapper typeMapper)
+            : base(attrs.ownerType, returnType, typeMapper)
         {
             _attrs = attrs;
 

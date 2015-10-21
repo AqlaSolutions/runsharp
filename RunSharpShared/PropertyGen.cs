@@ -43,10 +43,11 @@ namespace TriAxis.RunSharp
 {
 	public sealed class PropertyGen : Operand, IMemberInfo, IDelayedCompletion
 	{
+	    public ITypeMapper TypeMapper => _owner.TypeMapper;
 	    readonly TypeGen _owner;
 	    readonly MethodAttributes _attrs;
 	    readonly Type _type;
-	    readonly ParameterGenCollection _indexParameters = new ParameterGenCollection();
+	    readonly ParameterGenCollection _indexParameters;
 		PropertyBuilder _pb;
 	    List<AttributeGen> _customAttributes;
 
@@ -58,6 +59,7 @@ namespace TriAxis.RunSharp
 			_attrs = attrs;
 			_type = type;
 			Name = name;
+		    _indexParameters = new ParameterGenCollection(owner.TypeMapper);
 		}
 
 		void LockSignature()
@@ -123,7 +125,7 @@ namespace TriAxis.RunSharp
 
 		public AttributeGen<PropertyGen> BeginAttribute(AttributeType type, params object[] args)
 		{
-			return AttributeGen<PropertyGen>.CreateAndAdd(this, ref _customAttributes, AttributeTargets.Property, type, args);
+			return AttributeGen<PropertyGen>.CreateAndAdd(this, ref _customAttributes, AttributeTargets.Property, type, args, TypeMapper);
 		}
 
 		#endregion

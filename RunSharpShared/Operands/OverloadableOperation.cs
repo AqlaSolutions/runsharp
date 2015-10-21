@@ -45,36 +45,12 @@ namespace TriAxis.RunSharp.Operands
 	{
 	    readonly Operator _op;
 	    readonly Operand[] _operands;
-	    readonly ApplicableFunction _af;
+	    ApplicableFunction _af;
 
 		public OverloadableOperation(Operator op, params Operand[] operands)
 		{
 			_op = op;
 			_operands = operands;
-
-			List<ApplicableFunction> candidates = null;
-
-			foreach (Operand operand in operands)
-			{
-				if ((object)operand != null && !operand.Type.IsPrimitive)
-				{
-					// try overloads
-					candidates = op.FindUserCandidates(operands);
-					break;
-				}
-			}
-
-			if (candidates == null)
-				candidates = OverloadResolver.FindApplicable(op.GetStandardCandidates(operands), operands);
-
-			if (candidates == null)
-				throw new InvalidOperationException(string.Format(null, Properties.Messages.ErrInvalidOperation, op.MethodName,
-					string.Join(", ", Array.ConvertAll<Operand, string>(operands, GetTypeName))));
-
-			_af = OverloadResolver.FindBest(candidates);
-
-			if (_af == null)
-				throw new AmbiguousMatchException(Properties.Messages.ErrAmbiguousBinding);
 		}
 
 		internal void SetOperand(Operand newOp)
@@ -82,9 +58,38 @@ namespace TriAxis.RunSharp.Operands
 			_operands[0] = newOp;
 		}
 
+	    void PrepareAf(CodeGen g)
+	    {
+	        if (_af != null) return;
+	        List<ApplicableFunction> candidates = null;
+
+            foreach (Operand operand in _operands)
+            {
+                if ((object)operand != null && !operand.Type.IsPrimitive)
+                {
+                    // try overloads
+                    candidates = _op.FindUserCandidates(g.TypeMapper, _operands);
+                    break;
+                }
+            }
+
+            if (candidates == null)
+                candidates = OverloadResolver.FindApplicable(_op.GetStandardCandidates(_operands), g.TypeMapper, _operands);
+
+            if (candidates == null)
+                throw new InvalidOperationException(string.Format(null, Properties.Messages.ErrInvalidOperation, _op.MethodName,
+                    string.Join(", ", Array.ConvertAll<Operand, string>(_operands, GetTypeName))));
+
+            _af = OverloadResolver.FindBest(candidates, g.TypeMapper);
+
+            if (_af == null)
+                throw new AmbiguousMatchException(Properties.Messages.ErrAmbiguousBinding);
+        }
+
 		internal override void EmitGet(CodeGen g)
 		{
-			_af.EmitArgs(g, _operands);
+		    PrepareAf(g);
+            _af.EmitArgs(g, _operands);
 
 			IStandardOperation sop = _af.Method as IStandardOperation;
 			if (sop != null)
@@ -95,7 +100,8 @@ namespace TriAxis.RunSharp.Operands
 
 		internal override void EmitBranch(CodeGen g, BranchSet branchSet, Label label)
 		{
-			IStandardOperation stdOp = _af.Method as IStandardOperation;
+            PrepareAf(g);
+            IStandardOperation stdOp = _af.Method as IStandardOperation;
 			if (_op.BranchOp == 0 || stdOp == null)
 			{
 				base.EmitBranch(g, branchSet, label);

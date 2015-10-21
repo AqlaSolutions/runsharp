@@ -34,16 +34,17 @@ namespace TriAxis.RunSharp.Examples
 		public static void GenIndexedProperty(AssemblyGen ag)
 		{
 			CodeGen g;
-
-			TypeGen Document = ag.Public.Class("Document");
-			{
+		    ITypeMapper m = ag.TypeMapper;
+		    
+            TypeGen Document = ag.Public.Class("Document");
+		    {
 				FieldGen TextArray = Document.Private.Field(typeof(char[]), "TextArray");  // The text of the document.
 
 				// Type allowing the document to be viewed like an array of words:
 				TypeGen WordCollection = Document.Public.Class("WordCollection");
 				{
 					FieldGen document = WordCollection.ReadOnly.Field(Document, "document");	// The containing document
-					Operand document_TextArray = document.Field("TextArray");	// example of a saved expression - it is always re-evaluated when used
+					Operand document_TextArray = document.Field("TextArray", m);	// example of a saved expression - it is always re-evaluated when used
 
 					g = WordCollection.Internal.Constructor().Parameter(Document, "d");
 					{
@@ -73,7 +74,7 @@ namespace TriAxis.RunSharp.Examples
 						Operand i = g.Local();
 						g.For(i.Assign(begin), i <= end, i.Increment());
 						{
-							Operand isLetter = g.Local(i < end && Static.Invoke(typeof(char), "IsLetterOrDigit", text[i]));
+							Operand isLetter = g.Local(i < end && Static.Invoke(typeof(char), "IsLetterOrDigit", m, text[m, i]));
 
 							g.If(inWord >= 0);
 							{
@@ -115,13 +116,13 @@ namespace TriAxis.RunSharp.Examples
 
 							Operand start = g.Local(0), length = g.Local(0);
 
-							g.If(g.This().Invoke("GetWord", document_TextArray, 0, index, start.Ref(), length.Ref()));
+							g.If(g.This().Invoke("GetWord", m, document_TextArray, 0, index, start.Ref(), length.Ref()));
 							{
-								g.Return(Exp.New(typeof(string), document_TextArray, start, length));
+								g.Return(Exp.New(typeof(string), m, document_TextArray, start, length));
 							}
 							g.Else();
 							{
-								g.Throw(Exp.New(typeof(IndexOutOfRangeException)));
+								g.Throw(Exp.New(typeof(IndexOutOfRangeException), m));
 							}
 							g.End();
 						}
@@ -132,26 +133,26 @@ namespace TriAxis.RunSharp.Examples
 
 							Operand start = g.Local(0), length = g.Local(0);
 
-							g.If(g.This().Invoke("GetWord", document_TextArray, 0, index, start.Ref(), length.Ref()));
+							g.If(g.This().Invoke("GetWord", m, document_TextArray, 0, index, start.Ref(), length.Ref()));
 							{
 								// Replace the word at start/length with the 
 								// string "value":
-								g.If(length == value.Property("Length"));
+								g.If(length == value.Property("Length", m));
 								{
-									g.Invoke(typeof(Array), "Copy", value.Invoke("ToCharArray"), 0,
+									g.Invoke(typeof(Array), "Copy", value.Invoke("ToCharArray", m), 0,
 										document_TextArray, start, length);
 								}
 								g.Else();
 								{
 									Operand newText = g.Local(Exp.NewArray(typeof(char),
-										document_TextArray.ArrayLength() + value.Property("Length") - length));
+										document_TextArray.ArrayLength() + value.Property("Length", m) - length));
 
 									g.Invoke(typeof(Array), "Copy", document_TextArray, 0, newText,
 										0, start);
-									g.Invoke(typeof(Array), "Copy", value.Invoke("ToCharArray"), 0, newText,
-										start, value.Property("Length"));
+									g.Invoke(typeof(Array), "Copy", value.Invoke("ToCharArray", m), 0, newText,
+										start, value.Property("Length", m));
 									g.Invoke(typeof(Array), "Copy", document_TextArray, start + length,
-										newText, start + value.Property("Length"),
+										newText, start + value.Property("Length", m),
 										document_TextArray.ArrayLength() - start
 										- length);
 									g.Assign(document_TextArray, newText);
@@ -160,7 +161,7 @@ namespace TriAxis.RunSharp.Examples
 							}
 							g.Else();
 							{
-								g.Throw(Exp.New(typeof(IndexOutOfRangeException)));
+								g.Throw(Exp.New(typeof(IndexOutOfRangeException), m));
 							}
 							g.End();
 						}
@@ -171,7 +172,7 @@ namespace TriAxis.RunSharp.Examples
 					{
 						Operand count = g.Local(0), start = g.Local(0), length = g.Local(0);
 
-						g.While(g.This().Invoke("GetWord", document_TextArray, start + length, 0,
+						g.While(g.This().Invoke("GetWord", m, document_TextArray, start + length, 0,
 							start.Ref(), length.Ref()));
 						{
 							g.Increment(count);
@@ -187,7 +188,7 @@ namespace TriAxis.RunSharp.Examples
 				TypeGen CharacterCollection = Document.Public.Class("CharacterCollection");
 				{
 					FieldGen document = CharacterCollection.ReadOnly.Field(Document, "document");	// The containing document
-					Operand document_TextArray = document.Field("TextArray");
+					Operand document_TextArray = document.Field("TextArray", m);
 
 					g = CharacterCollection.Internal.Constructor().Parameter(Document, "d");
 					{
@@ -199,11 +200,11 @@ namespace TriAxis.RunSharp.Examples
 					{
 						g = Item.Getter();
 						{
-							g.Return(document_TextArray[g.Arg("index")]);
+							g.Return(document_TextArray[m, g.Arg("index")]);
 						}
 						g = Item.Setter();
 						{
-							g.Assign(document_TextArray[g.Arg("index")], g.PropertyValue());
+							g.Assign(document_TextArray[m, g.Arg("index")], g.PropertyValue());
 						}
 					}
 
@@ -221,14 +222,14 @@ namespace TriAxis.RunSharp.Examples
 
 				g = Document.Public.Constructor().Parameter(typeof(string), "initialText");
 				{
-					g.Assign(TextArray, g.Arg("initialText").Invoke("ToCharArray"));
-					g.Assign(Words, Exp.New(WordCollection, g.This()));
-					g.Assign(Characters, Exp.New(CharacterCollection, g.This()));
+					g.Assign(TextArray, g.Arg("initialText").Invoke("ToCharArray", m));
+					g.Assign(Words, Exp.New(WordCollection, m, g.This()));
+					g.Assign(Characters, Exp.New(CharacterCollection, m, g.This()));
 				}
 
 				g = Document.Public.Property(typeof(string), "Text").Getter();
 				{
-					g.Return(Exp.New(typeof(string), TextArray));
+					g.Return(Exp.New(typeof(string), m, TextArray));
 				}
 			}
 
@@ -236,32 +237,32 @@ namespace TriAxis.RunSharp.Examples
 			{
 				g = Test.Public.Static.Method(typeof(void), "Main");
 				{
-					Operand d = g.Local(Exp.New(Document, "peter piper picked a peck of pickled peppers. How many pickled peppers did peter piper pick?"));
+					Operand d = g.Local(Exp.New(Document, m, "peter piper picked a peck of pickled peppers. How many pickled peppers did peter piper pick?"));
 
 					// Change word "peter" to "penelope":
 					Operand i = g.Local();
-					g.For(i.Assign(0), i < d.Field("Words").Property("Count"), i.Increment());
+					g.For(i.Assign(0), i < d.Field("Words", m).Property("Count", m), i.Increment());
 					{
-						g.If(d.Field("Words")[i] == "peter");
+						g.If(d.Field("Words", m)[m, i] == "peter");
 						{
-							g.Assign(d.Field("Words")[i], "penelope");
+							g.Assign(d.Field("Words", m)[m, i], "penelope");
 						}
 						g.End();
 					}
 					g.End();
 
 					// Change character "p" to "P"
-					g.For(i.Assign(0), i < d.Field("Characters").Property("Count"), i.Increment());
+					g.For(i.Assign(0), i < d.Field("Characters", m).Property("Count", m), i.Increment());
 					{
-						g.If(d.Field("Characters")[i] == 'p');
+						g.If(d.Field("Characters", m)[m, i] == 'p');
 						{
-							g.Assign(d.Field("Characters")[i], 'P');
+							g.Assign(d.Field("Characters", m)[m, i], 'P');
 						}
 						g.End();
 					}
 					g.End();
 
-					g.WriteLine(d.Property("Text"));
+					g.WriteLine(d.Property("Text", m));
 				}
 			}
 		}

@@ -51,7 +51,7 @@ namespace TriAxis.RunSharp
 		List<AttributeGen> _assemblyAttributes;
 		List<AttributeGen> _moduleAttributes;
 		string _ns;
-
+        
 		internal AssemblyBuilder AssemblyBuilder { get; set; }
         internal ModuleBuilder ModuleBuilder { get; set; }
 
@@ -128,7 +128,7 @@ namespace TriAxis.RunSharp
 
 		public AttributeGen<AssemblyGen> BeginAttribute(AttributeType type, params object[] args)
 		{
-			return AttributeGen<AssemblyGen>.CreateAndAdd(this, ref _assemblyAttributes, AttributeTargets.Assembly, type, args);
+			return AttributeGen<AssemblyGen>.CreateAndAdd(this, ref _assemblyAttributes, AttributeTargets.Assembly, type, args, TypeMapper);
 		}
 
 		public AssemblyGen ModuleAttribute(AttributeType type)
@@ -150,7 +150,7 @@ namespace TriAxis.RunSharp
 
 		public AttributeGen<AssemblyGen> BeginModuleAttribute(AttributeType type, params object[] args)
 		{
-			return AttributeGen<AssemblyGen>.CreateAndAdd(this, ref _moduleAttributes, AttributeTargets.Module, type, args);
+			return AttributeGen<AssemblyGen>.CreateAndAdd(this, ref _moduleAttributes, AttributeTargets.Module, type, args, TypeMapper);
 		}
 
 		#endregion
@@ -168,7 +168,7 @@ namespace TriAxis.RunSharp
 
 		public TypeGen Class(string name, Type baseType, params Type[] interfaces)
 		{
-			TypeGen tg = new TypeGen(this, Qualify(name), (_attrs | TypeAttributes.Class) ^ TypeAttributes.BeforeFieldInit, baseType, interfaces);
+			TypeGen tg = new TypeGen(this, Qualify(name), (_attrs | TypeAttributes.Class) ^ TypeAttributes.BeforeFieldInit, baseType, interfaces, TypeMapper);
 			_attrs = 0;
 			return tg;
 		}
@@ -180,7 +180,7 @@ namespace TriAxis.RunSharp
 
 		public TypeGen Struct(string name, params Type[] interfaces)
 		{
-			TypeGen tg = new TypeGen(this, Qualify(name), (_attrs | TypeAttributes.Sealed | TypeAttributes.SequentialLayout) ^ TypeAttributes.BeforeFieldInit, TypeMapper.MapType(typeof(ValueType)), interfaces);
+			TypeGen tg = new TypeGen(this, Qualify(name), (_attrs | TypeAttributes.Sealed | TypeAttributes.SequentialLayout) ^ TypeAttributes.BeforeFieldInit, TypeMapper.MapType(typeof(ValueType)), interfaces, TypeMapper);
 			_attrs = 0;
 			return tg;
 		}
@@ -192,7 +192,7 @@ namespace TriAxis.RunSharp
 
 		public TypeGen Interface(string name, params Type[] interfaces)
 		{
-			TypeGen tg = new TypeGen(this, Qualify(name), (_attrs | TypeAttributes.Interface | TypeAttributes.Abstract) & ~(TypeAttributes.Sealed | TypeAttributes.BeforeFieldInit), null, interfaces);
+			TypeGen tg = new TypeGen(this, Qualify(name), (_attrs | TypeAttributes.Interface | TypeAttributes.Abstract) & ~(TypeAttributes.Sealed | TypeAttributes.BeforeFieldInit), null, interfaces, TypeMapper);
 			_attrs = 0;
 			return tg;
 		}
@@ -221,7 +221,7 @@ namespace TriAxis.RunSharp
         {
             Initialize(domain, name, AssemblyBuilderAccess.Run, options, typeMapper);
         }
-        
+
 #else
         public AssemblyGen(Universe universe, string assemblyName, CompilerOptions options, ITypeMapper typeMapper)
 	    {
@@ -252,7 +252,6 @@ namespace TriAxis.RunSharp
 #else
                 typeMapper = new TypeMapper();
 #endif
-
             bool save = (access & AssemblyBuilderAccess.Save) != 0;
             string path = options.OutputPath;
             if (path == null && save) throw new ArgumentNullException("options.OutputPath");

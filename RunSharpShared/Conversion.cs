@@ -45,6 +45,8 @@ namespace TriAxis.RunSharp
 
 	abstract class Conversion
 	{
+	    readonly ITypeMapper _typeMapper;
+
 		public abstract void Emit(CodeGen g, Type from, Type to);
 		public virtual bool IsAmbiguous => false;
 	    public virtual bool IsValid => true;
@@ -77,13 +79,21 @@ namespace TriAxis.RunSharp
 			/* ST */ new byte[] { X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, D },
 		};
 
-		delegate Conversion ConversionProvider(Operand op, Type to, bool onlyStandard);
+	    protected Conversion(ITypeMapper typeMapper)
+	    {
+	        _typeMapper = typeMapper;
+	    }
+
+	    delegate Conversion ConversionProvider(Operand op, Type to, bool onlyStandard, ITypeMapper typeMapper);
 
 		#region Conversions
 		sealed class Direct : Conversion
 		{
-			public static readonly Direct Instance = new Direct();
-
+		    public Direct(ITypeMapper typeMapper)
+		        : base(typeMapper)
+		    {
+		    }
+            
 			public override void Emit(CodeGen g, Type from, Type to)
 			{
 			}
@@ -91,9 +101,12 @@ namespace TriAxis.RunSharp
 
 		sealed class Primitive : Conversion
 		{
-			public static readonly Primitive Instance = new Primitive();
+		    public Primitive(ITypeMapper typeMapper)
+		        : base(typeMapper)
+		    {
+		    }
 
-			public override void Emit(CodeGen g, Type from, Type to)
+		    public override void Emit(CodeGen g, Type from, Type to)
 			{
 				g.EmitConvHelper(Type.GetTypeCode(to));
 			}
@@ -101,9 +114,12 @@ namespace TriAxis.RunSharp
 
 		sealed class Boxing : Conversion
 		{
-			public static readonly Boxing Instance = new Boxing();
+		    public Boxing(ITypeMapper typeMapper)
+		        : base(typeMapper)
+		    {
+		    }
 
-			public override void Emit(CodeGen g, Type from, Type to)
+		    public override void Emit(CodeGen g, Type from, Type to)
 			{
 				g.IL.Emit(OpCodes.Box, from);
 			}
@@ -111,9 +127,12 @@ namespace TriAxis.RunSharp
 
 		sealed class Unboxing : Conversion
 		{
-			public static readonly Unboxing Instance = new Unboxing();
+		    public Unboxing(ITypeMapper typeMapper)
+		        : base(typeMapper)
+		    {
+		    }
 
-			public override void Emit(CodeGen g, Type from, Type to)
+		    public override void Emit(CodeGen g, Type from, Type to)
 			{
 				g.IL.Emit(OpCodes.Unbox_Any, to);
 			}
@@ -121,7 +140,10 @@ namespace TriAxis.RunSharp
 
 		sealed class Cast : Conversion
 		{
-			public static readonly Cast Instance = new Cast();
+		    public Cast(ITypeMapper typeMapper)
+		        : base(typeMapper)
+		    {
+		    }
 
 			public override void Emit(CodeGen g, Type from, Type to)
 			{
@@ -131,9 +153,12 @@ namespace TriAxis.RunSharp
 
 		class Invalid : Conversion
 		{
-			public static readonly Invalid Instance = new Invalid();
+		    public Invalid(ITypeMapper typeMapper)
+		        : base(typeMapper)
+		    {
+		    }
 
-			public override void Emit(CodeGen g, Type from, Type to)
+		    public override void Emit(CodeGen g, Type from, Type to)
 			{
 				throw new InvalidCastException(string.Format(null, Properties.Messages.ErrInvalidConversion, from == null ? "<null>" : from.FullName, to.FullName));
 			}
@@ -143,9 +168,12 @@ namespace TriAxis.RunSharp
 
 		class Ambiguous : Conversion
 		{
-			public static readonly Ambiguous Instance = new Ambiguous();
+		    public Ambiguous(ITypeMapper typeMapper)
+		        : base(typeMapper)
+		    {
+		    }
 
-			public override void Emit(CodeGen g, Type from, Type to)
+		    public override void Emit(CodeGen g, Type from, Type to)
 			{
 				throw new AmbiguousMatchException(string.Format(null, Properties.Messages.ErrAmbiguousConversion, from.FullName, to.FullName));
 			}
@@ -164,7 +192,8 @@ namespace TriAxis.RunSharp
 		    readonly Type _toType;
 		    bool _sxSubset, _txSubset;
 
-			public UserDefined(Conversion before, IMemberInfo method, Conversion after)
+			public UserDefined(Conversion before, IMemberInfo method, Conversion after, ITypeMapper typeMapper)
+			    : base(typeMapper)
 			{
 				_before = before;
 				_method = method;
@@ -180,7 +209,7 @@ namespace TriAxis.RunSharp
 				_after.Emit(g, _toType, to);
 			}
 
-			public static Conversion FindImplicit(List<UserDefined> collection, Type from, Type to)
+			public static Conversion FindImplicit(List<UserDefined> collection, Type @from, Type to, ITypeMapper typeMapper)
 			{
 				Type sx = null, tx = null;
 				bool any = false;
@@ -196,7 +225,7 @@ namespace TriAxis.RunSharp
 				}
 
 				if (!any)
-					return Invalid.Instance;
+					return new Invalid(typeMapper);
 
 				if (sx == null || tx == null)
 				{
@@ -211,10 +240,10 @@ namespace TriAxis.RunSharp
 							if (udc2 == udc)
 								continue;
 
-							if (sxMatch && GetImplicit(udc._fromType, udc2._fromType, true) == null)
+							if (sxMatch && GetImplicit(udc._fromType, udc2._fromType, true, typeMapper) == null)
 								sxMatch = false;
 
-							if (txMatch && GetImplicit(udc2._toType, udc._toType, true) == null)
+							if (txMatch && GetImplicit(udc2._toType, udc._toType, true, typeMapper) == null)
 								txMatch = false;
 
 							if (!(sxMatch || txMatch))
@@ -232,7 +261,7 @@ namespace TriAxis.RunSharp
 				}
 
 				if (sx == null || tx == null)
-					return Ambiguous.Instance;
+					return new Ambiguous(typeMapper);
 
 				UserDefined match = null;
 
@@ -242,19 +271,19 @@ namespace TriAxis.RunSharp
 					if (udc._fromType == sx && udc._toType == tx)
 					{
 						if (match != null)
-							return Ambiguous.Instance;	// ambiguous match
+							return new Ambiguous(typeMapper);	// ambiguous match
 						else
 							match = udc;
 					}
 				}
 
 				if (match == null)
-					return Ambiguous.Instance;
+					return new Ambiguous(typeMapper);
 
 				return match;
 			}
 
-			public static Conversion FindExplicit(List<UserDefined> collection, Type from, Type to)
+			public static Conversion FindExplicit(List<UserDefined> collection, Type @from, Type to, ITypeMapper typeMapper)
 			{
 				Type sx = null, tx = null;
 				bool sxSubset = false, txSubset = false;
@@ -270,14 +299,14 @@ namespace TriAxis.RunSharp
 					if (tx == null && udc._toType == to)
 						tx = to;
 
-					if (udc._sxSubset = GetImplicit(from, udc._fromType, true) != null)
+					if (udc._sxSubset = GetImplicit(@from, udc._fromType, true, typeMapper) != null)
 						sxSubset = true;
-					if (udc._txSubset = GetImplicit(udc._toType, to, true) != null)
+					if (udc._txSubset = GetImplicit(udc._toType, to, true, typeMapper) != null)
 						txSubset = true;
 				}
 
 				if (!any)
-					return Invalid.Instance;
+					return new Invalid(typeMapper);
 
 				if (sx == null || tx == null)
 				{
@@ -300,12 +329,12 @@ namespace TriAxis.RunSharp
 							{
 								if (sxSubset)
 								{
-									if (udc._sxSubset && GetImplicit(udc._fromType, udc2._fromType, true) == null)
+									if (udc._sxSubset && GetImplicit(udc._fromType, udc2._fromType, true, typeMapper) == null)
 										sxMatch = false;
 								}
 								else
 								{
-									if (GetImplicit(udc2._fromType, udc._fromType, true) == null)
+									if (GetImplicit(udc2._fromType, udc._fromType, true, typeMapper) == null)
 										sxMatch = false;
 								}
 							}
@@ -314,12 +343,12 @@ namespace TriAxis.RunSharp
 							{
 								if (txSubset)
 								{
-									if (udc._txSubset && GetImplicit(udc2._toType, udc._toType, true) == null)
+									if (udc._txSubset && GetImplicit(udc2._toType, udc._toType, true, typeMapper) == null)
 										txMatch = false;
 								}
 								else
 								{
-									if (GetImplicit(udc._toType, udc2._toType, true) == null)
+									if (GetImplicit(udc._toType, udc2._toType, true, typeMapper) == null)
 										txMatch = false;
 								}
 							}
@@ -339,7 +368,7 @@ namespace TriAxis.RunSharp
 				}
 
 				if (sx == null || tx == null)
-					return Ambiguous.Instance;
+					return new Ambiguous(typeMapper);
 
 				UserDefined match = null;
 
@@ -349,14 +378,14 @@ namespace TriAxis.RunSharp
 					if (udc._fromType == sx && udc._toType == tx)
 					{
 						if (match != null)
-							return Ambiguous.Instance;	// ambiguous match
+							return new Ambiguous(typeMapper);	// ambiguous match
 						else
 							match = udc;
 					}
 				}
 
 				if (match == null)
-					return Ambiguous.Instance;
+					return new Ambiguous(typeMapper);
 				
 				return match;
 			}
@@ -370,18 +399,18 @@ namespace TriAxis.RunSharp
 			public override Type Type { get; }
 		}
         
-	    public static Conversion GetImplicit(Type from, Type to, bool onlyStandard)
+	    public static Conversion GetImplicit(Type @from, Type to, bool onlyStandard, ITypeMapper typeMapper)
 		{
-			return GetImplicit(new FakeTypedOperand(from), to, onlyStandard);
+			return GetImplicit(new FakeTypedOperand(@from), to, onlyStandard, typeMapper);
 		}
 
 		// the sections mentioned in comments of this method are from C# specification v1.2
-		public static Conversion GetImplicit(Operand op, Type to, bool onlyStandard)
+		public static Conversion GetImplicit(Operand op, Type to, bool onlyStandard, ITypeMapper typeMapper)
 		{
 			Type from = Operand.GetType(op);
 
 			if (to.Equals(from))
-				return Direct.Instance;
+				return new Direct(typeMapper);
 
 			// required for arrays created from TypeBuilder-s
 			if (from != null && to.IsArray && from.IsArray)
@@ -389,7 +418,7 @@ namespace TriAxis.RunSharp
 				if (to.GetArrayRank() == from.GetArrayRank())
 				{
 					if (to.GetElementType().Equals(from.GetElementType()))
-						return Direct.Instance;
+						return new Direct(typeMapper);
 				}
 			}
 
@@ -406,7 +435,7 @@ namespace TriAxis.RunSharp
 						// decimal is handled as user-defined conversion, but as it is a standard one, always enable UDC processing
 						onlyStandard = false;
 					else
-						return Primitive.Instance;
+						return new Primitive(typeMapper);
 				}
 			}
 
@@ -414,26 +443,26 @@ namespace TriAxis.RunSharp
 
 			// section 6.1.3 - Implicit enumeration conversions
 			if (!onlyStandard && to.IsEnum && (object)intLit != null && intLit.Value == 0)
-				return Primitive.Instance;
+				return new Primitive(typeMapper);
 
 			// section 6.1.4 - Implicit reference conversions
 			if ((from == null || !from.IsValueType) && !to.IsValueType)
 			{
 				if (from == null) // from the null type to any reference type
-					return Direct.Instance;
+					return new Direct(typeMapper);
 
 				if (to.IsAssignableFrom(from))	// the rest
-					return Direct.Instance;
+					return new Direct(typeMapper);
 			}
 
 			if (from == null)	// no other conversion from null type is possible
-				return Invalid.Instance;
+				return new Invalid(typeMapper);
 
 			// section 6.1.5 - Boxing conversions
 			if (from.IsValueType)
 			{
 				if (to.IsAssignableFrom(from))
-					return Boxing.Instance;
+					return new Boxing(typeMapper);
 			}
 
 			// section 6.1.6 - Implicit constant expression conversions
@@ -445,59 +474,59 @@ namespace TriAxis.RunSharp
 				{
 					case TypeCode.SByte:
 						if (val >= sbyte.MinValue && val <= sbyte.MaxValue)
-							return Direct.Instance;
+							return new Direct(typeMapper);
 						break;
 					case TypeCode.Byte:
 						if (val >= byte.MinValue && val <= byte.MaxValue)
-							return Direct.Instance;
-						break;
+                            return new Direct(typeMapper);
+                        break;
 					case TypeCode.Int16:
 						if (val >= short.MinValue && val <= short.MaxValue)
-							return Direct.Instance;
-						break;
+                            return new Direct(typeMapper);
+                        break;
 					case TypeCode.UInt16:
 						if (val >= ushort.MinValue && val <= ushort.MaxValue)
-							return Direct.Instance;
-						break;
+                            return new Direct(typeMapper);
+                        break;
 					case TypeCode.UInt32:
 						if (val >= 0)
-							return Direct.Instance;
-						break;
+                            return new Direct(typeMapper);
+                        break;
 					case TypeCode.UInt64:
 						if (val >= 0)
-							return Primitive.Instance;
-						break;
+                            return new Direct(typeMapper);
+                        break;
 				}
 			}
 			if (Helpers.AreTypesEqual(from, typeof(long)))
 			{
 				LongLiteral longLit = op as LongLiteral;
 				if ((object)longLit != null && longLit.Value > 0)
-					return Direct.Instance;
+					return new Direct(typeMapper);
 			}
 
 			// section 6.1.7 - User-defined implicit conversions (details in section 6.4.3)
 			if (onlyStandard || Helpers.AreTypesEqual(from, typeof(object)) || Helpers.AreTypesEqual(to, typeof(object)) || from.IsInterface || to.IsInterface ||
 				to.IsSubclassOf(from) || from.IsSubclassOf(to))
-				return Invalid.Instance;	// skip not-permitted conversion attempts (section 6.4.1)
+                return new Invalid(typeMapper);  // skip not-permitted conversion attempts (section 6.4.1)
 
-			List<UserDefined> candidates = null;
-			FindCandidates(ref candidates, FindImplicitMethods(from, to), op, to, GetImplicit);
+            List<UserDefined> candidates = null;
+			FindCandidates(ref candidates, FindImplicitMethods(from, to, typeMapper), op, to, GetImplicit, typeMapper);
 
 			if (candidates == null)
-				return Invalid.Instance;
+                return new Invalid(typeMapper);
 
-			if (candidates.Count == 1)
+            if (candidates.Count == 1)
 				return candidates[0];
 
-			return UserDefined.FindImplicit(candidates, from, to);
+			return UserDefined.FindImplicit(candidates, @from, to, typeMapper);
 		}
 
-		static IEnumerable<IMemberInfo> FindImplicitMethods(Type from, Type to)
+		static IEnumerable<IMemberInfo> FindImplicitMethods(Type from, Type to, ITypeMapper typeMapper)
 		{
 			while (from != null)
 			{
-				foreach (IMemberInfo mi in TypeInfo.GetMethods(from))
+				foreach (IMemberInfo mi in typeMapper.TypeInfo.GetMethods(from))
 				{
 					if (mi.IsStatic && mi.Name.Equals("op_Implicit", StringComparison.OrdinalIgnoreCase) && mi.ParameterTypes.Length == 1)
 						yield return mi;
@@ -506,36 +535,36 @@ namespace TriAxis.RunSharp
 				from = from.BaseType;
 			}
 
-			foreach (IMemberInfo mi in TypeInfo.GetMethods(to))
+			foreach (IMemberInfo mi in typeMapper.TypeInfo.GetMethods(to))
 			{
 				if (mi.IsStatic && mi.Name.Equals("op_Implicit", StringComparison.OrdinalIgnoreCase) && mi.ParameterTypes.Length == 1)
 					yield return mi;
 			}
 		}
 
-		static void FindCandidates(ref List<UserDefined> candidates, IEnumerable<IMemberInfo> methods, Operand from, Type to, ConversionProvider extraConv)
+		static void FindCandidates(ref List<UserDefined> candidates, IEnumerable<IMemberInfo> methods, Operand from, Type to, ConversionProvider extraConv, ITypeMapper typeMapper)
 		{
 			foreach (IMemberInfo mi in methods)
 			{
-				Conversion before = extraConv(from, mi.ParameterTypes[0], true);
+				Conversion before = extraConv(from, mi.ParameterTypes[0], true, typeMapper);
 				if (!before.IsValid)
 					continue;
 
-				Conversion after = extraConv(new FakeTypedOperand(mi.ReturnType), to, true);
+				Conversion after = extraConv(new FakeTypedOperand(mi.ReturnType), to, true, typeMapper);
 				if (!after.IsValid)
 					continue;
 
 				if (candidates == null)
 					candidates = new List<UserDefined>();
 
-				candidates.Add(new UserDefined(before, mi, after));
+				candidates.Add(new UserDefined(before, mi, after, typeMapper));
 			}
 		}
 
-		public static Conversion GetExplicit(Operand op, Type to, bool onlyStandard)
+		public static Conversion GetExplicit(Operand op, Type to, bool onlyStandard, ITypeMapper typeMapper)
 		{
 			// try implicit
-			Conversion conv = GetImplicit(op, to, onlyStandard);
+			Conversion conv = GetImplicit(op, to, onlyStandard, typeMapper);
 			if (conv.IsValid)
 				return conv;
 
@@ -544,8 +573,8 @@ namespace TriAxis.RunSharp
 			// section 6.3.2 - Standard explicit conversions
 			if (onlyStandard)
 			{
-				if (from == null || !GetImplicit(to, from, true).IsValid)
-					return Invalid.Instance;
+				if (from == null || !GetImplicit(to, @from, true, typeMapper).IsValid)
+					return new Invalid(typeMapper);
 			}
 
 			TypeCode tcFrom = Type.GetTypeCode(from);
@@ -556,7 +585,7 @@ namespace TriAxis.RunSharp
 			if ((from.IsPrimitive || from.IsEnum || Helpers.AreTypesEqual(from, typeof(decimal))) && (to.IsPrimitive || to.IsEnum || Helpers.AreTypesEqual(to, typeof(decimal))))
 			{
 				if (ct == D)
-					return Direct.Instance;	// this can happen for conversions involving enum-s
+					return new Direct(typeMapper);	// this can happen for conversions involving enum-s
 
 				if (ct <= E)
 				{
@@ -564,7 +593,7 @@ namespace TriAxis.RunSharp
 						// decimal is handled as user-defined conversion, but as it is a standard one, always enable UDC processing
 						onlyStandard = false;
 					else
-						return Primitive.Instance;
+                        return new Direct(typeMapper);
 				}
 			}
 
@@ -573,14 +602,14 @@ namespace TriAxis.RunSharp
 				to.IsSubclassOf(from) || from.IsSubclassOf(to)))
 			{
 				List<UserDefined> candidates = null;
-				FindCandidates(ref candidates, FindExplicitMethods(from, to), op, to, GetExplicit);
+				FindCandidates(ref candidates, FindExplicitMethods(from, to, typeMapper), op, to, GetExplicit, typeMapper);
 
 				if (candidates != null)
 				{
 					if (candidates.Count == 1)
 						return candidates[0];
 
-					return UserDefined.FindExplicit(candidates, from, to);
+					return UserDefined.FindExplicit(candidates, @from, to, typeMapper);
 				}
 			}
 
@@ -589,19 +618,19 @@ namespace TriAxis.RunSharp
 			if (!from.IsValueType && from.IsAssignableFrom(to))
 			{
 				if (to.IsValueType)
-					return Unboxing.Instance;
+					return new Unboxing(typeMapper);
 				else
-					return Cast.Instance;
+					return new Cast(typeMapper);
 			}
 
-			return Invalid.Instance;
+			return new Invalid(typeMapper);
 		}
 
-		static IEnumerable<IMemberInfo> FindExplicitMethods(Type from, Type to)
+		static IEnumerable<IMemberInfo> FindExplicitMethods(Type from, Type to, ITypeMapper typeMapper)
 		{
 			while (from != null)
 			{
-				foreach (IMemberInfo mi in TypeInfo.GetMethods(from))
+				foreach (IMemberInfo mi in typeMapper.TypeInfo.GetMethods(from))
 				{
 					if (mi.IsStatic &&
 						(mi.Name.Equals("op_Implicit", StringComparison.OrdinalIgnoreCase) || 
@@ -615,7 +644,7 @@ namespace TriAxis.RunSharp
 
 			while (to != null)
 			{
-				foreach (IMemberInfo mi in TypeInfo.GetMethods(to))
+				foreach (IMemberInfo mi in typeMapper.TypeInfo.GetMethods(to))
 				{
 					if (mi.IsStatic &&
 						(mi.Name.Equals("op_Implicit", StringComparison.OrdinalIgnoreCase) ||

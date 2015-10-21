@@ -43,7 +43,7 @@ namespace TriAxis.RunSharp
 {
     using Operands;
 
-    interface IMemberInfo
+    public interface IMemberInfo
     {
         MemberInfo Member { get; }
         string Name { get; }
@@ -54,7 +54,7 @@ namespace TriAxis.RunSharp
         bool IsOverride { get; }
     }
 
-    interface ITypeInfoProvider
+    public interface ITypeInfoProvider
     {
         IEnumerable<IMemberInfo> GetConstructors();
         IEnumerable<IMemberInfo> GetFields();
@@ -64,7 +64,7 @@ namespace TriAxis.RunSharp
         string DefaultMember { get; }
     }
 
-    class TypeInfo : ITypeInfo
+    public class TypeInfo : ITypeInfo
     {
         readonly Dictionary<Type, ITypeInfoProvider> _providers = new Dictionary<Type, ITypeInfoProvider>();
         readonly Dictionary<Type, WeakReference> _cache = new Dictionary<Type, WeakReference>();
@@ -319,7 +319,7 @@ namespace TriAxis.RunSharp
 
         public ApplicableFunction FindConstructor(Type t, Operand[] args)
         {
-            ApplicableFunction ctor = OverloadResolver.Resolve(GetConstructors(t), args);
+            ApplicableFunction ctor = OverloadResolver.Resolve(GetConstructors(t), TypeMapper, args);
 
             if (ctor == null)
                 throw new MissingMemberException(Properties.Messages.ErrMissingConstructor);
@@ -357,7 +357,7 @@ namespace TriAxis.RunSharp
 
             foreach (Type type in SearchableTypes(t))
             {
-                ApplicableFunction af = OverloadResolver.Resolve(Filter(GetProperties(type), name, false, @static, false), indexes);
+                ApplicableFunction af = OverloadResolver.Resolve(Filter(GetProperties(type), name, false, @static, false), TypeMapper, indexes);
 
                 if (af != null)
                     return af;
@@ -431,7 +431,7 @@ namespace TriAxis.RunSharp
         {
             foreach (Type type in SearchableTypes(t))
             {
-                ApplicableFunction af = OverloadResolver.Resolve(Filter(GetMethods(type), name, false, @static, false), args);
+                ApplicableFunction af = OverloadResolver.Resolve(Filter(GetMethods(type), name, false, @static, false), TypeMapper, args);
 
                 if (af != null)
                     return af;

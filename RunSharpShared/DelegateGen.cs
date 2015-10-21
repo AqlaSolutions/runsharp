@@ -52,7 +52,7 @@ namespace TriAxis.RunSharp
 	    public ITypeMapper TypeMapper => _owner != null ? _owner.TypeMapper : _owner2.TypeMapper;
 
 	    public DelegateGen(AssemblyGen owner, string name, Type returnType, TypeAttributes attrs)
-			: base(returnType)
+			: base(returnType, owner.TypeMapper)
 		{
 			_owner = owner;
 			_name = name;
@@ -60,7 +60,7 @@ namespace TriAxis.RunSharp
 		}
 
         public DelegateGen(TypeGen typeGen, string name, Type returnType, TypeAttributes typeAttributes)
-            : base(returnType)
+            : base(returnType, typeGen.TypeMapper)
         {
             _owner2 = typeGen;
             _name = name;
@@ -105,7 +105,7 @@ namespace TriAxis.RunSharp
 
 		public AttributeGen<DelegateGen> BeginAttribute(AttributeType type, params object[] args)
 		{
-			return AttributeGen<DelegateGen>.CreateAndAdd(this, ref _customAttributes, AttributeTargets.Delegate, type, args);
+			return AttributeGen<DelegateGen>.CreateAndAdd(this, ref _customAttributes, AttributeTargets.Delegate, type, args, TypeMapper);
 		}
 
 #endregion
@@ -115,11 +115,11 @@ namespace TriAxis.RunSharp
             TypeGen tg;
             if (_owner == null)
             {
-                tg = new TypeGen(_owner2, _name, _attrs, _owner2.TypeMapper.MapType(typeof(MulticastDelegate)), Type.EmptyTypes);
+                tg = new TypeGen(_owner2, _name, _attrs, _owner2.TypeMapper.MapType(typeof(MulticastDelegate)), Type.EmptyTypes, TypeMapper);
             }
             else
             {
-                tg = new TypeGen(_owner, _name, _attrs, _owner.TypeMapper.MapType(typeof(MulticastDelegate)), Type.EmptyTypes);
+                tg = new TypeGen(_owner, _name, _attrs, _owner.TypeMapper.MapType(typeof(MulticastDelegate)), Type.EmptyTypes, TypeMapper);
             }
 
 			ConstructorBuilder cb = tg.Public.RuntimeImpl.Constructor()

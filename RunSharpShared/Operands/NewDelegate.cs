@@ -44,23 +44,23 @@ namespace TriAxis.RunSharp.Operands
 	class NewDelegate : Operand
 	{
 	    readonly Type _delegateType;
+	    readonly ITypeMapper _typeMapper;
 	    readonly Operand _target;
 		MethodInfo _method;
 		ConstructorInfo _delegateConstructor;
-	    ITypeInfo _typeInfo;
-
-		public NewDelegate(Type delegateType, Type targetType, string methodName, ITypeInfo typeInfo)
-		{
+	    
+		public NewDelegate(Type delegateType, Type targetType, string methodName, ITypeMapper typeMapper)
+        {
 			_delegateType = delegateType;
-		    _typeInfo = typeInfo;
+		    _typeMapper = typeMapper;
 		    Initialize(targetType, methodName);
 		}
 
-		public NewDelegate(Type delegateType, Operand target, string methodName, ITypeInfo typeInfo)
+		public NewDelegate(Type delegateType, Operand target, string methodName, ITypeMapper typeMapper)
 		{
 			_delegateType = delegateType;
 			_target = target;
-		    _typeInfo = typeInfo;
+		    _typeMapper = typeMapper;
 		    Initialize(target.Type, methodName);
 		}
 
@@ -71,7 +71,7 @@ namespace TriAxis.RunSharp.Operands
 
 			IMemberInfo delegateInvocationMethod = null;
 
-			foreach (IMemberInfo mi in TypeInfo.GetMethods(_delegateType))
+			foreach (IMemberInfo mi in _typeMapper.TypeInfo.GetMethods(_delegateType))
 			{
 				if (mi.Name == "Invoke")
 				{
@@ -85,7 +85,7 @@ namespace TriAxis.RunSharp.Operands
 			if (delegateInvocationMethod == null)
 				throw new ArgumentException(Properties.Messages.ErrInvalidDelegateType, "delegateType");
 
-			foreach (IMemberInfo mi in TypeInfo.GetConstructors(_delegateType))
+			foreach (IMemberInfo mi in _typeMapper.TypeInfo.GetConstructors(_delegateType))
 			{
 				if (mi.IsStatic)
 					continue;
@@ -109,7 +109,7 @@ namespace TriAxis.RunSharp.Operands
 
 			for ( ; targetType != null; targetType = targetType.BaseType)
 			{
-				foreach (IMemberInfo mi in TypeInfo.Filter(TypeInfo.GetMethods(targetType), methodName, false, (object)_target == null, false))
+				foreach (IMemberInfo mi in _typeMapper.TypeInfo.Filter(_typeMapper.TypeInfo.GetMethods(targetType), methodName, false, (object)_target == null, false))
 				{
 					if (mi.ReturnType == retType && ArrayUtils.Equals(mi.ParameterTypes, parameterTypes))
 					{

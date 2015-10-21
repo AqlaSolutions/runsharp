@@ -33,7 +33,8 @@ namespace TriAxis.RunSharp.Examples
 		// example based on the MSDN Collection Classes Sample (tokens2.cs)
 		public static void GenTokens2(AssemblyGen ag)
 		{
-			TypeGen Tokens = ag.Public.Class("Tokens", typeof(object), typeof(IEnumerable));
+            ITypeMapper m = ag.TypeMapper;
+            TypeGen Tokens = ag.Public.Class("Tokens", typeof(object), typeof(IEnumerable));
 			{
 				FieldGen elements = Tokens.Private.Field(typeof(string[]), "elements");
 
@@ -41,8 +42,8 @@ namespace TriAxis.RunSharp.Examples
 					.Parameter(typeof(string), "source")
 					.Parameter(typeof(char[]), "delimiters")
 					;
-				{
-					g.Assign(elements, g.Arg("source").Invoke("Split", g.Arg("delimiters")));
+			    {
+					g.Assign(elements, g.Arg("source").Invoke("Split", m, g.Arg("delimiters")));
 				}
 
 				// Inner class implements IEnumerator interface:
@@ -59,7 +60,7 @@ namespace TriAxis.RunSharp.Examples
 
 					g = TokenEnumerator.Public.Method(typeof(bool), "MoveNext");
 					{
-						g.If(position < t.Field("elements").ArrayLength() - 1);
+						g.If(position < t.Field("elements", m).ArrayLength() - 1);
 						{
 							g.Increment(position);
 							g.Return(true);
@@ -79,13 +80,13 @@ namespace TriAxis.RunSharp.Examples
 					// non-IEnumerator version: type-safe
 					g = TokenEnumerator.Public.Property(typeof(string), "Current").Getter();
 					{
-						g.Return(t.Field("elements")[position]);
+						g.Return(t.Field("elements", m)[m, position]);
 					}
 
 					// IEnumerator version: returns object
 					g = TokenEnumerator.Public.PropertyImplementation(typeof(IEnumerator), typeof(object), "Current").Getter();
 					{
-						g.Return(t.Field("elements")[position]);
+						g.Return(t.Field("elements", m)[m, position]);
 					}
 				}
 
@@ -94,20 +95,20 @@ namespace TriAxis.RunSharp.Examples
 				// non-IEnumerable version
 				g = Tokens.Public.Method(TokenEnumerator, "GetEnumerator");
 				{
-					g.Return(Exp.New(TokenEnumerator, g.This()));
+					g.Return(Exp.New(TokenEnumerator, m, g.This()));
 				}
 
 				// IEnumerable version
 				g = Tokens.Public.MethodImplementation(typeof(IEnumerable), typeof(IEnumerator), "GetEnumerator");
 				{
-					g.Return(Exp.New(TokenEnumerator, g.This()).Cast(typeof(IEnumerator)));
+					g.Return(Exp.New(TokenEnumerator, m, g.This()).Cast(typeof(IEnumerator)));
 				}
 
 				// Test Tokens, TokenEnumerator
 
 				g = Tokens.Static.Method(typeof(void), "Main");
 				{
-					Operand f = g.Local(Exp.New(Tokens, "This is a well-done program.",
+					Operand f = g.Local(Exp.New(Tokens, m, "This is a well-done program.",
 						Exp.NewInitializedArray(typeof(char), ' ', '-')));
 					Operand item = g.ForEach(typeof(string), f);	// try changing string to int
 					{

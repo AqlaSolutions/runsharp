@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 #if FEAT_IKVM
 using IKVM.Reflection;
@@ -86,7 +87,7 @@ namespace TriAxis.RunSharp
 
 		public AttributeGen<FieldGen> BeginAttribute(AttributeType type, params object[] args)
 		{
-			return AttributeGen<FieldGen>.CreateAndAdd(this, ref _customAttributes, AttributeTargets.Field, type, args);
+			return AttributeGen<FieldGen>.CreateAndAdd(this, ref _customAttributes, AttributeTargets.Field, type, args, _owner.TypeMapper);
 		}
 
 		#endregion

@@ -46,7 +46,8 @@ namespace TriAxis.RunSharp.Examples
 		[TestArguments("arg1", "arg2", "arg3", "arg4")]
 		public static void GenHello3(AssemblyGen ag)
 		{
-			TypeGen Hello3 = ag.Public.Class("Hello3");
+            ITypeMapper m = ag.TypeMapper;
+            TypeGen Hello3 = ag.Public.Class("Hello3");
 			{
 				CodeGen g = Hello3.Public.Static.Method(typeof(void), "Main").Parameter(typeof(string[]), "args");
 				{
@@ -56,10 +57,10 @@ namespace TriAxis.RunSharp.Examples
 						args.ArrayLength());
 					Operand i = g.Local();
 					g.For(i.Assign(0), i < args.ArrayLength(), i.Increment());
-					{
-						g.WriteLine("{0}", args[i]);
-					}
-					g.End();
+				    {
+				        g.WriteLine("{0}", args[m, i]);
+				    }
+				    g.End();
 				}
 			}
 		}

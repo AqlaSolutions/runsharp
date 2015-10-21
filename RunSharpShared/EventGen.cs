@@ -186,7 +186,7 @@ namespace TriAxis.RunSharp
 
 		public AttributeGen<EventGen> BeginAttribute(AttributeType type, params object[] args)
 		{
-			return AttributeGen<EventGen>.CreateAndAdd(this, ref _customAttributes, AttributeTargets.Event, type, args);
+			return AttributeGen<EventGen>.CreateAndAdd(this, ref _customAttributes, AttributeTargets.Event, type, args, _owner.TypeMapper);
 		}
 
 		#endregion

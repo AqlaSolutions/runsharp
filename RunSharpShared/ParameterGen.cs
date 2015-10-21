@@ -44,7 +44,7 @@ namespace TriAxis.RunSharp
 	{
 		ParameterGenCollection _owner;
 	    internal List<AttributeGen> CustomAttributes;
-
+	    public ITypeMapper TypeMapper => _owner.TypeMapper;
 		internal ParameterGen(ParameterGenCollection owner, int position, Type parameterType, ParameterAttributes attributes, string name, bool va)
 		{
 			_owner = owner;
@@ -82,7 +82,7 @@ namespace TriAxis.RunSharp
 
 		public AttributeGen<ParameterGen> BeginAttribute(AttributeType type, params object[] args)
 		{
-			return AttributeGen<ParameterGen>.CreateAndAdd(this, ref CustomAttributes, Position == 0 ? AttributeTargets.ReturnValue : AttributeTargets.Parameter, type, args);
+			return AttributeGen<ParameterGen>.CreateAndAdd(this, ref CustomAttributes, Position == 0 ? AttributeTargets.ReturnValue : AttributeTargets.Parameter, type, args, TypeMapper);
 		}
 
 		#endregion
@@ -129,7 +129,7 @@ namespace TriAxis.RunSharp
 
 		public new AttributeGen<ParameterGen<TOuterContext>> BeginAttribute(AttributeType type, params object[] args)
 		{
-			return AttributeGen<ParameterGen<TOuterContext>>.CreateAndAdd(this, ref CustomAttributes, AttributeTargets.Delegate, type, args);
+			return AttributeGen<ParameterGen<TOuterContext>>.CreateAndAdd(this, ref CustomAttributes, AttributeTargets.Delegate, type, args, TypeMapper);
 		}
 
 		#endregion
@@ -142,8 +142,14 @@ namespace TriAxis.RunSharp
 
 	class ParameterGenCollection : IList<ParameterGen>
 	{
+        public ITypeMapper TypeMapper { get; }
 		ParameterGen[] _array = EmptyArray<ParameterGen>.Instance;
 		Type[] _typeArray = Type.EmptyTypes;
+
+	    public ParameterGenCollection(ITypeMapper typeMapper)
+	    {
+	        TypeMapper = typeMapper;
+	    }
 
 	    internal void Lock()
 		{

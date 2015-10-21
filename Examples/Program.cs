@@ -166,13 +166,13 @@ namespace TriAxis.RunSharp
             }
 
             // dynamic method examples
-            DynamicMethodExamples();
+            DynamicMethodExamples(new TypeMapper());
         }
 
         #region Dynamic Method examples
-        static void DynamicMethodExamples()
+        static void DynamicMethodExamples(ITypeMapper typeMapper)
         {
-            DynamicMethodGen dmg = DynamicMethodGen.Static(typeof(Program)).Method(typeof(void)).Parameter(typeof(string), "name");
+            DynamicMethodGen dmg = DynamicMethodGen.Static(typeof(Program)).Method(typeof(void), typeMapper).Parameter(typeof(string), "name");
             CodeGen g = dmg.GetCode();
             g.Try();
             {

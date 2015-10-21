@@ -43,22 +43,23 @@ namespace TriAxis.RunSharp.Examples
         [TestArguments("arg1", "arg2", "arg3", "arg4")]
         public static void GenCmdLine2(AssemblyGen ag)
         {
+            ITypeMapper m = ag.TypeMapper;
             TypeGen commandLine3 = ag.Public.Class("CommandLine3");
             {
                 CodeGen g = commandLine3.Public.Method(typeof(void), "Main3").Parameter(typeof(string[]), "args");
                 {
                     Operand args = g.Arg("args");
                     g.WriteLine("Number of command line 3 parameters = {0}",
-                        args.Property("Length"));
+                        args.Property("Length", m));
                     Operand s = g.ForEach(typeof(string), args);
                     {
                         g.WriteLine(s);
                     }
                     g.End();
-                    g.WriteLine(g.This().Invoke("GetType").Property("BaseType").Property("Name"));
+                    g.WriteLine(g.This().Invoke("GetType", m).Property("BaseType", m).Property("Name", m));
 
-                    Operand inst = Static.Field(typeof(CmdLineTestClass), "Default");
-                    g.WriteLine(inst.Invoke("GetValue"));
+                    Operand inst = Static.Field(typeof(CmdLineTestClass), "Default", m);
+                    g.WriteLine(inst.Invoke("GetValue", m));
                     //inst.Field("value").Assign(2);
                     /*g.Assign(inst.Field("value"), 2);
                     g.WriteLine(inst.Invoke("GetValue"));*/
@@ -74,12 +75,12 @@ namespace TriAxis.RunSharp.Examples
                 CodeGen g = commandLine2.Public.Static.Method(typeof(void), "Main").Parameter(typeof(string[]), "args");
                 {
                     //g.Invoke(CommandLine3, "Main3", g.Arg("args"));
-                    Operand cl = g.Local(Exp.New(commandLine3));
+                    Operand cl = g.Local(Exp.New(commandLine3, m));
                     g.WriteLine(0);
                     g.Invoke(cl, "Main3", g.Arg("args"));
                     Operand args = g.Arg("args");
                     g.WriteLine("Number of command line parameters = {0}",
-                        args.Property("Length"));
+                        args.Property("Length", m));
                     Operand s = g.ForEach(typeof(string), args);
                     {
                         g.WriteLine(s);

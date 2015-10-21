@@ -46,7 +46,7 @@ namespace TriAxis.RunSharp
 		List<AttributeGen> _customAttributes;
 
 		protected RoutineGen(TypeGen owner, Type returnType)
-			: base(returnType)
+			: base(returnType, owner.TypeMapper)
 		{
 			OwnerType = Owner = owner;
 
@@ -54,8 +54,8 @@ namespace TriAxis.RunSharp
 				owner.RegisterForCompletion(this);
 		}
 
-		protected RoutineGen(Type ownerType, Type returnType)
-			: base(returnType)
+		protected RoutineGen(Type ownerType, Type returnType, ITypeMapper typeMapper)
+			: base(returnType, typeMapper)
 		{
 			OwnerType = ownerType;
 		}
@@ -128,7 +128,7 @@ namespace TriAxis.RunSharp
 
 		public AttributeGen<T> BeginAttribute(AttributeType type, params object[] args)
 		{
-			return AttributeGen<T>.CreateAndAdd(TypedThis, ref _customAttributes, AttributeTarget, type, args);
+			return AttributeGen<T>.CreateAndAdd(TypedThis, ref _customAttributes, AttributeTarget, type, args, TypeMapper);
 		}
 
 		#endregion

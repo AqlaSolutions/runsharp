@@ -33,10 +33,11 @@ namespace TriAxis.RunSharp.Examples
 		// example based on the MSDN Delegates Sample (bookstore.cs)
 		public static void GenBookstore(AssemblyGen ag)
 		{
-			TypeGen book, processBookDelegate, BookDBLocal;
+		    ITypeMapper m = ag.TypeMapper;
+		    TypeGen book, processBookDelegate, BookDBLocal;
 
-			// A set of classes for handling a bookstore:
-			using (ag.Namespace("Bookstore"))
+		    // A set of classes for handling a bookstore:
+		    using (ag.Namespace("Bookstore"))
 			{
 				// Describes a book in the book list:
 				book = ag.Public.Struct("Book");
@@ -66,7 +67,7 @@ namespace TriAxis.RunSharp.Examples
 				BookDBLocal = ag.Public.Class("BookDB");
 				{
 					// List of all books in the database:
-					FieldGen list = BookDBLocal.Field(typeof(ArrayList), "list", Exp.New(typeof(ArrayList)));
+					FieldGen list = BookDBLocal.Field(typeof(ArrayList), "list", Exp.New(typeof(ArrayList), m));
 
 					// Add a book to the database:
 					CodeGen g = BookDBLocal.Public.Method(typeof(void), "AddBook")
@@ -76,7 +77,7 @@ namespace TriAxis.RunSharp.Examples
 						.Parameter(typeof(bool), "paperBack")
 						;
 					{
-						g.Invoke(list, "Add", Exp.New(book, g.Arg("title"), g.Arg("author"), g.Arg("price"), g.Arg("paperBack")));
+						g.Invoke(list, "Add", Exp.New(book, m, g.Arg("title"), g.Arg("author"), g.Arg("price"), g.Arg("paperBack")));
 					}
 
 					// Call a passed-in delegate on each paperback book to process it: 
@@ -84,7 +85,7 @@ namespace TriAxis.RunSharp.Examples
 					{
 						Operand b = g.ForEach(book, list);
 						{
-							g.If(b.Field("Paperback"));
+							g.If(b.Field("Paperback", m));
 							{
 								g.InvokeDelegate(g.Arg("processBook"), b);
 							}
@@ -107,7 +108,7 @@ namespace TriAxis.RunSharp.Examples
 					CodeGen g = priceTotaller.Internal.Method(typeof(void), "AddBookToTotal").Parameter(book, "book");
 					{
 						g.AssignAdd(countBooks, 1);
-						g.AssignAdd(priceBooks, g.Arg("book").Field("Price"));
+						g.AssignAdd(priceBooks, g.Arg("book").Field("Price", m));
 					}
 
 					g = priceTotaller.Internal.Method(typeof(decimal), "AveragePrice");
@@ -122,7 +123,7 @@ namespace TriAxis.RunSharp.Examples
 					// Print the title of the book.
 					CodeGen g = test.Static.Method(typeof(void), "PrintTitle").Parameter(book, "book");
 					{
-						g.WriteLine("   {0}", g.Arg("book").Field("Title"));
+						g.WriteLine("   {0}", g.Arg("book").Field("Title", m));
 					}
 
 					// Initialize the book database with some test books:
@@ -143,7 +144,7 @@ namespace TriAxis.RunSharp.Examples
 					// Execution starts here.
 					g = test.Public.Static.Method(typeof(void), "Main");
 					{
-						Operand bookDb = g.Local(Exp.New(BookDBLocal));
+						Operand bookDb = g.Local(Exp.New(BookDBLocal, m));
 
 						// Initialize the database with some books:
 						g.Invoke(test, "AddBooks", bookDb);
@@ -152,16 +153,16 @@ namespace TriAxis.RunSharp.Examples
 						g.WriteLine("Paperback Book Titles:");
 						// Create a new delegate object associated with the static 
 						// method Test.PrintTitle:
-						g.Invoke(bookDb, "ProcessPaperbackBooks", Exp.NewDelegate(processBookDelegate, test, "PrintTitle"));
+						g.Invoke(bookDb, "ProcessPaperbackBooks", Exp.NewDelegate(processBookDelegate, test, "PrintTitle", m));
 
 						// Get the average price of a paperback by using
 						// a PriceTotaller object:
-						Operand totaller = g.Local(Exp.New(priceTotaller));
+						Operand totaller = g.Local(Exp.New(priceTotaller, m));
 						// Create a new delegate object associated with the nonstatic 
 						// method AddBookToTotal on the object totaller:
-						g.Invoke(bookDb, "ProcessPaperbackBooks", Exp.NewDelegate(processBookDelegate, totaller, "AddBookToTotal"));
+						g.Invoke(bookDb, "ProcessPaperbackBooks", Exp.NewDelegate(processBookDelegate, totaller, "AddBookToTotal", m));
 						g.WriteLine("Average Paperback Book Price: ${0:#.##}",
-						   totaller.Invoke("AveragePrice"));
+						   totaller.Invoke("AveragePrice", m));
 					}
 				}
 			}
@@ -190,10 +191,10 @@ namespace TriAxis.RunSharp.Examples
 
 					// Create the delegate object a that references 
 					// the method Hello:
-					g.Assign(a, Exp.NewDelegate(myDelegate, myClass, "Hello"));
+					g.Assign(a, Exp.NewDelegate(myDelegate, myClass, "Hello", ag.TypeMapper));
 					// Create the delegate object b that references 
 					// the method Goodbye:
-					g.Assign(b, Exp.NewDelegate(myDelegate, myClass, "Goodbye"));
+					g.Assign(b, Exp.NewDelegate(myDelegate, myClass, "Goodbye", ag.TypeMapper));
 					// The two delegates, a and b, are composed to form c, 
 					// which calls both methods in order:
 					g.Assign(c, a + b);

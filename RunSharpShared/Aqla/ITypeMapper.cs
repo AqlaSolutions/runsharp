@@ -26,5 +26,7 @@ namespace TriAxis.RunSharp
         Type MapType(System.Type type, bool demand = true);
 
         Type GetType(string fullName, Assembly context);
+
+        ITypeInfo TypeInfo { get; }
     }
 }

@@ -192,7 +192,7 @@ namespace TriAxis.RunSharp
 			if (_chainCalled)
 				throw new InvalidOperationException(Properties.Messages.ErrConstructorAlreadyChained);
 
-			ApplicableFunction other = TypeInfo.FindConstructor(_cg.Type, args);
+			ApplicableFunction other = TypeMapper.TypeInfo.FindConstructor(_cg.Type, args);
 
 			IL.Emit(OpCodes.Ldarg_0);
 			other.EmitArgs(this, args);
@@ -209,7 +209,7 @@ namespace TriAxis.RunSharp
 			if (_cg.Type.TypeBuilder.IsValueType)
 				throw new InvalidOperationException(Properties.Messages.ErrStructNoBaseCtor);
 
-			ApplicableFunction other = TypeInfo.FindConstructor(_cg.Type.BaseType, args);
+			ApplicableFunction other = TypeMapper.TypeInfo.FindConstructor(_cg.Type.BaseType, args);
 
 			if (other == null)
 				throw new InvalidOperationException(Properties.Messages.ErrMissingConstructor);
@@ -239,7 +239,7 @@ namespace TriAxis.RunSharp
 			BeforeStatement();
 
 			invocation.EmitGet(this);
-			if (!Helpers.AreTypesEqual(invocation.Type, typeof(void), _typeMapper))
+			if (!Helpers.AreTypesEqual(invocation.Type, typeof(void), TypeMapper))
 				IL.Emit(OpCodes.Pop);
 		}
 
@@ -251,7 +251,7 @@ namespace TriAxis.RunSharp
 
 		public void Invoke(Type target, string method, params Operand[] args)
 		{
-			DoInvoke(Static.Invoke(target, method, args));
+			DoInvoke(Static.Invoke(target, method, TypeMapper, args));
 		}
 
 		public void Invoke(Operand target, string method)
@@ -264,7 +264,7 @@ namespace TriAxis.RunSharp
 			if ((object)target == null)
 				throw new ArgumentNullException(nameof(target));
 
-			DoInvoke(target.Invoke(method, args));
+			DoInvoke(target.Invoke(method, TypeMapper, args));
 		}
 
 		public void InvokeDelegate(Operand targetDelegate)
@@ -277,19 +277,19 @@ namespace TriAxis.RunSharp
 			if ((object)targetDelegate == null)
 				throw new ArgumentNullException(nameof(targetDelegate));
 
-			DoInvoke(targetDelegate.InvokeDelegate(args));
+			DoInvoke(targetDelegate.InvokeDelegate(TypeMapper, args));
 		}
 
-	    readonly ITypeMapper _typeMapper;
+	    public ITypeMapper TypeMapper { get; }
 
 	    public CodeGen(ITypeMapper typeMapper)
 	    {
-	        _typeMapper = typeMapper;
+	        TypeMapper = typeMapper;
 	    }
         
 	    public void WriteLine(params Operand[] args)
 		{
-			Invoke(_typeMapper.MapType(typeof(Console)), "WriteLine", args);
+			Invoke(TypeMapper.MapType(typeof(Console)), "WriteLine", args);
 		}
 		#endregion
 
@@ -301,7 +301,7 @@ namespace TriAxis.RunSharp
 			if ((object)handler == null)
 				throw new ArgumentNullException(nameof(handler));
 
-			IMemberInfo evt = TypeInfo.FindEvent(target.Type, eventName, target.IsStaticTarget);
+			IMemberInfo evt = TypeMapper.TypeInfo.FindEvent(target.Type, eventName, target.IsStaticTarget);
 			MethodInfo mi = ((EventInfo)evt.Member).GetAddMethod();
 			if (!target.IsStaticTarget)
 				target.EmitGet(this);
@@ -316,7 +316,7 @@ namespace TriAxis.RunSharp
 			if ((object)handler == null)
 				throw new ArgumentNullException(nameof(handler));
 
-			IMemberInfo evt = TypeInfo.FindEvent(target.Type, eventName, target.IsStaticTarget);
+			IMemberInfo evt = TypeMapper.TypeInfo.FindEvent(target.Type, eventName, target.IsStaticTarget);
 			MethodInfo mi = ((EventInfo)evt.Member).GetRemoveMethod();
 			if (!target.IsStaticTarget)
 				target.EmitGet(this);
@@ -411,7 +411,7 @@ namespace TriAxis.RunSharp
 
 		public void Return()
 		{
-		    if (Context.ReturnType != null && !Helpers.AreTypesEqual(Context.ReturnType, typeof(void), _typeMapper))
+		    if (Context.ReturnType != null && !Helpers.AreTypesEqual(Context.ReturnType, typeof(void), TypeMapper))
 				throw new InvalidOperationException(Properties.Messages.ErrMethodMustReturnValue);
 
 			BeforeStatement();
@@ -438,7 +438,7 @@ namespace TriAxis.RunSharp
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "'Operand' required as type to use provided implicit conversions")]
 		public void Return(Operand value)
 		{
-			if (Context.ReturnType == null || Helpers.AreTypesEqual(Context.ReturnType, typeof(void), _typeMapper))
+			if (Context.ReturnType == null || Helpers.AreTypesEqual(Context.ReturnType, typeof(void), TypeMapper))
 				throw new InvalidOperationException(Properties.Messages.ErrVoidMethodReturningValue);
 
 			BeforeStatement();
@@ -477,7 +477,7 @@ namespace TriAxis.RunSharp
 		{
 			BeforeStatement();
 
-			EmitGetHelper(exception, _typeMapper.MapType(typeof(Exception)), false);
+			EmitGetHelper(exception, TypeMapper.MapType(typeof(Exception)), false);
 			IL.Emit(OpCodes.Throw);
 			_reachable = false;
 		}
@@ -494,7 +494,7 @@ namespace TriAxis.RunSharp
 
 		public Operand ForEach(Type elementType, Operand expression)
 		{
-			ForeachBlock fb = new ForeachBlock(elementType, expression, _typeMapper);
+			ForeachBlock fb = new ForeachBlock(elementType, expression, TypeMapper);
 			Begin(fb);
 			return fb.Element;
 		}
@@ -516,7 +516,7 @@ namespace TriAxis.RunSharp
 
 		public void Try()
 		{
-			Begin(new ExceptionBlock(_typeMapper));
+			Begin(new ExceptionBlock(TypeMapper));
 		}
 
 		ExceptionBlock GetTryBlock()
@@ -563,7 +563,7 @@ namespace TriAxis.RunSharp
 
 		public void Switch(Operand expression)
 		{
-			Begin(new SwitchBlock(expression, _typeMapper));
+			Begin(new SwitchBlock(expression, TypeMapper));
 		}
 
 		SwitchBlock GetSwitchBlock()
@@ -829,17 +829,17 @@ namespace TriAxis.RunSharp
 			    if (Helpers.IsAssignableFrom(typeof(IEnumerable), _collection.Type, _typeMapper))
 			        _collection = _collection.Cast(_typeMapper.MapType(typeof(IEnumerable)));
 
-				G.Assign(_enumerator, _collection.Invoke("GetEnumerator"));
+				G.Assign(_enumerator, _collection.Invoke("GetEnumerator", _typeMapper));
 				G.IL.Emit(OpCodes.Br, _lbTest);
 				G.IL.MarkLabel(_lbLoop);
 				Element = G.Local(_elementType);
-				G.Assign(Element, _enumerator.Property("Current"), true);
+				G.Assign(Element, _enumerator.Property("Current", _typeMapper), true);
 			}
 
 			protected override void EndImpl()
 			{
 				G.IL.MarkLabel(_lbTest);
-				_enumerator.Invoke("MoveNext").EmitGet(G);
+				_enumerator.Invoke("MoveNext", _typeMapper).EmitGet(G);
 
 				G.IL.Emit(OpCodes.Brtrue, _lbLoop);
 
@@ -977,7 +977,7 @@ namespace TriAxis.RunSharp
 					// if a single implicit coversion from expression to one of the valid types exists, it's ok
 					foreach (Type t in _validTypes)
 					{
-						Conversion tmp = Conversion.GetImplicit(expression, typeMapper.MapType(t), false);
+						Conversion tmp = Conversion.GetImplicit(expression, typeMapper.MapType(t), false, typeMapper);
 						if (tmp.IsValid)
 						{
 							if (_conv == null)

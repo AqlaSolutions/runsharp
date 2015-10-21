@@ -50,13 +50,13 @@ namespace TriAxis.RunSharp.Examples
 					// Note that because RomanNumeral is declared as a struct, 
 					// calling new on the struct merely calls the constructor 
 					// rather than allocating an object on the heap:
-					g.Return(Exp.New(RomanNumeral, g.Arg("value")));
+					g.Return(Exp.New(RomanNumeral, ag.TypeMapper, g.Arg("value")));
 				}
 
 				// Declare an explicit conversion from a RomanNumeral to an int:
 				g = RomanNumeral.Public.ExplicitConversionTo(typeof(int), "roman");
 				{
-					g.Return(g.Arg("roman").Field("value"));
+					g.Return(g.Arg("roman").Field("value", ag.TypeMapper));
 				}
 
 				// Declare an implicit conversion from a RomanNumeral to 
@@ -107,7 +107,7 @@ namespace TriAxis.RunSharp.Examples
 
 				g = BinaryNumeral.Public.ImplicitConversionFrom(typeof(int));
 				{
-					g.Return(Exp.New(BinaryNumeral, g.Arg("value")));
+					g.Return(Exp.New(BinaryNumeral, ag.TypeMapper, g.Arg("value")));
 				}
 
 				g = BinaryNumeral.Public.ImplicitConversionTo(typeof(string));
@@ -117,7 +117,7 @@ namespace TriAxis.RunSharp.Examples
 
 				g = BinaryNumeral.Public.ExplicitConversionTo(typeof(int), "binary");
 				{
-					g.Return(g.Arg("binary").Field("value"));
+					g.Return(g.Arg("binary").Field("value", ag.TypeMapper));
 				}
 			}
 
@@ -132,17 +132,17 @@ namespace TriAxis.RunSharp.Examples
 
 				g = RomanNumeral.Public.ImplicitConversionFrom(typeof(int));
 				{
-					g.Return(Exp.New(RomanNumeral, g.Arg("value")));
+					g.Return(Exp.New(RomanNumeral, ag.TypeMapper, g.Arg("value")));
 				}
 
 				g = RomanNumeral.Public.ImplicitConversionFrom(BinaryNumeral, "binary");
 				{
-					g.Return(Exp.New(RomanNumeral, g.Arg("binary").Cast(typeof(int))));
+					g.Return(Exp.New(RomanNumeral, ag.TypeMapper, g.Arg("binary").Cast(typeof(int))));
 				}
 
 				g = RomanNumeral.Public.ExplicitConversionTo(typeof(int), "roman");
 				{
-					g.Return(g.Arg("roman").Field("value"));
+					g.Return(g.Arg("roman").Field("value", ag.TypeMapper));
 				}
 
 				g = RomanNumeral.Public.ImplicitConversionTo(typeof(string));

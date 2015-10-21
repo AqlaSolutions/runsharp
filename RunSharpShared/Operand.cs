@@ -52,7 +52,7 @@ namespace TriAxis.RunSharp
 
 	public abstract class Operand
 	{
-		internal static readonly Operand[] EmptyArray = { };
+        internal static readonly Operand[] EmptyArray = { };
 
 		#region Virtual methods
 		internal virtual void EmitGet(CodeGen g)
@@ -595,8 +595,8 @@ namespace TriAxis.RunSharp
 
 		#region Logical operations
 		bool _logical;
-
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2225:OperatorOverloadsHaveNamedAlternates", Justification = "The operator is provided for convenience, so that the && and || operators work correctly. It should not be invoked under any other circumstances.")]
+        
+	    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2225:OperatorOverloadsHaveNamedAlternates", Justification = "The operator is provided for convenience, so that the && and || operators work correctly. It should not be invoked under any other circumstances.")]
 		public static bool operator true(Operand op)
 		{
 			if ((object)op != null)
@@ -707,50 +707,50 @@ namespace TriAxis.RunSharp
 		}
 		*/
 
-		public Operand Field(string name)
+		public Operand Field(string name, ITypeMapper typeMapper)
 		{
-			return new Field((FieldInfo)TypeInfo.FindField(Type, name, IsStaticTarget).Member, this);
+			return new Field((FieldInfo)typeMapper.TypeInfo.FindField(Type, name, IsStaticTarget).Member, this);
 		}
 
-		public Operand Property(string name)
+		public Operand Property(string name, ITypeMapper typeMapper)
 		{
-			return Property(name, EmptyArray);
+			return Property(name, typeMapper, EmptyArray);
 		}
 
-		public Operand Property(string name, params Operand[] indexes)
+		public Operand Property(string name, ITypeMapper typeMapper, params Operand[] indexes)
 		{
-			return new Property(TypeInfo.FindProperty(Type, name, indexes, IsStaticTarget), this, indexes);
+			return new Property(typeMapper.TypeInfo.FindProperty(Type, name, indexes, IsStaticTarget), this, indexes);
 		}
 
-		public Operand Invoke(string name)
+		public Operand Invoke(string name, ITypeMapper typeMapper)
 		{
-			return Invoke(name, EmptyArray);
+			return Invoke(name, typeMapper, EmptyArray);
 		}
 
-		public Operand Invoke(string name, params Operand[] args)
+		public Operand Invoke(string name, ITypeMapper typeMapper, params Operand[] args)
 		{
-			return new Invocation(TypeInfo.FindMethod(Type, name, args, IsStaticTarget), this, args);
+			return new Invocation(typeMapper.TypeInfo.FindMethod(Type, name, args, IsStaticTarget), this, args);
 		}
 
-		public Operand InvokeDelegate()
+		public Operand InvokeDelegate(ITypeMapper typeMapper)
 		{
-			return InvokeDelegate(EmptyArray);
+			return InvokeDelegate(typeMapper, EmptyArray);
 		}
 
-		public Operand InvokeDelegate(params Operand[] args)
+		public Operand InvokeDelegate(ITypeMapper typeMapper, params Operand[] args)
 		{
-			return Invoke("Invoke", args);
+			return Invoke("Invoke", typeMapper, args);
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers", Justification = "Intentional, to simulate standard indexer 'feel'")]
-		public Operand this[params Operand[] indexes]
+		public Operand this[ITypeMapper typeMapper, params Operand[] indexes]
 		{
 			get
 			{
 				if (Type.IsArray)
 					return new ArrayAccess(this, indexes);
 
-				return Property(null, indexes);
+				return Property(null, typeMapper, indexes);
 			}
 		}
 
@@ -774,7 +774,10 @@ namespace TriAxis.RunSharp
 		{
 		    readonly Operand _op;
 
-			public Reference(Operand op) { _op = op; }
+		    public Reference(Operand op)
+		    {
+		        _op = op;
+		    }
 
 			internal override void EmitAddressOf(CodeGen g)
 			{

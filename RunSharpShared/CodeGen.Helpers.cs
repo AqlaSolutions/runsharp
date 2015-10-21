@@ -429,7 +429,7 @@ namespace TriAxis.RunSharp
 
         internal void Convert(Operand op, Type to, bool allowExplicit)
         {
-            Conversion conv = allowExplicit ? Conversion.GetExplicit(op, to, false) : Conversion.GetImplicit(op, to, false);
+            Conversion conv = allowExplicit ? Conversion.GetExplicit(op, to, false, TypeMapper) : Conversion.GetImplicit(op, to, false, TypeMapper);
             conv.Emit(this, (object)op == null ? null : op.Type, to);
         }
     }

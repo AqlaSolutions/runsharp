@@ -33,8 +33,9 @@ namespace TriAxis.RunSharp.Examples
 		// example based on the MSDN Explicit Interface Implementation Sample (explicit.cs)
 		public static void GenExplicit2(AssemblyGen ag)
 		{
-			// Declare the English units interface:
-			TypeGen IEnglishDimensions = ag.Interface("IEnglishDimensions");
+            ITypeMapper m = ag.TypeMapper;
+            // Declare the English units interface:
+            TypeGen IEnglishDimensions = ag.Interface("IEnglishDimensions");
 			{
 				IEnglishDimensions.Method(typeof(float), "Length");
 				IEnglishDimensions.Method(typeof(float), "Width");
@@ -83,17 +84,17 @@ namespace TriAxis.RunSharp.Examples
 				g = Box.Public.Static.Method(typeof(void), "Main");
 				{
 					// Declare a class instance "myBox":
-					Operand myBox = g.Local(Exp.New(Box, 30.0f, 20.0f));
+				    Operand myBox = g.Local(Exp.New(Box, m, 30.0f, 20.0f));
 					// Declare an instance of the English units interface:
 					Operand eDimensions = g.Local(myBox.Cast(IEnglishDimensions));
 					// Declare an instance of the metric units interface:
 					Operand mDimensions = g.Local(myBox.Cast(IMetricDimensions));
 					// Print dimensions in English units:
-					g.WriteLine("Length(in): {0}", eDimensions.Invoke("Length"));
-					g.WriteLine("Width (in): {0}", eDimensions.Invoke("Width"));
+					g.WriteLine("Length(in): {0}", eDimensions.Invoke("Length", m));
+					g.WriteLine("Width (in): {0}", eDimensions.Invoke("Width", m));
 					// Print dimensions in metric units:
-					g.WriteLine("Length(cm): {0}", mDimensions.Invoke("Length"));
-					g.WriteLine("Width (cm): {0}", mDimensions.Invoke("Width"));
+					g.WriteLine("Length(cm): {0}", mDimensions.Invoke("Length", m));
+					g.WriteLine("Width (cm): {0}", mDimensions.Invoke("Width", m));
 				}
 			}
 		}

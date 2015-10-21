@@ -46,7 +46,7 @@ namespace TriAxis.RunSharp
 		Undefined, Left, Right, Neither
 	}
 
-	class ApplicableFunction
+	public class ApplicableFunction
 	{
 	    readonly Type[] _methodSignature;
 	    readonly Type[] _appliedSignature;
@@ -124,7 +124,7 @@ namespace TriAxis.RunSharp
 			_conversions[index].Emit(g, _paramsSignature[index], _appliedSignature[index]);
 		}
 
-		public static Better GetBetterCandidate(ApplicableFunction left, ApplicableFunction right)
+		internal static Better GetBetterCandidate(ApplicableFunction left, ApplicableFunction right, ITypeMapper typeMapper)
 		{
 			if (!ArrayUtils.Equals(left._paramsSignature, right._paramsSignature))
 				throw new InvalidOperationException();
@@ -133,7 +133,7 @@ namespace TriAxis.RunSharp
 
 			for (int i = 0; i < left._appliedSignature.Length; i++)
 			{
-				Better better = GetBetterConversion(left._paramsSignature[i], left._appliedSignature[i], right._appliedSignature[i]);
+				Better better = GetBetterConversion(left._paramsSignature[i], left._appliedSignature[i], right._appliedSignature[i], typeMapper);
 				if (better == Better.Left)
 					leftBetter++;
 				else if (better == Better.Right)
@@ -150,7 +150,7 @@ namespace TriAxis.RunSharp
 			return Better.Neither;
 		}
 
-		static Better GetBetterConversion(Type from, Type left, Type right)
+		static Better GetBetterConversion(Type @from, Type left, Type right, ITypeMapper typeMapper)
 		{
 			if (left == right)
 				return Better.Neither;
@@ -159,8 +159,8 @@ namespace TriAxis.RunSharp
 			if (from == right)
 				return Better.Right;
 
-			Conversion lrConv = Conversion.GetImplicit(left, right, false);
-			Conversion rlConv = Conversion.GetImplicit(right, left, false);
+			Conversion lrConv = Conversion.GetImplicit(left, right, false, typeMapper);
+			Conversion rlConv = Conversion.GetImplicit(right, left, false, typeMapper);
 
 			if (lrConv.IsValid && !rlConv.IsValid)
 				return Better.Left;
@@ -192,14 +192,14 @@ namespace TriAxis.RunSharp
 
 	static class OverloadResolver
 	{
-		public static ApplicableFunction Resolve(IEnumerable<IMemberInfo> candidates, params Operand[] args)
+		public static ApplicableFunction Resolve(IEnumerable<IMemberInfo> candidates, ITypeMapper typeMapper, params Operand[] args)
 		{
-			List<ApplicableFunction> applicable = FindApplicable(candidates, args);
+			List<ApplicableFunction> applicable = FindApplicable(candidates, typeMapper, args);
 
 			if (applicable == null)
 				return null;
 
-			ApplicableFunction best = FindBest(applicable);
+			ApplicableFunction best = FindBest(applicable, typeMapper);
 
 			if (best == null)
 				throw new AmbiguousMatchException(Properties.Messages.ErrAmbiguousBinding);
@@ -230,12 +230,12 @@ namespace TriAxis.RunSharp
 			}
 		}
 
-		public static List<ApplicableFunction> FindApplicable(IEnumerable<IMemberInfo> candidates, params Operand[] args)
+		public static List<ApplicableFunction> FindApplicable(IEnumerable<IMemberInfo> candidates, ITypeMapper typeMapper, params Operand[] args)
 		{
 			List<ApplicableFunction> valid = null;
 			bool expandedCandidates = false;
 
-			if (!FindApplicable(ref valid, ref expandedCandidates, candidates, args))
+			if (!FindApplicable(ref valid, ref expandedCandidates, candidates, typeMapper, args))
 				return null;
 
 			if (expandedCandidates)
@@ -244,7 +244,7 @@ namespace TriAxis.RunSharp
 			return valid;
 		}
 
-		public static bool FindApplicable(ref List<ApplicableFunction> valid, ref bool expandedCandidates, IEnumerable<IMemberInfo> candidates, params Operand[] args)
+		public static bool FindApplicable(ref List<ApplicableFunction> valid, ref bool expandedCandidates, IEnumerable<IMemberInfo> candidates, ITypeMapper typeMapper, params Operand[] args)
 		{
 			if (candidates == null)
 				return false;
@@ -253,7 +253,7 @@ namespace TriAxis.RunSharp
 
 			foreach (IMemberInfo candidate in candidates)
 			{
-				ApplicableFunction vc = ValidateCandidate(candidate, args);
+				ApplicableFunction vc = ValidateCandidate(candidate, args, typeMapper);
 
 				if (vc != null)
 				{
@@ -271,7 +271,7 @@ namespace TriAxis.RunSharp
 			return found;
 		}
 
-		public static ApplicableFunction ValidateCandidate(IMemberInfo candidate, Operand[] args)
+		public static ApplicableFunction ValidateCandidate(IMemberInfo candidate, Operand[] args, ITypeMapper typeMapper)
 		{
 			Type[] cTypes = candidate.ParameterTypes;
 
@@ -281,7 +281,7 @@ namespace TriAxis.RunSharp
 
 				for (int i = 0; i < cTypes.Length; i++)
 				{
-					conversions[i] = Conversion.GetImplicit(args[i], cTypes[i], false);
+					conversions[i] = Conversion.GetImplicit(args[i], cTypes[i], false, typeMapper);
 					if (!conversions[i].IsValid)
 						return null;
 				}
@@ -302,7 +302,7 @@ namespace TriAxis.RunSharp
 
 				for (int i = 0; i < expandedTypes.Length; i++)
 				{
-					conversions[i] = Conversion.GetImplicit(args[i], expandedTypes[i], false);
+					conversions[i] = Conversion.GetImplicit(args[i], expandedTypes[i], false, typeMapper);
 					if (!conversions[i].IsValid)
 						return null;
 				}
@@ -324,7 +324,7 @@ namespace TriAxis.RunSharp
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1814:PreferJaggedArraysOverMultidimensional", MessageId = "Body", Justification = "Jagged array would have worse performance (many allocations)")]
-		public static ApplicableFunction FindBest(List<ApplicableFunction> candidates)
+		public static ApplicableFunction FindBest(List<ApplicableFunction> candidates, ITypeMapper typeMapper)
 		{
 			if (candidates == null || candidates.Count == 0)
 				return null;
@@ -347,7 +347,7 @@ namespace TriAxis.RunSharp
 					Better better = betterMap[i, j];
 					if (better == Better.Undefined)
 					{
-						better = ApplicableFunction.GetBetterCandidate(candidates[i], candidates[j]);
+						better = ApplicableFunction.GetBetterCandidate(candidates[i], candidates[j], typeMapper);
 						betterMap[i, j] = better;
 						betterMap[j, i] = Invert(better);
 					}

@@ -46,29 +46,29 @@ namespace TriAxis.RunSharp
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords", Justification = "There is no better name for this.")]
 	public static class Static
 	{
-		public static Operand Field(Type type, string name)
+		public static Operand Field(Type type, string name, ITypeMapper typeMapper)
 		{
-			return new Field((FieldInfo)TypeInfo.FindField(type, name, true).Member, null);
+			return new Field((FieldInfo)typeMapper.TypeInfo.FindField(type, name, true).Member, null);
 		}
 
-		public static Operand Property(Type type, string name)
+		public static Operand Property(Type type, string name, ITypeMapper typeMapper)
 		{
-			return Property(type, name, Operand.EmptyArray);
+			return Property(type, name, typeMapper, Operand.EmptyArray);
 		}
 
-		public static Operand Property(Type type, string name, params Operand[] indexes)
+		public static Operand Property(Type type, string name, ITypeMapper typeMapper, params Operand[] indexes)
 		{
-			return new Property(TypeInfo.FindProperty(type, name, indexes, true), null, indexes);
+			return new Property(typeMapper.TypeInfo.FindProperty(type, name, indexes, true), null, indexes);
 		}
 
-		public static Operand Invoke(Type type, string name)
+		public static Operand Invoke(Type type, string name, ITypeMapper typeMapper)
 		{
-			return Invoke(type, name, Operand.EmptyArray);
+			return Invoke(type, name, typeMapper, Operand.EmptyArray);
 		}
 
-		public static Operand Invoke(Type type, string name, params Operand[] args)
+		public static Operand Invoke(Type type, string name, ITypeMapper typeMapper, params Operand[] args)
 		{
-			return new Invocation(TypeInfo.FindMethod(type, name, args, true), null, args);
+			return new Invocation(typeMapper.TypeInfo.FindMethod(type, name, args, true), null, args);
 		}
 	}
 }

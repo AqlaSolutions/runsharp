@@ -83,6 +83,7 @@ namespace TriAxis.RunSharp
 	    readonly AssemblyGen _owner;
         public ITypeMapper TypeMapper => _owner.TypeMapper;
 	    Type[] _interfaces;
+	    readonly ITypeMapper _typeMapper;
 	    Type _type;
 		MethodGen _commonCtor;
 		ConstructorGen _staticCtor;
@@ -103,33 +104,35 @@ namespace TriAxis.RunSharp
 
 	    public string Name { get; }
 
-	    internal TypeGen(AssemblyGen owner, string name, TypeAttributes attrs, Type baseType, Type[] interfaces)
+	    internal TypeGen(AssemblyGen owner, string name, TypeAttributes attrs, Type baseType, Type[] interfaces, ITypeMapper typeMapper)
 		{
-			_owner = owner;
+            _owner = owner;
 			Name = name;
 			BaseType = baseType;
 			_interfaces = interfaces;
+	        _typeMapper = typeMapper;
 
-			TypeBuilder = owner.ModuleBuilder.DefineType(name, attrs, baseType, interfaces);
+	        TypeBuilder = owner.ModuleBuilder.DefineType(name, attrs, baseType, interfaces);
 			owner.AddType(this);
 			ScanMethodsToImplement(interfaces);
 
-			TypeInfo.RegisterProvider(TypeBuilder, this);
+			typeMapper.TypeInfo.RegisterProvider(TypeBuilder, this);
 			ResetAttrs();
 		}
 
-		internal TypeGen(TypeGen owner, string name, TypeAttributes attrs, Type baseType, Type[] interfaces)
+		internal TypeGen(TypeGen owner, string name, TypeAttributes attrs, Type baseType, Type[] interfaces, ITypeMapper typeMapper)
 		{
-			_owner = owner._owner;
+		    _owner = owner._owner;
 			Name = name;
 			BaseType = baseType;
 			_interfaces = interfaces;
+		    _typeMapper = typeMapper;
 
-			TypeBuilder = owner.TypeBuilder.DefineNestedType(name, attrs, baseType, interfaces);
+		    TypeBuilder = owner.TypeBuilder.DefineNestedType(name, attrs, baseType, interfaces);
 			owner._nestedTypes.Add(this);
 			ScanMethodsToImplement(interfaces);
 
-			TypeInfo.RegisterProvider(TypeBuilder, this);
+            typeMapper.TypeInfo.RegisterProvider(TypeBuilder, this);
 		}
 
 		void ScanMethodsToImplement(Type[] interfaces)
@@ -139,9 +142,9 @@ namespace TriAxis.RunSharp
 
 			foreach (Type t in interfaces)
 			{
-                foreach (Type @interface in TypeInfo.SearchInterfaces(t))
+                foreach (Type @interface in _typeMapper.TypeInfo.SearchInterfaces(t))
 			    {
-                    foreach (IMemberInfo mi in TypeInfo.GetMethods(@interface))
+                    foreach (IMemberInfo mi in _typeMapper.TypeInfo.GetMethods(@interface))
                         _implementations.Add(new InterfaceImplEntry(mi));
 			    }
 			}
@@ -294,7 +297,7 @@ namespace TriAxis.RunSharp
 			else
 				target = AttributeTargets.Class;
 
-			return AttributeGen<TypeGen>.CreateAndAdd(this, ref _customAttributes, target, type, args);
+			return AttributeGen<TypeGen>.CreateAndAdd(this, ref _customAttributes, target, type, args, TypeMapper);
 		}
 
 		#endregion
@@ -546,7 +549,7 @@ namespace TriAxis.RunSharp
 			if (_typeVis == 0)
 				_typeVis |= TypeAttributes.NestedPrivate;
 
-			TypeGen tg = new TypeGen(this, name, (_typeVis | _typeVirt | _typeFlags | TypeAttributes.Class) ^ TypeAttributes.BeforeFieldInit, baseType, interfaces);
+			TypeGen tg = new TypeGen(this, name, (_typeVis | _typeVirt | _typeFlags | TypeAttributes.Class) ^ TypeAttributes.BeforeFieldInit, baseType, interfaces, _typeMapper);
 			ResetAttrs();
 			return tg;
 		}
@@ -564,7 +567,7 @@ namespace TriAxis.RunSharp
 			if (_typeVis == 0)
 				_typeVis |= TypeAttributes.NestedPrivate;
 
-			TypeGen tg = new TypeGen(this, name, (_typeVis | _typeVirt | _typeFlags | TypeAttributes.Sealed | TypeAttributes.SequentialLayout) ^ TypeAttributes.BeforeFieldInit, typeof(ValueType), interfaces);
+			TypeGen tg = new TypeGen(this, name, (_typeVis | _typeVirt | _typeFlags | TypeAttributes.Sealed | TypeAttributes.SequentialLayout) ^ TypeAttributes.BeforeFieldInit, typeof(ValueType), interfaces, _typeMapper);
 			ResetAttrs();
 			return tg;
 		}
@@ -707,7 +710,7 @@ namespace TriAxis.RunSharp
 
 			_type = TypeBuilder.CreateType();
 
-			TypeInfo.UnregisterProvider(TypeBuilder);
+            _typeMapper.TypeInfo.UnregisterProvider(TypeBuilder);
 		}
 
 		public static implicit operator Type(TypeGen tg)
@@ -758,7 +761,7 @@ namespace TriAxis.RunSharp
 			// match explicit interface implementations
 			if (method.ImplementedInterface != null)
 			{
-				foreach (IMemberInfo mi in TypeInfo.Filter(TypeInfo.GetMethods(method.ImplementedInterface), method.Name, false, false, true))
+				foreach (IMemberInfo mi in _typeMapper.TypeInfo.Filter(_typeMapper.TypeInfo.GetMethods(method.ImplementedInterface), method.Name, false, false, true))
 				{
 					if (ArrayUtils.Equals(mi.ParameterTypes, method.ParameterTypes))
 					{

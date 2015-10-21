@@ -47,14 +47,14 @@ namespace TriAxis.RunSharp
 	{
 		#region Construction expressions
 
-		public static Operand New(Type type)
+		public static Operand New(Type type, ITypeMapper typeMapper)
 		{
-			return New(type, Operand.EmptyArray);
+			return New(type, typeMapper, Operand.EmptyArray);
 		}
 
-		public static Operand New(Type type, params Operand[] args)
+		public static Operand New(Type type, ITypeMapper typeMapper, params Operand[] args)
 		{
-			ApplicableFunction ctor = OverloadResolver.Resolve(TypeInfo.GetConstructors(type), args);
+			ApplicableFunction ctor = OverloadResolver.Resolve(typeMapper.TypeInfo.GetConstructors(type), typeMapper, args);
 
 			if (ctor == null)
 				throw new MissingMethodException(Properties.Messages.ErrMissingConstructor);
@@ -72,14 +72,14 @@ namespace TriAxis.RunSharp
 			return new InitializedArray(type, elements);
 		}
 
-		public static Operand NewDelegate(Type delegateType, Type target, string method)
+		public static Operand NewDelegate(Type delegateType, Type target, string method, ITypeMapper typeMapper)
 		{
-			return new NewDelegate(delegateType, target, method);
+			return new NewDelegate(delegateType, target, method, typeMapper);
 		}
 
-		public static Operand NewDelegate(Type delegateType, Operand target, string method)
+		public static Operand NewDelegate(Type delegateType, Operand target, string method, ITypeMapper typeMapper)
 		{
-			return new NewDelegate(delegateType, target, method);
+			return new NewDelegate(delegateType, target, method, typeMapper);
 		}
 		#endregion
 	}

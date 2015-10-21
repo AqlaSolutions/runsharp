@@ -114,5 +114,12 @@ namespace TriAxis.RunSharp
             return Type.GetType(fullName, false);
 #endif
         }
+
+        public TypeMapper()
+        {
+            TypeInfo = new TypeInfo(this);
+        }
+        
+        public virtual ITypeInfo TypeInfo { get; }
     }
 }
