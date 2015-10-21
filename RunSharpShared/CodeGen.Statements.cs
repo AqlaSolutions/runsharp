@@ -741,7 +741,7 @@ namespace TriAxis.RunSharp
 			}
 
 			Label _lbLoop, _lbTest, _lbEnd, _lbIter;
-			bool _endUsed = false, _iterUsed = false;
+			bool _endUsed, _iterUsed;
 
 			protected override void BeginImpl()
 			{
@@ -814,7 +814,7 @@ namespace TriAxis.RunSharp
 
 			Operand _enumerator;
 			Label _lbLoop, _lbTest, _lbEnd;
-			bool _endUsed = false;
+			bool _endUsed;
 
 			public Operand Element { get; set; }
 
@@ -867,7 +867,7 @@ namespace TriAxis.RunSharp
 
 		class ExceptionBlock : Block
 		{
-			bool _endReachable = false;
+			bool _endReachable;
 
 		    readonly ITypeMapper _typeMapper;
 
@@ -931,7 +931,7 @@ namespace TriAxis.RunSharp
 				G._reachable = _endReachable;
 			}
 
-			public bool IsFinally { get; set; } = false;
+			public bool IsFinally { get; set; }
 		}
 
 		class SwitchBlock : Block, IBreakable
@@ -949,8 +949,8 @@ namespace TriAxis.RunSharp
 			Label _lbEnd;
 			Label _lbDefault;
 			LocalBuilder _exp;
-			bool _defaultExists = false;
-			bool _endReachable = false;
+			bool _defaultExists;
+			bool _endReachable;
 		    readonly SortedList<IComparable, Label> _cases = new SortedList<IComparable, Label>();
 
 		    readonly ITypeMapper _typeMapper;

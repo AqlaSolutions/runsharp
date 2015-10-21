@@ -84,8 +84,8 @@ namespace TriAxis.RunSharp
         public ITypeMapper TypeMapper => _owner.TypeMapper;
 	    Type[] _interfaces;
 	    Type _type;
-		MethodGen _commonCtor = null;
-		ConstructorGen _staticCtor = null;
+		MethodGen _commonCtor;
+		ConstructorGen _staticCtor;
 	    readonly List<IDelayedDefinition> _definitionQueue = new List<IDelayedDefinition>();
 	    readonly List<IDelayedCompletion> _completionQueue = new List<IDelayedCompletion>();
 	    readonly List<TypeGen> _nestedTypes = new List<TypeGen>();

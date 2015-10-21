@@ -245,9 +245,9 @@ namespace TriAxis.RunSharp
 				array[arrayIndex++] = this._array[i];
 		}
 
-		public int Count { get; set; } = 0;
+		public int Count { get; set; }
 
-	    public bool IsReadOnly { get; set; } = false;
+	    public bool IsReadOnly { get; set; }
 
 	    public bool Remove(ParameterGen item)
 		{

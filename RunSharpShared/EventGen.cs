@@ -47,7 +47,7 @@ namespace TriAxis.RunSharp
 	    readonly MethodAttributes _attrs;
 	    readonly Type _type;
 	    EventBuilder _eb;
-		FieldGen _handler = null;
+		FieldGen _handler;
 		List<AttributeGen> _customAttributes;
 
 		MethodGen _adder, _remover;

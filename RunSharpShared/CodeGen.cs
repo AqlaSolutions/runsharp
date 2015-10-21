@@ -57,10 +57,10 @@ namespace TriAxis.RunSharp
 	public partial class CodeGen
 	{
 	    readonly ConstructorGen _cg;
-		bool _chainCalled = false;
+		bool _chainCalled;
 		bool _reachable = true;
-		bool _hasRetVar = false, _hasRetLabel = false;
-		LocalBuilder _retVar = null;
+		bool _hasRetVar, _hasRetLabel;
+		LocalBuilder _retVar;
 		Label _retLabel;
 	    readonly Stack<Block> _blocks = new Stack<Block>();
 	    readonly Dictionary<string, Label> _labels = new Dictionary<string, Label>();

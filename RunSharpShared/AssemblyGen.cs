@@ -50,7 +50,7 @@ namespace TriAxis.RunSharp
         readonly List<TypeGen> _types = new List<TypeGen>();
 		List<AttributeGen> _assemblyAttributes;
 		List<AttributeGen> _moduleAttributes;
-		string _ns = null;
+		string _ns;
 
 		internal AssemblyBuilder AssemblyBuilder { get; set; }
         internal ModuleBuilder ModuleBuilder { get; set; }

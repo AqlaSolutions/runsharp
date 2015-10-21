@@ -594,7 +594,7 @@ namespace TriAxis.RunSharp
 		#endregion
 
 		#region Logical operations
-		bool _logical = false;
+		bool _logical;
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2225:OperatorOverloadsHaveNamedAlternates", Justification = "The operator is provided for convenience, so that the && and || operators work correctly. It should not be invoked under any other circumstances.")]
 		public static bool operator true(Operand op)
