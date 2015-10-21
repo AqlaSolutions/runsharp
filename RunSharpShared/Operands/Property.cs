@@ -49,9 +49,9 @@ namespace TriAxis.RunSharp.Operands
 
 		public Property(ApplicableFunction property, Operand target, Operand[] indexes)
 		{
-			this._property = property;
-			this._target = target;
-			this._indexes = indexes;
+			_property = property;
+			_target = target;
+			_indexes = indexes;
 		}
 
 		internal override void EmitGet(CodeGen g)

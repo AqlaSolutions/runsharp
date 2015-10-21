@@ -49,9 +49,9 @@ namespace TriAxis.RunSharp.Operands
 
 		public Invocation(ApplicableFunction method, Operand target, Operand[] args)
 		{
-			this._method = method;
-			this._target = target;
-			this._args = args;
+			_method = method;
+			_target = target;
+			_args = args;
 		}
 
 		internal override void EmitGet(CodeGen g)

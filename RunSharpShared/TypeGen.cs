@@ -58,7 +58,7 @@ namespace TriAxis.RunSharp
 		{
 		    public InterfaceImplEntry(IMemberInfo interfaceMethod)
 			{
-				this.InterfaceMethod = interfaceMethod;
+				InterfaceMethod = interfaceMethod;
 			}
 
 			public bool Match(MethodGen candidate)
@@ -76,7 +76,7 @@ namespace TriAxis.RunSharp
 
 		    public void Bind(MethodGen implementation)
 			{
-				this.BoundMethod = implementation;
+				BoundMethod = implementation;
 			}
 		}
 
@@ -105,10 +105,10 @@ namespace TriAxis.RunSharp
 
 	    internal TypeGen(AssemblyGen owner, string name, TypeAttributes attrs, Type baseType, Type[] interfaces)
 		{
-			this._owner = owner;
-			this.Name = name;
-			this.BaseType = baseType;
-			this._interfaces = interfaces;
+			_owner = owner;
+			Name = name;
+			BaseType = baseType;
+			_interfaces = interfaces;
 
 			TypeBuilder = owner.ModuleBuilder.DefineType(name, attrs, baseType, interfaces);
 			owner.AddType(this);
@@ -120,10 +120,10 @@ namespace TriAxis.RunSharp
 
 		internal TypeGen(TypeGen owner, string name, TypeAttributes attrs, Type baseType, Type[] interfaces)
 		{
-			this._owner = owner._owner;
-			this.Name = name;
-			this.BaseType = baseType;
-			this._interfaces = interfaces;
+			_owner = owner._owner;
+			Name = name;
+			BaseType = baseType;
+			_interfaces = interfaces;
 
 			TypeBuilder = owner.TypeBuilder.DefineNestedType(name, attrs, baseType, interfaces);
 			owner._nestedTypes.Add(this);
@@ -186,12 +186,12 @@ namespace TriAxis.RunSharp
 
 		void SetVisibility(MethodAttributes mthVis, FieldAttributes fldVis, TypeAttributes typeVis)
 		{
-			if (this._mthVis != 0)
+			if (_mthVis != 0)
 				throw new InvalidOperationException(Properties.Messages.ErrMultiVisibility);
 
-			this._mthVis = mthVis;
-			this._fldVis = fldVis;
-			this._typeVis = typeVis;
+			_mthVis = mthVis;
+			_fldVis = fldVis;
+			_typeVis = typeVis;
 		}
 
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -209,11 +209,11 @@ namespace TriAxis.RunSharp
 
 		void SetVirtual(MethodAttributes mthVirt, TypeAttributes typeVirt)
 		{
-			if (this._mthVirt != 0)
+			if (_mthVirt != 0)
 				throw new InvalidOperationException(Properties.Messages.ErrMultiVTable);
 
-			this._mthVirt = mthVirt;
-			this._typeVirt = typeVirt;
+			_mthVirt = mthVirt;
+			_typeVirt = typeVirt;
 		}
 
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -227,14 +227,14 @@ namespace TriAxis.RunSharp
 
 		void SetFlag(MethodAttributes mthFlag, FieldAttributes fldFlag, TypeAttributes typeFlag)
 		{
-			if ((this._mthFlags & mthFlag) != 0 ||
-				(this._fldFlags & fldFlag) != 0 ||
-				(this._typeFlags & typeFlag) != 0)
+			if ((_mthFlags & mthFlag) != 0 ||
+				(_fldFlags & fldFlag) != 0 ||
+				(_typeFlags & typeFlag) != 0)
 				throw new InvalidOperationException(string.Format(null, Properties.Messages.ErrMultiAttribute, mthFlag));
 
-			this._mthFlags |= mthFlag;
-			this._fldFlags |= fldFlag;
-			this._typeFlags |= typeFlag;
+			_mthFlags |= mthFlag;
+			_fldFlags |= fldFlag;
+			_typeFlags |= typeFlag;
 		}
 
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]

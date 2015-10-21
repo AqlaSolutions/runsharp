@@ -48,7 +48,7 @@ namespace TriAxis.RunSharp.Operands
 
 		public PrefixOperation(Operator op, Operand operand)
 		{
-			this._target = operand;
+			_target = operand;
 			_baseOp = new OverloadableOperation(op, operand);
 		}
 

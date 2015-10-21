@@ -58,7 +58,7 @@ namespace TriAxis.RunSharp
 
 			for (int i = 0; i < array1.Length; i++)
 			{
-				if (!object.Equals(array1[i], array2[i]))
+				if (!Equals(array1[i], array2[i]))
 					return false;
 			}
 

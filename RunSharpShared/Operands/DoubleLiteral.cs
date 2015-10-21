@@ -44,7 +44,7 @@ namespace TriAxis.RunSharp.Operands
 	{
 	    readonly double _value;
 
-		public DoubleLiteral(double value) { this._value = value; }
+		public DoubleLiteral(double value) { _value = value; }
 
 		internal override void EmitGet(CodeGen g)
 		{

@@ -56,15 +56,15 @@ namespace TriAxis.RunSharp
 		internal ConstructorGen(TypeGen owner, MethodAttributes attributes, MethodImplAttributes implFlags)
 			: base(owner, null)
 		{
-			this._attributes = attributes;
-			this._implFlags = implFlags;
+			_attributes = attributes;
+			_implFlags = implFlags;
 
 			owner.RegisterForCompletion(this);
 		}
 
 		protected override void CreateMember()
 		{
-			this._cb = Owner.TypeBuilder.DefineConstructor(_attributes | MethodAttributes.HideBySig, IsStatic ? CallingConventions.Standard : CallingConventions.HasThis, ParameterTypes);
+			_cb = Owner.TypeBuilder.DefineConstructor(_attributes | MethodAttributes.HideBySig, IsStatic ? CallingConventions.Standard : CallingConventions.HasThis, ParameterTypes);
 			if (_implFlags != 0)
 				_cb.SetImplementationFlags(_implFlags);
 		}

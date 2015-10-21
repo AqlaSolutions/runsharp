@@ -48,8 +48,8 @@ namespace TriAxis.RunSharp.Operands
 
 		public InitializedArray(Type type, Operand[] elements)
 		{
-			this._type = type;
-			this._elements = elements;
+			_type = type;
+			_elements = elements;
 		}
 
 		internal override void EmitGet(CodeGen g)

@@ -48,7 +48,7 @@ namespace TriAxis.RunSharp
 		protected RoutineGen(TypeGen owner, Type returnType)
 			: base(returnType)
 		{
-			this.OwnerType = this.Owner = owner;
+			OwnerType = Owner = owner;
 
 			if (owner != null)
 				owner.RegisterForCompletion(this);
@@ -57,7 +57,7 @@ namespace TriAxis.RunSharp
 		protected RoutineGen(Type ownerType, Type returnType)
 			: base(returnType)
 		{
-			this.OwnerType = ownerType;
+			OwnerType = ownerType;
 		}
 
 		public Type OwnerType { get; }

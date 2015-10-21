@@ -45,7 +45,7 @@ namespace TriAxis.RunSharp.Operands
 	{
 	    readonly Enum _value;
 
-		public EnumLiteral(Enum value) { this._value = value; }
+		public EnumLiteral(Enum value) { _value = value; }
 
 		internal override void EmitGet(CodeGen g)
 		{

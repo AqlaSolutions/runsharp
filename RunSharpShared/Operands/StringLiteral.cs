@@ -45,7 +45,7 @@ namespace TriAxis.RunSharp.Operands
 	{
 	    readonly string _str;
 
-		public StringLiteral(string str) { this._str = str; }
+		public StringLiteral(string str) { _str = str; }
 
 		internal override void EmitGet(CodeGen g)
 		{

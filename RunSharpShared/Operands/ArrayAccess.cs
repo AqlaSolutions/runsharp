@@ -51,8 +51,8 @@ namespace TriAxis.RunSharp.Operands
 			if (array.Type.GetArrayRank() != indexes.Length)
 				throw new ArgumentException(Properties.Messages.ErrIndexCountMismatch);
 
-			this._array = array;
-			this._indexes = indexes;
+			_array = array;
+			_indexes = indexes;
 		}
 
 		void LoadArrayAndIndexes(CodeGen g)
@@ -60,7 +60,7 @@ namespace TriAxis.RunSharp.Operands
 			_array.EmitGet(g);
 
 			foreach (Operand op in _indexes)
-				g.EmitGetHelper(op, Operand.GetType(op) == typeof(int) ? typeof(int) : typeof(long), false);
+				g.EmitGetHelper(op, GetType(op) == typeof(int) ? typeof(int) : typeof(long), false);
 		}
 
 		internal override void EmitGet(CodeGen g)

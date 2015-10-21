@@ -49,8 +49,8 @@ namespace TriAxis.RunSharp.Operands
 
 		public OverloadableOperation(Operator op, params Operand[] operands)
 		{
-			this._op = op;
-			this._operands = operands;
+			_op = op;
+			_operands = operands;
 
 			List<ApplicableFunction> candidates = null;
 
@@ -69,7 +69,7 @@ namespace TriAxis.RunSharp.Operands
 
 			if (candidates == null)
 				throw new InvalidOperationException(string.Format(null, Properties.Messages.ErrInvalidOperation, op.MethodName,
-					string.Join(", ", Array.ConvertAll<Operand, string>(operands, Operand.GetTypeName))));
+					string.Join(", ", Array.ConvertAll<Operand, string>(operands, GetTypeName))));
 
 			_af = OverloadResolver.FindBest(candidates);
 

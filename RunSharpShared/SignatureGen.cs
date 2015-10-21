@@ -57,7 +57,7 @@ namespace TriAxis.RunSharp
         {
             TypedThis = (T)this;
             if (returnType != null)
-                this.ReturnParameter = new ParameterGen(_parameters, 0, returnType, 0, null, false);
+                ReturnParameter = new ParameterGen(_parameters, 0, returnType, 0, null, false);
         }
 
         internal bool SignatureComplete { get; set; }
@@ -133,7 +133,7 @@ namespace TriAxis.RunSharp
         internal T CopyParameters(IList<ParameterGen> parameters)
         {
             for (int i = 0; i < parameters.Count; i++)
-                this._parameters.Add(parameters[i]);
+                _parameters.Add(parameters[i]);
 
             return TypedThis;
         }

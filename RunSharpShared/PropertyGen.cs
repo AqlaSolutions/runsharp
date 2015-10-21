@@ -54,10 +54,10 @@ namespace TriAxis.RunSharp
 
 		internal PropertyGen(TypeGen owner, MethodAttributes attrs, Type type, string name)
 		{
-			this._owner = owner;
-			this._attrs = attrs;
-			this._type = type;
-			this.Name = name;
+			_owner = owner;
+			_attrs = attrs;
+			_type = type;
+			Name = name;
 		}
 
 		void LockSignature()

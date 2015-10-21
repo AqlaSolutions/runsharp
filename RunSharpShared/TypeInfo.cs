@@ -87,8 +87,8 @@ namespace TriAxis.RunSharp
 
             public CacheEntry(Type t, TypeInfo owner)
             {
-                this._ = owner;
-                this._t = t;
+                _ = owner;
+                _t = t;
 
                 if (t.GetType() != typeof(object).GetType())
                 {
@@ -453,18 +453,18 @@ namespace TriAxis.RunSharp
             public StdMethodInfo(MethodInfo mi, TypeInfo owner)
                 : this((MethodBase)mi, owner)
             {
-                this._mi = mi;
+                _mi = mi;
             }
 
             public StdMethodInfo(ConstructorInfo ci, TypeInfo owner)
                 : this((MethodBase)ci, owner)
             {
-                this._returnType =  owner.TypeMapper.MapType(typeof(void));
+                _returnType =  owner.TypeMapper.MapType(typeof(void));
             }
 
             public StdMethodInfo(MethodBase mb, TypeInfo owner)
             {
-                this._mb = mb;
+                _mb = mb;
                 _ = owner;
             }
 
@@ -536,8 +536,8 @@ namespace TriAxis.RunSharp
 
             public StdPropertyInfo(PropertyInfo pi)
             {
-                this._pi = pi;
-                this._mi = pi.GetGetMethod();
+                _pi = pi;
+                _mi = pi.GetGetMethod();
                 if (_mi == null)
                     _mi = pi.GetSetMethod();
                 // mi will remain null for abstract properties
@@ -607,10 +607,10 @@ namespace TriAxis.RunSharp
 
             public StdEventInfo(EventInfo ei)
             {
-                this._ei = ei;
-                this.Name = ei.Name;
+                _ei = ei;
+                Name = ei.Name;
 
-                this._mi = ei.GetAddMethod();
+                _mi = ei.GetAddMethod();
                 if (_mi == null)
                     _mi = ei.GetRemoveMethod();
                 // mi will remain null for abstract properties
@@ -636,8 +636,8 @@ namespace TriAxis.RunSharp
 
             public StdFieldInfo(FieldInfo fi)
             {
-                this._fi = fi;
-                this.Name = fi.Name;
+                _fi = fi;
+                Name = fi.Name;
             }
 
             public MemberInfo Member => _fi;

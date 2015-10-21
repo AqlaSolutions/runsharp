@@ -344,7 +344,7 @@ namespace TriAxis.RunSharp
 
 			public StdOp(Type returnType, params Type[] opTypes)
 			{
-				this.ReturnType = returnType; this.ParameterTypes = opTypes;
+				ReturnType = returnType; ParameterTypes = opTypes;
 				Unsigned = IsUnsigned(returnType);
 			}
 
@@ -468,36 +468,36 @@ namespace TriAxis.RunSharp
 
 		private Operator(OpCode opCode, bool invertOpResult, BranchInstruction branchOp, string methodName, IMemberInfo[] standardCandidates, SpecificOperatorProvider[] standardTemplates)
 		{
-			this.OpCode = this.OpCodeUn = this.OpCodeChk = this.OpCodeChkUn = opCode;
-			this.InvertOpResult = invertOpResult;
-			this.BranchOp = branchOp;
-			this.MethodName = methodName;
-			this._standardCandidates = standardCandidates;
-			this._standardTemplates = standardTemplates;
+			OpCode = OpCodeUn = OpCodeChk = OpCodeChkUn = opCode;
+			InvertOpResult = invertOpResult;
+			BranchOp = branchOp;
+			MethodName = methodName;
+			_standardCandidates = standardCandidates;
+			_standardTemplates = standardTemplates;
 		}
 
 		private Operator(OpCode opCode, OpCode opCodeUn, bool invertOpResult, BranchInstruction branchOp, string methodName, IMemberInfo[] standardCandidates, SpecificOperatorProvider[] standardTemplates)
 		{
-			this.OpCode = this.OpCodeChk = opCode;
-			this.OpCodeUn = this.OpCodeChkUn = opCodeUn;
-			this.InvertOpResult = invertOpResult;
-			this.BranchOp = branchOp;
-			this.MethodName = methodName;
-			this._standardCandidates = standardCandidates;
-			this._standardTemplates = standardTemplates;
+			OpCode = OpCodeChk = opCode;
+			OpCodeUn = OpCodeChkUn = opCodeUn;
+			InvertOpResult = invertOpResult;
+			BranchOp = branchOp;
+			MethodName = methodName;
+			_standardCandidates = standardCandidates;
+			_standardTemplates = standardTemplates;
 		}
 
 		private Operator(OpCode opCode, OpCode opCodeUn, OpCode opCodeChk, OpCode opCodeChkUn, bool invertOpResult, BranchInstruction branchOp, string methodName, IMemberInfo[] standardCandidates, SpecificOperatorProvider[] standardTemplates)
 		{
-			this.OpCode = opCode;
-			this.OpCodeUn = opCodeUn;
-			this.OpCodeChk = opCodeChk;
-			this.OpCodeChkUn = opCodeChkUn;
-			this.InvertOpResult = invertOpResult;
-			this.BranchOp = branchOp;
-			this.MethodName = methodName;
-			this._standardCandidates = standardCandidates;
-			this._standardTemplates = standardTemplates;
+			OpCode = opCode;
+			OpCodeUn = opCodeUn;
+			OpCodeChk = opCodeChk;
+			OpCodeChkUn = opCodeChkUn;
+			InvertOpResult = invertOpResult;
+			BranchOp = branchOp;
+			MethodName = methodName;
+			_standardCandidates = standardCandidates;
+			_standardTemplates = standardTemplates;
 		}
 
 		internal IEnumerable<IMemberInfo> GetStandardCandidates(params Operand[] args)

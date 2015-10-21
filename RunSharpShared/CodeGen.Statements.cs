@@ -284,7 +284,7 @@ namespace TriAxis.RunSharp
 
 	    public CodeGen(ITypeMapper typeMapper)
 	    {
-	        this._typeMapper = typeMapper;
+	        _typeMapper = typeMapper;
 	    }
         
 	    public void WriteLine(params Operand[] args)
@@ -671,9 +671,9 @@ namespace TriAxis.RunSharp
 			public IfBlock(Operand condition)
 			{
 				if (!Helpers.AreTypesEqual(condition.Type, typeof(bool)))
-					this._condition = condition.IsTrue();
+					_condition = condition.IsTrue();
 				else
-					this._condition = condition;
+					_condition = condition;
 			}
 
 			Label _lbSkip;
@@ -701,7 +701,7 @@ namespace TriAxis.RunSharp
 
 			public ElseBlock(IfBlock ifBlk)
 			{
-				this._ifBlk = ifBlk;
+				_ifBlk = ifBlk;
 			}
 
 			protected override void BeginImpl()
@@ -732,9 +732,9 @@ namespace TriAxis.RunSharp
 
 			public LoopBlock(IStatement init, Operand test, IStatement iter)
 			{
-				this._init = init;
-				this._test = test;
-				this._iter = iter;
+				_init = init;
+				_test = test;
+				_iter = iter;
 
 				if (!Helpers.AreTypesEqual(test.Type, typeof(bool)))
 					test = test.IsTrue();
@@ -807,9 +807,9 @@ namespace TriAxis.RunSharp
 
 			public ForeachBlock(Type elementType, Operand collection, ITypeMapper typeMapper)
 			{
-				this._elementType = elementType;
-				this._collection = collection;
-			    this._typeMapper = typeMapper;
+				_elementType = elementType;
+				_collection = collection;
+			    _typeMapper = typeMapper;
 			}
 
 			Operand _enumerator;
@@ -873,7 +873,7 @@ namespace TriAxis.RunSharp
 
 		    public ExceptionBlock(ITypeMapper typeMapper)
 		    {
-		        this._typeMapper = typeMapper;
+		        _typeMapper = typeMapper;
 		    }
 
 		    protected override void BeginImpl()
@@ -936,7 +936,7 @@ namespace TriAxis.RunSharp
 
 		class SwitchBlock : Block, IBreakable
 		{
-			static readonly System.Type[] _validTypes = { 
+			static readonly Type[] _validTypes = { 
 				typeof(sbyte), typeof(byte), typeof(short), typeof(ushort), typeof(int), typeof(uint), typeof(long), typeof(ulong), typeof(char), typeof(string)
 			};
 
@@ -957,7 +957,7 @@ namespace TriAxis.RunSharp
 
 			public SwitchBlock(Operand expression, ITypeMapper typeMapper)
 			{
-			    this._typeMapper = typeMapper;
+			    _typeMapper = typeMapper;
 			    _strCmp = typeMapper.MapType(typeof(string)).GetMethod(
 			        "Equals",
 			        BindingFlags.Public | BindingFlags.Static,
@@ -965,7 +965,7 @@ namespace TriAxis.RunSharp
 			        new Type[] { typeMapper.MapType(typeof(string)), typeMapper.MapType(typeof(string)) },
 			        null);
 
-                this._expression = expression;
+                _expression = expression;
 
 				Type exprType = expression.Type;
 				if (Array.IndexOf(_validTypes, exprType) != -1)
@@ -975,7 +975,7 @@ namespace TriAxis.RunSharp
 				else
 				{
 					// if a single implicit coversion from expression to one of the valid types exists, it's ok
-					foreach (System.Type t in _validTypes)
+					foreach (Type t in _validTypes)
 					{
 						Conversion tmp = Conversion.GetImplicit(expression, typeMapper.MapType(t), false);
 						if (tmp.IsValid)
@@ -1011,7 +1011,7 @@ namespace TriAxis.RunSharp
 				bool duplicate;
 
 				// make sure the value is of the governing type
-				IComparable val = value == null ? null : (IComparable)value.ToType(System.Type.GetType(_govType.FullName, true), System.Globalization.CultureInfo.InvariantCulture);
+				IComparable val = value == null ? null : (IComparable)value.ToType(Type.GetType(_govType.FullName, true), System.Globalization.CultureInfo.InvariantCulture);
 
 				if (value == null)
 					duplicate = _defaultExists;

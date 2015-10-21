@@ -51,16 +51,16 @@ namespace TriAxis.RunSharp.Operands
 
 		public NewDelegate(Type delegateType, Type targetType, string methodName, ITypeInfo typeInfo)
 		{
-			this._delegateType = delegateType;
-		    this._typeInfo = typeInfo;
+			_delegateType = delegateType;
+		    _typeInfo = typeInfo;
 		    Initialize(targetType, methodName);
 		}
 
 		public NewDelegate(Type delegateType, Operand target, string methodName, ITypeInfo typeInfo)
 		{
-			this._delegateType = delegateType;
-			this._target = target;
-		    this._typeInfo = typeInfo;
+			_delegateType = delegateType;
+			_target = target;
+		    _typeInfo = typeInfo;
 		    Initialize(target.Type, methodName);
 		}
 

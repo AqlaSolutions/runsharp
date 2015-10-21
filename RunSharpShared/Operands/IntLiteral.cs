@@ -43,7 +43,7 @@ namespace TriAxis.RunSharp.Operands
 {
 	class IntLiteral : Operand
 	{
-	    public IntLiteral(Type t, int value) { this.Type = t; this.Value = value; }
+	    public IntLiteral(Type t, int value) { Type = t; Value = value; }
 
 		internal override void EmitGet(CodeGen g)
 		{

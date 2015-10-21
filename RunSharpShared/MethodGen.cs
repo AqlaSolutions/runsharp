@@ -57,9 +57,9 @@ namespace TriAxis.RunSharp
 		internal MethodGen(TypeGen owner, string name, MethodAttributes attributes, Type returnType, MethodImplAttributes implFlags)
 			: base(owner, returnType)
 		{
-			this._name = name;
-			this._attributes = owner.PreprocessAttributes(this, attributes);
-			this._implFlags = implFlags;
+			_name = name;
+			_attributes = owner.PreprocessAttributes(this, attributes);
+			_implFlags = implFlags;
 		}
 
 		protected override void CreateMember()
@@ -69,7 +69,7 @@ namespace TriAxis.RunSharp
 			if (ImplementedInterface != null)
 				methodName = ImplementedInterface + "." + _name;
 
-			this._mb = Owner.TypeBuilder.DefineMethod(methodName, this._attributes | MethodAttributes.HideBySig, IsStatic ? CallingConventions.Standard : CallingConventions.HasThis, ReturnType, ParameterTypes);
+			_mb = Owner.TypeBuilder.DefineMethod(methodName, _attributes | MethodAttributes.HideBySig, IsStatic ? CallingConventions.Standard : CallingConventions.HasThis, ReturnType, ParameterTypes);
 			if (_implFlags != 0)
 				_mb.SetImplementationFlags(_implFlags);
 		}

@@ -57,11 +57,11 @@ namespace TriAxis.RunSharp
 			Type[] appliedSignature, Type[] paramsSignature,
 			Conversion[] conversions)
 		{
-			this.Method = method;
-			this._methodSignature = methodSignature;
-			this._appliedSignature = appliedSignature;
-			this._paramsSignature = paramsSignature;
-			this._conversions = conversions;
+			Method = method;
+			_methodSignature = methodSignature;
+			_appliedSignature = appliedSignature;
+			_paramsSignature = paramsSignature;
+			_conversions = conversions;
 		}
 		public IMemberInfo Method { get; }
 	    public bool IsExpanded => _methodSignature != _appliedSignature;

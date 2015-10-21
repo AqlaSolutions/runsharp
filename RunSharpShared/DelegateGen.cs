@@ -54,17 +54,17 @@ namespace TriAxis.RunSharp
 	    public DelegateGen(AssemblyGen owner, string name, Type returnType, TypeAttributes attrs)
 			: base(returnType)
 		{
-			this._owner = owner;
-			this._name = name;
-			this._attrs = attrs;
+			_owner = owner;
+			_name = name;
+			_attrs = attrs;
 		}
 
         public DelegateGen(TypeGen typeGen, string name, Type returnType, TypeAttributes typeAttributes)
             : base(returnType)
         {
-            this._owner2 = typeGen;
-            this._name = name;
-            this._attrs = typeAttributes;
+            _owner2 = typeGen;
+            _name = name;
+            _attrs = typeAttributes;
 
         }
 

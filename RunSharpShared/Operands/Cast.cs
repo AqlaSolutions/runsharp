@@ -48,8 +48,8 @@ namespace TriAxis.RunSharp.Operands
 
 		public Cast(Operand op, Type t)
 		{
-			this._op = op;
-			this._t = t;
+			_op = op;
+			_t = t;
 		}
 
 		internal override void EmitGet(CodeGen g)

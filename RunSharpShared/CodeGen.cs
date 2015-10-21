@@ -71,8 +71,8 @@ namespace TriAxis.RunSharp
 
 	    internal CodeGen(ICodeGenContext context)
 		{
-			this.Context = context;
-			this._cg = context as ConstructorGen;
+			Context = context;
+			_cg = context as ConstructorGen;
 
 			if (_cg != null && _cg.IsStatic)
 				// #14 - cg is relevant for instance constructors - it wreaks havoc in a static constructor
@@ -214,8 +214,8 @@ namespace TriAxis.RunSharp
 
 			public _Arg(int index, Type type)
 			{
-				this._index = checked((ushort)index);
-				this._type = type;
+				_index = checked((ushort)index);
+				_type = type;
 			}
 
 			internal override void EmitGet(CodeGen g)
@@ -271,20 +271,20 @@ namespace TriAxis.RunSharp
 
 			public _Local(CodeGen owner)
 			{
-				this._owner = owner;
+				_owner = owner;
 				_scope = owner.GetBlockForVariable();
 			}
 			public _Local(CodeGen owner, Type t)
 			{
-				this._owner = owner; this._t = t;
+				_owner = owner; _t = t;
 				_scope = owner.GetBlockForVariable();
 			}
 
 			public _Local(CodeGen owner, LocalBuilder var)
 			{
-				this._owner = owner;
-				this._var = var;
-				this._t = var.LocalType;
+				_owner = owner;
+				_var = var;
+				_t = var.LocalType;
 			}
 
 			void CheckScope(CodeGen g)
@@ -357,13 +357,13 @@ namespace TriAxis.RunSharp
 		    internal override void AssignmentHint(Operand op)
 			{
 				if (_tHint == null)
-					_tHint = Operand.GetType(op);
+					_tHint = GetType(op);
 			}
 		}
 
 		class StaticTarget : Operand
 		{
-		    public StaticTarget(Type t) { this.Type = t; }
+		    public StaticTarget(Type t) { Type = t; }
 
 			public override Type Type { get; }
 

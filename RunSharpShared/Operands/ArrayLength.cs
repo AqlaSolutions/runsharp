@@ -54,8 +54,8 @@ namespace TriAxis.RunSharp.Operands
 			if (!array.Type.IsArray)
 				throw new InvalidOperationException(Properties.Messages.ErrArrayOnly);
 
-			this._array = array;
-			this._asLong = asLong;
+			_array = array;
+			_asLong = asLong;
 		}
 
 		internal override void EmitGet(CodeGen g)

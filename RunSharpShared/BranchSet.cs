@@ -79,12 +79,12 @@ namespace TriAxis.RunSharp
 
 		private BranchSet(OpCode brTrue, OpCode brFalse, OpCode brEq, OpCode brNe, OpCode brLt, OpCode brLtUn, OpCode brGt, OpCode brGtUn, OpCode brLe, OpCode brLeUn, OpCode brGe, OpCode brGeUn)
 		{
-			this.BrTrue = brTrue; this.BrFalse = brFalse;
-			this.BrEq = brEq; this.BrNe = brNe;
-			this.BrLt = brLt; this.BrLtUn = brLtUn;
-			this.BrGt = brGt; this.BrGtUn = brGtUn;
-			this.BrLe = brLe; this.BrLeUn = brLeUn;
-			this.BrGe = brGe; this.BrGeUn = brGeUn;
+			BrTrue = brTrue; BrFalse = brFalse;
+			BrEq = brEq; BrNe = brNe;
+			BrLt = brLt; BrLtUn = brLtUn;
+			BrGt = brGt; BrGtUn = brGtUn;
+			BrLe = brLe; BrLeUn = brLeUn;
+			BrGe = brGe; BrGeUn = brGeUn;
 		}
 	}
 }

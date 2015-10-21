@@ -714,7 +714,7 @@ namespace TriAxis.RunSharp
 
 		public Operand Property(string name)
 		{
-			return Property(name, Operand.EmptyArray);
+			return Property(name, EmptyArray);
 		}
 
 		public Operand Property(string name, params Operand[] indexes)
@@ -724,7 +724,7 @@ namespace TriAxis.RunSharp
 
 		public Operand Invoke(string name)
 		{
-			return Invoke(name, Operand.EmptyArray);
+			return Invoke(name, EmptyArray);
 		}
 
 		public Operand Invoke(string name, params Operand[] args)
@@ -734,7 +734,7 @@ namespace TriAxis.RunSharp
 
 		public Operand InvokeDelegate()
 		{
-			return InvokeDelegate(Operand.EmptyArray);
+			return InvokeDelegate(EmptyArray);
 		}
 
 		public Operand InvokeDelegate(params Operand[] args)
@@ -774,7 +774,7 @@ namespace TriAxis.RunSharp
 		{
 		    readonly Operand _op;
 
-			public Reference(Operand op) { this._op = op; }
+			public Reference(Operand op) { _op = op; }
 
 			internal override void EmitAddressOf(CodeGen g)
 			{

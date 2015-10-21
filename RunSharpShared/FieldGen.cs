@@ -51,10 +51,10 @@ namespace TriAxis.RunSharp
 
 		internal FieldGen(TypeGen owner, string name, Type type, FieldAttributes attrs)
 		{
-			this._owner = owner;
-			this._attrs = attrs;
-			this.Name = name;
-			this._type = type;
+			_owner = owner;
+			_attrs = attrs;
+			Name = name;
+			_type = type;
 
 			_fb = owner.TypeBuilder.DefineField(name, type, attrs);
 			owner.RegisterForCompletion(this);

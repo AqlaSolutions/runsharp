@@ -48,8 +48,8 @@ namespace TriAxis.RunSharp.Operands
 
 		public Field(FieldInfo fi, Operand target)
 		{
-			this._fi = fi;
-			this._target = target;
+			_fi = fi;
+			_target = target;
 		}
 
 		internal override void EmitGet(CodeGen g)

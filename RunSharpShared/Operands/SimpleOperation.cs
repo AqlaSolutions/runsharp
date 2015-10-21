@@ -48,8 +48,8 @@ namespace TriAxis.RunSharp.Operands
 
 		public SimpleOperation(Operand op, params OpCode[] opCodes)
 		{
-			this._op = op;
-			this._opCodes = opCodes;
+			_op = op;
+			_opCodes = opCodes;
 		}
 
 		internal override void EmitGet(CodeGen g)

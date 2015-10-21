@@ -50,12 +50,12 @@ namespace TriAxis.RunSharp.Operands
 	    public Conditional(Operand cond, Operand ifTrue, Operand ifFalse)
 		{
 			// TODO: proper checking as in specification
-			if (Operand.GetType(ifTrue) != Operand.GetType(ifFalse))
+			if (GetType(ifTrue) != GetType(ifFalse))
 				throw new ArgumentException(Properties.Messages.ErrInvalidConditionalVariants);
 
-			this._cond = cond;
-			this._ifTrue = ifTrue;
-			this._ifFalse = ifFalse;
+			_cond = cond;
+			_ifTrue = ifTrue;
+			_ifFalse = ifFalse;
 		}
 
 		internal override void EmitGet(CodeGen g)
@@ -71,6 +71,6 @@ namespace TriAxis.RunSharp.Operands
 			g.IL.MarkLabel(lbFalse);
 		}
 
-		public override Type Type => Operand.GetType(_ifTrue);
+		public override Type Type => GetType(_ifTrue);
 	}
 }

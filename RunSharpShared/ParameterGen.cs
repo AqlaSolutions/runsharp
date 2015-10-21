@@ -47,12 +47,12 @@ namespace TriAxis.RunSharp
 
 		internal ParameterGen(ParameterGenCollection owner, int position, Type parameterType, ParameterAttributes attributes, string name, bool va)
 		{
-			this._owner = owner;
-			this.Position = position;
-			this.Type = parameterType;
-			this.ParameterAttributes = attributes;
-			this.Name = name;
-			this.IsParameterArray = va;
+			_owner = owner;
+			Position = position;
+			Type = parameterType;
+			ParameterAttributes = attributes;
+			Name = name;
+			IsParameterArray = va;
 		}
 
 		public int Position { get; }
@@ -105,7 +105,7 @@ namespace TriAxis.RunSharp
 		internal ParameterGen(TOuterContext context, ParameterGenCollection owner, int position, Type parameterType, ParameterAttributes attributes, string name, bool va)
 			: base(owner, position, parameterType, attributes, name, va)
 		{
-			this._context = context;
+			_context = context;
 		}
 
 		#region Custom Attributes
@@ -242,7 +242,7 @@ namespace TriAxis.RunSharp
 		public void CopyTo(ParameterGen[] array, int arrayIndex)
 		{
 			for (int i = 0; i < Count; i++)
-				array[arrayIndex++] = this._array[i];
+				array[arrayIndex++] = _array[i];
 		}
 
 		public int Count { get; set; }

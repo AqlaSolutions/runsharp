@@ -72,13 +72,13 @@ namespace TriAxis.RunSharp
 
             internal Attributes(Type owner, bool asInstance)
             {
-                this.ownerType = owner;
-                this.AsInstance = asInstance;
+                ownerType = owner;
+                AsInstance = asInstance;
             }
 
             internal Attributes(Module owner)
             {
-                this.OwnerModule = owner;
+                OwnerModule = owner;
             }
 
             [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -99,7 +99,7 @@ namespace TriAxis.RunSharp
         private DynamicMethodGen(Attributes attrs, Type returnType)
             : base(attrs.ownerType, returnType)
         {
-            this._attrs = attrs;
+            _attrs = attrs;
 
             if (attrs.AsInstance)
                 Parameter(attrs.ownerType, "this");
@@ -110,20 +110,20 @@ namespace TriAxis.RunSharp
             if (_attrs.ownerType != null)
                 try
                 {
-                    this._dm = new DynamicMethod(_attrs.name, ReturnType, ParameterTypes, _attrs.ownerType, _attrs.SkipVisibility);
+                    _dm = new DynamicMethod(_attrs.name, ReturnType, ParameterTypes, _attrs.ownerType, _attrs.SkipVisibility);
                 }
                 catch
                 {
-                    this._dm = new DynamicMethod(_attrs.name, ReturnType, ParameterTypes, _attrs.ownerType, false);
+                    _dm = new DynamicMethod(_attrs.name, ReturnType, ParameterTypes, _attrs.ownerType, false);
                 }
             else
                 try
                 {
-                    this._dm = new DynamicMethod(_attrs.name, ReturnType, ParameterTypes, _attrs.OwnerModule, _attrs.SkipVisibility);
+                    _dm = new DynamicMethod(_attrs.name, ReturnType, ParameterTypes, _attrs.OwnerModule, _attrs.SkipVisibility);
                 }
                 catch
                 {
-                    this._dm = new DynamicMethod(_attrs.name, ReturnType, ParameterTypes, _attrs.OwnerModule, false);
+                    _dm = new DynamicMethod(_attrs.name, ReturnType, ParameterTypes, _attrs.OwnerModule, false);
                 }
         }
 

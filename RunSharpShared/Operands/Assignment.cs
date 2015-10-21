@@ -49,9 +49,9 @@ namespace TriAxis.RunSharp.Operands
 
 		internal Assignment(Operand lvalue, Operand rvalue, bool allowExplicitConversion)
 		{
-			this._lvalue = lvalue;
-			this._rvalue = rvalue;
-			this._allowExplicitConversion = allowExplicitConversion;
+			_lvalue = lvalue;
+			_rvalue = rvalue;
+			_allowExplicitConversion = allowExplicitConversion;
 
 			lvalue.AssignmentHint(rvalue);
 		}

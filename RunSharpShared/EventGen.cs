@@ -54,10 +54,10 @@ namespace TriAxis.RunSharp
 
 	    internal EventGen(TypeGen owner, string name, Type type, MethodAttributes mthAttr)
 		{
-			this._owner = owner;
-			this.Name = name;
-			this._type = type;
-			this._attrs = mthAttr;
+			_owner = owner;
+			Name = name;
+			_type = type;
+			_attrs = mthAttr;
 		}
 
         void LockSignature()
@@ -213,7 +213,7 @@ namespace TriAxis.RunSharp
 		{
 		    readonly EventGen _eg;
 
-			public EventInfoProxy(EventGen eg) { this._eg = eg; }
+			public EventInfoProxy(EventGen eg) { _eg = eg; }
 
 			public override EventAttributes Attributes => EventAttributes.None;
 

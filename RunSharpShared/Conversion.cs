@@ -166,11 +166,11 @@ namespace TriAxis.RunSharp
 
 			public UserDefined(Conversion before, IMemberInfo method, Conversion after)
 			{
-				this._before = before;
-				this._method = method;
-				this._fromType = method.ParameterTypes[0];
-				this._toType = method.ReturnType;
-				this._after = after;
+				_before = before;
+				_method = method;
+				_fromType = method.ParameterTypes[0];
+				_toType = method.ReturnType;
+				_after = after;
 			}
 
 			public override void Emit(CodeGen g, Type from, Type to)
@@ -365,7 +365,7 @@ namespace TriAxis.RunSharp
 
 		sealed class FakeTypedOperand : Operand
 		{
-		    public FakeTypedOperand(Type t) { this.Type = t; }
+		    public FakeTypedOperand(Type t) { Type = t; }
 
 			public override Type Type { get; }
 		}

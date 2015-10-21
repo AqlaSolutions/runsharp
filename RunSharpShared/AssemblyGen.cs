@@ -67,8 +67,8 @@ namespace TriAxis.RunSharp
 
 			public NamespaceContext(AssemblyGen ag)
 			{
-				this._ag = ag;
-				this._oldNs = ag._ns;
+				_ag = ag;
+				_oldNs = ag._ns;
 			}
 
 			public void Dispose()
@@ -257,10 +257,10 @@ namespace TriAxis.RunSharp
             string path = options.OutputPath;
             if (path == null && save) throw new ArgumentNullException("options.OutputPath");
 
-            this.Universe = universe;
+            Universe = universe;
 
-            this.TypeMapper = typeMapper;
-            this._access = access;
+            TypeMapper = typeMapper;
+            _access = access;
 
             if (Helpers.IsNullOrEmpty(assemblyName))
             {
@@ -279,21 +279,21 @@ namespace TriAxis.RunSharp
 #if FEAT_IKVM
             if (!Helpers.IsNullOrEmpty(options.KeyFile))
             {
-               _asm.__SetAssemblyKeyPair(new StrongNameKeyPair(File.OpenRead(options.KeyFile)));
+               AssemblyBuilder.__SetAssemblyKeyPair(new StrongNameKeyPair(File.OpenRead(options.KeyFile)));
             }
             else if (!Helpers.IsNullOrEmpty(options.KeyContainer))
             {
-                _asm.__SetAssemblyKeyPair(new StrongNameKeyPair(options.KeyContainer));
+                AssemblyBuilder.__SetAssemblyKeyPair(new StrongNameKeyPair(options.KeyContainer));
             }
             else if (!Helpers.IsNullOrEmpty(options.PublicKey))
             {
-                _asm.__SetAssemblyPublicKey(FromHex(options.PublicKey));
+                AssemblyBuilder.__SetAssemblyPublicKey(FromHex(options.PublicKey));
             }
             if (!Helpers.IsNullOrEmpty(options.ImageRuntimeVersion) && options.MetaDataVersion != 0)
             {
-                _asm.__SetImageRuntimeVersion(options.ImageRuntimeVersion, options.MetaDataVersion);
+                AssemblyBuilder.__SetImageRuntimeVersion(options.ImageRuntimeVersion, options.MetaDataVersion);
             }
-            _mod = _asm.DefineDynamicModule(moduleName, path, options.SymbolInfo);
+            ModuleBuilder = AssemblyBuilder.DefineDynamicModule(moduleName, path, options.SymbolInfo);
 #else
             ModuleBuilder = save ? AssemblyBuilder.DefineDynamicModule(moduleName, path) : AssemblyBuilder.DefineDynamicModule(moduleName);
 #endif

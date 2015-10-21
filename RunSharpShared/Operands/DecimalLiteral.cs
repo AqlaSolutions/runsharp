@@ -49,7 +49,7 @@ namespace TriAxis.RunSharp.Operands
 
 	    readonly decimal _value;
 
-		public DecimalLiteral(decimal value) { this._value = value; }
+		public DecimalLiteral(decimal value) { _value = value; }
 
 		internal override void EmitGet(CodeGen g)
 		{

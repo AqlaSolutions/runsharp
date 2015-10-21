@@ -48,8 +48,8 @@ namespace TriAxis.RunSharp.Operands
 
 		public NewObject(ApplicableFunction ctor, Operand[] args)
 		{
-			this._ctor = ctor;
-			this._args = args;
+			_ctor = ctor;
+			_args = args;
 		}
 
 		internal override void EmitGet(CodeGen g)

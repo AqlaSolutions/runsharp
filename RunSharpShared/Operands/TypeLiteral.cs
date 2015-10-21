@@ -47,7 +47,7 @@ namespace TriAxis.RunSharp.Operands
 
 	    readonly Type _t;
 
-		public TypeLiteral(Type t) { this._t = t; }
+		public TypeLiteral(Type t) { _t = t; }
 
 		internal override void EmitGet(CodeGen g)
 		{

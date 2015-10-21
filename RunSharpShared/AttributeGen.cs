@@ -46,7 +46,7 @@ namespace TriAxis.RunSharp
 
 		private AttributeType(Type t)
 		{
-			this._t = t;
+			_t = t;
 		}
 
 		public static implicit operator Type(AttributeType t)
@@ -91,17 +91,17 @@ namespace TriAxis.RunSharp
 
 			// TODO: target validation
 
-			this._attributeType = attributeType;
+			_attributeType = attributeType;
 
 			Operand[] argOperands;
 			if (args == null || args.Length == 0)
 			{
-				this._args = EmptyArray<object>.Instance;
+				_args = EmptyArray<object>.Instance;
 				argOperands = Operand.EmptyArray;
 			}
 			else
 			{
-				this._args = args;
+				_args = args;
 				argOperands = new Operand[args.Length];
 				for (int i = 0; i < args.Length; i++)
 				{
@@ -109,10 +109,10 @@ namespace TriAxis.RunSharp
 				}
 			}
 
-			this._ctor = TypeInfo.FindConstructor(attributeType, argOperands);
+			_ctor = TypeInfo.FindConstructor(attributeType, argOperands);
 		}
         
-        static bool IsValidAttributeParamType(System.Type t)
+        static bool IsValidAttributeParamType(Type t)
 		{
 		    return t != null && (t.IsPrimitive || t.IsEnum || typeof(Type).IsAssignableFrom(t) || t.FullName == typeof(string).FullName);
 		}
@@ -126,7 +126,7 @@ namespace TriAxis.RunSharp
 		{
 			if (arg == null)
 				throw new ArgumentNullException();
-			System.Type t = arg.GetType();
+			Type t = arg.GetType();
 
 			if (IsValidAttributeParamType(t))
 				return;
@@ -263,7 +263,7 @@ namespace TriAxis.RunSharp
 		internal AttributeGen(TOuterContext context, AttributeTargets target, AttributeType attributeType, object[] args)
 			: base(target, attributeType, args)
 		{
-			this._context = context;
+			_context = context;
 		}
 
 		internal static AttributeGen<TOuterContext> CreateAndAdd(TOuterContext context, ref List<AttributeGen> list, AttributeTargets target, AttributeType attributeType, object[] args)
