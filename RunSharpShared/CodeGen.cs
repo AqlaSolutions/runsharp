@@ -162,7 +162,7 @@ namespace TriAxis.RunSharp
 			get
 			{
 				Type returnType = context.ReturnType;
-				return returnType != null && returnType != typeof(void);
+			    return returnType != null && !Helpers.AreTypesEqual(returnType, typeof(void), typeMapper);
 			}
 		}
 

@@ -19,6 +19,81 @@ namespace TriAxis.RunSharp
 {
     static class Helpers
     {
+
+        public static bool AreTypesEqual(Type a, Type b)
+        {
+            return a == b;
+        }
+
+        public static bool AreTypesEqual(Type a, Type b, ITypeMapper typeMapper)
+        {
+            return AreTypesEqual(a, b);
+        }
+
+#if FEAT_IKVM
+        public static bool AreTypesEqual(Type a, System.Type b)
+        {
+            return a.FullName == b.FullName;
+        }
+        
+        public static bool AreTypesEqual(Type a, System.Type b, ITypeMapper typeMapper)
+        {
+            return a == typeMapper.MapType(b);
+        }
+
+        public static bool AreTypesEqual(System.Type b, Type a, ITypeMapper typeMapper)
+        {
+            return AreTypesEqual(a, b, typeMapper);
+        }
+#endif
+        public static bool IsAttribute(Type t)
+        {
+            return IsAssignableFrom("System.Attribute", t);
+        }
+
+        public static bool IsAssignableFrom(Type t, Type @from, ITypeMapper typeMapper)
+        {
+            return IsAssignableFrom(t, @from);
+        }
+
+        public static bool IsAssignableFrom(Type t, Type @from)
+        {
+            if (t == null) throw new ArgumentNullException(nameof(t));
+            return IsAssignableFrom(t.FullName, @from);
+        }
+#if FEAT_IKVM
+        public static bool IsAssignableFrom(System.Type t, Type @from, ITypeMapper typeMapper)
+        {
+            if (t == null) throw new ArgumentNullException(nameof(t));
+            return typeMapper.MapType(t).IsAssignableFrom(@from);
+        }
+
+        public static bool IsAssignableFrom(System.Type t, Type @from)
+        {
+            if (t == null) throw new ArgumentNullException(nameof(t));
+            return IsAssignableFrom(t.FullName, @from);
+        }
+#endif
+        public static bool IsAssignableFrom(string typeFullName, Type @from)
+        {
+            if (@from == null) throw new ArgumentNullException(nameof(@from));
+            if (IsNullOrEmpty(typeFullName)) return false;
+            if (typeFullName == @from.FullName) return true;
+            foreach (var @interface in from.GetInterfaces())
+            {
+                if (typeFullName == @interface.FullName) return true;
+            }
+
+            from = from.BaseType;
+
+            while (@from != null && @from.FullName != "System.Object" && @from.FullName != "System.ValueType")
+            {
+                if (typeFullName == from.FullName) return true;
+                @from = @from.BaseType;
+            }
+            return false;
+        }
+
         public static object GetPropertyValue(System.Reflection.PropertyInfo prop, object instance)
         {
             return GetPropertyValue(prop, instance, null);

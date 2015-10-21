@@ -56,16 +56,16 @@ namespace TriAxis.RunSharp
 
 		public static implicit operator AttributeType(Type t)
 		{
-			if (!typeof(Attribute).IsAssignableFrom(t))
-				throw new ArgumentException("Attribute types must derive from the 'Attribute' class", "t");
+		    if (!Helpers.IsAttribute(t))
+		        throw new ArgumentException("Attribute types must derive from the 'Attribute' class", "t");
 
 			return new AttributeType(t);
 		}
 
 		public static implicit operator AttributeType(TypeGen tg)
 		{
-			if (!typeof(Attribute).IsAssignableFrom(tg.TypeBuilder))
-				throw new ArgumentException("Attribute types must derive from the 'Attribute' class", "t");
+            if (!Helpers.IsAttribute(tg.TypeBuilder))
+                throw new ArgumentException("Attribute types must derive from the 'Attribute' class", "t");
 
 			return new AttributeType(tg.TypeBuilder);
 		}
@@ -111,10 +111,10 @@ namespace TriAxis.RunSharp
 
 			this.ctor = TypeInfo.FindConstructor(attributeType, argOperands);
 		}
-
-		static bool IsValidAttributeParamType(Type t)
+        
+        static bool IsValidAttributeParamType(System.Type t)
 		{
-			return t != null && (t.IsPrimitive || t.IsEnum || typeof(Type).IsAssignableFrom(t) || t == typeof(string));
+		    return t != null && (t.IsPrimitive || t.IsEnum || typeof(Type).IsAssignableFrom(t) || t.FullName == typeof(string).FullName);
 		}
 
 		static bool IsSingleDimensionalZeroBasedArray(Array a)
@@ -126,7 +126,7 @@ namespace TriAxis.RunSharp
 		{
 			if (arg == null)
 				throw new ArgumentNullException();
-			Type t = arg.GetType();
+			System.Type t = arg.GetType();
 
 			if (IsValidAttributeParamType(t))
 				return;

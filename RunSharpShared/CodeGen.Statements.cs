@@ -239,7 +239,7 @@ namespace TriAxis.RunSharp
 			BeforeStatement();
 
 			invocation.EmitGet(this);
-			if (invocation.Type != typeof(void))
+			if (!Helpers.AreTypesEqual(invocation.Type, typeof(void), typeMapper))
 				il.Emit(OpCodes.Pop);
 		}
 
@@ -280,9 +280,16 @@ namespace TriAxis.RunSharp
 			DoInvoke(targetDelegate.InvokeDelegate(args));
 		}
 
-		public void WriteLine(params Operand[] args)
+	    ITypeMapper typeMapper;
+
+	    public CodeGen(ITypeMapper typeMapper)
+	    {
+	        this.typeMapper = typeMapper;
+	    }
+        
+	    public void WriteLine(params Operand[] args)
 		{
-			Invoke(typeof(Console), "WriteLine", args);
+			Invoke(typeMapper.MapType(typeof(Console)), "WriteLine", args);
 		}
 		#endregion
 
@@ -404,7 +411,7 @@ namespace TriAxis.RunSharp
 
 		public void Return()
 		{
-			if (context.ReturnType != null && context.ReturnType != typeof(void))
+		    if (context.ReturnType != null && !Helpers.AreTypesEqual(context.ReturnType, typeof(void), typeMapper))
 				throw new InvalidOperationException(Properties.Messages.ErrMethodMustReturnValue);
 
 			BeforeStatement();
@@ -431,7 +438,7 @@ namespace TriAxis.RunSharp
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "'Operand' required as type to use provided implicit conversions")]
 		public void Return(Operand value)
 		{
-			if (context.ReturnType == null || context.ReturnType == typeof(void))
+			if (context.ReturnType == null || Helpers.AreTypesEqual(context.ReturnType, typeof(void), typeMapper))
 				throw new InvalidOperationException(Properties.Messages.ErrVoidMethodReturningValue);
 
 			BeforeStatement();
@@ -470,7 +477,7 @@ namespace TriAxis.RunSharp
 		{
 			BeforeStatement();
 
-			EmitGetHelper(exception, typeof(Exception), false);
+			EmitGetHelper(exception, typeMapper.MapType(typeof(Exception)), false);
 			il.Emit(OpCodes.Throw);
 			reachable = false;
 		}
@@ -487,7 +494,7 @@ namespace TriAxis.RunSharp
 
 		public Operand ForEach(Type elementType, Operand expression)
 		{
-			ForeachBlock fb = new ForeachBlock(elementType, expression);
+			ForeachBlock fb = new ForeachBlock(elementType, expression, typeMapper);
 			Begin(fb);
 			return fb.Element;
 		}
@@ -509,7 +516,7 @@ namespace TriAxis.RunSharp
 
 		public void Try()
 		{
-			Begin(new ExceptionBlock());
+			Begin(new ExceptionBlock(typeMapper));
 		}
 
 		ExceptionBlock GetTryBlock()
@@ -556,7 +563,7 @@ namespace TriAxis.RunSharp
 
 		public void Switch(Operand expression)
 		{
-			Begin(new SwitchBlock(expression));
+			Begin(new SwitchBlock(expression, typeMapper));
 		}
 
 		SwitchBlock GetSwitchBlock()
@@ -663,7 +670,7 @@ namespace TriAxis.RunSharp
 
 			public IfBlock(Operand condition)
 			{
-				if (condition.Type != typeof(bool))
+				if (!Helpers.AreTypesEqual(condition.Type, typeof(bool)))
 					this.condition = condition.IsTrue();
 				else
 					this.condition = condition;
@@ -729,7 +736,7 @@ namespace TriAxis.RunSharp
 				this.test = test;
 				this.iter = iter;
 
-				if (test.Type != typeof(bool))
+				if (!Helpers.AreTypesEqual(test.Type, typeof(bool)))
 					test = test.IsTrue();
 			}
 
@@ -796,11 +803,13 @@ namespace TriAxis.RunSharp
 		{
 			Type elementType;
 			Operand collection;
+		    ITypeMapper typeMapper;
 
-			public ForeachBlock(Type elementType, Operand collection)
+			public ForeachBlock(Type elementType, Operand collection, ITypeMapper typeMapper)
 			{
 				this.elementType = elementType;
 				this.collection = collection;
+			    this.typeMapper = typeMapper;
 			}
 
 			Operand enumerator, element;
@@ -817,8 +826,8 @@ namespace TriAxis.RunSharp
 				lbLoop = g.il.DefineLabel();
 				lbTest = g.il.DefineLabel();
 
-				if (typeof(IEnumerable).IsAssignableFrom(collection.Type))
-					collection = collection.Cast(typeof(IEnumerable));
+			    if (Helpers.IsAssignableFrom(typeof(IEnumerable), collection.Type, typeMapper))
+			        collection = collection.Cast(typeMapper.MapType(typeof(IEnumerable)));
 
 				g.Assign(enumerator, collection.Invoke("GetEnumerator"));
 				g.il.Emit(OpCodes.Br, lbTest);
@@ -861,7 +870,14 @@ namespace TriAxis.RunSharp
 			bool endReachable = false;
 			bool isFinally = false;
 
-			protected override void BeginImpl()
+		    ITypeMapper typeMapper;
+
+		    public ExceptionBlock(ITypeMapper typeMapper)
+		    {
+		        this.typeMapper = typeMapper;
+		    }
+
+		    protected override void BeginImpl()
 			{
 				g.il.BeginExceptionBlock();
 			}
@@ -872,7 +888,7 @@ namespace TriAxis.RunSharp
 
 				if (g.reachable)
 					endReachable = true;
-				g.il.BeginCatchBlock(typeof(object));
+				g.il.BeginCatchBlock(typeMapper.MapType(typeof(object)));
 				g.il.Emit(OpCodes.Pop);
 				g.reachable = true;
 			}
@@ -921,11 +937,10 @@ namespace TriAxis.RunSharp
 
 		class SwitchBlock : Block, IBreakable
 		{
-			static Type[] validTypes = { 
+			static System.Type[] validTypes = { 
 				typeof(sbyte), typeof(byte), typeof(short), typeof(ushort), typeof(int), typeof(uint), typeof(long), typeof(ulong), typeof(char), typeof(string)
 			};
-			static MethodInfo strCmp = typeof(string).GetMethod("Equals", BindingFlags.Public | BindingFlags.Static,
-				null, new Type[] { typeof(string), typeof(string) }, null);
+			MethodInfo strCmp;
 
 			Operand expression;
 			Conversion conv;
@@ -938,27 +953,37 @@ namespace TriAxis.RunSharp
 			bool endReachable = false;
 			SortedList<IComparable, Label> cases = new SortedList<IComparable, Label>();
 
-			public SwitchBlock(Operand expression)
+		    ITypeMapper typeMapper;
+
+			public SwitchBlock(Operand expression, ITypeMapper typeMapper)
 			{
-				this.expression = expression;
+			    this.typeMapper = typeMapper;
+			    strCmp = typeMapper.MapType(typeof(string)).GetMethod(
+			        "Equals",
+			        BindingFlags.Public | BindingFlags.Static,
+			        null,
+			        new Type[] { typeMapper.MapType(typeof(string)), typeMapper.MapType(typeof(string)) },
+			        null);
+
+                this.expression = expression;
 
 				Type exprType = expression.Type;
 				if (Array.IndexOf(validTypes, exprType) != -1)
 					govType = exprType;
 				else if (exprType.IsEnum)
-					govType = Enum.GetUnderlyingType(exprType);
+					govType = Helpers.GetEnumEnderlyingType(exprType);
 				else
 				{
 					// if a single implicit coversion from expression to one of the valid types exists, it's ok
-					foreach (Type t in validTypes)
+					foreach (System.Type t in validTypes)
 					{
-						Conversion tmp = Conversion.GetImplicit(expression, t, false);
+						Conversion tmp = Conversion.GetImplicit(expression, typeMapper.MapType(t), false);
 						if (tmp.IsValid)
 						{
 							if (conv == null)
 							{
 								conv = tmp;
-								govType = t;
+								govType = typeMapper.MapType(t);
 							}
 							else
 								throw new AmbiguousMatchException(Properties.Messages.ErrAmbiguousSwitchExpression);
@@ -986,7 +1011,7 @@ namespace TriAxis.RunSharp
 				bool duplicate;
 
 				// make sure the value is of the governing type
-				IComparable val = value == null ? null : (IComparable)value.ToType(govType, System.Globalization.CultureInfo.InvariantCulture);
+				IComparable val = value == null ? null : (IComparable)value.ToType(System.Type.GetType(govType.FullName, true), System.Globalization.CultureInfo.InvariantCulture);
 
 				if (value == null)
 					duplicate = defaultExists;
@@ -1085,7 +1110,7 @@ namespace TriAxis.RunSharp
 				EndScope();
 				g.il.MarkLabel(lbDecision);
 
-				if (govType == typeof(string))
+			    if (Helpers.AreTypesEqual(govType, typeof(string), typeMapper))
 				{
 					foreach (KeyValuePair<IComparable, Label> kvp in cases)
 					{
