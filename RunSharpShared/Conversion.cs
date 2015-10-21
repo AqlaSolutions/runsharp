@@ -394,9 +394,14 @@ namespace TriAxis.RunSharp
 
 		sealed class FakeTypedOperand : Operand
 		{
-		    public FakeTypedOperand(Type t) { Type = t; }
+		    public FakeTypedOperand(Type t) { _type = t; }
 
-			public override Type Type { get; }
+		    readonly Type _type;
+
+		    public override Type GetReturnType(ITypeMapper typeMapper)
+		    {
+		        return _type;
+		    }
 		}
         
 	    public static Conversion GetImplicit(Type @from, Type to, bool onlyStandard, ITypeMapper typeMapper)
@@ -407,7 +412,7 @@ namespace TriAxis.RunSharp
 		// the sections mentioned in comments of this method are from C# specification v1.2
 		public static Conversion GetImplicit(Operand op, Type to, bool onlyStandard, ITypeMapper typeMapper)
 		{
-			Type from = Operand.GetType(op);
+			Type from = Operand.GetType(op, typeMapper);
 
 			if (to.Equals(from))
 				return new Direct(typeMapper);
@@ -568,7 +573,7 @@ namespace TriAxis.RunSharp
 			if (conv.IsValid)
 				return conv;
 
-			Type from = Operand.GetType(op);
+			Type from = Operand.GetType(op, typeMapper);
 
 			// section 6.3.2 - Standard explicit conversions
 			if (onlyStandard)

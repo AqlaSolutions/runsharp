@@ -68,7 +68,7 @@ namespace TriAxis.RunSharp.Operands
 			if (!_fi.IsStatic)
 				_target.EmitRef(g);
 
-			g.EmitGetHelper(value, Type, allowExplicitConversion);
+			g.EmitGetHelper(value, GetReturnType(g.TypeMapper), allowExplicitConversion);
 			g.IL.Emit(_fi.IsStatic ? OpCodes.Stsfld : OpCodes.Stfld, _fi);
 		}
 
@@ -83,7 +83,7 @@ namespace TriAxis.RunSharp.Operands
 			}
 		}
 
-		public override Type Type => _fi.FieldType;
+	    public override Type GetReturnType(ITypeMapper typeMapper) => _fi.FieldType;
 
 	    internal override bool TrivialAccess => true;
 	}

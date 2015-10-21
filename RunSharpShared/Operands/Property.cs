@@ -87,10 +87,10 @@ namespace TriAxis.RunSharp.Operands
 				_target.EmitRef(g);
 
 			_property.EmitArgs(g, _indexes);
-			g.EmitGetHelper(value, Type, allowExplicitConversion);
+			g.EmitGetHelper(value, GetReturnType(g.TypeMapper), allowExplicitConversion);
 			g.EmitCallHelper(mi, _target);
 		}
 
-		public override Type Type => _property.Method.ReturnType;
+	    public override Type GetReturnType(ITypeMapper typeMapper) => _property.Method.ReturnType;
 	}
 }

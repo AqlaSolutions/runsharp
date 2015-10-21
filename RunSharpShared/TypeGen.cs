@@ -400,7 +400,7 @@ namespace TriAxis.RunSharp
 			if ((object)field == null)
 				throw new ArgumentNullException(nameof(field));
 
-			PropertyGen pg = Property(field.Type, name);
+			PropertyGen pg = Property(field.GetReturnType(_typeMapper), name);
 			pg.Getter().GetCode().Return(field);
 			pg.Setter().GetCode().Assign(field, pg.Setter().GetCode().PropertyValue());
 			return pg;

@@ -223,7 +223,7 @@ namespace TriAxis.RunSharp
 				g.EmitLdargHelper(_index);
 
 				if (IsReference)
-					g.EmitLdindHelper(Type);
+					g.EmitLdindHelper(GetReturnType(g.TypeMapper));
 			}
 
 			internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
@@ -231,11 +231,11 @@ namespace TriAxis.RunSharp
 				if (IsReference)
 				{
 					g.EmitLdargHelper(_index);
-					g.EmitStindHelper(Type, value, allowExplicitConversion);
+					g.EmitStindHelper(GetReturnType(g.TypeMapper), value, allowExplicitConversion);
 				}
 				else
 				{
-					g.EmitGetHelper(value, Type, allowExplicitConversion);
+					g.EmitGetHelper(value, GetReturnType(g.TypeMapper), allowExplicitConversion);
 					g.EmitStargHelper(_index);
 				}
 			}
@@ -257,7 +257,7 @@ namespace TriAxis.RunSharp
 
 			bool IsReference => _type.IsByRef;
 
-		    public override Type Type => IsReference ? _type.GetElementType() : _type;
+		    public override Type GetReturnType(ITypeMapper typeMapper) => IsReference ? _type.GetElementType() : _type;
 
 		    internal override bool TrivialAccess => true;
 		}
@@ -310,7 +310,7 @@ namespace TriAxis.RunSharp
 				CheckScope(g);
 
 				if (_t == null)
-					_t = value.Type;
+					_t = value.GetReturnType(g.TypeMapper);
 
 				if (_var == null)
 					_var = g.IL.DeclareLocal(_t);
@@ -332,16 +332,13 @@ namespace TriAxis.RunSharp
 				g.IL.Emit(OpCodes.Ldloca, _var);
 			}
 
-			public override Type Type
-			{
-				get
-				{
-					RequireType();
-					return _t;
-				}
-			}
+		    public override Type GetReturnType(ITypeMapper typeMapper)
+		    {
+		        RequireType();
+		        return _t;
+		    }
 
-			void RequireType()
+		    void RequireType()
 			{
 				if (_t == null)
 				{
@@ -357,15 +354,20 @@ namespace TriAxis.RunSharp
 		    internal override void AssignmentHint(Operand op)
 			{
 				if (_tHint == null)
-					_tHint = GetType(op);
+					_tHint = GetType(op, _owner.TypeMapper);
 			}
 		}
 
 		class StaticTarget : Operand
 		{
-		    public StaticTarget(Type t) { Type = t; }
+		    public StaticTarget(Type t) { _type = t; }
 
-			public override Type Type { get; }
+		    readonly Type _type;
+
+		    public override Type GetReturnType(ITypeMapper typeMapper)
+		    {
+		        return _type;
+		    }
 
 		    internal override bool IsStaticTarget => true;
 		}

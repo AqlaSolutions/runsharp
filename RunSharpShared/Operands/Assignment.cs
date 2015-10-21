@@ -70,13 +70,13 @@ namespace TriAxis.RunSharp.Operands
 			}
 			else
 			{
-				Operand tmp = g.Local(_lvalue.Type);
+				Operand tmp = g.Local(_lvalue.GetReturnType(g.TypeMapper));
 				g.Assign(tmp, _rvalue, _allowExplicitConversion);
 				_lvalue.EmitSet(g, tmp, false);
 				tmp.EmitGet(g);
 			}
 		}
 
-		public override Type Type => _lvalue.Type;
+	    public override Type GetReturnType(ITypeMapper typeMapper) => _lvalue.GetReturnType(typeMapper);
 	}
 }

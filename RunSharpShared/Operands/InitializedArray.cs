@@ -64,7 +64,7 @@ namespace TriAxis.RunSharp.Operands
 				g.EmitStelemHelper(_type, _elements[i], false);
 			}
 		}
-		
-		public override Type Type => _type.MakeArrayType();
+
+	    public override Type GetReturnType(ITypeMapper typeMapper) => _type.MakeArrayType();
 	}
 }

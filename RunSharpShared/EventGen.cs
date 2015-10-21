@@ -50,6 +50,8 @@ namespace TriAxis.RunSharp
 		FieldGen _handler;
 		List<AttributeGen> _customAttributes;
 
+	    public ITypeMapper TypeMapper => _owner.TypeMapper;
+
 		MethodGen _adder, _remover;
 
 	    internal EventGen(TypeGen owner, string name, Type type, MethodAttributes mthAttr)
@@ -81,7 +83,7 @@ namespace TriAxis.RunSharp
 			if (_adder == null)
 			{
 			    LockSignature();
-				_adder = new MethodGen(_owner, "add_" + Name, _attrs | MethodAttributes.SpecialName, typeof(void), 0);
+				_adder = new MethodGen(_owner, "add_" + Name, _attrs | MethodAttributes.SpecialName, TypeMapper.MapType(typeof(void)), 0);
 			    _adder.ImplementedInterface = ImplementedInterface;
 				_adder.Parameter(_type, parameterName);
 				_eb.SetAddOnMethod(_adder.GetMethodBuilder());
@@ -100,7 +102,7 @@ namespace TriAxis.RunSharp
 			if (_remover == null)
 			{
 			    LockSignature();
-				_remover = new MethodGen(_owner, "remove_" + Name, _attrs | MethodAttributes.SpecialName, typeof(void), 0);
+				_remover = new MethodGen(_owner, "remove_" + Name, _attrs | MethodAttributes.SpecialName, TypeMapper.MapType(typeof(void)), 0);
 			    _remover.ImplementedInterface = ImplementedInterface;
                 _remover.Parameter(_type, parameterName);
 				_eb.SetRemoveOnMethod(_remover.GetMethodBuilder());
@@ -154,18 +156,15 @@ namespace TriAxis.RunSharp
 			_handler.EmitSet(g, value, allowExplicitConversion);
 		}
 
-		public override Type Type
-		{
-			get
-			{
-				if ((object)_handler == null)
-					throw new InvalidOperationException(Properties.Messages.ErrCustomEventFieldAccess);
+	    public override Type GetReturnType(ITypeMapper typeMapper)
+	    {
+	        if ((object)_handler == null)
+	            throw new InvalidOperationException(Properties.Messages.ErrCustomEventFieldAccess);
 
-				return _type;
-			}
-		}
+	        return _type;
+	    }
 
-		#region Custom Attributes
+	    #region Custom Attributes
 
 		public EventGen Attribute(AttributeType type)
 		{

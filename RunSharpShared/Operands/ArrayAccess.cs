@@ -48,19 +48,19 @@ namespace TriAxis.RunSharp.Operands
 
 		public ArrayAccess(Operand array, Operand[] indexes)
 		{
-			if (array.Type.GetArrayRank() != indexes.Length)
-				throw new ArgumentException(Properties.Messages.ErrIndexCountMismatch);
-
 			_array = array;
 			_indexes = indexes;
 		}
 
 		void LoadArrayAndIndexes(CodeGen g)
 		{
-			_array.EmitGet(g);
+            if (_array.GetReturnType(g.TypeMapper).GetArrayRank() != _indexes.Length)
+                throw new ArgumentException(Properties.Messages.ErrIndexCountMismatch);
+
+            _array.EmitGet(g);
 
 			foreach (Operand op in _indexes)
-				g.EmitGetHelper(op, GetType(op) == typeof(int) ? typeof(int) : typeof(long), false);
+				g.EmitGetHelper(op, GetType(op, g.TypeMapper) == typeof(int) ? typeof(int) : typeof(long), false);
 		}
 
 		internal override void EmitGet(CodeGen g)
@@ -69,7 +69,7 @@ namespace TriAxis.RunSharp.Operands
 
 			if (_indexes.Length == 1)
 			{
-				g.EmitLdelemHelper(Type);
+				g.EmitLdelemHelper(GetReturnType(g.TypeMapper));
 			}
 			else
 			{
@@ -83,7 +83,7 @@ namespace TriAxis.RunSharp.Operands
 
 			if (_indexes.Length == 1)
 			{
-				g.EmitStelemHelper(Type, value, allowExplicitConversion);
+				g.EmitStelemHelper(GetReturnType(g.TypeMapper), value, allowExplicitConversion);
 			}
 			else
 			{
@@ -97,7 +97,7 @@ namespace TriAxis.RunSharp.Operands
 
 			if (_indexes.Length == 1)
 			{
-				g.IL.Emit(OpCodes.Ldelema, Type);
+				g.IL.Emit(OpCodes.Ldelema, GetReturnType(g.TypeMapper));
 			}
 			else
 			{
@@ -105,7 +105,7 @@ namespace TriAxis.RunSharp.Operands
 			}
 		}
 
-		public override Type Type => _array.Type.GetElementType();
+	    public override Type GetReturnType(ITypeMapper typeMapper) => _array.GetReturnType(typeMapper).GetElementType();
 
 	    internal override bool TrivialAccess => true;
 	}

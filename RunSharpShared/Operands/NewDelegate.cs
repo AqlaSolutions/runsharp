@@ -61,7 +61,7 @@ namespace TriAxis.RunSharp.Operands
 			_delegateType = delegateType;
 			_target = target;
 		    _typeMapper = typeMapper;
-		    Initialize(target.Type, methodName);
+		    Initialize(target.GetReturnType(typeMapper), methodName);
 		}
 
 		void Initialize(Type targetType, string methodName)
@@ -135,6 +135,6 @@ namespace TriAxis.RunSharp.Operands
 			g.IL.Emit(OpCodes.Newobj, _delegateConstructor);
 		}
 
-		public override Type Type => _delegateType;
+	    public override Type GetReturnType(ITypeMapper typeMapper) => _delegateType;
 	}
 }

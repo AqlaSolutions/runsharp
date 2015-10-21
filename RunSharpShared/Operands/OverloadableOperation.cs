@@ -65,7 +65,7 @@ namespace TriAxis.RunSharp.Operands
 
             foreach (Operand operand in _operands)
             {
-                if ((object)operand != null && !operand.Type.IsPrimitive)
+                if ((object)operand != null && !operand.GetReturnType(g.TypeMapper).IsPrimitive)
                 {
                     // try overloads
                     candidates = _op.FindUserCandidates(g.TypeMapper, _operands);
@@ -74,11 +74,11 @@ namespace TriAxis.RunSharp.Operands
             }
 
             if (candidates == null)
-                candidates = OverloadResolver.FindApplicable(_op.GetStandardCandidates(_operands), g.TypeMapper, _operands);
+                candidates = OverloadResolver.FindApplicable(_op.GetStandardCandidates(g.TypeMapper, _operands), g.TypeMapper, _operands);
 
             if (candidates == null)
                 throw new InvalidOperationException(string.Format(null, Properties.Messages.ErrInvalidOperation, _op.MethodName,
-                    string.Join(", ", Array.ConvertAll<Operand, string>(_operands, GetTypeName))));
+                    string.Join(", ", Array.ConvertAll<Operand, string>(_operands, op=>op.GetReturnType(g.TypeMapper).FullName))));
 
             _af = OverloadResolver.FindBest(candidates, g.TypeMapper);
 
@@ -112,6 +112,6 @@ namespace TriAxis.RunSharp.Operands
 			g.IL.Emit(branchSet.Get(_op.BranchOp, stdOp.IsUnsigned), label);
 		}
 
-		public override Type Type => _af.Method.ReturnType;
+	    public override Type GetReturnType(ITypeMapper typeMapper) => _af.Method.ReturnType;
 	}
 }

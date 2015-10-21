@@ -52,7 +52,7 @@ namespace TriAxis.RunSharp.Operands
 			g.EmitI8Helper(Value, _t == typeof(long));
 		}
 
-		public override Type Type => _t;
+	    public override Type GetReturnType(ITypeMapper typeMapper) => _t;
 
 	    public long Value { get; }
 

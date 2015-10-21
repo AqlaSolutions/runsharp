@@ -80,9 +80,10 @@ namespace TriAxis.RunSharp
 			EmitGet(g);
 			g.IL.Emit(branchSet.BrTrue, label);
 		}
-		public abstract Type Type { get; }
 
-		internal virtual bool TrivialAccess => false;
+	    public abstract Type GetReturnType(ITypeMapper typeMapper);
+        
+	    internal virtual bool TrivialAccess => false;
 	    internal virtual bool IsStaticTarget => false;
 	    internal virtual bool SuppressVirtual => false;
 	    internal virtual object ConstantValue => null;
@@ -93,7 +94,7 @@ namespace TriAxis.RunSharp
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "0#g", Justification = "The 'g' is used throughout the library for 'CodeGen'")]
 		public void EmitRef(CodeGen g)
 		{
-			if (Type.IsValueType)
+			if (GetReturnType(g.TypeMapper).IsValueType)
 				EmitAddressOf(g);
 			else
 				EmitGet(g);
@@ -615,9 +616,9 @@ namespace TriAxis.RunSharp
 		#region Special operations
 		public Operand Conditional(Operand ifTrue, Operand ifFalse)
 		{
-			return new Conditional(Type == typeof(bool) ? this : IsTrue(), ifTrue, ifFalse);
+			return new Conditional(this, ifTrue, ifFalse);
 		}
-
+        
 		public Operand Cast(Type type)
 		{
 			return new Cast(this, type);
@@ -629,31 +630,23 @@ namespace TriAxis.RunSharp
 		{
 			return BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
 		}
-
-		internal static string GetTypeName(Operand op)
-		{
-			if ((object)op == null)
-				return "<null>";
-
-			return op.Type.FullName;
-		}
-
-		internal static Type GetType(Operand op)
+        
+		internal static Type GetType(Operand op, ITypeMapper typeMapper)
 		{
 			if ((object)op == null)
 				return null;
 
-			return op.Type;
+			return op.GetReturnType(typeMapper);
 		}
 
-		internal static Type[] GetTypes(Operand[] ops)
+		internal static Type[] GetTypes(Operand[] ops, ITypeMapper typeMapper)
 		{
 			if (ops == null)
 				return null;
 
 			Type[] types = new Type[ops.Length];
 			for (int i = 0; i < ops.Length; i++)
-				types[i] = (object)ops[i] == null ? null : ops[i].Type;
+				types[i] = (object)ops[i] == null ? null : ops[i].GetReturnType(typeMapper);
 
 			return types;
 		}
@@ -709,7 +702,7 @@ namespace TriAxis.RunSharp
 
 		public Operand Field(string name, ITypeMapper typeMapper)
 		{
-			return new Field((FieldInfo)typeMapper.TypeInfo.FindField(Type, name, IsStaticTarget).Member, this);
+			return new Field((FieldInfo)typeMapper.TypeInfo.FindField(GetReturnType(typeMapper), name, IsStaticTarget).Member, this);
 		}
 
 		public Operand Property(string name, ITypeMapper typeMapper)
@@ -719,7 +712,7 @@ namespace TriAxis.RunSharp
 
 		public Operand Property(string name, ITypeMapper typeMapper, params Operand[] indexes)
 		{
-			return new Property(typeMapper.TypeInfo.FindProperty(Type, name, indexes, IsStaticTarget), this, indexes);
+			return new Property(typeMapper.TypeInfo.FindProperty(GetReturnType(typeMapper), name, indexes, IsStaticTarget), this, indexes);
 		}
 
 		public Operand Invoke(string name, ITypeMapper typeMapper)
@@ -729,7 +722,7 @@ namespace TriAxis.RunSharp
 
 		public Operand Invoke(string name, ITypeMapper typeMapper, params Operand[] args)
 		{
-			return new Invocation(typeMapper.TypeInfo.FindMethod(Type, name, args, IsStaticTarget), this, args);
+			return new Invocation(typeMapper.TypeInfo.FindMethod(GetReturnType(typeMapper), name, args, IsStaticTarget), this, args);
 		}
 
 		public Operand InvokeDelegate(ITypeMapper typeMapper)
@@ -747,7 +740,7 @@ namespace TriAxis.RunSharp
 		{
 			get
 			{
-				if (Type.IsArray)
+				if (GetReturnType(typeMapper).IsArray)
 					return new ArrayAccess(this, indexes);
 
 				return Property(null, typeMapper, indexes);
@@ -784,7 +777,7 @@ namespace TriAxis.RunSharp
 				_op.EmitAddressOf(g);
 			}
 
-			public override Type Type => _op.Type.MakeByRefType();
+		    public override Type GetReturnType(ITypeMapper typeMapper) => _op.GetReturnType(typeMapper).MakeByRefType();
 		}
 	}
 }

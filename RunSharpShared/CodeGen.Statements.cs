@@ -242,7 +242,7 @@ namespace TriAxis.RunSharp
 			BeforeStatement();
 
 			invocation.EmitGet(this);
-			if (!Helpers.AreTypesEqual(invocation.Type, typeof(void), TypeMapper))
+			if (!Helpers.AreTypesEqual(invocation.GetReturnType(TypeMapper), typeof(void), TypeMapper))
 				IL.Emit(OpCodes.Pop);
 		}
 
@@ -304,7 +304,7 @@ namespace TriAxis.RunSharp
 			if ((object)handler == null)
 				throw new ArgumentNullException(nameof(handler));
 
-			IMemberInfo evt = TypeMapper.TypeInfo.FindEvent(target.Type, eventName, target.IsStaticTarget);
+			IMemberInfo evt = TypeMapper.TypeInfo.FindEvent(target.GetReturnType(TypeMapper), eventName, target.IsStaticTarget);
 			MethodInfo mi = ((EventInfo)evt.Member).GetAddMethod();
 			if (!target.IsStaticTarget)
 				target.EmitGet(this);
@@ -319,7 +319,7 @@ namespace TriAxis.RunSharp
 			if ((object)handler == null)
 				throw new ArgumentNullException(nameof(handler));
 
-			IMemberInfo evt = TypeMapper.TypeInfo.FindEvent(target.Type, eventName, target.IsStaticTarget);
+			IMemberInfo evt = TypeMapper.TypeInfo.FindEvent(target.GetReturnType(TypeMapper), eventName, target.IsStaticTarget);
 			MethodInfo mi = ((EventInfo)evt.Member).GetRemoveMethod();
 			if (!target.IsStaticTarget)
 				target.EmitGet(this);
@@ -336,7 +336,7 @@ namespace TriAxis.RunSharp
 			BeforeStatement();
 
 			target.EmitAddressOf(this);
-			IL.Emit(OpCodes.Initobj, target.Type);
+			IL.Emit(OpCodes.Initobj, target.GetReturnType(TypeMapper));
 		}
 
 		#region Flow Control
@@ -673,7 +673,7 @@ namespace TriAxis.RunSharp
 
 			public IfBlock(Operand condition)
 			{
-				if (!Helpers.AreTypesEqual(condition.Type, typeof(bool)))
+				if (!Helpers.AreTypesEqual(condition.GetReturnType(G.TypeMapper), typeof(bool)))
 					_condition = condition.IsTrue();
 				else
 					_condition = condition;
@@ -739,7 +739,7 @@ namespace TriAxis.RunSharp
 				_test = test;
 				_iter = iter;
 
-				if (!Helpers.AreTypesEqual(test.Type, typeof(bool)))
+				if (!Helpers.AreTypesEqual(test.GetReturnType(G.TypeMapper), typeof(bool)))
 					test = test.IsTrue();
 			}
 
@@ -829,7 +829,7 @@ namespace TriAxis.RunSharp
 				_lbLoop = G.IL.DefineLabel();
 				_lbTest = G.IL.DefineLabel();
 
-			    if (Helpers.IsAssignableFrom(typeof(IEnumerable), _collection.Type, _typeMapper))
+			    if (Helpers.IsAssignableFrom(typeof(IEnumerable), _collection.GetReturnType(G.TypeMapper), _typeMapper))
 			        _collection = _collection.Cast(_typeMapper.MapType(typeof(IEnumerable)));
 
 				G.Assign(_enumerator, _collection.Invoke("GetEnumerator", _typeMapper));
@@ -939,7 +939,7 @@ namespace TriAxis.RunSharp
 
 		class SwitchBlock : Block, IBreakable
 		{
-			static readonly Type[] _validTypes = { 
+			static readonly System.Type[] _validTypes = { 
 				typeof(sbyte), typeof(byte), typeof(short), typeof(ushort), typeof(int), typeof(uint), typeof(long), typeof(ulong), typeof(char), typeof(string)
 			};
 
@@ -970,7 +970,7 @@ namespace TriAxis.RunSharp
 
                 _expression = expression;
 
-				Type exprType = expression.Type;
+				Type exprType = expression.GetReturnType(G.TypeMapper);
 				if (Array.IndexOf(_validTypes, exprType) != -1)
 					_govType = exprType;
 				else if (exprType.IsEnum)
@@ -978,7 +978,7 @@ namespace TriAxis.RunSharp
 				else
 				{
 					// if a single implicit coversion from expression to one of the valid types exists, it's ok
-					foreach (Type t in _validTypes)
+					foreach (System.Type t in _validTypes)
 					{
 						Conversion tmp = Conversion.GetImplicit(expression, typeMapper.MapType(t), false, typeMapper);
 						if (tmp.IsValid)
@@ -1002,7 +1002,7 @@ namespace TriAxis.RunSharp
 
 				_expression.EmitGet(G);
 				if (_conv != null)
-					_conv.Emit(G, _expression.Type, _govType);
+					_conv.Emit(G, _expression.GetReturnType(G.TypeMapper), _govType);
 				_exp = G.IL.DeclareLocal(_govType);
 				G.IL.Emit(OpCodes.Stloc, _exp);
 				G.IL.Emit(OpCodes.Br, _lbDecision);
@@ -1014,7 +1014,7 @@ namespace TriAxis.RunSharp
 				bool duplicate;
 
 				// make sure the value is of the governing type
-				IComparable val = value == null ? null : (IComparable)value.ToType(Type.GetType(_govType.FullName, true), System.Globalization.CultureInfo.InvariantCulture);
+				IComparable val = value == null ? null : (IComparable)value.ToType(_typeMapper.GetType(_govType.FullName), System.Globalization.CultureInfo.InvariantCulture);
 
 				if (value == null)
 					duplicate = _defaultExists;

@@ -68,12 +68,12 @@ namespace TriAxis.RunSharp.Operands
 				ModuleBuilder mb = _t.Module as ModuleBuilder;
 
 				if (mb != null)
-					g.IL.Emit(OpCodes.Newobj, mb.GetArrayMethod(Type, ".ctor", CallingConventions.HasThis, null, argTypes));
+					g.IL.Emit(OpCodes.Newobj, mb.GetArrayMethod(GetReturnType(g.TypeMapper), ".ctor", CallingConventions.HasThis, null, argTypes));
 				else
-					g.IL.Emit(OpCodes.Newobj, Type.GetConstructor(argTypes));
+					g.IL.Emit(OpCodes.Newobj, GetReturnType(g.TypeMapper).GetConstructor(argTypes));
 			}
 		}
 
-		public override Type Type => _indexes.Length == 1 ? _t.MakeArrayType() : _t.MakeArrayType(_indexes.Length);
+	    public override Type GetReturnType(ITypeMapper typeMapper) => _indexes.Length == 1 ? _t.MakeArrayType() : _t.MakeArrayType(_indexes.Length);
 	}
 }

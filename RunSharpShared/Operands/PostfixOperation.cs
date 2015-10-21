@@ -60,7 +60,7 @@ namespace TriAxis.RunSharp.Operands
 			before.EmitGet(g);
 		}
 
-		public override Type Type => _target.Type;
+	    public override Type GetReturnType(ITypeMapper typeMapper) => _target.GetReturnType(typeMapper);
 
 	    public void Emit(CodeGen g)
 		{

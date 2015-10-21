@@ -60,6 +60,6 @@ namespace TriAxis.RunSharp.Operands
 				g.IL.Emit(oc);
 		}
 
-		public override Type Type => _op.Type;
+	    public override Type GetReturnType(ITypeMapper typeMapper) => _op.GetReturnType(typeMapper);
 	}
 }

@@ -61,7 +61,7 @@ namespace TriAxis.RunSharp
 			owner.RegisterForCompletion(this);
 		}
 
-		public override Type Type => _type;
+	    public override Type GetReturnType(ITypeMapper typeMapper) => _type;
 
 	    public string Name { get; }
 	    public bool IsStatic => (_attrs & FieldAttributes.Static) != 0;

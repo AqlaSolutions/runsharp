@@ -200,7 +200,7 @@ namespace TriAxis.RunSharp.Examples
 
 					g.Return((x.Field("value", m) > 0).Conditional("dbTrue",
 						(x.Field("value", m) < 0).Conditional("dbFalse",
-						"dbNull")));
+						                                      "dbNull")));
 				}
 
 				// Override the Object.Equals(object o) method:

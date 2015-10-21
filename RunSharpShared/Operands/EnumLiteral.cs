@@ -49,7 +49,7 @@ namespace TriAxis.RunSharp.Operands
 
 		internal override void EmitGet(CodeGen g)
 		{
-			Type t = Enum.GetUnderlyingType(Type);
+			Type t = Enum.GetUnderlyingType(GetReturnType(g.TypeMapper));
 			if (t == typeof(long))
 				g.EmitI8Helper(Convert.ToInt64(_value, null), true);
 			else if (t == typeof(ulong))
@@ -60,7 +60,7 @@ namespace TriAxis.RunSharp.Operands
 				g.EmitI4Helper(Convert.ToInt32(_value, null));
 		}
 
-		public override Type Type => _value.GetType();
+	    public override Type GetReturnType(ITypeMapper typeMapper) => _value.GetType();
 
 	    internal override object ConstantValue => _value;
 	}

@@ -142,9 +142,9 @@ namespace TriAxis.RunSharp
 			private UnaryOp() : base(typeof(T), typeof(T)) { }
 		}
 
-		static IMemberInfo[] UnaryEnumSpecific(Operand[] args)
+		static IMemberInfo[] UnaryEnumSpecific(Operand[] args, ITypeMapper typeMapper)
 		{
-			Type t = Operand.GetType(args[0]);
+			Type t = Operand.GetType(args[0], typeMapper);
 
 			if (t == null || !t.IsEnum)
 				return _stdNone;
@@ -192,9 +192,9 @@ namespace TriAxis.RunSharp
 			}
 		}
 
-		static IMemberInfo[] IncEnumSpecific(Operand[] args)
+		static IMemberInfo[] IncEnumSpecific(Operand[] args, ITypeMapper typeMapper)
 		{
-			Type t = Operand.GetType(args[0]);
+			Type t = Operand.GetType(args[0], typeMapper);
 
 			if (t == null || !t.IsEnum)
 				return _stdNone;
@@ -208,9 +208,9 @@ namespace TriAxis.RunSharp
 			private SameOp() : base(typeof(T), typeof(T), typeof(T)) { }
 		}
 
-		static IMemberInfo[] AddEnumSpecific(Operand[] args)
+		static IMemberInfo[] AddEnumSpecific(Operand[] args, ITypeMapper typeMapper)
 		{
-			Type t1 = Operand.GetType(args[0]), t2 = Operand.GetType(args[1]);
+			Type t1 = Operand.GetType(args[0], typeMapper), t2 = Operand.GetType(args[1], typeMapper);
 
 			if (t1 == null || t2 == null || t1.IsEnum == t2.IsEnum)	// if none or both types are enum, no operator can be valid
 				return _stdNone;
@@ -221,9 +221,9 @@ namespace TriAxis.RunSharp
 			return new IMemberInfo[] { new StdOp(e, e, u), new StdOp(e, u, e) };
 		}
 
-		static IMemberInfo[] AddDelegateSpecific(Operand[] args)
+		static IMemberInfo[] AddDelegateSpecific(Operand[] args, ITypeMapper typeMapper)
 		{
-			Type t1 = Operand.GetType(args[0]), t2 = Operand.GetType(args[1]);
+			Type t1 = Operand.GetType(args[0], typeMapper), t2 = Operand.GetType(args[1], typeMapper);
 
 			if (t1 != t2 || t1 == null || !t1.IsSubclassOf(typeof(Delegate)))	// if the types are not the same, no operator can be valid
 				return _stdNone;
@@ -243,9 +243,9 @@ namespace TriAxis.RunSharp
 			}
 		}
 
-		static IMemberInfo[] SubEnumSpecific(Operand[] args)
+		static IMemberInfo[] SubEnumSpecific(Operand[] args, ITypeMapper typeMapper)
 		{
-			Type t1 = Operand.GetType(args[0]), t2 = Operand.GetType(args[1]);
+			Type t1 = Operand.GetType(args[0], typeMapper), t2 = Operand.GetType(args[1], typeMapper);
 
 			if (t1 == null || t2 == null || !t1.IsEnum || (t2.IsEnum && t2 != t1))	// if the types are not the same, no operator can be valid
 				return _stdNone;
@@ -255,9 +255,9 @@ namespace TriAxis.RunSharp
             return new IMemberInfo[] { new StdOp(u, e, e), new StdOp(e, e, u) };
 		}
 
-		static IMemberInfo[] SubDelegateSpecific(Operand[] args)
+		static IMemberInfo[] SubDelegateSpecific(Operand[] args, ITypeMapper typeMapper)
 		{
-			Type t1 = Operand.GetType(args[0]), t2 = Operand.GetType(args[1]);
+			Type t1 = Operand.GetType(args[0], typeMapper), t2 = Operand.GetType(args[1], typeMapper);
 
 			if (t1 != t2 || t1 == null || !t1.IsSubclassOf(typeof(Delegate)))	// if the types are not the same, no operator can be valid
 				return _stdNone;
@@ -293,9 +293,9 @@ namespace TriAxis.RunSharp
 			}
 		}
 
-		static IMemberInfo[] BitEnumSpecific(Operand[] args)
+		static IMemberInfo[] BitEnumSpecific(Operand[] args, ITypeMapper typeMapper)
 		{
-			Type t1 = Operand.GetType(args[0]), t2 = Operand.GetType(args[1]);
+			Type t1 = Operand.GetType(args[0], typeMapper), t2 = Operand.GetType(args[1], typeMapper);
 
 			if (t1 != t2 || t1 == null || !t1.IsEnum)	// if both types are not the same enum, no operator can be valid
 				return _stdNone;
@@ -325,12 +325,12 @@ namespace TriAxis.RunSharp
 			}
 		}
 
-		static IMemberInfo[] CmpEnumSpecific(Operand[] args)
+		static IMemberInfo[] CmpEnumSpecific(Operand[] args, ITypeMapper typeMapper)
 		{
 			if ((object)args[0] == null || (object)args[1] == null)	// if any of the operands is null, it can't be an enum
 				return _stdNone;
 
-			Type t1 = args[0].Type, t2 = args[1].Type;
+			Type t1 = args[0].GetReturnType(typeMapper), t2 = args[1].GetReturnType(typeMapper);
 
 			if (t1 != t2 || t1 == null || !t1.IsEnum)	// if both types are not the same enum, no operator can be valid
 				return _stdNone;
@@ -401,7 +401,7 @@ namespace TriAxis.RunSharp
 #endregion
 		}
 
-		delegate IMemberInfo[] SpecificOperatorProvider(Operand[] args);
+		delegate IMemberInfo[] SpecificOperatorProvider(Operand[] args, ITypeMapper typeMapper);
         #endregion
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "The type is immutable")]
@@ -500,22 +500,22 @@ namespace TriAxis.RunSharp
 			_standardTemplates = standardTemplates;
 		}
 
-		internal IEnumerable<IMemberInfo> GetStandardCandidates(params Operand[] args)
+		internal IEnumerable<IMemberInfo> GetStandardCandidates(ITypeMapper typeMapper, params Operand[] args)
 		{
 			if (_standardTemplates == null)
 				return _standardCandidates;
 			else
-				return GetStandardCandidatesT(args);
+				return GetStandardCandidatesT(args, typeMapper);
 		}
 
-		IEnumerable<IMemberInfo> GetStandardCandidatesT(Operand[] args)
+		IEnumerable<IMemberInfo> GetStandardCandidatesT(Operand[] args, ITypeMapper typeMapper)
 		{
 			foreach (IMemberInfo op in _standardCandidates)
 				yield return op;
 
 			foreach (SpecificOperatorProvider tpl in _standardTemplates)
 			{
-				foreach (IMemberInfo inst in tpl(args))
+				foreach (IMemberInfo inst in tpl(args, typeMapper))
 					yield return inst;
 			}
 		}
@@ -529,7 +529,7 @@ namespace TriAxis.RunSharp
 
 			foreach (Operand arg in args)
 			{
-				for (Type t = Operand.GetType(arg); t != null && t != typeof(object) && (t.IsClass || t.IsValueType) && !usedTypes.Contains(t); t = t.IsValueType ? null : t.BaseType)
+				for (Type t = Operand.GetType(arg, typeMapper); t != null && t != typeof(object) && (t.IsClass || t.IsValueType) && !usedTypes.Contains(t); t = t.IsValueType ? null : t.BaseType)
 				{
 					usedTypes.Add(t);
 

@@ -79,8 +79,9 @@ namespace TriAxis.RunSharp
 		Dictionary<PropertyInfo, object> _namedProperties;
 		Dictionary<FieldInfo, object> _namedFields;
 	    readonly ITypeMapper _typeMapper;
+	    public ITypeMapper TypeMapper => _typeMapper;
 
-		internal AttributeGen(AttributeTargets target, AttributeType attributeType, object[] args, ITypeMapper typeMapper)
+	    internal AttributeGen(AttributeTargets target, AttributeType attributeType, object[] args, ITypeMapper typeMapper)
 		{
 			if (args != null)
 			{
@@ -124,11 +125,11 @@ namespace TriAxis.RunSharp
 			return a != null && a.Rank == 1 && a.GetLowerBound(0) == 0;
 		}
 
-		static void CheckValue(object arg)
+		void CheckValue(object arg)
 		{
 			if (arg == null)
 				throw new ArgumentNullException();
-			Type t = arg.GetType();
+			Type t = _typeMapper.MapType(arg.GetType());
 
 			if (IsValidAttributeParamType(t))
 				return;

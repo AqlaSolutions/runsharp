@@ -51,18 +51,18 @@ namespace TriAxis.RunSharp.Operands
 
 		public ArrayLength(Operand array, bool asLong)
 		{
-			if (!array.Type.IsArray)
-				throw new InvalidOperationException(Properties.Messages.ErrArrayOnly);
-
 			_array = array;
 			_asLong = asLong;
 		}
 
 		internal override void EmitGet(CodeGen g)
-		{
-			_array.EmitGet(g);
+        {
+            if (!_array.GetReturnType(g.TypeMapper).IsArray)
+                throw new InvalidOperationException(Properties.Messages.ErrArrayOnly);
 
-			if (_array.Type.GetArrayRank() == 1 && (!_asLong || IntPtr.Size == 8))
+            _array.EmitGet(g);
+
+			if (_array.GetReturnType(g.TypeMapper).GetArrayRank() == 1 && (!_asLong || IntPtr.Size == 8))
 			{
 				g.IL.Emit(OpCodes.Ldlen);
 				g.IL.Emit(_asLong ? OpCodes.Conv_I8 : OpCodes.Conv_I4);
@@ -72,6 +72,6 @@ namespace TriAxis.RunSharp.Operands
 			g.IL.Emit(OpCodes.Call, _asLong ? _arrGetLongLen : _arrGetLen);
 		}
 
-		public override Type Type => _asLong ? typeof(long) : typeof(int);
+	    public override Type GetReturnType(ITypeMapper typeMapper) => typeMapper.MapType(_asLong ? typeof(long) : typeof(int));
 	}
 }

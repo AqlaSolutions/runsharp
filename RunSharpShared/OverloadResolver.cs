@@ -286,7 +286,7 @@ namespace TriAxis.RunSharp
 						return null;
 				}
 
-				return new ApplicableFunction(candidate, cTypes, cTypes, Operand.GetTypes(args), conversions);
+				return new ApplicableFunction(candidate, cTypes, cTypes, Operand.GetTypes(args, typeMapper), conversions);
 			}
 
 			if (candidate.IsParameterArray && args.Length >= cTypes.Length - 1)
@@ -307,7 +307,7 @@ namespace TriAxis.RunSharp
 						return null;
 				}
 
-				return new ApplicableFunction(candidate, cTypes, expandedTypes, Operand.GetTypes(args), conversions);
+				return new ApplicableFunction(candidate, cTypes, expandedTypes, Operand.GetTypes(args, typeMapper), conversions);
 			}
 
 			return null;

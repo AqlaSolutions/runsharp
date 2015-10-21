@@ -96,7 +96,7 @@ namespace TriAxis.RunSharp
 #endif
         }
 
-        public Type GetType(string fullName, Assembly context)
+        public Type GetType(string fullName, Assembly context = null)
         {
 #if FEAT_IKVM
             if (context != null)

@@ -82,7 +82,7 @@ namespace TriAxis.RunSharp.Operands
 			g.IL.Emit(OpCodes.Newobj, _decimalExtConstructor);
 		}
 
-		public override Type Type => typeof(decimal);
+	    public override Type GetReturnType(ITypeMapper typeMapper) => typeof(decimal);
 
 	    internal override object ConstantValue => _value;
 	}

@@ -65,6 +65,6 @@ namespace TriAxis.RunSharp.Operands
 			g.EmitCallHelper(mb, _target);
 		}
 
-		public override Type Type => _method.Method.ReturnType;
+	    public override Type GetReturnType(ITypeMapper typeMapper) => _method.Method.ReturnType;
 	}
 }

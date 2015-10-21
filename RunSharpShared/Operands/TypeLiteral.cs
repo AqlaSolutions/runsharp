@@ -55,7 +55,7 @@ namespace TriAxis.RunSharp.Operands
 			g.IL.Emit(OpCodes.Call, _typeofMethod);
 		}
 
-		public override Type Type => typeof(Type);
+	    public override Type GetReturnType(ITypeMapper typeMapper) => typeof(Type);
 
 	    internal override object ConstantValue => _t;
 	}

@@ -69,7 +69,7 @@ namespace TriAxis.RunSharp.Operands
 			}
 		}
 
-		public override Type Type => _target.Type;
+	    public override Type GetReturnType(ITypeMapper typeMapper) => _target.GetReturnType(typeMapper);
 
 	    public void Emit(CodeGen g)
 		{

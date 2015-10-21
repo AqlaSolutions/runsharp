@@ -37,40 +37,52 @@ using BindingFlags = IKVM.Reflection.BindingFlags;
 #else
 using System.Reflection;
 using System.Reflection.Emit;
+
 #endif
 
 namespace TriAxis.RunSharp.Operands
 {
-	class Conditional : Operand
-	{
-	    readonly Operand _cond;
-	    readonly Operand _ifTrue;
-	    readonly Operand _ifFalse;
+    class Conditional : Operand
+    {
+        Operand _cond;
+        readonly Operand _ifTrue;
+        readonly Operand _ifFalse;
 
-	    public Conditional(Operand cond, Operand ifTrue, Operand ifFalse)
-		{
-			// TODO: proper checking as in specification
-			if (GetType(ifTrue) != GetType(ifFalse))
-				throw new ArgumentException(Properties.Messages.ErrInvalidConditionalVariants);
+        public Conditional(Operand cond, Operand ifTrue, Operand ifFalse)
+        {
+            _cond = cond;
+            _ifTrue = ifTrue;
+            _ifFalse = ifFalse;
+        }
 
-			_cond = cond;
-			_ifTrue = ifTrue;
-			_ifFalse = ifFalse;
-		}
+        bool _initialized;
 
-		internal override void EmitGet(CodeGen g)
-		{
-			Label lbTrue = g.IL.DefineLabel();
-			Label lbFalse = g.IL.DefineLabel();
+        void Initialize(ITypeMapper typeMapper)
+        {
+            if (_initialized) return;
+            _initialized = true;
 
-			_cond.EmitBranch(g, BranchSet.Normal, lbTrue);
-			_ifFalse.EmitGet(g);
-			g.IL.Emit(OpCodes.Br, lbFalse);
-			g.IL.MarkLabel(lbTrue);
-			_ifTrue.EmitGet(g);
-			g.IL.MarkLabel(lbFalse);
-		}
+            // TODO: proper checking as in specification
+            if (_ifTrue.GetReturnType(typeMapper) != _ifFalse.GetReturnType(typeMapper))
+                throw new ArgumentException(Properties.Messages.ErrInvalidConditionalVariants);
 
-		public override Type Type => GetType(_ifTrue);
-	}
+            if (_cond.GetReturnType(typeMapper) != typeMapper.MapType(typeof(bool))) _cond = _cond.IsTrue();
+        }
+
+        internal override void EmitGet(CodeGen g)
+        {
+            Initialize(g.TypeMapper);
+            Label lbTrue = g.IL.DefineLabel();
+            Label lbFalse = g.IL.DefineLabel();
+
+            _cond.EmitBranch(g, BranchSet.Normal, lbTrue);
+            _ifFalse.EmitGet(g);
+            g.IL.Emit(OpCodes.Br, lbFalse);
+            g.IL.MarkLabel(lbTrue);
+            _ifTrue.EmitGet(g);
+            g.IL.MarkLabel(lbFalse);
+        }
+
+        public override Type GetReturnType(ITypeMapper typeMapper) => GetType(_ifTrue, typeMapper);
+    }
 }

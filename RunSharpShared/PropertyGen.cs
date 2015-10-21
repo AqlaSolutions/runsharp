@@ -178,11 +178,11 @@ namespace TriAxis.RunSharp
 				throw new InvalidOperationException(Properties.Messages.ErrInvalidPropertyContext);
 
 			g.IL.Emit(OpCodes.Ldarg_0);
-			g.EmitGetHelper(value, Type, allowExplicitConversion);
+			g.EmitGetHelper(value, GetReturnType(TypeMapper), allowExplicitConversion);
 			g.EmitCallHelper(_setter.GetMethodBuilder(), null);
 		}
 
-		public override Type Type => _type;
+	    public override Type GetReturnType(ITypeMapper typeMapper) => _type;
 
 	    #region IMethodInfo Members
 

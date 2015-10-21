@@ -382,7 +382,7 @@ namespace TriAxis.RunSharp
         {
             if (desiredType.IsByRef)
             {
-                if (op.Type != desiredType.GetElementType())
+                if (op.GetReturnType(TypeMapper) != desiredType.GetElementType())
                     throw new InvalidOperationException(Properties.Messages.ErrByRefTypeMismatch);
 
                 op.EmitAddressOf(this);
@@ -406,11 +406,11 @@ namespace TriAxis.RunSharp
             MethodInfo mi = mth as MethodInfo;
             if (mi != null)
             {
-                bool suppressVirtual = ((object)target != null && target.SuppressVirtual) || mi.IsStatic || (((object)target != null) && target.Type.IsValueType && !mi.IsVirtual);
+                bool suppressVirtual = ((object)target != null && target.SuppressVirtual) || mi.IsStatic || (((object)target != null) && target.GetReturnType(TypeMapper).IsValueType && !mi.IsVirtual);
 
-                if (!suppressVirtual && (object)target != null && target.Type.IsValueType && mi.IsVirtual)
+                if (!suppressVirtual && (object)target != null && target.GetReturnType(TypeMapper).IsValueType && mi.IsVirtual)
                 {
-                    IL.Emit(OpCodes.Constrained, target.Type);
+                    IL.Emit(OpCodes.Constrained, target.GetReturnType(TypeMapper));
                 }
                 //Console.WriteLine("Emitting " + mth + ", using " + (suppressVirtual ? "call" : "callvirt"));
                 IL.Emit(suppressVirtual ? OpCodes.Call : OpCodes.Callvirt, mi);
@@ -430,7 +430,7 @@ namespace TriAxis.RunSharp
         internal void Convert(Operand op, Type to, bool allowExplicit)
         {
             Conversion conv = allowExplicit ? Conversion.GetExplicit(op, to, false, TypeMapper) : Conversion.GetImplicit(op, to, false, TypeMapper);
-            conv.Emit(this, (object)op == null ? null : op.Type, to);
+            conv.Emit(this, (object)op == null ? null : op.GetReturnType(TypeMapper), to);
         }
     }
 }
