@@ -43,31 +43,22 @@ namespace TriAxis.RunSharp.Operands
 {
 	class IntLiteral : Operand
 	{
-	    readonly Type _t;
-	    readonly int _value;
-
-		public IntLiteral(Type t, int value) { this._t = t; this._value = value; }
+	    public IntLiteral(Type t, int value) { this.Type = t; this.Value = value; }
 
 		internal override void EmitGet(CodeGen g)
 		{
-			g.EmitI4Helper(_value);
+			g.EmitI4Helper(Value);
 		}
 
-		public override Type Type
+		public override Type Type { get; }
+
+	    public int Value { get; }
+
+	    internal override object ConstantValue
 		{
 			get
 			{
-				return _t;
-			}
-		}
-
-		public int Value { get { return _value; } }
-
-		internal override object ConstantValue
-		{
-			get
-			{
-				return _value;
+				return Value;
 			}
 		}
 	}

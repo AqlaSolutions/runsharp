@@ -340,13 +340,11 @@ namespace TriAxis.RunSharp
 
 		class StdOp : IMemberInfo, IStandardOperation
 		{
-		    readonly Type _retType;
-		    readonly Type[] _opTypes;
-			protected bool Unsigned;
+		    protected bool Unsigned;
 
 			public StdOp(Type returnType, params Type[] opTypes)
 			{
-				this._retType = returnType; this._opTypes = opTypes;
+				this.ReturnType = returnType; this.ParameterTypes = opTypes;
 				Unsigned = IsUnsigned(returnType);
 			}
 
@@ -380,17 +378,11 @@ namespace TriAxis.RunSharp
 				get { return null; }
 			}
 
-			public Type ReturnType
-			{
-				get { return _retType; }
-			}
+			public Type ReturnType { get; }
 
-			public Type[] ParameterTypes
-			{
-				get { return _opTypes; }
-			}
+		    public Type[] ParameterTypes { get; }
 
-			public bool IsParameterArray
+		    public bool IsParameterArray
 			{
 				get { return false; }
 			}

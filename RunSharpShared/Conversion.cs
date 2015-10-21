@@ -383,17 +383,9 @@ namespace TriAxis.RunSharp
 
 		sealed class FakeTypedOperand : Operand
 		{
-		    readonly Type _t;
+		    public FakeTypedOperand(Type t) { this.Type = t; }
 
-			public FakeTypedOperand(Type t) { this._t = t; }
-
-			public override Type Type
-			{
-				get
-				{
-					return _t;
-				}
-			}
+			public override Type Type { get; }
 		}
         
 	    public static Conversion GetImplicit(Type from, Type to, bool onlyStandard)

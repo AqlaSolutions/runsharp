@@ -44,13 +44,12 @@ namespace TriAxis.RunSharp.Operands
 	class LongLiteral : Operand
 	{
 	    readonly Type _t;
-	    readonly long _value;
 
-		public LongLiteral(Type t, long value) { this._t = t; this._value = value; }
+	    public LongLiteral(Type t, long value) { this._t = t; this.Value = value; }
 
 		internal override void EmitGet(CodeGen g)
 		{
-			g.EmitI8Helper(_value, _t == typeof(long));
+			g.EmitI8Helper(Value, _t == typeof(long));
 		}
 
 		public override Type Type
@@ -61,13 +60,13 @@ namespace TriAxis.RunSharp.Operands
 			}
 		}
 
-		public long Value { get { return _value; } }
+		public long Value { get; }
 
-		internal override object ConstantValue
+	    internal override object ConstantValue
 		{
 			get
 			{
-				return _value;
+				return Value;
 			}
 		}
 	}

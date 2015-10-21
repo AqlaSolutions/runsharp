@@ -47,9 +47,8 @@ namespace TriAxis.RunSharp
 	    readonly MethodAttributes _attributes;
 		MethodBuilder _mb;
 	    readonly MethodImplAttributes _implFlags;
-		Type _interfaceType;
 
-		internal MethodBuilder GetMethodBuilder()
+	    internal MethodBuilder GetMethodBuilder()
 		{
 			LockSignature(); 
 			return _mb;
@@ -67,8 +66,8 @@ namespace TriAxis.RunSharp
 		{
 			string methodName = _name;
 
-			if (_interfaceType != null)
-				methodName = _interfaceType + "." + _name;
+			if (ImplementedInterface != null)
+				methodName = ImplementedInterface + "." + _name;
 
 			this._mb = Owner.TypeBuilder.DefineMethod(methodName, this._attributes | MethodAttributes.HideBySig, IsStatic ? CallingConventions.Standard : CallingConventions.HasThis, ReturnType, ParameterTypes);
 			if (_implFlags != 0)
@@ -90,13 +89,9 @@ namespace TriAxis.RunSharp
 			get { return (_attributes & MethodAttributes.Abstract) != 0; }
 		}
 
-		internal Type ImplementedInterface
-		{
-			get { return _interfaceType; }
-			set { _interfaceType = value; }
-		}
+		internal Type ImplementedInterface { get; set; }
 
-		#region RoutineGen concrete implementation
+	    #region RoutineGen concrete implementation
 
 		protected internal override bool IsStatic
 		{

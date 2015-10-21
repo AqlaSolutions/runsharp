@@ -194,9 +194,9 @@ namespace TriAxis.RunSharp
 
 			ApplicableFunction other = TypeInfo.FindConstructor(_cg.Type, args);
 
-			_il.Emit(OpCodes.Ldarg_0);
+			IL.Emit(OpCodes.Ldarg_0);
 			other.EmitArgs(this, args);
-			_il.Emit(OpCodes.Call, (ConstructorInfo)other.Method.Member);
+			IL.Emit(OpCodes.Call, (ConstructorInfo)other.Method.Member);
 			_chainCalled = true;
 		}
 
@@ -214,14 +214,14 @@ namespace TriAxis.RunSharp
 			if (other == null)
 				throw new InvalidOperationException(Properties.Messages.ErrMissingConstructor);
 
-			_il.Emit(OpCodes.Ldarg_0);
+			IL.Emit(OpCodes.Ldarg_0);
 			other.EmitArgs(this, args);
-			_il.Emit(OpCodes.Call, (ConstructorInfo)other.Method.Member);
+			IL.Emit(OpCodes.Call, (ConstructorInfo)other.Method.Member);
 			_chainCalled = true;
 
 			// when the chain continues to base, we also need to call the common constructor
-			_il.Emit(OpCodes.Ldarg_0);
-			_il.Emit(OpCodes.Call, _cg.Type.CommonConstructor().GetMethodBuilder());
+			IL.Emit(OpCodes.Ldarg_0);
+			IL.Emit(OpCodes.Call, _cg.Type.CommonConstructor().GetMethodBuilder());
 		}
 		#endregion
 
@@ -240,7 +240,7 @@ namespace TriAxis.RunSharp
 
 			invocation.EmitGet(this);
 			if (!Helpers.AreTypesEqual(invocation.Type, typeof(void), _typeMapper))
-				_il.Emit(OpCodes.Pop);
+				IL.Emit(OpCodes.Pop);
 		}
 
 		#region Invocation
@@ -333,7 +333,7 @@ namespace TriAxis.RunSharp
 			BeforeStatement();
 
 			target.EmitAddressOf(this);
-			_il.Emit(OpCodes.Initobj, target.Type);
+			IL.Emit(OpCodes.Initobj, target.Type);
 		}
 
 		#region Flow Control
@@ -369,7 +369,7 @@ namespace TriAxis.RunSharp
 
 				if (brkBlock != null)
 				{
-					_il.Emit(useLeave ? OpCodes.Leave : OpCodes.Br, brkBlock.GetBreakTarget());
+					IL.Emit(useLeave ? OpCodes.Leave : OpCodes.Br, brkBlock.GetBreakTarget());
 					_reachable = false;
 					return;
 				}
@@ -400,7 +400,7 @@ namespace TriAxis.RunSharp
 
 				if (cntBlock != null)
 				{
-					_il.Emit(useLeave ? OpCodes.Leave : OpCodes.Br, cntBlock.GetContinueTarget());
+					IL.Emit(useLeave ? OpCodes.Leave : OpCodes.Br, cntBlock.GetContinueTarget());
 					_reachable = false;
 					return;
 				}
@@ -411,7 +411,7 @@ namespace TriAxis.RunSharp
 
 		public void Return()
 		{
-		    if (_context.ReturnType != null && !Helpers.AreTypesEqual(_context.ReturnType, typeof(void), _typeMapper))
+		    if (Context.ReturnType != null && !Helpers.AreTypesEqual(Context.ReturnType, typeof(void), _typeMapper))
 				throw new InvalidOperationException(Properties.Messages.ErrMethodMustReturnValue);
 
 			BeforeStatement();
@@ -420,7 +420,7 @@ namespace TriAxis.RunSharp
 
 			if (xb == null)
 			{
-				_il.Emit(OpCodes.Ret);
+				IL.Emit(OpCodes.Ret);
 			}
 			else if (xb.IsFinally)
 			{
@@ -429,7 +429,7 @@ namespace TriAxis.RunSharp
 			else
 			{
 				EnsureReturnVariable();
-				_il.Emit(OpCodes.Leave, _retLabel);
+				IL.Emit(OpCodes.Leave, _retLabel);
 			}
 
 			_reachable = false;
@@ -438,18 +438,18 @@ namespace TriAxis.RunSharp
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "'Operand' required as type to use provided implicit conversions")]
 		public void Return(Operand value)
 		{
-			if (_context.ReturnType == null || Helpers.AreTypesEqual(_context.ReturnType, typeof(void), _typeMapper))
+			if (Context.ReturnType == null || Helpers.AreTypesEqual(Context.ReturnType, typeof(void), _typeMapper))
 				throw new InvalidOperationException(Properties.Messages.ErrVoidMethodReturningValue);
 
 			BeforeStatement();
 
-			EmitGetHelper(value, _context.ReturnType, false);
+			EmitGetHelper(value, Context.ReturnType, false);
 
 			ExceptionBlock xb = GetAnyTryBlock();
 
 			if (xb == null)
 			{
-				_il.Emit(OpCodes.Ret);
+				IL.Emit(OpCodes.Ret);
 			}
 			else if (xb.IsFinally)
 			{
@@ -458,8 +458,8 @@ namespace TriAxis.RunSharp
 			else
 			{
 				EnsureReturnVariable();
-				_il.Emit(OpCodes.Stloc, _retVar);
-				_il.Emit(OpCodes.Leave, _retLabel);
+				IL.Emit(OpCodes.Stloc, _retVar);
+				IL.Emit(OpCodes.Leave, _retLabel);
 			}
 			_reachable = false;
 		}
@@ -468,7 +468,7 @@ namespace TriAxis.RunSharp
 		{
 			BeforeStatement();
 
-			_il.Emit(OpCodes.Rethrow);
+			IL.Emit(OpCodes.Rethrow);
 			_reachable = false;
 		}
 
@@ -478,7 +478,7 @@ namespace TriAxis.RunSharp
 			BeforeStatement();
 
 			EmitGetHelper(exception, _typeMapper.MapType(typeof(Exception)), false);
-			_il.Emit(OpCodes.Throw);
+			IL.Emit(OpCodes.Throw);
 			_reachable = false;
 		}
 
@@ -633,8 +633,8 @@ namespace TriAxis.RunSharp
 			{
 				if (!_hasScope)
 				{
-					if (G._context.SupportsScopes)
-						G._il.BeginScope();
+					if (G.Context.SupportsScopes)
+						G.IL.BeginScope();
 					_hasScope = true;
 				}
 			}
@@ -643,8 +643,8 @@ namespace TriAxis.RunSharp
 			{
 				if (_hasScope)
 				{
-					if (G._context.SupportsScopes)
-						G._il.EndScope();
+					if (G.Context.SupportsScopes)
+						G.IL.EndScope();
 					_hasScope = false;
 				}
 			}
@@ -682,13 +682,13 @@ namespace TriAxis.RunSharp
 			{
 				G.BeforeStatement();
 
-				_lbSkip = G._il.DefineLabel();
+				_lbSkip = G.IL.DefineLabel();
 				_condition.EmitBranch(G, BranchSet.Inverse, _lbSkip);
 			}
 
 			protected override void EndImpl()
 			{
-				G._il.MarkLabel(_lbSkip);
+				G.IL.MarkLabel(_lbSkip);
 				G._reachable = true;
 			}
 		}
@@ -708,8 +708,8 @@ namespace TriAxis.RunSharp
 			{
 				if (_canSkip = G._reachable)
 				{
-					_lbSkip = G._il.DefineLabel();
-					G._il.Emit(OpCodes.Br, _lbSkip);
+					_lbSkip = G.IL.DefineLabel();
+					G.IL.Emit(OpCodes.Br, _lbSkip);
 				}
 				_ifBlk.End();
 			}
@@ -718,7 +718,7 @@ namespace TriAxis.RunSharp
 			{
 				if (_canSkip)
 				{
-					G._il.MarkLabel(_lbSkip);
+					G.IL.MarkLabel(_lbSkip);
 					G._reachable = true;
 				}
 			}
@@ -747,12 +747,12 @@ namespace TriAxis.RunSharp
 			{
 				G.BeforeStatement();
 
-				_lbLoop = G._il.DefineLabel();
-				_lbTest = G._il.DefineLabel();
+				_lbLoop = G.IL.DefineLabel();
+				_lbTest = G.IL.DefineLabel();
 				if (_init != null)
 					_init.Emit(G);
-				G._il.Emit(OpCodes.Br, _lbTest);
-				G._il.MarkLabel(_lbLoop);
+				G.IL.Emit(OpCodes.Br, _lbTest);
+				G.IL.MarkLabel(_lbLoop);
 			}
 
 			protected override void EndImpl()
@@ -760,16 +760,16 @@ namespace TriAxis.RunSharp
 				if (_iter != null)
 				{
 					if (_iterUsed)
-						G._il.MarkLabel(_lbIter);
+						G.IL.MarkLabel(_lbIter);
 				
 					_iter.Emit(G);
 				}
 
-				G._il.MarkLabel(_lbTest);
+				G.IL.MarkLabel(_lbTest);
 				_test.EmitBranch(G, BranchSet.Normal, _lbLoop);
 
 				if (_endUsed)
-					G._il.MarkLabel(_lbEnd);
+					G.IL.MarkLabel(_lbEnd);
 
 				G._reachable = true;
 			}
@@ -778,7 +778,7 @@ namespace TriAxis.RunSharp
 			{
 				if (!_endUsed)
 				{
-					_lbEnd = G._il.DefineLabel();
+					_lbEnd = G.IL.DefineLabel();
 					_endUsed = true;
 				}
 				return _lbEnd;
@@ -791,7 +791,7 @@ namespace TriAxis.RunSharp
 
 				if (!_iterUsed)
 				{
-					_lbIter = G._il.DefineLabel();
+					_lbIter = G.IL.DefineLabel();
 					_iterUsed = true;
 				}
 				return _lbIter;
@@ -812,39 +812,39 @@ namespace TriAxis.RunSharp
 			    this._typeMapper = typeMapper;
 			}
 
-			Operand _enumerator, _element;
+			Operand _enumerator;
 			Label _lbLoop, _lbTest, _lbEnd;
 			bool _endUsed = false;
 
-			public Operand Element { get { return _element; } }
+			public Operand Element { get; set; }
 
-			protected override void BeginImpl()
+		    protected override void BeginImpl()
 			{
 				G.BeforeStatement();
 
 				_enumerator = G.Local();
-				_lbLoop = G._il.DefineLabel();
-				_lbTest = G._il.DefineLabel();
+				_lbLoop = G.IL.DefineLabel();
+				_lbTest = G.IL.DefineLabel();
 
 			    if (Helpers.IsAssignableFrom(typeof(IEnumerable), _collection.Type, _typeMapper))
 			        _collection = _collection.Cast(_typeMapper.MapType(typeof(IEnumerable)));
 
 				G.Assign(_enumerator, _collection.Invoke("GetEnumerator"));
-				G._il.Emit(OpCodes.Br, _lbTest);
-				G._il.MarkLabel(_lbLoop);
-				_element = G.Local(_elementType);
-				G.Assign(_element, _enumerator.Property("Current"), true);
+				G.IL.Emit(OpCodes.Br, _lbTest);
+				G.IL.MarkLabel(_lbLoop);
+				Element = G.Local(_elementType);
+				G.Assign(Element, _enumerator.Property("Current"), true);
 			}
 
 			protected override void EndImpl()
 			{
-				G._il.MarkLabel(_lbTest);
+				G.IL.MarkLabel(_lbTest);
 				_enumerator.Invoke("MoveNext").EmitGet(G);
 
-				G._il.Emit(OpCodes.Brtrue, _lbLoop);
+				G.IL.Emit(OpCodes.Brtrue, _lbLoop);
 
 				if (_endUsed)
-					G._il.MarkLabel(_lbEnd); 
+					G.IL.MarkLabel(_lbEnd); 
 				
 				G._reachable = true;
 			}
@@ -853,7 +853,7 @@ namespace TriAxis.RunSharp
 			{
 				if (!_endUsed)
 				{
-					_lbEnd = G._il.DefineLabel();
+					_lbEnd = G.IL.DefineLabel();
 					_endUsed = true;
 				}
 				return _lbEnd;
@@ -868,7 +868,6 @@ namespace TriAxis.RunSharp
 		class ExceptionBlock : Block
 		{
 			bool _endReachable = false;
-			bool _isFinally = false;
 
 		    readonly ITypeMapper _typeMapper;
 
@@ -879,7 +878,7 @@ namespace TriAxis.RunSharp
 
 		    protected override void BeginImpl()
 			{
-				G._il.BeginExceptionBlock();
+				G.IL.BeginExceptionBlock();
 			}
 
 			public void BeginCatchAll()
@@ -888,8 +887,8 @@ namespace TriAxis.RunSharp
 
 				if (G._reachable)
 					_endReachable = true;
-				G._il.BeginCatchBlock(_typeMapper.MapType(typeof(object)));
-				G._il.Emit(OpCodes.Pop);
+				G.IL.BeginCatchBlock(_typeMapper.MapType(typeof(object)));
+				G.IL.Emit(OpCodes.Pop);
 				G._reachable = true;
 			}
 
@@ -900,9 +899,9 @@ namespace TriAxis.RunSharp
 				if (G._reachable)
 					_endReachable = true;
 
-				G._il.BeginCatchBlock(t);
-				LocalBuilder lb = G._il.DeclareLocal(t);
-				G._il.Emit(OpCodes.Stloc, lb);
+				G.IL.BeginCatchBlock(t);
+				LocalBuilder lb = G.IL.DeclareLocal(t);
+				G.IL.Emit(OpCodes.Stloc, lb);
 				G._reachable = true;
 
 				return new _Local(G, lb);
@@ -912,27 +911,27 @@ namespace TriAxis.RunSharp
 			{
 				EndScope();
 
-				G._il.BeginFaultBlock();
+				G.IL.BeginFaultBlock();
 				G._reachable = true;
-				_isFinally = true;
+				IsFinally = true;
 			}
 
 			public void BeginFinally()
 			{
 				EndScope();
 
-				G._il.BeginFinallyBlock();
+				G.IL.BeginFinallyBlock();
 				G._reachable = true;
-				_isFinally = true;
+				IsFinally = true;
 			}
 
 			protected override void EndImpl()
 			{
-				G._il.EndExceptionBlock();
+				G.IL.EndExceptionBlock();
 				G._reachable = _endReachable;
 			}
 
-			public bool IsFinally { get { return _isFinally; } }
+			public bool IsFinally { get; set; } = false;
 		}
 
 		class SwitchBlock : Block, IBreakable
@@ -995,15 +994,15 @@ namespace TriAxis.RunSharp
 
 			protected override void BeginImpl()
 			{
-				_lbDecision = G._il.DefineLabel();
-				_lbDefault = _lbEnd = G._il.DefineLabel();
+				_lbDecision = G.IL.DefineLabel();
+				_lbDefault = _lbEnd = G.IL.DefineLabel();
 
 				_expression.EmitGet(G);
 				if (_conv != null)
 					_conv.Emit(G, _expression.Type, _govType);
-				_exp = G._il.DeclareLocal(_govType);
-				G._il.Emit(OpCodes.Stloc, _exp);
-				G._il.Emit(OpCodes.Br, _lbDecision);
+				_exp = G.IL.DeclareLocal(_govType);
+				G.IL.Emit(OpCodes.Stloc, _exp);
+				G.IL.Emit(OpCodes.Br, _lbDecision);
 				G._reachable = false;
 			}
 
@@ -1023,11 +1022,11 @@ namespace TriAxis.RunSharp
 					throw new InvalidOperationException(Properties.Messages.ErrDuplicateCase);
 
 				if (G._reachable)
-					G._il.Emit(OpCodes.Br, _lbEnd);
+					G.IL.Emit(OpCodes.Br, _lbEnd);
 
 				EndScope();
-				Label lb = G._il.DefineLabel();
-				G._il.MarkLabel(lb);
+				Label lb = G.IL.DefineLabel();
+				G.IL.MarkLabel(lb);
 				if (value == null)
 				{
 					_defaultExists = true;
@@ -1072,11 +1071,11 @@ namespace TriAxis.RunSharp
 				{
 					case 0: break;
 					case 1:
-						G._il.Emit(OpCodes.Beq, labels[0]);
+						G.IL.Emit(OpCodes.Beq, labels[0]);
 						break;
 					default:
-						G._il.Emit(OpCodes.Sub);
-						G._il.Emit(OpCodes.Switch, labels.ToArray());
+						G.IL.Emit(OpCodes.Sub);
+						G.IL.Emit(OpCodes.Switch, labels.ToArray());
 						break;
 				}
 			}
@@ -1104,21 +1103,21 @@ namespace TriAxis.RunSharp
 			{
 				if (G._reachable)
 				{
-					G._il.Emit(OpCodes.Br, _lbEnd);
+					G.IL.Emit(OpCodes.Br, _lbEnd);
 					_endReachable = true;
 				}
 
 				EndScope();
-				G._il.MarkLabel(_lbDecision);
+				G.IL.MarkLabel(_lbDecision);
 
 			    if (Helpers.AreTypesEqual(_govType, typeof(string), _typeMapper))
 				{
 					foreach (KeyValuePair<IComparable, Label> kvp in _cases)
 					{
-						G._il.Emit(OpCodes.Ldloc, _exp);
-						G._il.Emit(OpCodes.Ldstr, kvp.Key.ToString());
-						G._il.Emit(OpCodes.Call, _strCmp);
-						G._il.Emit(OpCodes.Brtrue, kvp.Value);
+						G.IL.Emit(OpCodes.Ldloc, _exp);
+						G.IL.Emit(OpCodes.Ldstr, kvp.Key.ToString());
+						G.IL.Emit(OpCodes.Call, _strCmp);
+						G.IL.Emit(OpCodes.Brtrue, kvp.Value);
 					}
 				}
 				else
@@ -1146,7 +1145,7 @@ namespace TriAxis.RunSharp
 
 						if (first)
 						{
-							G._il.Emit(OpCodes.Ldloc, _exp);
+							G.IL.Emit(OpCodes.Ldloc, _exp);
 							EmitValue(val);
 							first = false;
 						}
@@ -1158,8 +1157,8 @@ namespace TriAxis.RunSharp
 					Finish(labels);
 				}
 				if (_lbDefault != _lbEnd)
-					G._il.Emit(OpCodes.Br, _lbDefault);
-				G._il.MarkLabel(_lbEnd);
+					G.IL.Emit(OpCodes.Br, _lbDefault);
+				G.IL.MarkLabel(_lbEnd);
 				G._reachable = _endReachable;
 			}
 

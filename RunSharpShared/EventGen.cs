@@ -46,19 +46,16 @@ namespace TriAxis.RunSharp
 	    readonly TypeGen _owner;
 	    readonly MethodAttributes _attrs;
 	    readonly Type _type;
-	    readonly string _name;
-		EventBuilder _eb;
+	    EventBuilder _eb;
 		FieldGen _handler = null;
 		List<AttributeGen> _customAttributes;
 
 		MethodGen _adder, _remover;
 
-	    private Type _interfaceType;
-
 	    internal EventGen(TypeGen owner, string name, Type type, MethodAttributes mthAttr)
 		{
 			this._owner = owner;
-			this._name = name;
+			this.Name = name;
 			this._type = type;
 			this._attrs = mthAttr;
 		}
@@ -67,18 +64,14 @@ namespace TriAxis.RunSharp
         {
             if (_eb == null)
             {
-                _eb = _owner.TypeBuilder.DefineEvent(_interfaceType == null ? _name : _interfaceType.FullName + "." + _name, EventAttributes.None, _type);
+                _eb = _owner.TypeBuilder.DefineEvent(ImplementedInterface == null ? Name : ImplementedInterface.FullName + "." + Name, EventAttributes.None, _type);
                 _owner.RegisterForCompletion(this);
             }
         }
 
-        internal Type ImplementedInterface
-        {
-            get { return _interfaceType; }
-            set { _interfaceType = value; }
-        }
+        internal Type ImplementedInterface { get; set; }
 
-		public MethodGen AddMethod()
+	    public MethodGen AddMethod()
 		{
 			return AddMethod("handler");
 		}
@@ -88,8 +81,8 @@ namespace TriAxis.RunSharp
 			if (_adder == null)
 			{
 			    LockSignature();
-				_adder = new MethodGen(_owner, "add_" + _name, _attrs | MethodAttributes.SpecialName, typeof(void), 0);
-			    _adder.ImplementedInterface = _interfaceType;
+				_adder = new MethodGen(_owner, "add_" + Name, _attrs | MethodAttributes.SpecialName, typeof(void), 0);
+			    _adder.ImplementedInterface = ImplementedInterface;
 				_adder.Parameter(_type, parameterName);
 				_eb.SetAddOnMethod(_adder.GetMethodBuilder());
 			}
@@ -107,8 +100,8 @@ namespace TriAxis.RunSharp
 			if (_remover == null)
 			{
 			    LockSignature();
-				_remover = new MethodGen(_owner, "remove_" + _name, _attrs | MethodAttributes.SpecialName, typeof(void), 0);
-			    _remover.ImplementedInterface = _interfaceType;
+				_remover = new MethodGen(_owner, "remove_" + Name, _attrs | MethodAttributes.SpecialName, typeof(void), 0);
+			    _remover.ImplementedInterface = ImplementedInterface;
                 _remover.Parameter(_type, parameterName);
 				_eb.SetRemoveOnMethod(_remover.GetMethodBuilder());
 			}
@@ -121,9 +114,9 @@ namespace TriAxis.RunSharp
 			if ((object)_handler == null)
 			{
 				if (IsStatic)
-					_handler = _owner.Private.Static.Field(_type, _name);
+					_handler = _owner.Private.Static.Field(_type, Name);
 				else
-					_handler = _owner.Private.Field(_type, _name);
+					_handler = _owner.Private.Field(_type, Name);
 
 				CodeGen g = AddMethod();
 				g.AssignAdd(_handler, g.Arg("handler"));
@@ -205,12 +198,9 @@ namespace TriAxis.RunSharp
 			get { return new EventInfoProxy(this); }
 		}
 
-		public string Name
-		{
-			get { return _name; }
-		}
+		public string Name { get; }
 
-		Type IMemberInfo.ReturnType
+	    Type IMemberInfo.ReturnType
 		{
 			get { return _type; }
 		}
@@ -317,7 +307,7 @@ namespace TriAxis.RunSharp
 
 			public override string Name
 			{
-				get { return _eg._name; }
+				get { return _eg.Name; }
 			}
 
 			public override Type ReflectedType

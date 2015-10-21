@@ -56,8 +56,6 @@ namespace TriAxis.RunSharp
 
 	public partial class CodeGen
 	{
-	    readonly ILGenerator _il;
-	    readonly ICodeGenContext _context;
 	    readonly ConstructorGen _cg;
 		bool _chainCalled = false;
 		bool _reachable = true;
@@ -68,19 +66,19 @@ namespace TriAxis.RunSharp
 	    readonly Dictionary<string, Label> _labels = new Dictionary<string, Label>();
 	    readonly Dictionary<string, Operand> _namedLocals = new Dictionary<string, Operand>();
 
-		internal ILGenerator IL { get { return _il; } }
-		internal ICodeGenContext Context { get { return _context; } }
+		internal ILGenerator IL { get; }
+	    internal ICodeGenContext Context { get; }
 
-		internal CodeGen(ICodeGenContext context)
+	    internal CodeGen(ICodeGenContext context)
 		{
-			this._context = context;
+			this.Context = context;
 			this._cg = context as ConstructorGen;
 
 			if (_cg != null && _cg.IsStatic)
 				// #14 - cg is relevant for instance constructors - it wreaks havoc in a static constructor
 				_cg = null;
 
-			_il = context.GetILGenerator();
+			IL = context.GetILGenerator();
 		}
 
 		/*public static CodeGen CreateDynamicMethod(string name, Type returnType, params Type[] parameterTypes, Type owner, bool skipVisibility)
@@ -102,31 +100,31 @@ namespace TriAxis.RunSharp
 		#region Arguments
 		public Operand This()
 		{
-			if (_context.IsStatic)
+			if (Context.IsStatic)
 				throw new InvalidOperationException(Properties.Messages.ErrCodeStaticThis);
 
-			return new _Arg(0, _context.OwnerType);
+			return new _Arg(0, Context.OwnerType);
 		}
 
 		public Operand Base()
 		{
-			if (_context.IsStatic)
-				return new StaticTarget(_context.OwnerType.BaseType);
+			if (Context.IsStatic)
+				return new StaticTarget(Context.OwnerType.BaseType);
 			else
-				return new _Base(_context.OwnerType.BaseType);
+				return new _Base(Context.OwnerType.BaseType);
 		}
 
-		int ThisOffset { get { return _context.IsStatic ? 0 : 1; } }
+		int ThisOffset { get { return Context.IsStatic ? 0 : 1; } }
 
 		public Operand PropertyValue()
 		{
-			Type[] parameterTypes = _context.ParameterTypes;
+			Type[] parameterTypes = Context.ParameterTypes;
 			return new _Arg(ThisOffset + parameterTypes.Length - 1, parameterTypes[parameterTypes.Length - 1]);
 		}
 
 		public Operand Arg(string name)
 		{
-			ParameterGen param = _context.GetParameterByName(name);
+			ParameterGen param = Context.GetParameterByName(name);
 			return new _Arg(ThisOffset + param.Position - 1, param.Type);
 		}
 		#endregion
@@ -161,7 +159,7 @@ namespace TriAxis.RunSharp
 		{
 			get
 			{
-				Type returnType = _context.ReturnType;
+				Type returnType = Context.ReturnType;
 			    return returnType != null && !Helpers.AreTypesEqual(returnType, typeof(void), _typeMapper);
 			}
 		}
@@ -171,9 +169,9 @@ namespace TriAxis.RunSharp
 			if (_hasRetVar)
 				return;
 
-			_retLabel = _il.DefineLabel();
+			_retLabel = IL.DefineLabel();
 			if (HasReturnValue)
-				_retVar = _il.DeclareLocal(_context.ReturnType);
+				_retVar = IL.DeclareLocal(Context.ReturnType);
 			_hasRetVar = true;
 		}
 
@@ -193,17 +191,17 @@ namespace TriAxis.RunSharp
 			if (_reachable)
 			{
 				if (HasReturnValue)
-					throw new InvalidOperationException(string.Format(null, Properties.Messages.ErrMethodMustReturnValue, _context));
+					throw new InvalidOperationException(string.Format(null, Properties.Messages.ErrMethodMustReturnValue, Context));
 				else
 					Return();
 			}
 
 			if (_hasRetVar && !_hasRetLabel)
 			{
-				_il.MarkLabel(_retLabel);
+				IL.MarkLabel(_retLabel);
 				if (_retVar != null)
-					_il.Emit(OpCodes.Ldloc, _retVar);
-				_il.Emit(OpCodes.Ret);
+					IL.Emit(OpCodes.Ldloc, _retVar);
+				IL.Emit(OpCodes.Ret);
 				_hasRetLabel = true;
 			}
 		}
@@ -263,9 +261,9 @@ namespace TriAxis.RunSharp
 				else
 				{
 					if (_index <= byte.MaxValue)
-						g._il.Emit(OpCodes.Ldarga_S, (byte)_index);
+						g.IL.Emit(OpCodes.Ldarga_S, (byte)_index);
 					else
-						g._il.Emit(OpCodes.Ldarga, _index);
+						g.IL.Emit(OpCodes.Ldarga, _index);
 				}
 			}
 
@@ -328,7 +326,7 @@ namespace TriAxis.RunSharp
 				if (_var == null)
 					throw new InvalidOperationException(Properties.Messages.ErrUninitializedVarAccess);
 
-				g._il.Emit(OpCodes.Ldloc, _var);
+				g.IL.Emit(OpCodes.Ldloc, _var);
 			}
 
 			internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
@@ -339,10 +337,10 @@ namespace TriAxis.RunSharp
 					_t = value.Type;
 
 				if (_var == null)
-					_var = g._il.DeclareLocal(_t);
+					_var = g.IL.DeclareLocal(_t);
 
 				g.EmitGetHelper(value, _t, allowExplicitConversion);
-				g._il.Emit(OpCodes.Stloc, _var);
+				g.IL.Emit(OpCodes.Stloc, _var);
 			}
 
 			internal override void EmitAddressOf(CodeGen g)
@@ -352,10 +350,10 @@ namespace TriAxis.RunSharp
 				if (_var == null)
 				{
 					RequireType();
-					_var = g._il.DeclareLocal(_t);
+					_var = g.IL.DeclareLocal(_t);
 				}
 
-				g._il.Emit(OpCodes.Ldloca, _var);
+				g.IL.Emit(OpCodes.Ldloca, _var);
 			}
 
 			public override Type Type
@@ -395,19 +393,11 @@ namespace TriAxis.RunSharp
 
 		class StaticTarget : Operand
 		{
-		    readonly Type _t;
+		    public StaticTarget(Type t) { this.Type = t; }
 
-			public StaticTarget(Type t) { this._t = t; }
+			public override Type Type { get; }
 
-			public override Type Type
-			{
-				get
-				{
-					return _t;
-				}
-			}
-
-			internal override bool IsStaticTarget
+		    internal override bool IsStaticTarget
 			{
 				get
 				{

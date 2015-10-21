@@ -56,40 +56,34 @@ namespace TriAxis.RunSharp
 	{
 		class InterfaceImplEntry
 		{
-		    readonly IMemberInfo _interfaceMethod;
-			MethodGen _implementation;
-
-			public InterfaceImplEntry(IMemberInfo interfaceMethod)
+		    public InterfaceImplEntry(IMemberInfo interfaceMethod)
 			{
-				this._interfaceMethod = interfaceMethod;
+				this.InterfaceMethod = interfaceMethod;
 			}
 
 			public bool Match(MethodGen candidate)
 			{
-				return candidate.Name == _interfaceMethod.Name &&
-						candidate.ReturnType == _interfaceMethod.ReturnType &&
-						ArrayUtils.Equals(candidate.ParameterTypes, _interfaceMethod.ParameterTypes);
+				return candidate.Name == InterfaceMethod.Name &&
+						candidate.ReturnType == InterfaceMethod.ReturnType &&
+						ArrayUtils.Equals(candidate.ParameterTypes, InterfaceMethod.ParameterTypes);
 			}
 
-			public IMemberInfo InterfaceMethod { get { return _interfaceMethod; } }
-			public Type InterfaceType { get { return _interfaceMethod.Member.DeclaringType; } }
-			public MethodGen BoundMethod { get { return _implementation; } }
+			public IMemberInfo InterfaceMethod { get; }
+		    public Type InterfaceType { get { return InterfaceMethod.Member.DeclaringType; } }
+			public MethodGen BoundMethod { get; set; }
 
-			public bool IsBound { get { return _implementation != null; } }
+		    public bool IsBound { get { return BoundMethod != null; } }
 
 			public void Bind(MethodGen implementation)
 			{
-				this._implementation = implementation;
+				this.BoundMethod = implementation;
 			}
 		}
 
 	    readonly AssemblyGen _owner;
         public ITypeMapper TypeMapper { get { return _owner.TypeMapper; } }
-	    readonly string _name;
-	    readonly Type _baseType;
-		Type[] _interfaces;
-	    readonly TypeBuilder _tb;
-		Type _type;
+	    Type[] _interfaces;
+	    Type _type;
 		MethodGen _commonCtor = null;
 		ConstructorGen _staticCtor = null;
 	    readonly List<IDelayedDefinition> _definitionQueue = new List<IDelayedDefinition>();
@@ -104,38 +98,38 @@ namespace TriAxis.RunSharp
 		List<AttributeGen> _customAttributes = new List<AttributeGen>();
 		string _indexerName;
 		
-		internal TypeBuilder TypeBuilder { get { return _tb; } }
-		internal Type BaseType { get { return _baseType; } }
+		internal TypeBuilder TypeBuilder { get; }
+	    internal Type BaseType { get; }
 
-		public string Name { get { return _name; } }
+	    public string Name { get; }
 
-		internal TypeGen(AssemblyGen owner, string name, TypeAttributes attrs, Type baseType, Type[] interfaces)
+	    internal TypeGen(AssemblyGen owner, string name, TypeAttributes attrs, Type baseType, Type[] interfaces)
 		{
 			this._owner = owner;
-			this._name = name;
-			this._baseType = baseType;
+			this.Name = name;
+			this.BaseType = baseType;
 			this._interfaces = interfaces;
 
-			_tb = owner.ModuleBuilder.DefineType(name, attrs, baseType, interfaces);
+			TypeBuilder = owner.ModuleBuilder.DefineType(name, attrs, baseType, interfaces);
 			owner.AddType(this);
 			ScanMethodsToImplement(interfaces);
 
-			TypeInfo.RegisterProvider(_tb, this);
+			TypeInfo.RegisterProvider(TypeBuilder, this);
 			ResetAttrs();
 		}
 
 		internal TypeGen(TypeGen owner, string name, TypeAttributes attrs, Type baseType, Type[] interfaces)
 		{
 			this._owner = owner._owner;
-			this._name = name;
-			this._baseType = baseType;
+			this.Name = name;
+			this.BaseType = baseType;
 			this._interfaces = interfaces;
 
-			_tb = owner.TypeBuilder.DefineNestedType(name, attrs, baseType, interfaces);
+			TypeBuilder = owner.TypeBuilder.DefineNestedType(name, attrs, baseType, interfaces);
 			owner._nestedTypes.Add(this);
 			ScanMethodsToImplement(interfaces);
 
-			TypeInfo.RegisterProvider(_tb, this);
+			TypeInfo.RegisterProvider(TypeBuilder, this);
 		}
 
 		void ScanMethodsToImplement(Type[] interfaces)
@@ -255,7 +249,7 @@ namespace TriAxis.RunSharp
 
 		void ResetAttrs()
 		{
-			if (_tb.IsInterface)
+			if (TypeBuilder.IsInterface)
 			{
 				_mthVis = MethodAttributes.Public;
 				_mthVirt = MethodAttributes.Virtual | MethodAttributes.NewSlot | MethodAttributes.Abstract;
@@ -293,9 +287,9 @@ namespace TriAxis.RunSharp
 		{
 			AttributeTargets target = AttributeTargets.Class;
 
-			if (_baseType == null)
+			if (BaseType == null)
 				target = AttributeTargets.Interface;
-			else if (_baseType == typeof(ValueType))
+			else if (BaseType == typeof(ValueType))
 				target = AttributeTargets.Struct;
 			else
 				target = AttributeTargets.Class;
@@ -308,9 +302,9 @@ namespace TriAxis.RunSharp
 		#region Members
 		public MethodGen CommonConstructor()
 		{
-			if (_tb.IsValueType)
+			if (TypeBuilder.IsValueType)
 				throw new InvalidOperationException(Properties.Messages.ErrStructNoDefaultCtor);
-			if (_tb.IsInterface)
+			if (TypeBuilder.IsInterface)
 				throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoCtor);
 
 			if (_commonCtor == null)
@@ -323,7 +317,7 @@ namespace TriAxis.RunSharp
 
 		public ConstructorGen Constructor()
 		{
-			if (_tb.IsInterface)
+			if (TypeBuilder.IsInterface)
 				throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoCtor);
 
 			ConstructorGen cg = new ConstructorGen(this, _mthVis, _implFlags);
@@ -333,7 +327,7 @@ namespace TriAxis.RunSharp
 
 		public ConstructorGen StaticConstructor()
 		{
-			if (_tb.IsInterface)
+			if (TypeBuilder.IsInterface)
 				throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoCtor);
 			
 			if (_staticCtor == null)
@@ -346,7 +340,7 @@ namespace TriAxis.RunSharp
 
 		public FieldGen Field(Type type, string name)
 		{
-			if (_tb.IsInterface)
+			if (TypeBuilder.IsInterface)
 				throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoField);
 
 			if (_fldVis == 0)
@@ -372,7 +366,7 @@ namespace TriAxis.RunSharp
 			if (_mthVis == 0)
 				_mthVis |= MethodAttributes.Private;
 
-			if (_tb.IsInterface)
+			if (TypeBuilder.IsInterface)
 				_mthVirt |= MethodAttributes.Virtual | MethodAttributes.Abstract;
 
 			PropertyGen pg = new PropertyGen(this, _mthVis | _mthVirt | _mthFlags, type, name);
@@ -427,7 +421,7 @@ namespace TriAxis.RunSharp
 		{
 			if (_mthVis == 0)
 				_mthVis |= MethodAttributes.Private;
-			if (_tb.IsInterface)
+			if (TypeBuilder.IsInterface)
 				_mthVirt |= MethodAttributes.Virtual | MethodAttributes.Abstract;
 
 			MethodGen mg = new MethodGen(this, name, _mthVis | _mthVirt | _mthFlags, returnType, _implFlags);
@@ -442,13 +436,13 @@ namespace TriAxis.RunSharp
 
 		public MethodGen ImplicitConversionFrom(Type fromType, string parameterName)
 		{
-			if (_tb.IsInterface)
+			if (TypeBuilder.IsInterface)
 				throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoConversion);
 
 			ResetAttrs();
 			_mthFlags = MethodAttributes.SpecialName | MethodAttributes.Static;
 			_mthVis = MethodAttributes.Public;
-			return Method(_tb, "op_Implicit").Parameter(fromType, parameterName);
+			return Method(TypeBuilder, "op_Implicit").Parameter(fromType, parameterName);
 		}
 
 		public MethodGen ImplicitConversionTo(Type toType)
@@ -458,13 +452,13 @@ namespace TriAxis.RunSharp
 
 		public MethodGen ImplicitConversionTo(Type toType, string parameterName)
 		{
-			if (_tb.IsInterface)
+			if (TypeBuilder.IsInterface)
 				throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoConversion);
 
 			ResetAttrs();
 			_mthFlags = MethodAttributes.SpecialName | MethodAttributes.Static;
 			_mthVis = MethodAttributes.Public;
-			return Method(toType, "op_Implicit").Parameter(_tb, parameterName);
+			return Method(toType, "op_Implicit").Parameter(TypeBuilder, parameterName);
 		}
 
 		public MethodGen ExplicitConversionFrom(Type fromType)
@@ -474,13 +468,13 @@ namespace TriAxis.RunSharp
 
 		public MethodGen ExplicitConversionFrom(Type fromType, string parameterName)
 		{
-			if (_tb.IsInterface)
+			if (TypeBuilder.IsInterface)
 				throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoConversion);
 
 			ResetAttrs();
 			_mthFlags = MethodAttributes.SpecialName | MethodAttributes.Static;
 			_mthVis = MethodAttributes.Public;
-			return Method(_tb, "op_Explicit").Parameter(fromType, parameterName);
+			return Method(TypeBuilder, "op_Explicit").Parameter(fromType, parameterName);
 		}
 
 		public MethodGen ExplicitConversionTo(Type toType)
@@ -490,13 +484,13 @@ namespace TriAxis.RunSharp
 
 		public MethodGen ExplicitConversionTo(Type toType, string parameterName)
 		{
-			if (_tb.IsInterface)
+			if (TypeBuilder.IsInterface)
 				throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoConversion);
 
 			ResetAttrs();
 			_mthFlags = MethodAttributes.SpecialName | MethodAttributes.Static;
 			_mthVis = MethodAttributes.Public;
-			return Method(toType, "op_Explicit").Parameter(_tb, parameterName);
+			return Method(toType, "op_Explicit").Parameter(TypeBuilder, parameterName);
 		}
 
 		public MethodGen Operator(Operator op, Type returnType, Type operandType)
@@ -546,7 +540,7 @@ namespace TriAxis.RunSharp
 
 		public TypeGen Class(string name, Type baseType, params Type[] interfaces)
 		{
-			if (_tb.IsInterface)
+			if (TypeBuilder.IsInterface)
 				throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoNested);
 
 			if (_typeVis == 0)
@@ -564,7 +558,7 @@ namespace TriAxis.RunSharp
 
 		public TypeGen Struct(string name, params Type[] interfaces)
 		{
-			if (_tb.IsInterface)
+			if (TypeBuilder.IsInterface)
 				throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoNested);
 
 			if (_typeVis == 0)
@@ -598,7 +592,7 @@ namespace TriAxis.RunSharp
 
 		public MethodGen MethodImplementation(Type interfaceType, Type returnType, string name)
 		{
-			if (_tb.IsInterface)
+			if (TypeBuilder.IsInterface)
 				throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoExplicitImpl);
 
 			MethodGen mg = new MethodGen(this, name,
@@ -610,7 +604,7 @@ namespace TriAxis.RunSharp
 
 		public PropertyGen PropertyImplementation(Type interfaceType, Type type, string name)
 		{
-			if (_tb.IsInterface)
+			if (TypeBuilder.IsInterface)
 				throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoExplicitImpl);
 
 			PropertyGen pg = new PropertyGen(this,
@@ -622,7 +616,7 @@ namespace TriAxis.RunSharp
 
         public EventGen EventImplementation(Type interfaceType, Type eventHandlerType, string name)
         {
-            if (_tb.IsInterface)
+            if (TypeBuilder.IsInterface)
                 throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoExplicitImpl);
 
             EventGen eg = new EventGen(this, name, eventHandlerType,
@@ -700,7 +694,7 @@ namespace TriAxis.RunSharp
 					throw new NotImplementedException(string.Format(null, Properties.Messages.ErrInterfaceNotImplemented,
 						iie.InterfaceType, iie.InterfaceMethod.Member));
 
-				_tb.DefineMethodOverride(iie.BoundMethod.GetMethodBuilder(), (MethodInfo) iie.InterfaceMethod.Member);
+				TypeBuilder.DefineMethodOverride(iie.BoundMethod.GetMethodBuilder(), (MethodInfo) iie.InterfaceMethod.Member);
 			}
 
 			// set indexer name
@@ -709,14 +703,14 @@ namespace TriAxis.RunSharp
 				CustomAttributeBuilder cab = new CustomAttributeBuilder(
 					typeof(DefaultMemberAttribute).GetConstructor(new Type[] { typeof(string) }),
 					new object[] { _indexerName });
-				_tb.SetCustomAttribute(cab);
+				TypeBuilder.SetCustomAttribute(cab);
 			}
 
-			AttributeGen.ApplyList(ref _customAttributes, _tb.SetCustomAttribute);
+			AttributeGen.ApplyList(ref _customAttributes, TypeBuilder.SetCustomAttribute);
 
-			_type = _tb.CreateType();
+			_type = TypeBuilder.CreateType();
 
-			TypeInfo.UnregisterProvider(_tb);
+			TypeInfo.UnregisterProvider(TypeBuilder);
 		}
 
 		public static implicit operator Type(TypeGen tg)
@@ -727,17 +721,17 @@ namespace TriAxis.RunSharp
 			if (tg._type != null)
 				return tg._type;
 
-			return tg._tb;
+			return tg.TypeBuilder;
 		}
 
 		public override string ToString()
 		{
-			return _tb.FullName;
+			return TypeBuilder.FullName;
 		}
 
 		void EnsureDefaultConstructor()
 		{
-			if (_constructors.Count == 0 && _tb.IsClass)
+			if (_constructors.Count == 0 && TypeBuilder.IsClass)
 			{
 				// create default constructor
 				ResetAttrs();
@@ -751,7 +745,7 @@ namespace TriAxis.RunSharp
 			if (constructor.IsStatic)
 				return;
 			
-			if (constructor.ParameterCount == 0 && _tb.IsValueType)
+			if (constructor.ParameterCount == 0 && TypeBuilder.IsValueType)
 				throw new InvalidOperationException(Properties.Messages.ErrStructNoDefaultCtor);
 
 			_constructors.Add(constructor);

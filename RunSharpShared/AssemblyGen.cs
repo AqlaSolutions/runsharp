@@ -47,17 +47,15 @@ namespace TriAxis.RunSharp
 {
     public class AssemblyGen
 	{
-		AssemblyBuilder _asm;
-		ModuleBuilder _mod;
         readonly List<TypeGen> _types = new List<TypeGen>();
 		List<AttributeGen> _assemblyAttributes;
 		List<AttributeGen> _moduleAttributes;
 		string _ns = null;
 
-		internal AssemblyBuilder AssemblyBuilder { get { return _asm; } }
-		internal ModuleBuilder ModuleBuilder { get { return _mod; } }
+		internal AssemblyBuilder AssemblyBuilder { get; set; }
+        internal ModuleBuilder ModuleBuilder { get; set; }
 
-		internal void AddType(TypeGen tg)
+        internal void AddType(TypeGen tg)
 		{
 			_types.Add(tg);
 		}
@@ -277,7 +275,7 @@ namespace TriAxis.RunSharp
             AssemblyName an = new AssemblyName();
             an.Name = assemblyName;
 
-            _asm = Universe.DefineDynamicAssembly(an, access);
+            AssemblyBuilder = Universe.DefineDynamicAssembly(an, access);
 #if FEAT_IKVM
             if (!Helpers.IsNullOrEmpty(options.KeyFile))
             {
@@ -297,7 +295,7 @@ namespace TriAxis.RunSharp
             }
             _mod = _asm.DefineDynamicModule(moduleName, path, options.SymbolInfo);
 #else
-            _mod = save ? _asm.DefineDynamicModule(moduleName, path) : _asm.DefineDynamicModule(moduleName);
+            ModuleBuilder = save ? AssemblyBuilder.DefineDynamicModule(moduleName, path) : AssemblyBuilder.DefineDynamicModule(moduleName);
 #endif
         }
 
@@ -307,13 +305,13 @@ namespace TriAxis.RunSharp
 			Complete();
 
 			if ((_access & AssemblyBuilderAccess.Save) != 0)
-				_asm.Save(Path.GetFileName(_fileName));
+				AssemblyBuilder.Save(Path.GetFileName(_fileName));
 		}
 
 		public Assembly GetAssembly()
 		{
 			Complete();
-			return _asm;
+			return AssemblyBuilder;
 		}
 
 
@@ -400,9 +398,9 @@ namespace TriAxis.RunSharp
 			foreach (TypeGen tg in _types)
 				tg.Complete();
 
-			AttributeGen.ApplyList(ref _assemblyAttributes, _asm.SetCustomAttribute);
-			AttributeGen.ApplyList(ref _moduleAttributes, _mod.SetCustomAttribute);
-            WriteAssemblyAttributes(_compilerOptions, _asm.GetName().Name, _asm);
+			AttributeGen.ApplyList(ref _assemblyAttributes, AssemblyBuilder.SetCustomAttribute);
+			AttributeGen.ApplyList(ref _moduleAttributes, ModuleBuilder.SetCustomAttribute);
+            WriteAssemblyAttributes(_compilerOptions, AssemblyBuilder.GetName().Name, AssemblyBuilder);
 		}
 #endregion
 	}

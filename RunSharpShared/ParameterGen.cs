@@ -43,30 +43,25 @@ namespace TriAxis.RunSharp
 	public class ParameterGen
 	{
 		ParameterGenCollection _owner;
-	    readonly int _position;
-	    readonly Type _parameterType;
-	    readonly ParameterAttributes _attributes = ParameterAttributes.None;
-	    readonly string _name;
-	    readonly bool _va;
-		internal List<AttributeGen> CustomAttributes;
+	    internal List<AttributeGen> CustomAttributes;
 
 		internal ParameterGen(ParameterGenCollection owner, int position, Type parameterType, ParameterAttributes attributes, string name, bool va)
 		{
 			this._owner = owner;
-			this._position = position;
-			this._parameterType = parameterType;
-			this._attributes = attributes;
-			this._name = name;
-			this._va = va;
+			this.Position = position;
+			this.Type = parameterType;
+			this.ParameterAttributes = attributes;
+			this.Name = name;
+			this.IsParameterArray = va;
 		}
 
-		public int Position { get { return _position; } }
-		public Type Type { get { return _parameterType; } }
-		public string Name { get { return _name; } }
-		public ParameterAttributes ParameterAttributes { get { return _attributes; } }
-		internal bool IsParameterArray { get { return _va; } }
+		public int Position { get; }
+	    public Type Type { get; }
+	    public string Name { get; }
+	    public ParameterAttributes ParameterAttributes { get; } = ParameterAttributes.None;
+	    internal bool IsParameterArray { get; }
 
-		#region Custom Attributes
+	    #region Custom Attributes
 
 		public ParameterGen Attribute(AttributeType type)
 		{
@@ -87,14 +82,14 @@ namespace TriAxis.RunSharp
 
 		public AttributeGen<ParameterGen> BeginAttribute(AttributeType type, params object[] args)
 		{
-			return AttributeGen<ParameterGen>.CreateAndAdd(this, ref CustomAttributes, _position == 0 ? AttributeTargets.ReturnValue : AttributeTargets.Parameter, type, args);
+			return AttributeGen<ParameterGen>.CreateAndAdd(this, ref CustomAttributes, Position == 0 ? AttributeTargets.ReturnValue : AttributeTargets.Parameter, type, args);
 		}
 
 		#endregion
 
 		internal void Complete(ISignatureGen sig)
 		{
-			ParameterBuilder pb = sig.DefineParameter(_position, _attributes, _name);
+			ParameterBuilder pb = sig.DefineParameter(Position, ParameterAttributes, Name);
 
 			if (CustomAttributes != null && pb != null)
 			{
@@ -149,17 +144,15 @@ namespace TriAxis.RunSharp
 	{
 		ParameterGen[] _array = EmptyArray<ParameterGen>.Instance;
 		Type[] _typeArray = Type.EmptyTypes;
-		int _count = 0;
-		bool _locked = false;
 
-		internal void Lock()
+	    internal void Lock()
 		{
-			_locked = true;
+			IsReadOnly = true;
 		}
 
 		internal void LockCheck()
 		{
-			if (_locked)
+			if (IsReadOnly)
 				throw new InvalidOperationException();
 		}
 
@@ -170,11 +163,11 @@ namespace TriAxis.RunSharp
 				if (_typeArray != null)
 					return _typeArray;
 
-				Type[] arr = new Type[_count];
+				Type[] arr = new Type[Count];
 				for (int i = 0; i < arr.Length; i++)
 					arr[i] = _array[i].Type;
 
-				if (_locked)
+				if (IsReadOnly)
 					_typeArray = arr;
 
 				return arr;
@@ -187,7 +180,7 @@ namespace TriAxis.RunSharp
 		{
 			if (item == null)
 				return -1;
-			return Array.IndexOf(_array, item, 0, _count);
+			return Array.IndexOf(_array, item, 0, Count);
 		}
 
 		public void Insert(int index, ParameterGen item)
@@ -204,7 +197,7 @@ namespace TriAxis.RunSharp
 		{
 			get
 			{
-				if (index < 0 || index >= _count)
+				if (index < 0 || index >= Count)
 					throw new IndexOutOfRangeException();
 				return _array[index];
 			}
@@ -222,7 +215,7 @@ namespace TriAxis.RunSharp
 		{
 			LockCheck();
 
-			if (item.IsParameterArray && _count > 0 && _array[_count - 1].IsParameterArray)
+			if (item.IsParameterArray && Count > 0 && _array[Count - 1].IsParameterArray)
 				throw new InvalidOperationException(Properties.Messages.ErrParamArrayMustBeLast);
 
 			AddUnchecked(item);
@@ -230,9 +223,9 @@ namespace TriAxis.RunSharp
 
 		internal void AddUnchecked(ParameterGen item)
 		{
-			if (_array.Length <= _count)
-				Array.Resize(ref _array, _count + 16);
-			_array[_count++] = item;
+			if (_array.Length <= Count)
+				Array.Resize(ref _array, Count + 16);
+			_array[Count++] = item;
 			_typeArray = null;
 		}
 
@@ -248,21 +241,15 @@ namespace TriAxis.RunSharp
 
 		public void CopyTo(ParameterGen[] array, int arrayIndex)
 		{
-			for (int i = 0; i < _count; i++)
+			for (int i = 0; i < Count; i++)
 				array[arrayIndex++] = this._array[i];
 		}
 
-		public int Count
-		{
-			get { return _count; }
-		}
+		public int Count { get; set; } = 0;
 
-		public bool IsReadOnly
-		{
-			get { return _locked; }
-		}
+	    public bool IsReadOnly { get; set; } = false;
 
-		public bool Remove(ParameterGen item)
+	    public bool Remove(ParameterGen item)
 		{
 			throw new NotSupportedException();
 		}
@@ -273,7 +260,7 @@ namespace TriAxis.RunSharp
 
 		public IEnumerator<ParameterGen> GetEnumerator()
 		{
-			for (int i = 0; i < _count; i++)
+			for (int i = 0; i < Count; i++)
 				yield return _array[i];
 		}
 

@@ -46,11 +46,9 @@ namespace TriAxis.RunSharp
 	    readonly TypeGen _owner;
 	    readonly MethodAttributes _attrs;
 	    readonly Type _type;
-	    readonly string _name;
 	    readonly ParameterGenCollection _indexParameters = new ParameterGenCollection();
 		PropertyBuilder _pb;
-		Type _interfaceType;
-		List<AttributeGen> _customAttributes;
+	    List<AttributeGen> _customAttributes;
 
 		MethodGen _getter, _setter;
 
@@ -59,7 +57,7 @@ namespace TriAxis.RunSharp
 			this._owner = owner;
 			this._attrs = attrs;
 			this._type = type;
-			this._name = name;
+			this.Name = name;
 		}
 
 		void LockSignature()
@@ -68,24 +66,20 @@ namespace TriAxis.RunSharp
 			{
 				_indexParameters.Lock();
 
-				_pb = _owner.TypeBuilder.DefineProperty(_interfaceType == null ? _name : _interfaceType.FullName + "." + _name, PropertyAttributes.None, _type, _indexParameters.TypeArray);
+				_pb = _owner.TypeBuilder.DefineProperty(ImplementedInterface == null ? Name : ImplementedInterface.FullName + "." + Name, PropertyAttributes.None, _type, _indexParameters.TypeArray);
 				_owner.RegisterForCompletion(this);
 			}
 		}
 
-		internal Type ImplementedInterface
-		{
-			get { return _interfaceType; }
-			set { _interfaceType = value; }
-		}
+		internal Type ImplementedInterface { get; set; }
 
-		public MethodGen Getter()
+	    public MethodGen Getter()
 		{
 			if (_getter == null)
 			{
 				LockSignature();
-				_getter = new MethodGen(_owner, "get_" + _name, _attrs | MethodAttributes.SpecialName, _type, 0);
-				_getter.ImplementedInterface = _interfaceType;
+				_getter = new MethodGen(_owner, "get_" + Name, _attrs | MethodAttributes.SpecialName, _type, 0);
+				_getter.ImplementedInterface = ImplementedInterface;
 				_getter.CopyParameters(_indexParameters);
 				_pb.SetGetMethod(_getter.GetMethodBuilder());
 			}
@@ -98,8 +92,8 @@ namespace TriAxis.RunSharp
 			if (_setter == null)
 			{
 				LockSignature();
-				_setter = new MethodGen(_owner, "set_" + _name, _attrs | MethodAttributes.SpecialName, typeof(void), 0);
-				_setter.ImplementedInterface = _interfaceType;
+				_setter = new MethodGen(_owner, "set_" + Name, _attrs | MethodAttributes.SpecialName, typeof(void), 0);
+				_setter.ImplementedInterface = ImplementedInterface;
 				_setter.CopyParameters(_indexParameters);
 				_setter.UncheckedParameter(_type, "value");
 				_pb.SetSetMethod(_setter.GetMethodBuilder());
@@ -153,9 +147,9 @@ namespace TriAxis.RunSharp
 		public bool IsOverride { get { return Utils.IsOverride(_attrs); } }
 		public bool IsStatic { get { return (_attrs & MethodAttributes.Static) != 0; } }
 
-		public string Name { get { return _name; } }
+		public string Name { get; }
 
-		internal override void EmitGet(CodeGen g)
+	    internal override void EmitGet(CodeGen g)
 		{
 			if (_getter == null)
 				base.EmitGet(g);

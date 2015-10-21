@@ -42,15 +42,13 @@ namespace TriAxis.RunSharp
 {
 	public abstract class RoutineGen<T> : SignatureGen<T>, ICodeGenContext where T : RoutineGen<T>
 	{
-	    readonly TypeGen _owner;
-	    readonly Type _ownerType;
-		CodeGen _code;
+	    CodeGen _code;
 		List<AttributeGen> _customAttributes;
 
 		protected RoutineGen(TypeGen owner, Type returnType)
 			: base(returnType)
 		{
-			this._ownerType = this._owner = owner;
+			this.OwnerType = this.Owner = owner;
 
 			if (owner != null)
 				owner.RegisterForCompletion(this);
@@ -59,13 +57,13 @@ namespace TriAxis.RunSharp
 		protected RoutineGen(Type ownerType, Type returnType)
 			: base(returnType)
 		{
-			this._ownerType = ownerType;
+			this.OwnerType = ownerType;
 		}
 
-		public Type OwnerType { get { return _ownerType; } }
-		public TypeGen Owner { get { return _owner; } }
+		public Type OwnerType { get; }
+	    public TypeGen Owner { get; }
 
-		public CodeGen GetCode()
+	    public CodeGen GetCode()
 		{
 			if (_code == null)
 			{

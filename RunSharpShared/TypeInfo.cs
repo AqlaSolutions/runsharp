@@ -601,13 +601,12 @@ namespace TriAxis.RunSharp
         class StdEventInfo : IMemberInfo
         {
             readonly EventInfo _ei;
-            readonly string _name;
             readonly MethodInfo _mi;
 
             public StdEventInfo(EventInfo ei)
             {
                 this._ei = ei;
-                this._name = ei.Name;
+                this.Name = ei.Name;
 
                 this._mi = ei.GetAddMethod();
                 if (_mi == null)
@@ -616,7 +615,7 @@ namespace TriAxis.RunSharp
             }
 
             public MemberInfo Member { get { return _ei; } }
-            public string Name { get { return _name; } }
+            public string Name { get; }
             public Type ReturnType { get { return _ei.EventHandlerType; } }
             public Type[] ParameterTypes { get { return Type.EmptyTypes; } }
             public bool IsParameterArray { get { return false; } }
@@ -632,16 +631,15 @@ namespace TriAxis.RunSharp
         class StdFieldInfo : IMemberInfo
         {
             readonly FieldInfo _fi;
-            readonly string _name;
 
             public StdFieldInfo(FieldInfo fi)
             {
                 this._fi = fi;
-                this._name = fi.Name;
+                this.Name = fi.Name;
             }
 
             public MemberInfo Member { get { return _fi; } }
-            public string Name { get { return _name; } }
+            public string Name { get; }
             public Type ReturnType { get { return _fi.FieldType; } }
             public Type[] ParameterTypes { get { return Type.EmptyTypes; } }
             public bool IsParameterArray { get { return false; } }

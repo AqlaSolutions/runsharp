@@ -76,25 +76,25 @@ namespace TriAxis.RunSharp
             }
         }
 
-        private string _targetFrameworkName, _targetFrameworkDisplayName, _outputPath, _imageRuntimeVersion;
+        private string _imageRuntimeVersion;
         private int _metaDataVersion;
         /// <summary>
         /// The TargetFrameworkAttribute FrameworkName value to burn into the generated assembly
         /// </summary>
-        public string TargetFrameworkName { get { return _targetFrameworkName; } set { _targetFrameworkName = value; } }
+        public string TargetFrameworkName { get; set; }
 
         /// <summary>
         /// The TargetFrameworkAttribute FrameworkDisplayName value to burn into the generated assembly
         /// </summary>
-        public string TargetFrameworkDisplayName { get { return _targetFrameworkDisplayName; } set { _targetFrameworkDisplayName = value; } }
-        
+        public string TargetFrameworkDisplayName { get; set; }
+
         public bool SymbolInfo { get; set; }
 
         /// <summary>
         /// The path for the new dll
         /// </summary>
-        public string OutputPath { get { return _outputPath; } set { _outputPath = value; } }
-        
+        public string OutputPath { get; set; }
+
 #if FEAT_IKVM
         /// <summary>
         /// The name of the container that holds the key pair.

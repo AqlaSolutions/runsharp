@@ -50,26 +50,24 @@ namespace TriAxis.RunSharp
 
     public abstract class SignatureGen<T> : ISignatureGen where T : SignatureGen<T>
     {
-        readonly ParameterGen _returnParameter;
         readonly ParameterGenCollection _parameters = new ParameterGenCollection();
-        bool _signatureComplete;
         internal readonly T TypedThis;
 
         internal SignatureGen(Type returnType)
         {
             TypedThis = (T)this;
             if (returnType != null)
-                this._returnParameter = new ParameterGen(_parameters, 0, returnType, 0, null, false);
+                this.ReturnParameter = new ParameterGen(_parameters, 0, returnType, 0, null, false);
         }
 
-        internal bool SignatureComplete { get { return _signatureComplete; } }
+        internal bool SignatureComplete { get; set; }
 
         public int ParameterCount { get { return _parameters.Count; } }
 
-        public Type ReturnType { get { return _returnParameter == null ? null : _returnParameter.Type; } }
+        public Type ReturnType { get { return ReturnParameter == null ? null : ReturnParameter.Type; } }
         public Type[] ParameterTypes { get { return _parameters.TypeArray; } }
 
-        public ParameterGen ReturnParameter { get { return _returnParameter; } }
+        public ParameterGen ReturnParameter { get; }
         public IList<ParameterGen> Parameters { get { return _parameters; } }
 
         #region Parameter Definition
@@ -140,14 +138,14 @@ namespace TriAxis.RunSharp
 
         internal T LockSignature()
         {
-            if (!_signatureComplete)
+            if (!SignatureComplete)
             {
-                _signatureComplete = true;
+                SignatureComplete = true;
                 _parameters.Lock();
                 OnParametersLocked();
 
-                if (_returnParameter != null)
-                    _returnParameter.Complete(this);
+                if (ReturnParameter != null)
+                    ReturnParameter.Complete(this);
 
                 foreach (ParameterGen pgen in _parameters)
                 {

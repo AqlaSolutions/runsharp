@@ -48,7 +48,6 @@ namespace TriAxis.RunSharp
 
 	class ApplicableFunction
 	{
-	    readonly IMemberInfo _method;
 	    readonly Type[] _methodSignature;
 	    readonly Type[] _appliedSignature;
 	    readonly Type[] _paramsSignature;
@@ -58,14 +57,14 @@ namespace TriAxis.RunSharp
 			Type[] appliedSignature, Type[] paramsSignature,
 			Conversion[] conversions)
 		{
-			this._method = method;
+			this.Method = method;
 			this._methodSignature = methodSignature;
 			this._appliedSignature = appliedSignature;
 			this._paramsSignature = paramsSignature;
 			this._conversions = conversions;
 		}
-		public IMemberInfo Method { get { return _method; } }
-		public bool IsExpanded { get { return _methodSignature != _appliedSignature; } }
+		public IMemberInfo Method { get; }
+	    public bool IsExpanded { get { return _methodSignature != _appliedSignature; } }
 
 		public bool SignatureEquals(ApplicableFunction other)
 		{

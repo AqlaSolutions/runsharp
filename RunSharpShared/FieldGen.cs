@@ -45,7 +45,6 @@ namespace TriAxis.RunSharp
 	{
 	    readonly TypeGen _owner;
 	    readonly FieldAttributes _attrs;
-	    readonly string _name;
 	    readonly Type _type;
 	    readonly FieldBuilder _fb;
 		List<AttributeGen> _customAttributes = new List<AttributeGen>();
@@ -54,7 +53,7 @@ namespace TriAxis.RunSharp
 		{
 			this._owner = owner;
 			this._attrs = attrs;
-			this._name = name;
+			this.Name = name;
 			this._type = type;
 
 			_fb = owner.TypeBuilder.DefineField(name, type, attrs);
@@ -69,8 +68,8 @@ namespace TriAxis.RunSharp
 			}
 		}
 
-		public string Name { get { return _name; } }
-		public bool IsStatic { get { return (_attrs & FieldAttributes.Static) != 0; } }
+		public string Name { get; }
+	    public bool IsStatic { get { return (_attrs & FieldAttributes.Static) != 0; } }
 
 		#region Custom Attributes
 
