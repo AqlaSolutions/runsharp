@@ -57,7 +57,7 @@ namespace TriAxis.RunSharp
 		public static implicit operator AttributeType(Type t)
 		{
 		    if (!Helpers.IsAttribute(t))
-		        throw new ArgumentException("Attribute types must derive from the 'Attribute' class", "t");
+		        throw new ArgumentException("Attribute types must derive from the 'Attribute' class", nameof(t));
 
 			return new AttributeType(t);
 		}

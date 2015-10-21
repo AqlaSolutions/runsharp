@@ -395,7 +395,7 @@ namespace TriAxis.RunSharp
 		public PropertyGen SimpleProperty(FieldGen field, string name)
 		{
 			if ((object)field == null)
-				throw new ArgumentNullException("field");
+				throw new ArgumentNullException(nameof(field));
 
 			PropertyGen pg = Property(field.Type, name);
 			pg.Getter().GetCode().Return(field);
@@ -501,7 +501,7 @@ namespace TriAxis.RunSharp
 		public MethodGen Operator(Operator op, Type returnType, Type operandType, string operandName)
 		{
 			if (op == null)
-				throw new ArgumentNullException("op");
+				throw new ArgumentNullException(nameof(op));
 
 			ResetAttrs();
 			_mthFlags = MethodAttributes.SpecialName | MethodAttributes.Static;
@@ -517,7 +517,7 @@ namespace TriAxis.RunSharp
 		public MethodGen Operator(Operator op, Type returnType, Type leftType, string leftName, Type rightType, string rightName)
 		{
 			if (op == null)
-				throw new ArgumentNullException("op");
+				throw new ArgumentNullException(nameof(op));
 
 			ResetAttrs();
 			_mthFlags = MethodAttributes.SpecialName | MethodAttributes.Static;

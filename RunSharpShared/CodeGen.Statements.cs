@@ -55,7 +55,7 @@ namespace TriAxis.RunSharp
 		public void Assign(Operand target, Operand value, bool allowExplicitConversion)
 		{
 			if ((object)target == null)
-				throw new ArgumentNullException("target");
+				throw new ArgumentNullException(nameof(target));
 
 			BeforeStatement();
 
@@ -65,7 +65,7 @@ namespace TriAxis.RunSharp
 		public void AssignAdd(Operand target, Operand value)
 		{
 			if ((object)target == null)
-				throw new ArgumentNullException("target");
+				throw new ArgumentNullException(nameof(target));
 
 			BeforeStatement();
 
@@ -75,7 +75,7 @@ namespace TriAxis.RunSharp
 		public void AssignSubtract(Operand target, Operand value)
 		{
 			if ((object)target == null)
-				throw new ArgumentNullException("target");
+				throw new ArgumentNullException(nameof(target));
 
 			BeforeStatement();
 
@@ -85,7 +85,7 @@ namespace TriAxis.RunSharp
 		public void AssignMultiply(Operand target, Operand value)
 		{
 			if ((object)target == null)
-				throw new ArgumentNullException("target");
+				throw new ArgumentNullException(nameof(target));
 
 			BeforeStatement();
 
@@ -95,7 +95,7 @@ namespace TriAxis.RunSharp
 		public void AssignDivide(Operand target, Operand value)
 		{
 			if ((object)target == null)
-				throw new ArgumentNullException("target");
+				throw new ArgumentNullException(nameof(target));
 
 			BeforeStatement();
 
@@ -105,7 +105,7 @@ namespace TriAxis.RunSharp
 		public void AssignModulus(Operand target, Operand value)
 		{
 			if ((object)target == null)
-				throw new ArgumentNullException("target");
+				throw new ArgumentNullException(nameof(target));
 
 			BeforeStatement();
 
@@ -115,7 +115,7 @@ namespace TriAxis.RunSharp
 		public void AssignAnd(Operand target, Operand value)
 		{
 			if ((object)target == null)
-				throw new ArgumentNullException("target");
+				throw new ArgumentNullException(nameof(target));
 
 			BeforeStatement();
 
@@ -126,7 +126,7 @@ namespace TriAxis.RunSharp
 		public void AssignOr(Operand target, Operand value)
 		{
 			if ((object)target == null)
-				throw new ArgumentNullException("target");
+				throw new ArgumentNullException(nameof(target));
 
 			BeforeStatement();
 
@@ -136,7 +136,7 @@ namespace TriAxis.RunSharp
 		public void AssignXor(Operand target, Operand value)
 		{
 			if ((object)target == null)
-				throw new ArgumentNullException("target");
+				throw new ArgumentNullException(nameof(target));
 
 			BeforeStatement();
 
@@ -146,7 +146,7 @@ namespace TriAxis.RunSharp
 		public void AssignLeftShift(Operand target, Operand value)
 		{
 			if ((object)target == null)
-				throw new ArgumentNullException("target");
+				throw new ArgumentNullException(nameof(target));
 
 			BeforeStatement();
 
@@ -156,7 +156,7 @@ namespace TriAxis.RunSharp
 		public void AssignRightShift(Operand target, Operand value)
 		{
 			if ((object)target == null)
-				throw new ArgumentNullException("target");
+				throw new ArgumentNullException(nameof(target));
 
 			BeforeStatement();
 
@@ -166,7 +166,7 @@ namespace TriAxis.RunSharp
 		public void Increment(Operand target)
 		{
 			if ((object)target == null)
-				throw new ArgumentNullException("target");
+				throw new ArgumentNullException(nameof(target));
 
 			BeforeStatement();
 
@@ -176,7 +176,7 @@ namespace TriAxis.RunSharp
 		public void Decrement(Operand target)
 		{
 			if ((object)target == null)
-				throw new ArgumentNullException("target");
+				throw new ArgumentNullException(nameof(target));
 
 			BeforeStatement();
 
@@ -262,7 +262,7 @@ namespace TriAxis.RunSharp
 		public void Invoke(Operand target, string method, params Operand[] args)
 		{
 			if ((object)target == null)
-				throw new ArgumentNullException("target");
+				throw new ArgumentNullException(nameof(target));
 
 			DoInvoke(target.Invoke(method, args));
 		}
@@ -275,7 +275,7 @@ namespace TriAxis.RunSharp
 		public void InvokeDelegate(Operand targetDelegate, params Operand[] args)
 		{
 			if ((object)targetDelegate == null)
-				throw new ArgumentNullException("targetDelegate");
+				throw new ArgumentNullException(nameof(targetDelegate));
 
 			DoInvoke(targetDelegate.InvokeDelegate(args));
 		}
@@ -297,9 +297,9 @@ namespace TriAxis.RunSharp
 		public void SubscribeEvent(Operand target, string eventName, Operand handler)
 		{
 			if ((object)target == null)
-				throw new ArgumentNullException("target");
+				throw new ArgumentNullException(nameof(target));
 			if ((object)handler == null)
-				throw new ArgumentNullException("handler");
+				throw new ArgumentNullException(nameof(handler));
 
 			IMemberInfo evt = TypeInfo.FindEvent(target.Type, eventName, target.IsStaticTarget);
 			MethodInfo mi = ((EventInfo)evt.Member).GetAddMethod();
@@ -312,9 +312,9 @@ namespace TriAxis.RunSharp
 		public void UnsubscribeEvent(Operand target, string eventName, Operand handler)
 		{
 			if ((object)target == null)
-				throw new ArgumentNullException("target");
+				throw new ArgumentNullException(nameof(target));
 			if ((object)handler == null)
-				throw new ArgumentNullException("handler");
+				throw new ArgumentNullException(nameof(handler));
 
 			IMemberInfo evt = TypeInfo.FindEvent(target.Type, eventName, target.IsStaticTarget);
 			MethodInfo mi = ((EventInfo)evt.Member).GetRemoveMethod();
@@ -328,7 +328,7 @@ namespace TriAxis.RunSharp
 		public void InitObj(Operand target)
 		{
 			if ((object)target == null)
-				throw new ArgumentNullException("target");
+				throw new ArgumentNullException(nameof(target));
 
 			BeforeStatement();
 
@@ -579,7 +579,7 @@ namespace TriAxis.RunSharp
 			IConvertible conv = value as IConvertible;
 
 			if (conv == null)
-				throw new ArgumentException(Properties.Messages.ErrArgMustImplementIConvertible, "value");
+				throw new ArgumentException(Properties.Messages.ErrArgMustImplementIConvertible, nameof(value));
 
 			GetSwitchBlock().Case(conv);
 		}

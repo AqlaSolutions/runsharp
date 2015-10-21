@@ -73,9 +73,9 @@ namespace TriAxis.RunSharp
 		internal virtual void EmitBranch(CodeGen g, BranchSet branchSet, Label label)
 		{
 			if (g == null)
-				throw new ArgumentNullException("g");
+				throw new ArgumentNullException(nameof(g));
 			if (branchSet == null)
-				throw new ArgumentNullException("branchSet");
+				throw new ArgumentNullException(nameof(branchSet));
 
 			EmitGet(g);
 			g.IL.Emit(branchSet.BrTrue, label);

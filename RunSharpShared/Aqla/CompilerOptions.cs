@@ -62,7 +62,7 @@ namespace TriAxis.RunSharp
         /// </summary>
         public void SetFrameworkOptions(Type from, ITypeMapper mapper)
         {
-            if (@from == null) throw new ArgumentNullException("from");
+            if (@from == null) throw new ArgumentNullException(nameof(@from));
             AttributeMap[] attribs = AttributeMap.Create(mapper, @from.Assembly);
             foreach (AttributeMap attrib in attribs)
             {

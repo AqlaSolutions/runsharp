@@ -392,7 +392,7 @@ namespace TriAxis.RunSharp
             if ((object)op == null)
             {
                 if (desiredType.IsValueType)
-                    throw new ArgumentNullException("op");
+                    throw new ArgumentNullException(nameof(op));
                 IL.Emit(OpCodes.Ldnull);
                 return;
             }
@@ -424,7 +424,7 @@ namespace TriAxis.RunSharp
                 return;
             }
 
-            throw new ArgumentException(Properties.Messages.ErrInvalidMethodBase, "mth");
+            throw new ArgumentException(Properties.Messages.ErrInvalidMethodBase, nameof(mth));
         }
 
         internal void Convert(Operand op, Type to, bool allowExplicit)

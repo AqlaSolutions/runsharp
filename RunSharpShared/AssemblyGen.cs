@@ -264,7 +264,7 @@ namespace TriAxis.RunSharp
 
             if (Helpers.IsNullOrEmpty(assemblyName))
             {
-                if (save) throw new ArgumentNullException("assemblyName");
+                if (save) throw new ArgumentNullException(nameof(assemblyName));
                 assemblyName = Guid.NewGuid().ToString();
             }
             
