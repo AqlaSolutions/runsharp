@@ -43,26 +43,26 @@ namespace TriAxis.RunSharp.Operands
 {
 	class NewObject : Operand
 	{
-		ApplicableFunction ctor;
-		Operand[] args;
+		ApplicableFunction _ctor;
+		Operand[] _args;
 
 		public NewObject(ApplicableFunction ctor, Operand[] args)
 		{
-			this.ctor = ctor;
-			this.args = args;
+			this._ctor = ctor;
+			this._args = args;
 		}
 
 		internal override void EmitGet(CodeGen g)
 		{
-			ctor.EmitArgs(g, args);
-			g.IL.Emit(OpCodes.Newobj, (ConstructorInfo)ctor.Method.Member);
+			_ctor.EmitArgs(g, _args);
+			g.IL.Emit(OpCodes.Newobj, (ConstructorInfo)_ctor.Method.Member);
 		}
 
 		public override Type Type
 		{
 			get
 			{
-				return ctor.Method.Member.DeclaringType;
+				return _ctor.Method.Member.DeclaringType;
 			}
 		}
 	}

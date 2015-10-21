@@ -42,13 +42,13 @@ namespace TriAxis.RunSharp.Operands
 {
 	class DoubleLiteral : Operand
 	{
-		double value;
+		double _value;
 
-		public DoubleLiteral(double value) { this.value = value; }
+		public DoubleLiteral(double value) { this._value = value; }
 
 		internal override void EmitGet(CodeGen g)
 		{
-			g.IL.Emit(OpCodes.Ldc_R8, value);
+			g.IL.Emit(OpCodes.Ldc_R8, _value);
 		}
 
 		public override Type Type
@@ -63,7 +63,7 @@ namespace TriAxis.RunSharp.Operands
 		{
 			get
 			{
-				return value;
+				return _value;
 			}
 		}
 	}

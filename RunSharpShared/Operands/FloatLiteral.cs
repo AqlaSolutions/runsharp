@@ -43,13 +43,13 @@ namespace TriAxis.RunSharp.Operands
 {
 	class FloatLiteral : Operand
 	{
-		float value;
+		float _value;
 
-		public FloatLiteral(float value) { this.value = value; }
+		public FloatLiteral(float value) { this._value = value; }
 
 		internal override void EmitGet(CodeGen g)
 		{
-			g.IL.Emit(OpCodes.Ldc_R4, value);
+			g.IL.Emit(OpCodes.Ldc_R4, _value);
 		}
 
 		public override Type Type
@@ -64,7 +64,7 @@ namespace TriAxis.RunSharp.Operands
 		{
 			get
 			{
-				return value;
+				return _value;
 			}
 		}
 	}

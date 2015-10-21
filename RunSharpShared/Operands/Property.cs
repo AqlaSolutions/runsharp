@@ -43,20 +43,20 @@ namespace TriAxis.RunSharp.Operands
 {
 	class Property : Operand
 	{
-		ApplicableFunction property;
-		Operand target;
-		Operand[] indexes;
+		ApplicableFunction _property;
+		Operand _target;
+		Operand[] _indexes;
 
 		public Property(ApplicableFunction property, Operand target, Operand[] indexes)
 		{
-			this.property = property;
-			this.target = target;
-			this.indexes = indexes;
+			this._property = property;
+			this._target = target;
+			this._indexes = indexes;
 		}
 
 		internal override void EmitGet(CodeGen g)
 		{
-			PropertyInfo pi = (PropertyInfo)property.Method.Member;
+			PropertyInfo pi = (PropertyInfo)_property.Method.Member;
 			MethodInfo mi = pi.GetGetMethod(true);
 
 			if (mi == null)
@@ -66,15 +66,15 @@ namespace TriAxis.RunSharp.Operands
 			}
 
 			if (!mi.IsStatic)
-				target.EmitRef(g);
+				_target.EmitRef(g);
 
-			property.EmitArgs(g, indexes);
-			g.EmitCallHelper(mi, target);
+			_property.EmitArgs(g, _indexes);
+			g.EmitCallHelper(mi, _target);
 		}
 
 		internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
 		{
-			PropertyInfo pi = (PropertyInfo)property.Method.Member;
+			PropertyInfo pi = (PropertyInfo)_property.Method.Member;
 			MethodInfo mi = pi.GetSetMethod(true);
 
 			if (mi == null)
@@ -84,18 +84,18 @@ namespace TriAxis.RunSharp.Operands
 			}
 
 			if (!mi.IsStatic)
-				target.EmitRef(g);
+				_target.EmitRef(g);
 
-			property.EmitArgs(g, indexes);
+			_property.EmitArgs(g, _indexes);
 			g.EmitGetHelper(value, Type, allowExplicitConversion);
-			g.EmitCallHelper(mi, target);
+			g.EmitCallHelper(mi, _target);
 		}
 
 		public override Type Type
 		{
 			get
 			{
-				return property.Method.ReturnType;
+				return _property.Method.ReturnType;
 			}
 		}
 	}

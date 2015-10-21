@@ -187,50 +187,50 @@ namespace TriAxis.RunSharp
 		#region Constructor chaining
 		public void InvokeThis(params Operand[] args)
 		{
-			if (cg == null)
+			if (_cg == null)
 				throw new InvalidOperationException(Properties.Messages.ErrConstructorOnlyCall);
-			if (chainCalled)
+			if (_chainCalled)
 				throw new InvalidOperationException(Properties.Messages.ErrConstructorAlreadyChained);
 
-			ApplicableFunction other = TypeInfo.FindConstructor(cg.Type, args);
+			ApplicableFunction other = TypeInfo.FindConstructor(_cg.Type, args);
 
-			il.Emit(OpCodes.Ldarg_0);
+			_il.Emit(OpCodes.Ldarg_0);
 			other.EmitArgs(this, args);
-			il.Emit(OpCodes.Call, (ConstructorInfo)other.Method.Member);
-			chainCalled = true;
+			_il.Emit(OpCodes.Call, (ConstructorInfo)other.Method.Member);
+			_chainCalled = true;
 		}
 
 		public void InvokeBase(params Operand[] args)
 		{
-			if (cg == null)
+			if (_cg == null)
 				throw new InvalidOperationException(Properties.Messages.ErrConstructorOnlyCall);
-			if (chainCalled)
+			if (_chainCalled)
 				throw new InvalidOperationException(Properties.Messages.ErrConstructorAlreadyChained);
-			if (cg.Type.TypeBuilder.IsValueType)
+			if (_cg.Type.TypeBuilder.IsValueType)
 				throw new InvalidOperationException(Properties.Messages.ErrStructNoBaseCtor);
 
-			ApplicableFunction other = TypeInfo.FindConstructor(cg.Type.BaseType, args);
+			ApplicableFunction other = TypeInfo.FindConstructor(_cg.Type.BaseType, args);
 
 			if (other == null)
 				throw new InvalidOperationException(Properties.Messages.ErrMissingConstructor);
 
-			il.Emit(OpCodes.Ldarg_0);
+			_il.Emit(OpCodes.Ldarg_0);
 			other.EmitArgs(this, args);
-			il.Emit(OpCodes.Call, (ConstructorInfo)other.Method.Member);
-			chainCalled = true;
+			_il.Emit(OpCodes.Call, (ConstructorInfo)other.Method.Member);
+			_chainCalled = true;
 
 			// when the chain continues to base, we also need to call the common constructor
-			il.Emit(OpCodes.Ldarg_0);
-			il.Emit(OpCodes.Call, cg.Type.CommonConstructor().GetMethodBuilder());
+			_il.Emit(OpCodes.Ldarg_0);
+			_il.Emit(OpCodes.Call, _cg.Type.CommonConstructor().GetMethodBuilder());
 		}
 		#endregion
 
 		void BeforeStatement()
 		{
-			if (!reachable)
+			if (!_reachable)
 				throw new InvalidOperationException(Properties.Messages.ErrCodeNotReachable);
 
-			if (cg != null && !chainCalled && !cg.Type.TypeBuilder.IsValueType)
+			if (_cg != null && !_chainCalled && !_cg.Type.TypeBuilder.IsValueType)
 				InvokeBase();
 		}
 
@@ -239,8 +239,8 @@ namespace TriAxis.RunSharp
 			BeforeStatement();
 
 			invocation.EmitGet(this);
-			if (!Helpers.AreTypesEqual(invocation.Type, typeof(void), typeMapper))
-				il.Emit(OpCodes.Pop);
+			if (!Helpers.AreTypesEqual(invocation.Type, typeof(void), _typeMapper))
+				_il.Emit(OpCodes.Pop);
 		}
 
 		#region Invocation
@@ -280,16 +280,16 @@ namespace TriAxis.RunSharp
 			DoInvoke(targetDelegate.InvokeDelegate(args));
 		}
 
-	    ITypeMapper typeMapper;
+	    ITypeMapper _typeMapper;
 
 	    public CodeGen(ITypeMapper typeMapper)
 	    {
-	        this.typeMapper = typeMapper;
+	        this._typeMapper = typeMapper;
 	    }
         
 	    public void WriteLine(params Operand[] args)
 		{
-			Invoke(typeMapper.MapType(typeof(Console)), "WriteLine", args);
+			Invoke(_typeMapper.MapType(typeof(Console)), "WriteLine", args);
 		}
 		#endregion
 
@@ -333,7 +333,7 @@ namespace TriAxis.RunSharp
 			BeforeStatement();
 
 			target.EmitAddressOf(this);
-			il.Emit(OpCodes.Initobj, target.Type);
+			_il.Emit(OpCodes.Initobj, target.Type);
 		}
 
 		#region Flow Control
@@ -353,7 +353,7 @@ namespace TriAxis.RunSharp
 
 			bool useLeave = false;
 
-			foreach (Block blk in blocks)
+			foreach (Block blk in _blocks)
 			{
 				ExceptionBlock xb = blk as ExceptionBlock;
 
@@ -369,8 +369,8 @@ namespace TriAxis.RunSharp
 
 				if (brkBlock != null)
 				{
-					il.Emit(useLeave ? OpCodes.Leave : OpCodes.Br, brkBlock.GetBreakTarget());
-					reachable = false;
+					_il.Emit(useLeave ? OpCodes.Leave : OpCodes.Br, brkBlock.GetBreakTarget());
+					_reachable = false;
 					return;
 				}
 			}
@@ -384,7 +384,7 @@ namespace TriAxis.RunSharp
 
 			bool useLeave = false;
 
-			foreach (Block blk in blocks)
+			foreach (Block blk in _blocks)
 			{
 				ExceptionBlock xb = blk as ExceptionBlock;
 
@@ -400,8 +400,8 @@ namespace TriAxis.RunSharp
 
 				if (cntBlock != null)
 				{
-					il.Emit(useLeave ? OpCodes.Leave : OpCodes.Br, cntBlock.GetContinueTarget());
-					reachable = false;
+					_il.Emit(useLeave ? OpCodes.Leave : OpCodes.Br, cntBlock.GetContinueTarget());
+					_reachable = false;
 					return;
 				}
 			}
@@ -411,7 +411,7 @@ namespace TriAxis.RunSharp
 
 		public void Return()
 		{
-		    if (context.ReturnType != null && !Helpers.AreTypesEqual(context.ReturnType, typeof(void), typeMapper))
+		    if (_context.ReturnType != null && !Helpers.AreTypesEqual(_context.ReturnType, typeof(void), _typeMapper))
 				throw new InvalidOperationException(Properties.Messages.ErrMethodMustReturnValue);
 
 			BeforeStatement();
@@ -420,7 +420,7 @@ namespace TriAxis.RunSharp
 
 			if (xb == null)
 			{
-				il.Emit(OpCodes.Ret);
+				_il.Emit(OpCodes.Ret);
 			}
 			else if (xb.IsFinally)
 			{
@@ -429,27 +429,27 @@ namespace TriAxis.RunSharp
 			else
 			{
 				EnsureReturnVariable();
-				il.Emit(OpCodes.Leave, retLabel);
+				_il.Emit(OpCodes.Leave, _retLabel);
 			}
 
-			reachable = false;
+			_reachable = false;
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "'Operand' required as type to use provided implicit conversions")]
 		public void Return(Operand value)
 		{
-			if (context.ReturnType == null || Helpers.AreTypesEqual(context.ReturnType, typeof(void), typeMapper))
+			if (_context.ReturnType == null || Helpers.AreTypesEqual(_context.ReturnType, typeof(void), _typeMapper))
 				throw new InvalidOperationException(Properties.Messages.ErrVoidMethodReturningValue);
 
 			BeforeStatement();
 
-			EmitGetHelper(value, context.ReturnType, false);
+			EmitGetHelper(value, _context.ReturnType, false);
 
 			ExceptionBlock xb = GetAnyTryBlock();
 
 			if (xb == null)
 			{
-				il.Emit(OpCodes.Ret);
+				_il.Emit(OpCodes.Ret);
 			}
 			else if (xb.IsFinally)
 			{
@@ -458,18 +458,18 @@ namespace TriAxis.RunSharp
 			else
 			{
 				EnsureReturnVariable();
-				il.Emit(OpCodes.Stloc, retVar);
-				il.Emit(OpCodes.Leave, retLabel);
+				_il.Emit(OpCodes.Stloc, _retVar);
+				_il.Emit(OpCodes.Leave, _retLabel);
 			}
-			reachable = false;
+			_reachable = false;
 		}
 
 		public void Throw()
 		{
 			BeforeStatement();
 
-			il.Emit(OpCodes.Rethrow);
-			reachable = false;
+			_il.Emit(OpCodes.Rethrow);
+			_reachable = false;
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "'Operand' required as type to use provided implicit conversions")]
@@ -477,9 +477,9 @@ namespace TriAxis.RunSharp
 		{
 			BeforeStatement();
 
-			EmitGetHelper(exception, typeMapper.MapType(typeof(Exception)), false);
-			il.Emit(OpCodes.Throw);
-			reachable = false;
+			EmitGetHelper(exception, _typeMapper.MapType(typeof(Exception)), false);
+			_il.Emit(OpCodes.Throw);
+			_reachable = false;
 		}
 
 		public void For(IStatement init, Operand test, IStatement iterator)
@@ -494,7 +494,7 @@ namespace TriAxis.RunSharp
 
 		public Operand ForEach(Type elementType, Operand expression)
 		{
-			ForeachBlock fb = new ForeachBlock(elementType, expression, typeMapper);
+			ForeachBlock fb = new ForeachBlock(elementType, expression, _typeMapper);
 			Begin(fb);
 			return fb.Element;
 		}
@@ -510,13 +510,13 @@ namespace TriAxis.RunSharp
 			if (ifBlk == null)
 				throw new InvalidOperationException(Properties.Messages.ErrElseWithoutIf);
 
-			blocks.Pop();
+			_blocks.Pop();
 			Begin(new ElseBlock(ifBlk));
 		}
 
 		public void Try()
 		{
-			Begin(new ExceptionBlock(typeMapper));
+			Begin(new ExceptionBlock(_typeMapper));
 		}
 
 		ExceptionBlock GetTryBlock()
@@ -529,7 +529,7 @@ namespace TriAxis.RunSharp
 
 		ExceptionBlock GetAnyTryBlock()
 		{
-			foreach (Block blk in blocks)
+			foreach (Block blk in _blocks)
 			{
 				ExceptionBlock tryBlk = blk as ExceptionBlock;
 
@@ -563,7 +563,7 @@ namespace TriAxis.RunSharp
 
 		public void Switch(Operand expression)
 		{
-			Begin(new SwitchBlock(expression, typeMapper));
+			Begin(new SwitchBlock(expression, _typeMapper));
 		}
 
 		SwitchBlock GetSwitchBlock()
@@ -592,60 +592,60 @@ namespace TriAxis.RunSharp
 
 		Block GetBlock()
 		{
-			if (blocks.Count == 0)
+			if (_blocks.Count == 0)
 				return null;
 
-			return blocks.Peek();
+			return _blocks.Peek();
 		}
 
 		Block GetBlockForVariable()
 		{
-			if (blocks.Count == 0)
+			if (_blocks.Count == 0)
 				return null;
 
-			Block b = blocks.Peek();
+			Block b = _blocks.Peek();
 			b.EnsureScope();
 			return b;
 		}
 
 		void Begin(Block b)
 		{
-			blocks.Push(b);
-			b.g = this;
+			_blocks.Push(b);
+			b.G = this;
 			b.Begin();
 		}
 
 		public void End()
 		{
-			if (blocks.Count == 0)
+			if (_blocks.Count == 0)
 				throw new InvalidOperationException(Properties.Messages.ErrNoOpenBlocks);
 
-			blocks.Peek().End();
-			blocks.Pop();
+			_blocks.Peek().End();
+			_blocks.Pop();
 		}
 
 		abstract class Block
 		{
-			bool hasScope;
-			internal CodeGen g;
+			bool _hasScope;
+			internal CodeGen G;
 
 			public void EnsureScope()
 			{
-				if (!hasScope)
+				if (!_hasScope)
 				{
-					if (g.context.SupportsScopes)
-						g.il.BeginScope();
-					hasScope = true;
+					if (G._context.SupportsScopes)
+						G._il.BeginScope();
+					_hasScope = true;
 				}
 			}
 
 			protected void EndScope()
 			{
-				if (hasScope)
+				if (_hasScope)
 				{
-					if (g.context.SupportsScopes)
-						g.il.EndScope();
-					hasScope = false;
+					if (G._context.SupportsScopes)
+						G._il.EndScope();
+					_hasScope = false;
 				}
 			}
 
@@ -666,324 +666,324 @@ namespace TriAxis.RunSharp
 
 		class IfBlock : Block
 		{
-			Operand condition;
+			Operand _condition;
 
 			public IfBlock(Operand condition)
 			{
 				if (!Helpers.AreTypesEqual(condition.Type, typeof(bool)))
-					this.condition = condition.IsTrue();
+					this._condition = condition.IsTrue();
 				else
-					this.condition = condition;
+					this._condition = condition;
 			}
 
-			Label lbSkip;
+			Label _lbSkip;
 
 			protected override void BeginImpl()
 			{
-				g.BeforeStatement();
+				G.BeforeStatement();
 
-				lbSkip = g.il.DefineLabel();
-				condition.EmitBranch(g, BranchSet.Inverse, lbSkip);
+				_lbSkip = G._il.DefineLabel();
+				_condition.EmitBranch(G, BranchSet.Inverse, _lbSkip);
 			}
 
 			protected override void EndImpl()
 			{
-				g.il.MarkLabel(lbSkip);
-				g.reachable = true;
+				G._il.MarkLabel(_lbSkip);
+				G._reachable = true;
 			}
 		}
 
 		class ElseBlock : Block
 		{
-			IfBlock ifBlk;
-			Label lbSkip;
-			bool canSkip;
+			IfBlock _ifBlk;
+			Label _lbSkip;
+			bool _canSkip;
 
 			public ElseBlock(IfBlock ifBlk)
 			{
-				this.ifBlk = ifBlk;
+				this._ifBlk = ifBlk;
 			}
 
 			protected override void BeginImpl()
 			{
-				if (canSkip = g.reachable)
+				if (_canSkip = G._reachable)
 				{
-					lbSkip = g.il.DefineLabel();
-					g.il.Emit(OpCodes.Br, lbSkip);
+					_lbSkip = G._il.DefineLabel();
+					G._il.Emit(OpCodes.Br, _lbSkip);
 				}
-				ifBlk.End();
+				_ifBlk.End();
 			}
 
 			protected override void EndImpl()
 			{
-				if (canSkip)
+				if (_canSkip)
 				{
-					g.il.MarkLabel(lbSkip);
-					g.reachable = true;
+					G._il.MarkLabel(_lbSkip);
+					G._reachable = true;
 				}
 			}
 		}
 
 		class LoopBlock : Block, IBreakable, IContinuable
 		{
-			IStatement init;
-			Operand test;
-			IStatement iter;
+			IStatement _init;
+			Operand _test;
+			IStatement _iter;
 
 			public LoopBlock(IStatement init, Operand test, IStatement iter)
 			{
-				this.init = init;
-				this.test = test;
-				this.iter = iter;
+				this._init = init;
+				this._test = test;
+				this._iter = iter;
 
 				if (!Helpers.AreTypesEqual(test.Type, typeof(bool)))
 					test = test.IsTrue();
 			}
 
-			Label lbLoop, lbTest, lbEnd, lbIter;
-			bool endUsed = false, iterUsed = false;
+			Label _lbLoop, _lbTest, _lbEnd, _lbIter;
+			bool _endUsed = false, _iterUsed = false;
 
 			protected override void BeginImpl()
 			{
-				g.BeforeStatement();
+				G.BeforeStatement();
 
-				lbLoop = g.il.DefineLabel();
-				lbTest = g.il.DefineLabel();
-				if (init != null)
-					init.Emit(g);
-				g.il.Emit(OpCodes.Br, lbTest);
-				g.il.MarkLabel(lbLoop);
+				_lbLoop = G._il.DefineLabel();
+				_lbTest = G._il.DefineLabel();
+				if (_init != null)
+					_init.Emit(G);
+				G._il.Emit(OpCodes.Br, _lbTest);
+				G._il.MarkLabel(_lbLoop);
 			}
 
 			protected override void EndImpl()
 			{
-				if (iter != null)
+				if (_iter != null)
 				{
-					if (iterUsed)
-						g.il.MarkLabel(lbIter);
+					if (_iterUsed)
+						G._il.MarkLabel(_lbIter);
 				
-					iter.Emit(g);
+					_iter.Emit(G);
 				}
 
-				g.il.MarkLabel(lbTest);
-				test.EmitBranch(g, BranchSet.Normal, lbLoop);
+				G._il.MarkLabel(_lbTest);
+				_test.EmitBranch(G, BranchSet.Normal, _lbLoop);
 
-				if (endUsed)
-					g.il.MarkLabel(lbEnd);
+				if (_endUsed)
+					G._il.MarkLabel(_lbEnd);
 
-				g.reachable = true;
+				G._reachable = true;
 			}
 
 			public Label GetBreakTarget()
 			{
-				if (!endUsed)
+				if (!_endUsed)
 				{
-					lbEnd = g.il.DefineLabel();
-					endUsed = true;
+					_lbEnd = G._il.DefineLabel();
+					_endUsed = true;
 				}
-				return lbEnd;
+				return _lbEnd;
 			}
 
 			public Label GetContinueTarget()
 			{
-				if (iter == null)
-					return lbTest;
+				if (_iter == null)
+					return _lbTest;
 
-				if (!iterUsed)
+				if (!_iterUsed)
 				{
-					lbIter = g.il.DefineLabel();
-					iterUsed = true;
+					_lbIter = G._il.DefineLabel();
+					_iterUsed = true;
 				}
-				return lbIter;
+				return _lbIter;
 			}
 		}
 
 		// TODO: proper implementation, including dispose
 		class ForeachBlock : Block, IBreakable, IContinuable
 		{
-			Type elementType;
-			Operand collection;
-		    ITypeMapper typeMapper;
+			Type _elementType;
+			Operand _collection;
+		    ITypeMapper _typeMapper;
 
 			public ForeachBlock(Type elementType, Operand collection, ITypeMapper typeMapper)
 			{
-				this.elementType = elementType;
-				this.collection = collection;
-			    this.typeMapper = typeMapper;
+				this._elementType = elementType;
+				this._collection = collection;
+			    this._typeMapper = typeMapper;
 			}
 
-			Operand enumerator, element;
-			Label lbLoop, lbTest, lbEnd;
-			bool endUsed = false;
+			Operand _enumerator, _element;
+			Label _lbLoop, _lbTest, _lbEnd;
+			bool _endUsed = false;
 
-			public Operand Element { get { return element; } }
+			public Operand Element { get { return _element; } }
 
 			protected override void BeginImpl()
 			{
-				g.BeforeStatement();
+				G.BeforeStatement();
 
-				enumerator = g.Local();
-				lbLoop = g.il.DefineLabel();
-				lbTest = g.il.DefineLabel();
+				_enumerator = G.Local();
+				_lbLoop = G._il.DefineLabel();
+				_lbTest = G._il.DefineLabel();
 
-			    if (Helpers.IsAssignableFrom(typeof(IEnumerable), collection.Type, typeMapper))
-			        collection = collection.Cast(typeMapper.MapType(typeof(IEnumerable)));
+			    if (Helpers.IsAssignableFrom(typeof(IEnumerable), _collection.Type, _typeMapper))
+			        _collection = _collection.Cast(_typeMapper.MapType(typeof(IEnumerable)));
 
-				g.Assign(enumerator, collection.Invoke("GetEnumerator"));
-				g.il.Emit(OpCodes.Br, lbTest);
-				g.il.MarkLabel(lbLoop);
-				element = g.Local(elementType);
-				g.Assign(element, enumerator.Property("Current"), true);
+				G.Assign(_enumerator, _collection.Invoke("GetEnumerator"));
+				G._il.Emit(OpCodes.Br, _lbTest);
+				G._il.MarkLabel(_lbLoop);
+				_element = G.Local(_elementType);
+				G.Assign(_element, _enumerator.Property("Current"), true);
 			}
 
 			protected override void EndImpl()
 			{
-				g.il.MarkLabel(lbTest);
-				enumerator.Invoke("MoveNext").EmitGet(g);
+				G._il.MarkLabel(_lbTest);
+				_enumerator.Invoke("MoveNext").EmitGet(G);
 
-				g.il.Emit(OpCodes.Brtrue, lbLoop);
+				G._il.Emit(OpCodes.Brtrue, _lbLoop);
 
-				if (endUsed)
-					g.il.MarkLabel(lbEnd); 
+				if (_endUsed)
+					G._il.MarkLabel(_lbEnd); 
 				
-				g.reachable = true;
+				G._reachable = true;
 			}
 
 			public Label GetBreakTarget()
 			{
-				if (!endUsed)
+				if (!_endUsed)
 				{
-					lbEnd = g.il.DefineLabel();
-					endUsed = true;
+					_lbEnd = G._il.DefineLabel();
+					_endUsed = true;
 				}
-				return lbEnd;
+				return _lbEnd;
 			}
 
 			public Label GetContinueTarget()
 			{
-				return lbTest;
+				return _lbTest;
 			}
 		}
 
 		class ExceptionBlock : Block
 		{
-			bool endReachable = false;
-			bool isFinally = false;
+			bool _endReachable = false;
+			bool _isFinally = false;
 
-		    ITypeMapper typeMapper;
+		    ITypeMapper _typeMapper;
 
 		    public ExceptionBlock(ITypeMapper typeMapper)
 		    {
-		        this.typeMapper = typeMapper;
+		        this._typeMapper = typeMapper;
 		    }
 
 		    protected override void BeginImpl()
 			{
-				g.il.BeginExceptionBlock();
+				G._il.BeginExceptionBlock();
 			}
 
 			public void BeginCatchAll()
 			{
 				EndScope();
 
-				if (g.reachable)
-					endReachable = true;
-				g.il.BeginCatchBlock(typeMapper.MapType(typeof(object)));
-				g.il.Emit(OpCodes.Pop);
-				g.reachable = true;
+				if (G._reachable)
+					_endReachable = true;
+				G._il.BeginCatchBlock(_typeMapper.MapType(typeof(object)));
+				G._il.Emit(OpCodes.Pop);
+				G._reachable = true;
 			}
 
 			public Operand BeginCatch(Type t)
 			{
 				EndScope();
 
-				if (g.reachable)
-					endReachable = true;
+				if (G._reachable)
+					_endReachable = true;
 
-				g.il.BeginCatchBlock(t);
-				LocalBuilder lb = g.il.DeclareLocal(t);
-				g.il.Emit(OpCodes.Stloc, lb);
-				g.reachable = true;
+				G._il.BeginCatchBlock(t);
+				LocalBuilder lb = G._il.DeclareLocal(t);
+				G._il.Emit(OpCodes.Stloc, lb);
+				G._reachable = true;
 
-				return new _Local(g, lb);
+				return new _Local(G, lb);
 			}
 
 			public void BeginFault()
 			{
 				EndScope();
 
-				g.il.BeginFaultBlock();
-				g.reachable = true;
-				isFinally = true;
+				G._il.BeginFaultBlock();
+				G._reachable = true;
+				_isFinally = true;
 			}
 
 			public void BeginFinally()
 			{
 				EndScope();
 
-				g.il.BeginFinallyBlock();
-				g.reachable = true;
-				isFinally = true;
+				G._il.BeginFinallyBlock();
+				G._reachable = true;
+				_isFinally = true;
 			}
 
 			protected override void EndImpl()
 			{
-				g.il.EndExceptionBlock();
-				g.reachable = endReachable;
+				G._il.EndExceptionBlock();
+				G._reachable = _endReachable;
 			}
 
-			public bool IsFinally { get { return isFinally; } }
+			public bool IsFinally { get { return _isFinally; } }
 		}
 
 		class SwitchBlock : Block, IBreakable
 		{
-			static System.Type[] validTypes = { 
+			static System.Type[] _validTypes = { 
 				typeof(sbyte), typeof(byte), typeof(short), typeof(ushort), typeof(int), typeof(uint), typeof(long), typeof(ulong), typeof(char), typeof(string)
 			};
-			MethodInfo strCmp;
+			MethodInfo _strCmp;
 
-			Operand expression;
-			Conversion conv;
-			Type govType;
-			Label lbDecision;
-			Label lbEnd;
-			Label lbDefault;
-			LocalBuilder exp;
-			bool defaultExists = false;
-			bool endReachable = false;
-			SortedList<IComparable, Label> cases = new SortedList<IComparable, Label>();
+			Operand _expression;
+			Conversion _conv;
+			Type _govType;
+			Label _lbDecision;
+			Label _lbEnd;
+			Label _lbDefault;
+			LocalBuilder _exp;
+			bool _defaultExists = false;
+			bool _endReachable = false;
+			SortedList<IComparable, Label> _cases = new SortedList<IComparable, Label>();
 
-		    ITypeMapper typeMapper;
+		    ITypeMapper _typeMapper;
 
 			public SwitchBlock(Operand expression, ITypeMapper typeMapper)
 			{
-			    this.typeMapper = typeMapper;
-			    strCmp = typeMapper.MapType(typeof(string)).GetMethod(
+			    this._typeMapper = typeMapper;
+			    _strCmp = typeMapper.MapType(typeof(string)).GetMethod(
 			        "Equals",
 			        BindingFlags.Public | BindingFlags.Static,
 			        null,
 			        new Type[] { typeMapper.MapType(typeof(string)), typeMapper.MapType(typeof(string)) },
 			        null);
 
-                this.expression = expression;
+                this._expression = expression;
 
 				Type exprType = expression.Type;
-				if (Array.IndexOf(validTypes, exprType) != -1)
-					govType = exprType;
+				if (Array.IndexOf(_validTypes, exprType) != -1)
+					_govType = exprType;
 				else if (exprType.IsEnum)
-					govType = Helpers.GetEnumEnderlyingType(exprType);
+					_govType = Helpers.GetEnumEnderlyingType(exprType);
 				else
 				{
 					// if a single implicit coversion from expression to one of the valid types exists, it's ok
-					foreach (System.Type t in validTypes)
+					foreach (System.Type t in _validTypes)
 					{
 						Conversion tmp = Conversion.GetImplicit(expression, typeMapper.MapType(t), false);
 						if (tmp.IsValid)
 						{
-							if (conv == null)
+							if (_conv == null)
 							{
-								conv = tmp;
-								govType = typeMapper.MapType(t);
+								_conv = tmp;
+								_govType = typeMapper.MapType(t);
 							}
 							else
 								throw new AmbiguousMatchException(Properties.Messages.ErrAmbiguousSwitchExpression);
@@ -994,16 +994,16 @@ namespace TriAxis.RunSharp
 
 			protected override void BeginImpl()
 			{
-				lbDecision = g.il.DefineLabel();
-				lbDefault = lbEnd = g.il.DefineLabel();
+				_lbDecision = G._il.DefineLabel();
+				_lbDefault = _lbEnd = G._il.DefineLabel();
 
-				expression.EmitGet(g);
-				if (conv != null)
-					conv.Emit(g, expression.Type, govType);
-				exp = g.il.DeclareLocal(govType);
-				g.il.Emit(OpCodes.Stloc, exp);
-				g.il.Emit(OpCodes.Br, lbDecision);
-				g.reachable = false;
+				_expression.EmitGet(G);
+				if (_conv != null)
+					_conv.Emit(G, _expression.Type, _govType);
+				_exp = G._il.DeclareLocal(_govType);
+				G._il.Emit(OpCodes.Stloc, _exp);
+				G._il.Emit(OpCodes.Br, _lbDecision);
+				G._reachable = false;
 			}
 
 			public void Case(IConvertible value)
@@ -1011,32 +1011,32 @@ namespace TriAxis.RunSharp
 				bool duplicate;
 
 				// make sure the value is of the governing type
-				IComparable val = value == null ? null : (IComparable)value.ToType(System.Type.GetType(govType.FullName, true), System.Globalization.CultureInfo.InvariantCulture);
+				IComparable val = value == null ? null : (IComparable)value.ToType(System.Type.GetType(_govType.FullName, true), System.Globalization.CultureInfo.InvariantCulture);
 
 				if (value == null)
-					duplicate = defaultExists;
+					duplicate = _defaultExists;
 				else
-					duplicate = cases.ContainsKey(val);
+					duplicate = _cases.ContainsKey(val);
 
 				if (duplicate)
 					throw new InvalidOperationException(Properties.Messages.ErrDuplicateCase);
 
-				if (g.reachable)
-					g.il.Emit(OpCodes.Br, lbEnd);
+				if (G._reachable)
+					G._il.Emit(OpCodes.Br, _lbEnd);
 
 				EndScope();
-				Label lb = g.il.DefineLabel();
-				g.il.MarkLabel(lb);
+				Label lb = G._il.DefineLabel();
+				G._il.MarkLabel(lb);
 				if (value == null)
 				{
-					defaultExists = true;
-					lbDefault = lb;
+					_defaultExists = true;
+					_lbDefault = lb;
 				}
 				else
 				{
-					cases[val] = lb;
+					_cases[val] = lb;
 				}
-				g.reachable = true;
+				G._reachable = true;
 			}
 
 			static int Diff(IConvertible val1, IConvertible val2)
@@ -1071,11 +1071,11 @@ namespace TriAxis.RunSharp
 				{
 					case 0: break;
 					case 1:
-						g.il.Emit(OpCodes.Beq, labels[0]);
+						G._il.Emit(OpCodes.Beq, labels[0]);
 						break;
 					default:
-						g.il.Emit(OpCodes.Sub);
-						g.il.Emit(OpCodes.Switch, labels.ToArray());
+						G._il.Emit(OpCodes.Sub);
+						G._il.Emit(OpCodes.Switch, labels.ToArray());
 						break;
 				}
 			}
@@ -1085,39 +1085,39 @@ namespace TriAxis.RunSharp
 				switch (val.GetTypeCode())
 				{
 					case TypeCode.UInt64:
-						g.EmitI8Helper(unchecked((long)val.ToUInt64(null)), false);
+						G.EmitI8Helper(unchecked((long)val.ToUInt64(null)), false);
 						break;
 					case TypeCode.Int64:
-						g.EmitI8Helper(val.ToInt64(null), true);
+						G.EmitI8Helper(val.ToInt64(null), true);
 						break;
 					case TypeCode.UInt32:
-						g.EmitI4Helper(unchecked((int)val.ToUInt64(null)));
+						G.EmitI4Helper(unchecked((int)val.ToUInt64(null)));
 						break;
 					default:
-						g.EmitI4Helper(val.ToInt32(null));
+						G.EmitI4Helper(val.ToInt32(null));
 						break;
 				}
 			}
 
 			protected override void EndImpl()
 			{
-				if (g.reachable)
+				if (G._reachable)
 				{
-					g.il.Emit(OpCodes.Br, lbEnd);
-					endReachable = true;
+					G._il.Emit(OpCodes.Br, _lbEnd);
+					_endReachable = true;
 				}
 
 				EndScope();
-				g.il.MarkLabel(lbDecision);
+				G._il.MarkLabel(_lbDecision);
 
-			    if (Helpers.AreTypesEqual(govType, typeof(string), typeMapper))
+			    if (Helpers.AreTypesEqual(_govType, typeof(string), _typeMapper))
 				{
-					foreach (KeyValuePair<IComparable, Label> kvp in cases)
+					foreach (KeyValuePair<IComparable, Label> kvp in _cases)
 					{
-						g.il.Emit(OpCodes.Ldloc, exp);
-						g.il.Emit(OpCodes.Ldstr, kvp.Key.ToString());
-						g.il.Emit(OpCodes.Call, strCmp);
-						g.il.Emit(OpCodes.Brtrue, kvp.Value);
+						G._il.Emit(OpCodes.Ldloc, _exp);
+						G._il.Emit(OpCodes.Ldstr, kvp.Key.ToString());
+						G._il.Emit(OpCodes.Call, _strCmp);
+						G._il.Emit(OpCodes.Brtrue, kvp.Value);
 					}
 				}
 				else
@@ -1126,7 +1126,7 @@ namespace TriAxis.RunSharp
 					IConvertible prev = null;
 					List<Label> labels = new List<Label>();
 
-					foreach (KeyValuePair<IComparable, Label> kvp in cases)
+					foreach (KeyValuePair<IComparable, Label> kvp in _cases)
 					{
 						IConvertible val = (IConvertible)kvp.Key;
 						if (prev != null)
@@ -1140,12 +1140,12 @@ namespace TriAxis.RunSharp
 								first = true;
 							}
 							else while (diff-- > 1)
-									labels.Add(lbDefault);
+									labels.Add(_lbDefault);
 						}
 
 						if (first)
 						{
-							g.il.Emit(OpCodes.Ldloc, exp);
+							G._il.Emit(OpCodes.Ldloc, _exp);
 							EmitValue(val);
 							first = false;
 						}
@@ -1156,16 +1156,16 @@ namespace TriAxis.RunSharp
 
 					Finish(labels);
 				}
-				if (lbDefault != lbEnd)
-					g.il.Emit(OpCodes.Br, lbDefault);
-				g.il.MarkLabel(lbEnd);
-				g.reachable = endReachable;
+				if (_lbDefault != _lbEnd)
+					G._il.Emit(OpCodes.Br, _lbDefault);
+				G._il.MarkLabel(_lbEnd);
+				G._reachable = _endReachable;
 			}
 
 			public Label GetBreakTarget()
 			{
-				endReachable = true;
-				return lbEnd;
+				_endReachable = true;
+				return _lbEnd;
 			}
 		}
 	}

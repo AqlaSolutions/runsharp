@@ -43,43 +43,43 @@ namespace TriAxis.RunSharp.Operands
 {
 	class Field : Operand
 	{
-		FieldInfo fi;
-		Operand target;
+		FieldInfo _fi;
+		Operand _target;
 
 		public Field(FieldInfo fi, Operand target)
 		{
-			this.fi = fi;
-			this.target = target;
+			this._fi = fi;
+			this._target = target;
 		}
 
 		internal override void EmitGet(CodeGen g)
 		{
-			if (fi.IsStatic)
-				g.IL.Emit(OpCodes.Ldsfld, fi);
+			if (_fi.IsStatic)
+				g.IL.Emit(OpCodes.Ldsfld, _fi);
 			else
 			{
-				target.EmitRef(g);
-				g.IL.Emit(OpCodes.Ldfld, fi);
+				_target.EmitRef(g);
+				g.IL.Emit(OpCodes.Ldfld, _fi);
 			}
 		}
 
 		internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
 		{
-			if (!fi.IsStatic)
-				target.EmitRef(g);
+			if (!_fi.IsStatic)
+				_target.EmitRef(g);
 
 			g.EmitGetHelper(value, Type, allowExplicitConversion);
-			g.IL.Emit(fi.IsStatic ? OpCodes.Stsfld : OpCodes.Stfld, fi);
+			g.IL.Emit(_fi.IsStatic ? OpCodes.Stsfld : OpCodes.Stfld, _fi);
 		}
 
 		internal override void EmitAddressOf(CodeGen g)
 		{
-			if (fi.IsStatic)
-				g.IL.Emit(OpCodes.Ldsflda, fi);
+			if (_fi.IsStatic)
+				g.IL.Emit(OpCodes.Ldsflda, _fi);
 			else
 			{
-				target.EmitRef(g);
-				g.IL.Emit(OpCodes.Ldflda, fi);
+				_target.EmitRef(g);
+				g.IL.Emit(OpCodes.Ldflda, _fi);
 			}
 		}
 
@@ -87,7 +87,7 @@ namespace TriAxis.RunSharp.Operands
 		{
 			get
 			{
-				return fi.FieldType;
+				return _fi.FieldType;
 			}
 		}
 

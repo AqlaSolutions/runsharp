@@ -43,29 +43,29 @@ namespace TriAxis.RunSharp.Operands
 {
 	class NewArray : Operand
 	{
-		Type t;
-		Operand[] indexes;
+		Type _t;
+		Operand[] _indexes;
 
 		public NewArray(Type t, Operand[] indexes)
 		{
-			this.t = t;
-			this.indexes = indexes;
+			this._t = t;
+			this._indexes = indexes;
 		}
 
 		internal override void EmitGet(CodeGen g)
 		{
-			for (int i = 0; i < indexes.Length; i++)
-				g.EmitGetHelper(indexes[i], typeof(int), false);
+			for (int i = 0; i < _indexes.Length; i++)
+				g.EmitGetHelper(_indexes[i], typeof(int), false);
 
-			if (indexes.Length == 1)
-				g.IL.Emit(OpCodes.Newarr, t);
+			if (_indexes.Length == 1)
+				g.IL.Emit(OpCodes.Newarr, _t);
 			else
 			{
-				Type[] argTypes = new Type[indexes.Length];
+				Type[] argTypes = new Type[_indexes.Length];
 				for (int i = 0; i < argTypes.Length; i++)
 					argTypes[i] = typeof(int);
 
-				ModuleBuilder mb = t.Module as ModuleBuilder;
+				ModuleBuilder mb = _t.Module as ModuleBuilder;
 
 				if (mb != null)
 					g.IL.Emit(OpCodes.Newobj, mb.GetArrayMethod(Type, ".ctor", CallingConventions.HasThis, null, argTypes));
@@ -78,7 +78,7 @@ namespace TriAxis.RunSharp.Operands
 		{
 			get
 			{
-				return indexes.Length == 1 ? t.MakeArrayType() : t.MakeArrayType(indexes.Length);
+				return _indexes.Length == 1 ? _t.MakeArrayType() : _t.MakeArrayType(_indexes.Length);
 			}
 		}
 	}

@@ -43,35 +43,35 @@ namespace TriAxis.RunSharp.Operands
 {
 	public class Assignment : Operand, IStatement
 	{
-		Operand lvalue, rvalue;
-		bool allowExplicitConversion;
+		Operand _lvalue, _rvalue;
+		bool _allowExplicitConversion;
 
 		internal Assignment(Operand lvalue, Operand rvalue, bool allowExplicitConversion)
 		{
-			this.lvalue = lvalue;
-			this.rvalue = rvalue;
-			this.allowExplicitConversion = allowExplicitConversion;
+			this._lvalue = lvalue;
+			this._rvalue = rvalue;
+			this._allowExplicitConversion = allowExplicitConversion;
 
 			lvalue.AssignmentHint(rvalue);
 		}
 
 		public void Emit(CodeGen g)
 		{
-			lvalue.EmitSet(g, rvalue, allowExplicitConversion);
+			_lvalue.EmitSet(g, _rvalue, _allowExplicitConversion);
 		}
 
 		internal override void EmitGet(CodeGen g)
 		{
-			if (lvalue.TrivialAccess)
+			if (_lvalue.TrivialAccess)
 			{
-				lvalue.EmitSet(g, rvalue, allowExplicitConversion);
-				lvalue.EmitGet(g);
+				_lvalue.EmitSet(g, _rvalue, _allowExplicitConversion);
+				_lvalue.EmitGet(g);
 			}
 			else
 			{
-				Operand tmp = g.Local(lvalue.Type);
-				g.Assign(tmp, rvalue, allowExplicitConversion);
-				lvalue.EmitSet(g, tmp, false);
+				Operand tmp = g.Local(_lvalue.Type);
+				g.Assign(tmp, _rvalue, _allowExplicitConversion);
+				_lvalue.EmitSet(g, tmp, false);
 				tmp.EmitGet(g);
 			}
 		}
@@ -80,7 +80,7 @@ namespace TriAxis.RunSharp.Operands
 		{
 			get
 			{
-				return lvalue.Type;
+				return _lvalue.Type;
 			}
 		}
 	}

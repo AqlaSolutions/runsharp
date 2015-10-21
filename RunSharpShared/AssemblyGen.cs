@@ -47,66 +47,66 @@ namespace TriAxis.RunSharp
 {
     public class AssemblyGen
 	{
-		AssemblyBuilder asm;
-		ModuleBuilder mod;
-		List<TypeGen> types = new List<TypeGen>();
-		List<AttributeGen> assemblyAttributes;
-		List<AttributeGen> moduleAttributes;
-		string ns = null;
+		AssemblyBuilder _asm;
+		ModuleBuilder _mod;
+		List<TypeGen> _types = new List<TypeGen>();
+		List<AttributeGen> _assemblyAttributes;
+		List<AttributeGen> _moduleAttributes;
+		string _ns = null;
 
-		internal AssemblyBuilder AssemblyBuilder { get { return asm; } }
-		internal ModuleBuilder ModuleBuilder { get { return mod; } }
+		internal AssemblyBuilder AssemblyBuilder { get { return _asm; } }
+		internal ModuleBuilder ModuleBuilder { get { return _mod; } }
 
 		internal void AddType(TypeGen tg)
 		{
-			types.Add(tg);
+			_types.Add(tg);
 		}
 
 		class NamespaceContext : IDisposable
 		{
-			AssemblyGen ag;
-			string oldNs;
+			AssemblyGen _ag;
+			string _oldNs;
 
 			public NamespaceContext(AssemblyGen ag)
 			{
-				this.ag = ag;
-				this.oldNs = ag.ns;
+				this._ag = ag;
+				this._oldNs = ag._ns;
 			}
 
 			public void Dispose()
 			{
-				ag.ns = oldNs;
+				_ag._ns = _oldNs;
 			}
 		}
 
 		public IDisposable Namespace(string name)
 		{
 			NamespaceContext nc = new NamespaceContext(this);
-			ns = Qualify(name);
+			_ns = Qualify(name);
 			return nc;
 		}
 
 		string Qualify(string name)
 		{
-			if (ns == null)
+			if (_ns == null)
 				return name;
 			else
-				return ns + "." + name;
+				return _ns + "." + name;
 		}
 
 		#region Modifiers
-		TypeAttributes attrs;
+		TypeAttributes _attrs;
 
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		public AssemblyGen Public { get { attrs |= TypeAttributes.Public; return this; } }
+		public AssemblyGen Public { get { _attrs |= TypeAttributes.Public; return this; } }
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		public AssemblyGen Private { get { attrs |= TypeAttributes.NotPublic; return this; } }
+		public AssemblyGen Private { get { _attrs |= TypeAttributes.NotPublic; return this; } }
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		public AssemblyGen Sealed { get { attrs |= TypeAttributes.Sealed; return this; } }
+		public AssemblyGen Sealed { get { _attrs |= TypeAttributes.Sealed; return this; } }
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		public AssemblyGen Abstract { get { attrs |= TypeAttributes.Abstract; return this; } }
+		public AssemblyGen Abstract { get { _attrs |= TypeAttributes.Abstract; return this; } }
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		public AssemblyGen NoBeforeFieldInit { get { attrs |= TypeAttributes.BeforeFieldInit; return this; } }
+		public AssemblyGen NoBeforeFieldInit { get { _attrs |= TypeAttributes.BeforeFieldInit; return this; } }
 		#endregion
 
 		#region Custom Attributes
@@ -130,7 +130,7 @@ namespace TriAxis.RunSharp
 
 		public AttributeGen<AssemblyGen> BeginAttribute(AttributeType type, params object[] args)
 		{
-			return AttributeGen<AssemblyGen>.CreateAndAdd(this, ref assemblyAttributes, AttributeTargets.Assembly, type, args);
+			return AttributeGen<AssemblyGen>.CreateAndAdd(this, ref _assemblyAttributes, AttributeTargets.Assembly, type, args);
 		}
 
 		public AssemblyGen ModuleAttribute(AttributeType type)
@@ -152,7 +152,7 @@ namespace TriAxis.RunSharp
 
 		public AttributeGen<AssemblyGen> BeginModuleAttribute(AttributeType type, params object[] args)
 		{
-			return AttributeGen<AssemblyGen>.CreateAndAdd(this, ref moduleAttributes, AttributeTargets.Module, type, args);
+			return AttributeGen<AssemblyGen>.CreateAndAdd(this, ref _moduleAttributes, AttributeTargets.Module, type, args);
 		}
 
 		#endregion
@@ -170,8 +170,8 @@ namespace TriAxis.RunSharp
 
 		public TypeGen Class(string name, Type baseType, params Type[] interfaces)
 		{
-			TypeGen tg = new TypeGen(this, Qualify(name), (attrs | TypeAttributes.Class) ^ TypeAttributes.BeforeFieldInit, baseType, interfaces);
-			attrs = 0;
+			TypeGen tg = new TypeGen(this, Qualify(name), (_attrs | TypeAttributes.Class) ^ TypeAttributes.BeforeFieldInit, baseType, interfaces);
+			_attrs = 0;
 			return tg;
 		}
 
@@ -182,8 +182,8 @@ namespace TriAxis.RunSharp
 
 		public TypeGen Struct(string name, params Type[] interfaces)
 		{
-			TypeGen tg = new TypeGen(this, Qualify(name), (attrs | TypeAttributes.Sealed | TypeAttributes.SequentialLayout) ^ TypeAttributes.BeforeFieldInit, TypeMapper.MapType(typeof(ValueType)), interfaces);
-			attrs = 0;
+			TypeGen tg = new TypeGen(this, Qualify(name), (_attrs | TypeAttributes.Sealed | TypeAttributes.SequentialLayout) ^ TypeAttributes.BeforeFieldInit, TypeMapper.MapType(typeof(ValueType)), interfaces);
+			_attrs = 0;
 			return tg;
 		}
 
@@ -194,20 +194,20 @@ namespace TriAxis.RunSharp
 
 		public TypeGen Interface(string name, params Type[] interfaces)
 		{
-			TypeGen tg = new TypeGen(this, Qualify(name), (attrs | TypeAttributes.Interface | TypeAttributes.Abstract) & ~(TypeAttributes.Sealed | TypeAttributes.BeforeFieldInit), null, interfaces);
-			attrs = 0;
+			TypeGen tg = new TypeGen(this, Qualify(name), (_attrs | TypeAttributes.Interface | TypeAttributes.Abstract) & ~(TypeAttributes.Sealed | TypeAttributes.BeforeFieldInit), null, interfaces);
+			_attrs = 0;
 			return tg;
 		}
 
 		public DelegateGen Delegate(Type returnType, string name)
 		{
-			return new DelegateGen(this, Qualify(name), returnType, (attrs | TypeAttributes.Sealed) & ~(TypeAttributes.Abstract | TypeAttributes.BeforeFieldInit));
+			return new DelegateGen(this, Qualify(name), returnType, (_attrs | TypeAttributes.Sealed) & ~(TypeAttributes.Abstract | TypeAttributes.BeforeFieldInit));
 		}
         #endregion
 
         #region Construction
 
-        AssemblyBuilderAccess access;
+        AssemblyBuilderAccess _access;
         public ITypeMapper TypeMapper { get; private set; }
         public Universe Universe { get; private set; }
 
@@ -242,7 +242,7 @@ namespace TriAxis.RunSharp
             return result;
         }
 #endif
-        string fileName;
+        string _fileName;
 
         void Initialize(Universe universe, string assemblyName, AssemblyBuilderAccess access, CompilerOptions options, ITypeMapper typeMapper)
         {
@@ -262,7 +262,7 @@ namespace TriAxis.RunSharp
             this.Universe = universe;
 
             this.TypeMapper = typeMapper;
-            this.access = access;
+            this._access = access;
 
             if (Helpers.IsNullOrEmpty(assemblyName))
             {
@@ -272,32 +272,32 @@ namespace TriAxis.RunSharp
             
             string moduleName = path == null ? assemblyName + ".dll" : assemblyName + Path.GetExtension(path);
 
-            fileName = path;
+            _fileName = path;
 
             AssemblyName an = new AssemblyName();
             an.Name = assemblyName;
 
-            asm = Universe.DefineDynamicAssembly(an, access);
+            _asm = Universe.DefineDynamicAssembly(an, access);
 #if FEAT_IKVM
             if (!Helpers.IsNullOrEmpty(options.KeyFile))
             {
-                asm.__SetAssemblyKeyPair(new StrongNameKeyPair(File.OpenRead(options.KeyFile)));
+               _asm.__SetAssemblyKeyPair(new StrongNameKeyPair(File.OpenRead(options.KeyFile)));
             }
             else if (!Helpers.IsNullOrEmpty(options.KeyContainer))
             {
-                asm.__SetAssemblyKeyPair(new StrongNameKeyPair(options.KeyContainer));
+                _asm.__SetAssemblyKeyPair(new StrongNameKeyPair(options.KeyContainer));
             }
             else if (!Helpers.IsNullOrEmpty(options.PublicKey))
             {
-                asm.__SetAssemblyPublicKey(FromHex(options.PublicKey));
+                _asm.__SetAssemblyPublicKey(FromHex(options.PublicKey));
             }
             if (!Helpers.IsNullOrEmpty(options.ImageRuntimeVersion) && options.MetaDataVersion != 0)
             {
-                asm.__SetImageRuntimeVersion(options.ImageRuntimeVersion, options.MetaDataVersion);
+                _asm.__SetImageRuntimeVersion(options.ImageRuntimeVersion, options.MetaDataVersion);
             }
-            mod = asm.DefineDynamicModule(moduleName, path, options.SymbolInfo);
+            _mod = _asm.DefineDynamicModule(moduleName, path, options.SymbolInfo);
 #else
-            mod = save ? asm.DefineDynamicModule(moduleName, path) : asm.DefineDynamicModule(moduleName);
+            _mod = save ? _asm.DefineDynamicModule(moduleName, path) : _asm.DefineDynamicModule(moduleName);
 #endif
         }
 
@@ -306,14 +306,14 @@ namespace TriAxis.RunSharp
 		{
 			Complete();
 
-			if ((access & AssemblyBuilderAccess.Save) != 0)
-				asm.Save(Path.GetFileName(fileName));
+			if ((_access & AssemblyBuilderAccess.Save) != 0)
+				_asm.Save(Path.GetFileName(_fileName));
 		}
 
 		public Assembly GetAssembly()
 		{
 			Complete();
-			return asm;
+			return _asm;
 		}
 
 
@@ -364,7 +364,7 @@ namespace TriAxis.RunSharp
             {
                 List<string> internalAssemblies = new List<string>();
                 List<Assembly> consideredAssemblies = new List<Assembly>();
-                foreach (Type type in types)
+                foreach (Type type in _types)
                 {
                     Assembly assembly = type.Assembly;
                     if (consideredAssemblies.IndexOf(assembly) >= 0) continue;
@@ -393,16 +393,16 @@ namespace TriAxis.RunSharp
             }
         }
 
-        CompilerOptions compilerOptions;
+        CompilerOptions _compilerOptions;
 
         public void Complete()
 		{
-			foreach (TypeGen tg in types)
+			foreach (TypeGen tg in _types)
 				tg.Complete();
 
-			AttributeGen.ApplyList(ref assemblyAttributes, asm.SetCustomAttribute);
-			AttributeGen.ApplyList(ref moduleAttributes, mod.SetCustomAttribute);
-            WriteAssemblyAttributes(compilerOptions, asm.GetName().Name, asm);
+			AttributeGen.ApplyList(ref _assemblyAttributes, _asm.SetCustomAttribute);
+			AttributeGen.ApplyList(ref _moduleAttributes, _mod.SetCustomAttribute);
+            WriteAssemblyAttributes(_compilerOptions, _asm.GetName().Name, _asm);
 		}
 #endregion
 	}

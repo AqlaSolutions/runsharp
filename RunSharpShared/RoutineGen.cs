@@ -42,15 +42,15 @@ namespace TriAxis.RunSharp
 {
 	public abstract class RoutineGen<T> : SignatureGen<T>, ICodeGenContext where T : RoutineGen<T>
 	{
-		TypeGen owner;
-		Type ownerType;
-		CodeGen code;
-		List<AttributeGen> customAttributes;
+		TypeGen _owner;
+		Type _ownerType;
+		CodeGen _code;
+		List<AttributeGen> _customAttributes;
 
 		protected RoutineGen(TypeGen owner, Type returnType)
 			: base(returnType)
 		{
-			this.ownerType = this.owner = owner;
+			this._ownerType = this._owner = owner;
 
 			if (owner != null)
 				owner.RegisterForCompletion(this);
@@ -59,24 +59,24 @@ namespace TriAxis.RunSharp
 		protected RoutineGen(Type ownerType, Type returnType)
 			: base(returnType)
 		{
-			this.ownerType = ownerType;
+			this._ownerType = ownerType;
 		}
 
-		public Type OwnerType { get { return ownerType; } }
-		public TypeGen Owner { get { return owner; } }
+		public Type OwnerType { get { return _ownerType; } }
+		public TypeGen Owner { get { return _owner; } }
 
 		public CodeGen GetCode()
 		{
-			if (code == null)
+			if (_code == null)
 			{
 				if (!HasCode)
 					throw new InvalidOperationException(Properties.Messages.ErrNoCodeAllowed);
 
 				LockSignature();
-				code = new CodeGen(this);
+				_code = new CodeGen(this);
 			}
 
-			return code;
+			return _code;
 		}
 
 		protected override void OnParametersLocked()
@@ -114,13 +114,13 @@ namespace TriAxis.RunSharp
 		public T Attribute(AttributeType type)
 		{
 			BeginAttribute(type);
-			return typedThis;
+			return TypedThis;
 		}
 
 		public T Attribute(AttributeType type, params object[] args)
 		{
 			BeginAttribute(type, args);
-			return typedThis;
+			return TypedThis;
 		}
 
 		public AttributeGen<T> BeginAttribute(AttributeType type)
@@ -130,7 +130,7 @@ namespace TriAxis.RunSharp
 
 		public AttributeGen<T> BeginAttribute(AttributeType type, params object[] args)
 		{
-			return AttributeGen<T>.CreateAndAdd(typedThis, ref customAttributes, AttributeTarget, type, args);
+			return AttributeGen<T>.CreateAndAdd(TypedThis, ref _customAttributes, AttributeTarget, type, args);
 		}
 
 		#endregion
@@ -151,7 +151,7 @@ namespace TriAxis.RunSharp
 				GetCode().Complete();
 			}
 
-			AttributeGen.ApplyList(ref customAttributes, SetCustomAttribute);
+			AttributeGen.ApplyList(ref _customAttributes, SetCustomAttribute);
 		}
 
 		#endregion

@@ -48,42 +48,42 @@ namespace TriAxis.RunSharp
 
 	class ApplicableFunction
 	{
-		IMemberInfo method;
-		Type[] methodSignature, appliedSignature, paramsSignature;
-		Conversion[] conversions;
+		IMemberInfo _method;
+		Type[] _methodSignature, _appliedSignature, _paramsSignature;
+		Conversion[] _conversions;
 
 		internal ApplicableFunction(IMemberInfo method, Type[] methodSignature,
 			Type[] appliedSignature, Type[] paramsSignature,
 			Conversion[] conversions)
 		{
-			this.method = method;
-			this.methodSignature = methodSignature;
-			this.appliedSignature = appliedSignature;
-			this.paramsSignature = paramsSignature;
-			this.conversions = conversions;
+			this._method = method;
+			this._methodSignature = methodSignature;
+			this._appliedSignature = appliedSignature;
+			this._paramsSignature = paramsSignature;
+			this._conversions = conversions;
 		}
-		public IMemberInfo Method { get { return method; } }
-		public bool IsExpanded { get { return methodSignature != appliedSignature; } }
+		public IMemberInfo Method { get { return _method; } }
+		public bool IsExpanded { get { return _methodSignature != _appliedSignature; } }
 
 		public bool SignatureEquals(ApplicableFunction other)
 		{
-			return ArrayUtils.Equals(appliedSignature, other.appliedSignature);
+			return ArrayUtils.Equals(_appliedSignature, other._appliedSignature);
 		}
 
 		public void EmitArgs(CodeGen g, Operand[] args)
 		{
-			if (args.Length != appliedSignature.Length)
+			if (args.Length != _appliedSignature.Length)
 				throw new InvalidOperationException();
 
 			if (IsExpanded)
 			{
-				int fixedCount = methodSignature.Length - 1;
-				Type expType = methodSignature[fixedCount].GetElementType();
+				int fixedCount = _methodSignature.Length - 1;
+				Type expType = _methodSignature[fixedCount].GetElementType();
 
 				for (int i = 0; i < fixedCount; i++)
 					EmitArg(g, i, args[i]);
 
-				int arrayLen = args.Length - methodSignature.Length - 1;
+				int arrayLen = args.Length - _methodSignature.Length - 1;
 				g.EmitI4Helper(arrayLen);
 				g.IL.Emit(OpCodes.Newarr, expType);
 				OpCode stelemCode = CodeGen.GetStelemOpCode(expType);
@@ -109,7 +109,7 @@ namespace TriAxis.RunSharp
 
 		void EmitArg(CodeGen g, int index, Operand arg)
 		{
-			if (appliedSignature[index].IsByRef)
+			if (_appliedSignature[index].IsByRef)
 			{
 				arg.EmitAddressOf(g);
 				return;
@@ -120,19 +120,19 @@ namespace TriAxis.RunSharp
 			else
 				arg.EmitGet(g);
 
-			conversions[index].Emit(g, paramsSignature[index], appliedSignature[index]);
+			_conversions[index].Emit(g, _paramsSignature[index], _appliedSignature[index]);
 		}
 
 		public static Better GetBetterCandidate(ApplicableFunction left, ApplicableFunction right)
 		{
-			if (!ArrayUtils.Equals(left.paramsSignature, right.paramsSignature))
+			if (!ArrayUtils.Equals(left._paramsSignature, right._paramsSignature))
 				throw new InvalidOperationException();
 
 			int leftBetter = 0, rightBetter = 0;
 
-			for (int i = 0; i < left.appliedSignature.Length; i++)
+			for (int i = 0; i < left._appliedSignature.Length; i++)
 			{
-				Better better = GetBetterConversion(left.paramsSignature[i], left.appliedSignature[i], right.appliedSignature[i]);
+				Better better = GetBetterConversion(left._paramsSignature[i], left._appliedSignature[i], right._appliedSignature[i]);
 				if (better == Better.Left)
 					leftBetter++;
 				else if (better == Better.Right)

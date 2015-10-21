@@ -38,21 +38,21 @@ namespace TriAxis.RunSharp
     [AttributeUsage(AttributeTargets.Method)]
     class TestArgumentsAttribute : Attribute
     {
-        string[] args;
+        string[] _args;
 
         public TestArgumentsAttribute(params string[] args)
         {
-            this.args = args;
+            this._args = args;
         }
 
-        public string[] Arguments { get { return args; } }
+        public string[] Arguments { get { return _args; } }
     }
 
     public class Program
     {
         delegate void Generator(AssemblyGen ag);
 
-        static Generator[] examples
+        static Generator[] Examples
         {
             get
             {
@@ -114,7 +114,7 @@ namespace TriAxis.RunSharp
                 Directory.CreateDirectory(exePath);
             }
 
-            foreach (Generator gen in examples)
+            foreach (Generator gen in Examples)
             {
                 string testName = GetTestName(gen);
                 Console.WriteLine(">>> GEN {0}", testName);

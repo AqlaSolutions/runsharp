@@ -78,7 +78,7 @@ namespace TriAxis.RunSharp
 				throw new ArgumentNullException("branchSet");
 
 			EmitGet(g);
-			g.IL.Emit(branchSet.brTrue, label);
+			g.IL.Emit(branchSet.BrTrue, label);
 		}
 		public abstract Type Type { get; }
 
@@ -334,7 +334,7 @@ namespace TriAxis.RunSharp
 			return new OverloadableOperation(Operator.Equality, left, right);
 		}
 
-		public Operand EQ(Operand value)
+		public Operand Eq(Operand value)
 		{
 			return new OverloadableOperation(Operator.Equality, this, value);
 		}
@@ -344,7 +344,7 @@ namespace TriAxis.RunSharp
 			return new OverloadableOperation(Operator.Inequality, left, right);
 		}
 
-		public Operand NE(Operand value)
+		public Operand Ne(Operand value)
 		{
 			return new OverloadableOperation(Operator.Inequality, this, value);
 		}
@@ -355,7 +355,7 @@ namespace TriAxis.RunSharp
 			return new OverloadableOperation(Operator.LessThan, left, right);
 		}
 
-		public Operand LT(Operand value)
+		public Operand Lt(Operand value)
 		{
 			return new OverloadableOperation(Operator.LessThan, this, value);
 		}
@@ -366,7 +366,7 @@ namespace TriAxis.RunSharp
 			return new OverloadableOperation(Operator.GreaterThan, left, right);
 		}
 
-		public Operand GT(Operand value)
+		public Operand Gt(Operand value)
 		{
 			return new OverloadableOperation(Operator.GreaterThan, this, value);
 		}
@@ -377,7 +377,7 @@ namespace TriAxis.RunSharp
 			return new OverloadableOperation(Operator.GreaterThanOrEqual, left, right);
 		}
 
-		public Operand GE(Operand value)
+		public Operand Ge(Operand value)
 		{
 			return new OverloadableOperation(Operator.GreaterThanOrEqual, this, value);
 		}
@@ -388,7 +388,7 @@ namespace TriAxis.RunSharp
 			return new OverloadableOperation(Operator.LessThanOrEqual, left, right);
 		}
 
-		public Operand LE(Operand value)
+		public Operand Le(Operand value)
 		{
 			return new OverloadableOperation(Operator.LessThanOrEqual, this, value);
 		}
@@ -447,9 +447,9 @@ namespace TriAxis.RunSharp
 
 		public static Operand operator &(Operand left, Operand right)
 		{
-			if ((object)left != null && left.logical)
+			if ((object)left != null && left._logical)
 			{
-				left.logical = false;
+				left._logical = false;
 				return left.LogicalAnd(right);
 			}
 
@@ -463,9 +463,9 @@ namespace TriAxis.RunSharp
 
 		public static Operand operator |(Operand left, Operand right)
 		{
-			if ((object)left != null && left.logical)
+			if ((object)left != null && left._logical)
 			{
-				left.logical = false;
+				left._logical = false;
 				return left.LogicalOr(right);
 			}
 
@@ -594,13 +594,13 @@ namespace TriAxis.RunSharp
 		#endregion
 
 		#region Logical operations
-		bool logical = false;
+		bool _logical = false;
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2225:OperatorOverloadsHaveNamedAlternates", Justification = "The operator is provided for convenience, so that the && and || operators work correctly. It should not be invoked under any other circumstances.")]
 		public static bool operator true(Operand op)
 		{
 			if ((object)op != null)
-				op.logical = true;
+				op._logical = true;
 			return false;
 		}
 
@@ -608,7 +608,7 @@ namespace TriAxis.RunSharp
 		public static bool operator false(Operand op)
 		{
 			if ((object)op != null)
-				op.logical = true;
+				op._logical = true;
 			return false;
 		}
 		#endregion
@@ -772,16 +772,16 @@ namespace TriAxis.RunSharp
 
 		class Reference : Operand
 		{
-			Operand op;
+			Operand _op;
 
-			public Reference(Operand op) { this.op = op; }
+			public Reference(Operand op) { this._op = op; }
 
 			internal override void EmitAddressOf(CodeGen g)
 			{
-				op.EmitAddressOf(g);
+				_op.EmitAddressOf(g);
 			}
 
-			public override Type Type { get { return op.Type.MakeByRefType(); } }
+			public override Type Type { get { return _op.Type.MakeByRefType(); } }
 		}
 	}
 }

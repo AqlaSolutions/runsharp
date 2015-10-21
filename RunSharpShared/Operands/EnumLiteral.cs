@@ -43,28 +43,28 @@ namespace TriAxis.RunSharp.Operands
 {
 	class EnumLiteral : Operand
 	{
-		Enum value;
+		Enum _value;
 
-		public EnumLiteral(Enum value) { this.value = value; }
+		public EnumLiteral(Enum value) { this._value = value; }
 
 		internal override void EmitGet(CodeGen g)
 		{
 			Type t = Enum.GetUnderlyingType(Type);
 			if (t == typeof(long))
-				g.EmitI8Helper(Convert.ToInt64(value, null), true);
+				g.EmitI8Helper(Convert.ToInt64(_value, null), true);
 			else if (t == typeof(ulong))
-				g.EmitI8Helper(unchecked((long)Convert.ToUInt64(value, null)), false);
+				g.EmitI8Helper(unchecked((long)Convert.ToUInt64(_value, null)), false);
 			else if (t == typeof(uint))
-				g.EmitI4Helper(unchecked((int)Convert.ToUInt32(value, null)));
+				g.EmitI4Helper(unchecked((int)Convert.ToUInt32(_value, null)));
 			else
-				g.EmitI4Helper(Convert.ToInt32(value, null));
+				g.EmitI4Helper(Convert.ToInt32(_value, null));
 		}
 
 		public override Type Type
 		{
 			get
 			{
-				return value.GetType();
+				return _value.GetType();
 			}
 		}
 
@@ -72,7 +72,7 @@ namespace TriAxis.RunSharp.Operands
 		{
 			get
 			{
-				return value;
+				return _value;
 			}
 		}
 	}

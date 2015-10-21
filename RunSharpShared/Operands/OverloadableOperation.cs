@@ -43,14 +43,14 @@ namespace TriAxis.RunSharp.Operands
 {
 	class OverloadableOperation : Operand
 	{
-		Operator op;
-		Operand[] operands;
-		ApplicableFunction af;
+		Operator _op;
+		Operand[] _operands;
+		ApplicableFunction _af;
 
 		public OverloadableOperation(Operator op, params Operand[] operands)
 		{
-			this.op = op;
-			this.operands = operands;
+			this._op = op;
+			this._operands = operands;
 
 			List<ApplicableFunction> candidates = null;
 
@@ -68,49 +68,49 @@ namespace TriAxis.RunSharp.Operands
 				candidates = OverloadResolver.FindApplicable(op.GetStandardCandidates(operands), operands);
 
 			if (candidates == null)
-				throw new InvalidOperationException(string.Format(null, Properties.Messages.ErrInvalidOperation, op.methodName,
+				throw new InvalidOperationException(string.Format(null, Properties.Messages.ErrInvalidOperation, op.MethodName,
 					string.Join(", ", Array.ConvertAll<Operand, string>(operands, Operand.GetTypeName))));
 
-			af = OverloadResolver.FindBest(candidates);
+			_af = OverloadResolver.FindBest(candidates);
 
-			if (af == null)
+			if (_af == null)
 				throw new AmbiguousMatchException(Properties.Messages.ErrAmbiguousBinding);
 		}
 
 		internal void SetOperand(Operand newOp)
 		{
-			operands[0] = newOp;
+			_operands[0] = newOp;
 		}
 
 		internal override void EmitGet(CodeGen g)
 		{
-			af.EmitArgs(g, operands);
+			_af.EmitArgs(g, _operands);
 
-			IStandardOperation sop = af.Method as IStandardOperation;
+			IStandardOperation sop = _af.Method as IStandardOperation;
 			if (sop != null)
-				sop.Emit(g, op);
+				sop.Emit(g, _op);
 			else
-				g.IL.Emit(OpCodes.Call, (MethodInfo)af.Method.Member);
+				g.IL.Emit(OpCodes.Call, (MethodInfo)_af.Method.Member);
 		}
 
 		internal override void EmitBranch(CodeGen g, BranchSet branchSet, Label label)
 		{
-			IStandardOperation stdOp = af.Method as IStandardOperation;
-			if (op.branchOp == 0 || stdOp == null)
+			IStandardOperation stdOp = _af.Method as IStandardOperation;
+			if (_op.BranchOp == 0 || stdOp == null)
 			{
 				base.EmitBranch(g, branchSet, label);
 				return;
 			}
 
-			af.EmitArgs(g, operands);
-			g.IL.Emit(branchSet.Get(op.branchOp, stdOp.IsUnsigned), label);
+			_af.EmitArgs(g, _operands);
+			g.IL.Emit(branchSet.Get(_op.BranchOp, stdOp.IsUnsigned), label);
 		}
 
 		public override Type Type
 		{
 			get
 			{
-				return af.Method.ReturnType;
+				return _af.Method.ReturnType;
 			}
 		}
 	}

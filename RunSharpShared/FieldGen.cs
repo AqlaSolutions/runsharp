@@ -43,21 +43,21 @@ namespace TriAxis.RunSharp
 {
 	public sealed class FieldGen : Operand, IMemberInfo, IDelayedCompletion
 	{
-		TypeGen owner;
-		FieldAttributes attrs;
-		string name;
-		Type type;
-		FieldBuilder fb;
-		List<AttributeGen> customAttributes = new List<AttributeGen>();
+		TypeGen _owner;
+		FieldAttributes _attrs;
+		string _name;
+		Type _type;
+		FieldBuilder _fb;
+		List<AttributeGen> _customAttributes = new List<AttributeGen>();
 
 		internal FieldGen(TypeGen owner, string name, Type type, FieldAttributes attrs)
 		{
-			this.owner = owner;
-			this.attrs = attrs;
-			this.name = name;
-			this.type = type;
+			this._owner = owner;
+			this._attrs = attrs;
+			this._name = name;
+			this._type = type;
 
-			fb = owner.TypeBuilder.DefineField(name, type, attrs);
+			_fb = owner.TypeBuilder.DefineField(name, type, attrs);
 			owner.RegisterForCompletion(this);
 		}
 
@@ -65,12 +65,12 @@ namespace TriAxis.RunSharp
 		{
 			get
 			{
-				return type;
+				return _type;
 			}
 		}
 
-		public string Name { get { return name; } }
-		public bool IsStatic { get { return (attrs & FieldAttributes.Static) != 0; } }
+		public string Name { get { return _name; } }
+		public bool IsStatic { get { return (_attrs & FieldAttributes.Static) != 0; } }
 
 		#region Custom Attributes
 
@@ -93,7 +93,7 @@ namespace TriAxis.RunSharp
 
 		public AttributeGen<FieldGen> BeginAttribute(AttributeType type, params object[] args)
 		{
-			return AttributeGen<FieldGen>.CreateAndAdd(this, ref customAttributes, AttributeTargets.Field, type, args);
+			return AttributeGen<FieldGen>.CreateAndAdd(this, ref _customAttributes, AttributeTargets.Field, type, args);
 		}
 
 		#endregion
@@ -102,42 +102,42 @@ namespace TriAxis.RunSharp
 		{
 			if (!IsStatic)
 			{
-				if (g.Context.IsStatic || g.Context.OwnerType != owner.TypeBuilder)
+				if (g.Context.IsStatic || g.Context.OwnerType != _owner.TypeBuilder)
 					throw new InvalidOperationException(Properties.Messages.ErrInvalidFieldContext);
 
 				g.IL.Emit(OpCodes.Ldarg_0);
-				g.IL.Emit(OpCodes.Ldfld, fb);
+				g.IL.Emit(OpCodes.Ldfld, _fb);
 			}
 			else
-				g.IL.Emit(OpCodes.Ldsfld, fb);
+				g.IL.Emit(OpCodes.Ldsfld, _fb);
 		}
 
 		internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
 		{
 			if (!IsStatic)
 			{
-				if (g.Context.IsStatic || g.Context.OwnerType != owner.TypeBuilder)
+				if (g.Context.IsStatic || g.Context.OwnerType != _owner.TypeBuilder)
 					throw new InvalidOperationException(Properties.Messages.ErrInvalidFieldContext);
 
 				g.IL.Emit(OpCodes.Ldarg_0);
 			}
 
-			g.EmitGetHelper(value, type, allowExplicitConversion);
-			g.IL.Emit(IsStatic ? OpCodes.Stsfld : OpCodes.Stfld, fb);
+			g.EmitGetHelper(value, _type, allowExplicitConversion);
+			g.IL.Emit(IsStatic ? OpCodes.Stsfld : OpCodes.Stfld, _fb);
 		}
 
 		internal override void EmitAddressOf(CodeGen g)
 		{
 			if (!IsStatic)
 			{
-				if (g.Context.IsStatic || g.Context.OwnerType != owner.TypeBuilder)
+				if (g.Context.IsStatic || g.Context.OwnerType != _owner.TypeBuilder)
 					throw new InvalidOperationException(Properties.Messages.ErrInvalidFieldContext);
 
 				g.IL.Emit(OpCodes.Ldarg_0);
-				g.IL.Emit(OpCodes.Ldflda, fb);
+				g.IL.Emit(OpCodes.Ldflda, _fb);
 			}
 			else
-				g.IL.Emit(OpCodes.Ldsflda, fb);
+				g.IL.Emit(OpCodes.Ldsflda, _fb);
 		}
 
 		internal override bool TrivialAccess
@@ -152,12 +152,12 @@ namespace TriAxis.RunSharp
 
 		MemberInfo IMemberInfo.Member
 		{
-			get { return fb; }
+			get { return _fb; }
 		}
 
 		Type IMemberInfo.ReturnType
 		{
-			get { return type; }
+			get { return _type; }
 		}
 
 		Type[] IMemberInfo.ParameterTypes
@@ -181,7 +181,7 @@ namespace TriAxis.RunSharp
 
 		void IDelayedCompletion.Complete()
 		{
-			AttributeGen.ApplyList(ref customAttributes, fb.SetCustomAttribute);
+			AttributeGen.ApplyList(ref _customAttributes, _fb.SetCustomAttribute);
 		}
 
 		#endregion

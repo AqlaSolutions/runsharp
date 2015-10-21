@@ -57,21 +57,21 @@ namespace TriAxis.RunSharp
                 case 3: opCode = OpCodes.Ldarg_3; break;
                 default:
                     if (index <= byte.MaxValue)
-                        il.Emit(OpCodes.Ldarg_S, (byte)index);
+                        _il.Emit(OpCodes.Ldarg_S, (byte)index);
                     else
-                        il.Emit(OpCodes.Ldarg, index);
+                        _il.Emit(OpCodes.Ldarg, index);
                     return;
             }
 
-            il.Emit(opCode);
+            _il.Emit(opCode);
         }
 
         internal void EmitStargHelper(ushort index)
         {
             if (index <= byte.MaxValue)
-                il.Emit(OpCodes.Starg_S, (byte)index);
+                _il.Emit(OpCodes.Starg_S, (byte)index);
             else
-                il.Emit(OpCodes.Starg, index);
+                _il.Emit(OpCodes.Starg, index);
         }
 
         internal void EmitLdelemHelper(Type elementType)
@@ -127,14 +127,14 @@ namespace TriAxis.RunSharp
             }
             else if (elementType.IsValueType)
             {
-                il.Emit(OpCodes.Ldelema, elementType);
-                il.Emit(OpCodes.Ldobj, elementType);
+                _il.Emit(OpCodes.Ldelema, elementType);
+                _il.Emit(OpCodes.Ldobj, elementType);
                 return;
             }
             else
                 op = OpCodes.Ldelem_Ref;
 
-            il.Emit(op);
+            _il.Emit(op);
         }
 
         internal static OpCode GetStelemOpCode(Type elementType)
@@ -182,12 +182,12 @@ namespace TriAxis.RunSharp
             OpCode op = GetStelemOpCode(elementType);
 
             if (op == OpCodes.Stobj)
-                il.Emit(OpCodes.Ldelema, elementType);
+                _il.Emit(OpCodes.Ldelema, elementType);
             EmitGetHelper(element, elementType, allowExplicitConversion);
             if (op == OpCodes.Stobj)
-                il.Emit(OpCodes.Stobj, elementType);
+                _il.Emit(OpCodes.Stobj, elementType);
             else
-                il.Emit(op);
+                _il.Emit(op);
         }
 
         internal void EmitLdindHelper(Type type)
@@ -243,13 +243,13 @@ namespace TriAxis.RunSharp
             }
             else if (type.IsValueType)
             {
-                il.Emit(OpCodes.Ldobj, type);
+                _il.Emit(OpCodes.Ldobj, type);
                 return;
             }
             else
                 op = OpCodes.Ldind_Ref;
 
-            il.Emit(op);
+            _il.Emit(op);
         }
 
         internal static OpCode GetStindOpCode(Type type)
@@ -298,9 +298,9 @@ namespace TriAxis.RunSharp
 
             EmitGetHelper(value, type, allowExplicitConversion);
             if (op == OpCodes.Stobj)
-                il.Emit(OpCodes.Stobj, type);
+                _il.Emit(OpCodes.Stobj, type);
             else
-                il.Emit(op);
+                _il.Emit(op);
         }
 
         internal void EmitI4Helper(int value)
@@ -321,13 +321,13 @@ namespace TriAxis.RunSharp
                 case -1: code = OpCodes.Ldc_I4_M1; break;
                 default:
                     if (value >= sbyte.MinValue && value <= sbyte.MaxValue)
-                        il.Emit(OpCodes.Ldc_I4_S, (sbyte)value);
+                        _il.Emit(OpCodes.Ldc_I4_S, (sbyte)value);
                     else
-                        il.Emit(OpCodes.Ldc_I4, value);
+                        _il.Emit(OpCodes.Ldc_I4, value);
                     return;
             }
 
-            il.Emit(code);
+            _il.Emit(code);
         }
 
         internal void EmitI8Helper(long value, bool signed)
@@ -336,12 +336,12 @@ namespace TriAxis.RunSharp
             {
                 EmitI4Helper((int)value);
                 if (value < 0 && signed)
-                    il.Emit(OpCodes.Conv_I8);
+                    _il.Emit(OpCodes.Conv_I8);
                 else
-                    il.Emit(OpCodes.Conv_U8);
+                    _il.Emit(OpCodes.Conv_U8);
             }
             else
-                il.Emit(OpCodes.Ldc_I8, value);
+                _il.Emit(OpCodes.Ldc_I8, value);
         }
 
         internal void EmitConvHelper(TypeCode to)
@@ -375,7 +375,7 @@ namespace TriAxis.RunSharp
                     throw new NotSupportedException();
             }
 
-            il.Emit(op);
+            _il.Emit(op);
         }
 
         internal void EmitGetHelper(Operand op, Type desiredType, bool allowExplicitConversion)
@@ -393,7 +393,7 @@ namespace TriAxis.RunSharp
             {
                 if (desiredType.IsValueType)
                     throw new ArgumentNullException("op");
-                il.Emit(OpCodes.Ldnull);
+                _il.Emit(OpCodes.Ldnull);
                 return;
             }
 
@@ -410,17 +410,17 @@ namespace TriAxis.RunSharp
 
                 if (!suppressVirtual && (object)target != null && target.Type.IsValueType && mi.IsVirtual)
                 {
-                    il.Emit(OpCodes.Constrained, target.Type);
+                    _il.Emit(OpCodes.Constrained, target.Type);
                 }
                 //Console.WriteLine("Emitting " + mth + ", using " + (suppressVirtual ? "call" : "callvirt"));
-                il.Emit(suppressVirtual ? OpCodes.Call : OpCodes.Callvirt, mi);
+                _il.Emit(suppressVirtual ? OpCodes.Call : OpCodes.Callvirt, mi);
                 return;
             }
 
             ConstructorInfo ci = mth as ConstructorInfo;
             if (ci != null)
             {
-                il.Emit(OpCodes.Call, ci);
+                _il.Emit(OpCodes.Call, ci);
                 return;
             }
 

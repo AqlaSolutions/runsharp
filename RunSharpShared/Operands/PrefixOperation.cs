@@ -43,28 +43,28 @@ namespace TriAxis.RunSharp.Operands
 {
 	class PrefixOperation : Operand, IStatement
 	{
-		Operand target;
-		OverloadableOperation baseOp;
+		Operand _target;
+		OverloadableOperation _baseOp;
 
 		public PrefixOperation(Operator op, Operand operand)
 		{
-			this.target = operand;
-			baseOp = new OverloadableOperation(op, operand);
+			this._target = operand;
+			_baseOp = new OverloadableOperation(op, operand);
 		}
 
 		internal override void EmitGet(CodeGen g)
 		{
-			if (target.TrivialAccess)
+			if (_target.TrivialAccess)
 			{
-				target.EmitSet(g, baseOp, false);
-				target.EmitGet(g);
+				_target.EmitSet(g, _baseOp, false);
+				_target.EmitGet(g);
 			}
 			else
 			{
-				Operand tmp = g.Local(target);
-				baseOp.SetOperand(tmp);
-				tmp.EmitSet(g, baseOp, false);
-				target.EmitSet(g, tmp, false);
+				Operand tmp = g.Local(_target);
+				_baseOp.SetOperand(tmp);
+				tmp.EmitSet(g, _baseOp, false);
+				_target.EmitSet(g, tmp, false);
 				tmp.EmitGet(g);
 			}
 		}
@@ -73,13 +73,13 @@ namespace TriAxis.RunSharp.Operands
 		{
 			get
 			{
-				return target.Type;
+				return _target.Type;
 			}
 		}
 
 		public void Emit(CodeGen g)
 		{
-			target.EmitSet(g, baseOp, false);
+			_target.EmitSet(g, _baseOp, false);
 		}
 	}
 }

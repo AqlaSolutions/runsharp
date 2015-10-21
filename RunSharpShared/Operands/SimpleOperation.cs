@@ -43,20 +43,20 @@ namespace TriAxis.RunSharp.Operands
 {
 	class SimpleOperation : Operand
 	{
-		Operand op;
-		OpCode[] opCodes;
+		Operand _op;
+		OpCode[] _opCodes;
 
 		public SimpleOperation(Operand op, params OpCode[] opCodes)
 		{
-			this.op = op;
-			this.opCodes = opCodes;
+			this._op = op;
+			this._opCodes = opCodes;
 		}
 
 		internal override void EmitGet(CodeGen g)
 		{
-			op.EmitGet(g);
+			_op.EmitGet(g);
 
-			foreach (OpCode oc in opCodes)
+			foreach (OpCode oc in _opCodes)
 				g.IL.Emit(oc);
 		}
 
@@ -64,7 +64,7 @@ namespace TriAxis.RunSharp.Operands
 		{
 			get
 			{
-				return op.Type;
+				return _op.Type;
 			}
 		}
 	}

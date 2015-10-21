@@ -43,8 +43,8 @@ namespace TriAxis.RunSharp
 {
     public sealed class DynamicMethodGen : RoutineGen<DynamicMethodGen>, ICodeGenContext
     {
-        Attributes attrs;
-        DynamicMethod dm;
+        Attributes _attrs;
+        DynamicMethod _dm;
 
         public static Attributes Static(Type owner)
         {
@@ -65,24 +65,24 @@ namespace TriAxis.RunSharp
         public sealed class Attributes
         {
             internal string name = "";
-            internal bool skipVisibility;
+            internal bool SkipVisibility;
             internal Type ownerType;
-            internal Module ownerModule;
-            internal bool asInstance;
+            internal Module OwnerModule;
+            internal bool AsInstance;
 
             internal Attributes(Type owner, bool asInstance)
             {
                 this.ownerType = owner;
-                this.asInstance = asInstance;
+                this.AsInstance = asInstance;
             }
 
             internal Attributes(Module owner)
             {
-                this.ownerModule = owner;
+                this.OwnerModule = owner;
             }
 
             [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-            public Attributes NoVisibilityChecks { get { skipVisibility = true; return this; } }
+            public Attributes NoVisibilityChecks { get { SkipVisibility = true; return this; } }
 
             public Attributes WithName(string name)
             {
@@ -99,31 +99,31 @@ namespace TriAxis.RunSharp
         private DynamicMethodGen(Attributes attrs, Type returnType)
             : base(attrs.ownerType, returnType)
         {
-            this.attrs = attrs;
+            this._attrs = attrs;
 
-            if (attrs.asInstance)
+            if (attrs.AsInstance)
                 Parameter(attrs.ownerType, "this");
         }
 
         protected override void CreateMember()
         {
-            if (attrs.ownerType != null)
+            if (_attrs.ownerType != null)
                 try
                 {
-                    this.dm = new DynamicMethod(attrs.name, ReturnType, ParameterTypes, attrs.ownerType, attrs.skipVisibility);
+                    this._dm = new DynamicMethod(_attrs.name, ReturnType, ParameterTypes, _attrs.ownerType, _attrs.SkipVisibility);
                 }
                 catch
                 {
-                    this.dm = new DynamicMethod(attrs.name, ReturnType, ParameterTypes, attrs.ownerType, false);
+                    this._dm = new DynamicMethod(_attrs.name, ReturnType, ParameterTypes, _attrs.ownerType, false);
                 }
             else
                 try
                 {
-                    this.dm = new DynamicMethod(attrs.name, ReturnType, ParameterTypes, attrs.ownerModule, attrs.skipVisibility);
+                    this._dm = new DynamicMethod(_attrs.name, ReturnType, ParameterTypes, _attrs.OwnerModule, _attrs.SkipVisibility);
                 }
                 catch
                 {
-                    this.dm = new DynamicMethod(attrs.name, ReturnType, ParameterTypes, attrs.ownerModule, false);
+                    this._dm = new DynamicMethod(_attrs.name, ReturnType, ParameterTypes, _attrs.OwnerModule, false);
                 }
         }
 
@@ -148,7 +148,7 @@ namespace TriAxis.RunSharp
             else if (!IsCompleted)
                 throw new InvalidOperationException(Properties.Messages.ErrDynamicMethodNotCompleted);
 
-            return dm;
+            return _dm;
         }
 
         #region RoutineGen concrete implementation
@@ -160,27 +160,27 @@ namespace TriAxis.RunSharp
 
         protected override ILGenerator GetILGenerator()
         {
-            return dm.GetILGenerator();
+            return _dm.GetILGenerator();
         }
 
         protected override ParameterBuilder DefineParameter(int position, ParameterAttributes attributes, string parameterName)
         {
-            return dm.DefineParameter(position, attributes, parameterName);
+            return _dm.DefineParameter(position, attributes, parameterName);
         }
 
         protected override MemberInfo Member
         {
-            get { return dm; }
+            get { return _dm; }
         }
 
         public override string Name
         {
-            get { return attrs.name; }
+            get { return _attrs.name; }
         }
 
         protected internal override bool IsStatic
         {
-            get { return !attrs.asInstance; }
+            get { return !_attrs.AsInstance; }
         }
 
         protected internal override bool IsOverride

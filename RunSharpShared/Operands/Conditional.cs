@@ -43,7 +43,7 @@ namespace TriAxis.RunSharp.Operands
 {
 	class Conditional : Operand
 	{
-		Operand cond, ifTrue, ifFalse;
+		Operand _cond, _ifTrue, _ifFalse;
 
 		public Conditional(Operand cond, Operand ifTrue, Operand ifFalse)
 		{
@@ -51,9 +51,9 @@ namespace TriAxis.RunSharp.Operands
 			if (Operand.GetType(ifTrue) != Operand.GetType(ifFalse))
 				throw new ArgumentException(Properties.Messages.ErrInvalidConditionalVariants);
 
-			this.cond = cond;
-			this.ifTrue = ifTrue;
-			this.ifFalse = ifFalse;
+			this._cond = cond;
+			this._ifTrue = ifTrue;
+			this._ifFalse = ifFalse;
 		}
 
 		internal override void EmitGet(CodeGen g)
@@ -61,11 +61,11 @@ namespace TriAxis.RunSharp.Operands
 			Label lbTrue = g.IL.DefineLabel();
 			Label lbFalse = g.IL.DefineLabel();
 
-			cond.EmitBranch(g, BranchSet.Normal, lbTrue);
-			ifFalse.EmitGet(g);
+			_cond.EmitBranch(g, BranchSet.Normal, lbTrue);
+			_ifFalse.EmitGet(g);
 			g.IL.Emit(OpCodes.Br, lbFalse);
 			g.IL.MarkLabel(lbTrue);
-			ifTrue.EmitGet(g);
+			_ifTrue.EmitGet(g);
 			g.IL.MarkLabel(lbFalse);
 		}
 
@@ -73,7 +73,7 @@ namespace TriAxis.RunSharp.Operands
 		{
 			get
 			{
-				return Operand.GetType(ifTrue);
+				return Operand.GetType(_ifTrue);
 			}
 		}
 	}

@@ -43,39 +43,39 @@ namespace TriAxis.RunSharp
 {
 	public sealed class EventGen : Operand, IMemberInfo, IDelayedCompletion
 	{
-		TypeGen owner;
-		MethodAttributes attrs;
-		Type type;
-		string name;
-		EventBuilder eb;
-		FieldGen handler = null;
-		List<AttributeGen> customAttributes;
+		TypeGen _owner;
+		MethodAttributes _attrs;
+		Type _type;
+		string _name;
+		EventBuilder _eb;
+		FieldGen _handler = null;
+		List<AttributeGen> _customAttributes;
 
-		MethodGen adder, remover;
+		MethodGen _adder, _remover;
 
-	    private Type interfaceType;
+	    private Type _interfaceType;
 
 	    internal EventGen(TypeGen owner, string name, Type type, MethodAttributes mthAttr)
 		{
-			this.owner = owner;
-			this.name = name;
-			this.type = type;
-			this.attrs = mthAttr;
+			this._owner = owner;
+			this._name = name;
+			this._type = type;
+			this._attrs = mthAttr;
 		}
 
         void LockSignature()
         {
-            if (eb == null)
+            if (_eb == null)
             {
-                eb = owner.TypeBuilder.DefineEvent(interfaceType == null ? name : interfaceType.FullName + "." + name, EventAttributes.None, type);
-                owner.RegisterForCompletion(this);
+                _eb = _owner.TypeBuilder.DefineEvent(_interfaceType == null ? _name : _interfaceType.FullName + "." + _name, EventAttributes.None, _type);
+                _owner.RegisterForCompletion(this);
             }
         }
 
         internal Type ImplementedInterface
         {
-            get { return interfaceType; }
-            set { interfaceType = value; }
+            get { return _interfaceType; }
+            set { _interfaceType = value; }
         }
 
 		public MethodGen AddMethod()
@@ -85,16 +85,16 @@ namespace TriAxis.RunSharp
 
 		public MethodGen AddMethod(string parameterName)
 		{
-			if (adder == null)
+			if (_adder == null)
 			{
 			    LockSignature();
-				adder = new MethodGen(owner, "add_" + name, attrs | MethodAttributes.SpecialName, typeof(void), 0);
-			    adder.ImplementedInterface = interfaceType;
-				adder.Parameter(type, parameterName);
-				eb.SetAddOnMethod(adder.GetMethodBuilder());
+				_adder = new MethodGen(_owner, "add_" + _name, _attrs | MethodAttributes.SpecialName, typeof(void), 0);
+			    _adder.ImplementedInterface = _interfaceType;
+				_adder.Parameter(_type, parameterName);
+				_eb.SetAddOnMethod(_adder.GetMethodBuilder());
 			}
 
-			return adder;
+			return _adder;
 		}
 
 		public MethodGen RemoveMethod()
@@ -104,34 +104,34 @@ namespace TriAxis.RunSharp
 
 		public MethodGen RemoveMethod(string parameterName)
 		{
-			if (remover == null)
+			if (_remover == null)
 			{
 			    LockSignature();
-				remover = new MethodGen(owner, "remove_" + name, attrs | MethodAttributes.SpecialName, typeof(void), 0);
-			    remover.ImplementedInterface = interfaceType;
-                remover.Parameter(type, parameterName);
-				eb.SetRemoveOnMethod(remover.GetMethodBuilder());
+				_remover = new MethodGen(_owner, "remove_" + _name, _attrs | MethodAttributes.SpecialName, typeof(void), 0);
+			    _remover.ImplementedInterface = _interfaceType;
+                _remover.Parameter(_type, parameterName);
+				_eb.SetRemoveOnMethod(_remover.GetMethodBuilder());
 			}
 
-			return remover;
+			return _remover;
 		}
 
 		public EventGen WithStandardImplementation()
 		{
-			if ((object)handler == null)
+			if ((object)_handler == null)
 			{
 				if (IsStatic)
-					handler = owner.Private.Static.Field(type, name);
+					_handler = _owner.Private.Static.Field(_type, _name);
 				else
-					handler = owner.Private.Field(type, name);
+					_handler = _owner.Private.Field(_type, _name);
 
 				CodeGen g = AddMethod();
-				g.AssignAdd(handler, g.Arg("handler"));
-				adder.GetMethodBuilder().SetImplementationFlags(MethodImplAttributes.IL | MethodImplAttributes.Managed | MethodImplAttributes.Synchronized);
+				g.AssignAdd(_handler, g.Arg("handler"));
+				_adder.GetMethodBuilder().SetImplementationFlags(MethodImplAttributes.IL | MethodImplAttributes.Managed | MethodImplAttributes.Synchronized);
 
 				g = RemoveMethod();
-				g.AssignSubtract(handler, g.Arg("handler"));
-				remover.GetMethodBuilder().SetImplementationFlags(MethodImplAttributes.IL | MethodImplAttributes.Managed | MethodImplAttributes.Synchronized);
+				g.AssignSubtract(_handler, g.Arg("handler"));
+				_remover.GetMethodBuilder().SetImplementationFlags(MethodImplAttributes.IL | MethodImplAttributes.Managed | MethodImplAttributes.Synchronized);
 			};
 				
 			return this;
@@ -139,36 +139,36 @@ namespace TriAxis.RunSharp
 
 		void IDelayedCompletion.Complete()
 		{
-			if ((adder == null) != (remover == null))
+			if ((_adder == null) != (_remover == null))
 				throw new InvalidOperationException(Properties.Messages.ErrInvalidEventAccessors);
 
-			AttributeGen.ApplyList(ref customAttributes, eb.SetCustomAttribute);
+			AttributeGen.ApplyList(ref _customAttributes, _eb.SetCustomAttribute);
 		}
 
 		internal override void EmitGet(CodeGen g)
 		{
-			if ((object)handler == null)
+			if ((object)_handler == null)
 				throw new InvalidOperationException(Properties.Messages.ErrCustomEventFieldAccess);
 
-			handler.EmitGet(g);
+			_handler.EmitGet(g);
 		}
 
 		internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
 		{
-			if ((object)handler == null)
+			if ((object)_handler == null)
 				throw new InvalidOperationException(Properties.Messages.ErrCustomEventFieldAccess);
 
-			handler.EmitSet(g, value, allowExplicitConversion);
+			_handler.EmitSet(g, value, allowExplicitConversion);
 		}
 
 		public override Type Type
 		{
 			get
 			{
-				if ((object)handler == null)
+				if ((object)_handler == null)
 					throw new InvalidOperationException(Properties.Messages.ErrCustomEventFieldAccess);
 
-				return type;
+				return _type;
 			}
 		}
 
@@ -193,7 +193,7 @@ namespace TriAxis.RunSharp
 
 		public AttributeGen<EventGen> BeginAttribute(AttributeType type, params object[] args)
 		{
-			return AttributeGen<EventGen>.CreateAndAdd(this, ref customAttributes, AttributeTargets.Event, type, args);
+			return AttributeGen<EventGen>.CreateAndAdd(this, ref _customAttributes, AttributeTargets.Event, type, args);
 		}
 
 		#endregion
@@ -207,12 +207,12 @@ namespace TriAxis.RunSharp
 
 		public string Name
 		{
-			get { return name; }
+			get { return _name; }
 		}
 
 		Type IMemberInfo.ReturnType
 		{
-			get { return type; }
+			get { return _type; }
 		}
 
 		Type[] IMemberInfo.ParameterTypes
@@ -227,21 +227,21 @@ namespace TriAxis.RunSharp
 
 		public bool IsStatic
 		{
-			get { return (attrs & MethodAttributes.Static) != 0; }
+			get { return (_attrs & MethodAttributes.Static) != 0; }
 		}
 
 		public bool IsOverride
 		{
-			get { return Utils.IsOverride(attrs); }
+			get { return Utils.IsOverride(_attrs); }
 		}
 
 		#endregion
 
 		class EventInfoProxy : EventInfo
 		{
-			EventGen eg;
+			EventGen _eg;
 
-			public EventInfoProxy(EventGen eg) { this.eg = eg; }
+			public EventInfoProxy(EventGen eg) { this._eg = eg; }
 
 			public override EventAttributes Attributes
 			{
@@ -250,7 +250,7 @@ namespace TriAxis.RunSharp
 
 		    public override MethodInfo GetAddMethod(bool nonPublic)
 			{
-				return eg.adder == null ? null : eg.adder.GetMethodBuilder();
+				return _eg._adder == null ? null : _eg._adder.GetMethodBuilder();
 			}
 
 			public override MethodInfo GetRaiseMethod(bool nonPublic)
@@ -260,13 +260,13 @@ namespace TriAxis.RunSharp
 
 			public override MethodInfo GetRemoveMethod(bool nonPublic)
 			{
-				return eg.remover == null ? null : eg.remover.GetMethodBuilder();
+				return _eg._remover == null ? null : _eg._remover.GetMethodBuilder();
 			}
 #if FEAT_IKVM
 
 		    public override Type EventHandlerType
 		    {
-		        get { return eg.type; }
+		        get { return _eg._type; }
 		    }
 
 		    public override MethodInfo[] GetOtherMethods(bool nonPublic)
@@ -292,7 +292,7 @@ namespace TriAxis.RunSharp
 
             public override Module Module
             {
-                get { return eg.type.Module; }
+                get { return _eg._type.Module; }
             }
 #else
             public override object[] GetCustomAttributes(Type attributeType, bool inherit)
@@ -312,12 +312,12 @@ namespace TriAxis.RunSharp
 #endif
             public override Type DeclaringType
 			{
-				get { return eg.owner; }
+				get { return _eg._owner; }
 			}
 
 			public override string Name
 			{
-				get { return eg.name; }
+				get { return _eg._name; }
 			}
 
 			public override Type ReflectedType

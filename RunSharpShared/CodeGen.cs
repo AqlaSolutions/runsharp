@@ -56,31 +56,31 @@ namespace TriAxis.RunSharp
 
 	public partial class CodeGen
 	{
-		ILGenerator il;
-		ICodeGenContext context;
-		ConstructorGen cg;
-		bool chainCalled = false;
-		bool reachable = true;
-		bool hasRetVar = false, hasRetLabel = false;
-		LocalBuilder retVar = null;
-		Label retLabel;
-		Stack<Block> blocks = new Stack<Block>();
-		Dictionary<string, Label> Labels = new Dictionary<string, Label>();
-		Dictionary<string, Operand> NamedLocals = new Dictionary<string, Operand>();
+		ILGenerator _il;
+		ICodeGenContext _context;
+		ConstructorGen _cg;
+		bool _chainCalled = false;
+		bool _reachable = true;
+		bool _hasRetVar = false, _hasRetLabel = false;
+		LocalBuilder _retVar = null;
+		Label _retLabel;
+		Stack<Block> _blocks = new Stack<Block>();
+		Dictionary<string, Label> _labels = new Dictionary<string, Label>();
+		Dictionary<string, Operand> _namedLocals = new Dictionary<string, Operand>();
 
-		internal ILGenerator IL { get { return il; } }
-		internal ICodeGenContext Context { get { return context; } }
+		internal ILGenerator IL { get { return _il; } }
+		internal ICodeGenContext Context { get { return _context; } }
 
 		internal CodeGen(ICodeGenContext context)
 		{
-			this.context = context;
-			this.cg = context as ConstructorGen;
+			this._context = context;
+			this._cg = context as ConstructorGen;
 
-			if (cg != null && cg.IsStatic)
+			if (_cg != null && _cg.IsStatic)
 				// #14 - cg is relevant for instance constructors - it wreaks havoc in a static constructor
-				cg = null;
+				_cg = null;
 
-			il = context.GetILGenerator();
+			_il = context.GetILGenerator();
 		}
 
 		/*public static CodeGen CreateDynamicMethod(string name, Type returnType, params Type[] parameterTypes, Type owner, bool skipVisibility)
@@ -102,32 +102,32 @@ namespace TriAxis.RunSharp
 		#region Arguments
 		public Operand This()
 		{
-			if (context.IsStatic)
+			if (_context.IsStatic)
 				throw new InvalidOperationException(Properties.Messages.ErrCodeStaticThis);
 
-			return new _Arg(0, context.OwnerType);
+			return new _Arg(0, _context.OwnerType);
 		}
 
 		public Operand Base()
 		{
-			if (context.IsStatic)
-				return new _StaticTarget(context.OwnerType.BaseType);
+			if (_context.IsStatic)
+				return new StaticTarget(_context.OwnerType.BaseType);
 			else
-				return new _Base(context.OwnerType.BaseType);
+				return new _Base(_context.OwnerType.BaseType);
 		}
 
-		int _ThisOffset { get { return context.IsStatic ? 0 : 1; } }
+		int ThisOffset { get { return _context.IsStatic ? 0 : 1; } }
 
 		public Operand PropertyValue()
 		{
-			Type[] parameterTypes = context.ParameterTypes;
-			return new _Arg(_ThisOffset + parameterTypes.Length - 1, parameterTypes[parameterTypes.Length - 1]);
+			Type[] parameterTypes = _context.ParameterTypes;
+			return new _Arg(ThisOffset + parameterTypes.Length - 1, parameterTypes[parameterTypes.Length - 1]);
 		}
 
 		public Operand Arg(string name)
 		{
-			ParameterGen param = context.GetParameterByName(name);
-			return new _Arg(_ThisOffset + param.Position - 1, param.Type);
+			ParameterGen param = _context.GetParameterByName(name);
+			return new _Arg(ThisOffset + param.Position - 1, param.Type);
 		}
 		#endregion
 
@@ -161,50 +161,50 @@ namespace TriAxis.RunSharp
 		{
 			get
 			{
-				Type returnType = context.ReturnType;
-			    return returnType != null && !Helpers.AreTypesEqual(returnType, typeof(void), typeMapper);
+				Type returnType = _context.ReturnType;
+			    return returnType != null && !Helpers.AreTypesEqual(returnType, typeof(void), _typeMapper);
 			}
 		}
 
 		void EnsureReturnVariable()
 		{
-			if (hasRetVar)
+			if (_hasRetVar)
 				return;
 
-			retLabel = il.DefineLabel();
+			_retLabel = _il.DefineLabel();
 			if (HasReturnValue)
-				retVar = il.DeclareLocal(context.ReturnType);
-			hasRetVar = true;
+				_retVar = _il.DeclareLocal(_context.ReturnType);
+			_hasRetVar = true;
 		}
 
 		public bool IsCompleted
 		{
 			get
 			{
-				return blocks.Count == 0 && !reachable && hasRetVar == hasRetLabel;
+				return _blocks.Count == 0 && !_reachable && _hasRetVar == _hasRetLabel;
 			}
 		}
 
 		internal void Complete()
 		{
-			if (blocks.Count > 0)
+			if (_blocks.Count > 0)
 				throw new InvalidOperationException(Properties.Messages.ErrOpenBlocksRemaining);
 
-			if (reachable)
+			if (_reachable)
 			{
 				if (HasReturnValue)
-					throw new InvalidOperationException(string.Format(null, Properties.Messages.ErrMethodMustReturnValue, context));
+					throw new InvalidOperationException(string.Format(null, Properties.Messages.ErrMethodMustReturnValue, _context));
 				else
 					Return();
 			}
 
-			if (hasRetVar && !hasRetLabel)
+			if (_hasRetVar && !_hasRetLabel)
 			{
-				il.MarkLabel(retLabel);
-				if (retVar != null)
-					il.Emit(OpCodes.Ldloc, retVar);
-				il.Emit(OpCodes.Ret);
-				hasRetLabel = true;
+				_il.MarkLabel(_retLabel);
+				if (_retVar != null)
+					_il.Emit(OpCodes.Ldloc, _retVar);
+				_il.Emit(OpCodes.Ret);
+				_hasRetLabel = true;
 			}
 		}
 
@@ -223,18 +223,18 @@ namespace TriAxis.RunSharp
 
 		class _Arg : Operand
 		{
-			ushort index;
-			Type type;
+			ushort _index;
+			Type _type;
 
 			public _Arg(int index, Type type)
 			{
-				this.index = checked((ushort)index);
-				this.type = type;
+				this._index = checked((ushort)index);
+				this._type = type;
 			}
 
 			internal override void EmitGet(CodeGen g)
 			{
-				g.EmitLdargHelper(index);
+				g.EmitLdargHelper(_index);
 
 				if (IsReference)
 					g.EmitLdindHelper(Type);
@@ -244,13 +244,13 @@ namespace TriAxis.RunSharp
 			{
 				if (IsReference)
 				{
-					g.EmitLdargHelper(index);
+					g.EmitLdargHelper(_index);
 					g.EmitStindHelper(Type, value, allowExplicitConversion);
 				}
 				else
 				{
 					g.EmitGetHelper(value, Type, allowExplicitConversion);
-					g.EmitStargHelper(index);
+					g.EmitStargHelper(_index);
 				}
 			}
 
@@ -258,24 +258,24 @@ namespace TriAxis.RunSharp
 			{
 				if (IsReference)
 				{
-					g.EmitLdargHelper(index);
+					g.EmitLdargHelper(_index);
 				}
 				else
 				{
-					if (index <= byte.MaxValue)
-						g.il.Emit(OpCodes.Ldarga_S, (byte)index);
+					if (_index <= byte.MaxValue)
+						g._il.Emit(OpCodes.Ldarga_S, (byte)_index);
 					else
-						g.il.Emit(OpCodes.Ldarga, index);
+						g._il.Emit(OpCodes.Ldarga, _index);
 				}
 			}
 
-			bool IsReference { get { return type.IsByRef; } }
+			bool IsReference { get { return _type.IsByRef; } }
 
 			public override Type Type
 			{
 				get
 				{
-					return IsReference ? type.GetElementType() : type;
+					return IsReference ? _type.GetElementType() : _type;
 				}
 			}
 
@@ -290,34 +290,34 @@ namespace TriAxis.RunSharp
 
 		internal class _Local : Operand
 		{
-			CodeGen owner;
-			LocalBuilder var;
-			Block scope;
-			Type t, tHint;
+			CodeGen _owner;
+			LocalBuilder _var;
+			Block _scope;
+			Type _t, _tHint;
 
 			public _Local(CodeGen owner)
 			{
-				this.owner = owner;
-				scope = owner.GetBlockForVariable();
+				this._owner = owner;
+				_scope = owner.GetBlockForVariable();
 			}
 			public _Local(CodeGen owner, Type t)
 			{
-				this.owner = owner; this.t = t;
-				scope = owner.GetBlockForVariable();
+				this._owner = owner; this._t = t;
+				_scope = owner.GetBlockForVariable();
 			}
 
 			public _Local(CodeGen owner, LocalBuilder var)
 			{
-				this.owner = owner;
-				this.var = var;
-				this.t = var.LocalType;
+				this._owner = owner;
+				this._var = var;
+				this._t = var.LocalType;
 			}
 
 			void CheckScope(CodeGen g)
 			{
-				if (g != owner)
+				if (g != _owner)
 					throw new InvalidOperationException(Properties.Messages.ErrInvalidVariableContext);
-				if (scope != null && !owner.blocks.Contains(scope))
+				if (_scope != null && !_owner._blocks.Contains(_scope))
 					throw new InvalidOperationException(Properties.Messages.ErrInvalidVariableScope);
 			}
 
@@ -325,37 +325,37 @@ namespace TriAxis.RunSharp
 			{
 				CheckScope(g);
 
-				if (var == null)
+				if (_var == null)
 					throw new InvalidOperationException(Properties.Messages.ErrUninitializedVarAccess);
 
-				g.il.Emit(OpCodes.Ldloc, var);
+				g._il.Emit(OpCodes.Ldloc, _var);
 			}
 
 			internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
 			{
 				CheckScope(g);
 
-				if (t == null)
-					t = value.Type;
+				if (_t == null)
+					_t = value.Type;
 
-				if (var == null)
-					var = g.il.DeclareLocal(t);
+				if (_var == null)
+					_var = g._il.DeclareLocal(_t);
 
-				g.EmitGetHelper(value, t, allowExplicitConversion);
-				g.il.Emit(OpCodes.Stloc, var);
+				g.EmitGetHelper(value, _t, allowExplicitConversion);
+				g._il.Emit(OpCodes.Stloc, _var);
 			}
 
 			internal override void EmitAddressOf(CodeGen g)
 			{
 				CheckScope(g);
 
-				if (var == null)
+				if (_var == null)
 				{
 					RequireType();
-					var = g.il.DeclareLocal(t);
+					_var = g._il.DeclareLocal(_t);
 				}
 
-				g.il.Emit(OpCodes.Ldloca, var);
+				g._il.Emit(OpCodes.Ldloca, _var);
 			}
 
 			public override Type Type
@@ -363,16 +363,16 @@ namespace TriAxis.RunSharp
 				get
 				{
 					RequireType();
-					return t;
+					return _t;
 				}
 			}
 
 			void RequireType()
 			{
-				if (t == null)
+				if (_t == null)
 				{
-					if (tHint != null)
-						t = tHint;
+					if (_tHint != null)
+						_t = _tHint;
 					else
 						throw new InvalidOperationException(Properties.Messages.ErrUntypedVarAccess);
 				}
@@ -388,22 +388,22 @@ namespace TriAxis.RunSharp
 
 			internal override void AssignmentHint(Operand op)
 			{
-				if (tHint == null)
-					tHint = Operand.GetType(op);
+				if (_tHint == null)
+					_tHint = Operand.GetType(op);
 			}
 		}
 
-		class _StaticTarget : Operand
+		class StaticTarget : Operand
 		{
-			Type t;
+			Type _t;
 
-			public _StaticTarget(Type t) { this.t = t; }
+			public StaticTarget(Type t) { this._t = t; }
 
 			public override Type Type
 			{
 				get
 				{
-					return t;
+					return _t;
 				}
 			}
 
@@ -421,34 +421,34 @@ namespace TriAxis.RunSharp
 			get
 			{
 				Operand target;
-				if (!NamedLocals.TryGetValue(localName, out target))
+				if (!_namedLocals.TryGetValue(localName, out target))
 					throw new InvalidOperationException(Properties.Messages.ErrUninitializedVarAccess);
 				return target;
 			}
 			set
 			{
 				Operand target;
-				if (NamedLocals.TryGetValue(localName, out target))
+				if (_namedLocals.TryGetValue(localName, out target))
 					// run in statement form; C# left-to-right evaluation semantics "just work"
 					Assign(target, value);
 				else
-					NamedLocals.Add(localName, Local(value));
+					_namedLocals.Add(localName, Local(value));
 			}
 		}
 
 		public void Label(string labelName)
 		{
 			Label label;
-			if (!Labels.TryGetValue(labelName, out label))
-				Labels.Add(labelName, label = IL.DefineLabel());
+			if (!_labels.TryGetValue(labelName, out label))
+				_labels.Add(labelName, label = IL.DefineLabel());
 			IL.MarkLabel(label);
 		}
 
 		public void Goto(string labelName)
 		{
 			Label label;
-			if (!Labels.TryGetValue(labelName, out label))
-				Labels.Add(labelName, label = IL.DefineLabel());
+			if (!_labels.TryGetValue(labelName, out label))
+				_labels.Add(labelName, label = IL.DefineLabel());
 			IL.Emit(OpCodes.Br, label);
 		}
 	}

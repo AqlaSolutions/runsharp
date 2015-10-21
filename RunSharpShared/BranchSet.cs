@@ -58,20 +58,20 @@ namespace TriAxis.RunSharp
 			OpCodes.Bge, OpCodes.Bge_Un, OpCodes.Ble, OpCodes.Ble_Un,
 			OpCodes.Bgt, OpCodes.Bgt_Un, OpCodes.Blt, OpCodes.Blt_Un);
 
-		public readonly OpCode brTrue, brFalse, brEq, brNe, brLt, brLtUn, brGt, brGtUn, brLe, brLeUn, brGe, brGeUn;
+		public readonly OpCode BrTrue, BrFalse, BrEq, BrNe, BrLt, BrLtUn, BrGt, BrGtUn, BrLe, BrLeUn, BrGe, BrGeUn;
 
 		public OpCode Get(BranchInstruction ins, bool unsigned)
 		{
 			switch (ins)
 			{
-				case BranchInstruction.True: return brTrue;
-				case BranchInstruction.False: return brFalse;
-				case BranchInstruction.Eq: return brEq;
-				case BranchInstruction.Ne: return brNe;
-				case BranchInstruction.Lt: return unsigned ? brLtUn : brLt;
-				case BranchInstruction.Gt: return unsigned ? brGtUn : brGt;
-				case BranchInstruction.Le: return unsigned ? brLeUn : brLe;
-				case BranchInstruction.Ge: return unsigned ? brGeUn : brGe;
+				case BranchInstruction.True: return BrTrue;
+				case BranchInstruction.False: return BrFalse;
+				case BranchInstruction.Eq: return BrEq;
+				case BranchInstruction.Ne: return BrNe;
+				case BranchInstruction.Lt: return unsigned ? BrLtUn : BrLt;
+				case BranchInstruction.Gt: return unsigned ? BrGtUn : BrGt;
+				case BranchInstruction.Le: return unsigned ? BrLeUn : BrLe;
+				case BranchInstruction.Ge: return unsigned ? BrGeUn : BrGe;
 				default:
 					throw new NotSupportedException();
 			}
@@ -79,12 +79,12 @@ namespace TriAxis.RunSharp
 
 		private BranchSet(OpCode brTrue, OpCode brFalse, OpCode brEq, OpCode brNe, OpCode brLt, OpCode brLtUn, OpCode brGt, OpCode brGtUn, OpCode brLe, OpCode brLeUn, OpCode brGe, OpCode brGeUn)
 		{
-			this.brTrue = brTrue; this.brFalse = brFalse;
-			this.brEq = brEq; this.brNe = brNe;
-			this.brLt = brLt; this.brLtUn = brLtUn;
-			this.brGt = brGt; this.brGtUn = brGtUn;
-			this.brLe = brLe; this.brLeUn = brLeUn;
-			this.brGe = brGe; this.brGeUn = brGeUn;
+			this.BrTrue = brTrue; this.BrFalse = brFalse;
+			this.BrEq = brEq; this.BrNe = brNe;
+			this.BrLt = brLt; this.BrLtUn = brLtUn;
+			this.BrGt = brGt; this.BrGtUn = brGtUn;
+			this.BrLe = brLe; this.BrLeUn = brLeUn;
+			this.BrGe = brGe; this.BrGeUn = brGeUn;
 		}
 	}
 }

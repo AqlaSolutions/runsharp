@@ -43,40 +43,40 @@ namespace TriAxis.RunSharp.Operands
 {
 	class ArrayLength : Operand
 	{
-		Operand array;
-		bool asLong;
+		Operand _array;
+		bool _asLong;
 
-		static MethodInfo arrGetLen = typeof(Array).GetProperty("Length").GetGetMethod();
-		static MethodInfo arrGetLongLen = typeof(Array).GetProperty("LongLength").GetGetMethod();
+		static MethodInfo _arrGetLen = typeof(Array).GetProperty("Length").GetGetMethod();
+		static MethodInfo _arrGetLongLen = typeof(Array).GetProperty("LongLength").GetGetMethod();
 
 		public ArrayLength(Operand array, bool asLong)
 		{
 			if (!array.Type.IsArray)
 				throw new InvalidOperationException(Properties.Messages.ErrArrayOnly);
 
-			this.array = array;
-			this.asLong = asLong;
+			this._array = array;
+			this._asLong = asLong;
 		}
 
 		internal override void EmitGet(CodeGen g)
 		{
-			array.EmitGet(g);
+			_array.EmitGet(g);
 
-			if (array.Type.GetArrayRank() == 1 && (!asLong || IntPtr.Size == 8))
+			if (_array.Type.GetArrayRank() == 1 && (!_asLong || IntPtr.Size == 8))
 			{
 				g.IL.Emit(OpCodes.Ldlen);
-				g.IL.Emit(asLong ? OpCodes.Conv_I8 : OpCodes.Conv_I4);
+				g.IL.Emit(_asLong ? OpCodes.Conv_I8 : OpCodes.Conv_I4);
 				return;
 			}
 
-			g.IL.Emit(OpCodes.Call, asLong ? arrGetLongLen : arrGetLen);
+			g.IL.Emit(OpCodes.Call, _asLong ? _arrGetLongLen : _arrGetLen);
 		}
 
 		public override Type Type
 		{
 			get
 			{
-				return asLong ? typeof(long) : typeof(int);
+				return _asLong ? typeof(long) : typeof(int);
 			}
 		}
 	}

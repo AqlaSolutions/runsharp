@@ -30,10 +30,10 @@ namespace TriAxis.RunSharp.Examples
 {
     public class CmdLineTestClass
     {
-        int value = 5;
+        int _value = 5;
         public int GetValue()
         {
-            return value;
+            return _value;
         }
         public static CmdLineTestClass Default = new CmdLineTestClass();
     }
@@ -43,9 +43,9 @@ namespace TriAxis.RunSharp.Examples
         [TestArguments("arg1", "arg2", "arg3", "arg4")]
         public static void GenCmdLine2(AssemblyGen ag)
         {
-            TypeGen CommandLine3 = ag.Public.Class("CommandLine3");
+            TypeGen commandLine3 = ag.Public.Class("CommandLine3");
             {
-                CodeGen g = CommandLine3.Public.Method(typeof(void), "Main3").Parameter(typeof(string[]), "args");
+                CodeGen g = commandLine3.Public.Method(typeof(void), "Main3").Parameter(typeof(string[]), "args");
                 {
                     Operand args = g.Arg("args");
                     g.WriteLine("Number of command line 3 parameters = {0}",
@@ -66,15 +66,15 @@ namespace TriAxis.RunSharp.Examples
                 }
 
 
-                CommandLine3.Public.CommonConstructor();
+                commandLine3.Public.CommonConstructor();
             }
 
-            TypeGen CommandLine2 = ag.Public.Class("CommandLine2");
+            TypeGen commandLine2 = ag.Public.Class("CommandLine2");
             {
-                CodeGen g = CommandLine2.Public.Static.Method(typeof(void), "Main").Parameter(typeof(string[]), "args");
+                CodeGen g = commandLine2.Public.Static.Method(typeof(void), "Main").Parameter(typeof(string[]), "args");
                 {
                     //g.Invoke(CommandLine3, "Main3", g.Arg("args"));
-                    Operand cl = g.Local(Exp.New(CommandLine3));
+                    Operand cl = g.Local(Exp.New(commandLine3));
                     g.WriteLine(0);
                     g.Invoke(cl, "Main3", g.Arg("args"));
                     Operand args = g.Arg("args");

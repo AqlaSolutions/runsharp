@@ -43,25 +43,25 @@ namespace TriAxis.RunSharp.Operands
 {
 	class Cast : Operand
 	{
-		Operand op;
-		Type t;
+		Operand _op;
+		Type _t;
 
 		public Cast(Operand op, Type t)
 		{
-			this.op = op;
-			this.t = t;
+			this._op = op;
+			this._t = t;
 		}
 
 		internal override void EmitGet(CodeGen g)
 		{
-			g.EmitGetHelper(op, t, true);
+			g.EmitGetHelper(_op, _t, true);
 		}
 
 		public override Type Type
 		{
 			get
 			{
-				return t;
+				return _t;
 			}
 		}
 	}

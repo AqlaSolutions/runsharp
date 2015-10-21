@@ -54,7 +54,7 @@ namespace TriAxis.RunSharp
 		const byte E = 2;	// explicit conversion
 		const byte X = 3;	// no conversion
 
-		static byte[][] convTable = { // indexed by TypeCode [from,to]
+		static byte[][] _convTable = { // indexed by TypeCode [from,to]
 			// FROM      TO:       NA,OB,DN,BL,CH,I1,U1,I2,U2,I4,U4,I8,U8,R4,R8,DC,DT,--,ST
 			/* NA */ new byte[] { X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X },
 			/* OB */ new byte[] { X, D, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X },
@@ -175,25 +175,25 @@ namespace TriAxis.RunSharp
 
 		class UserDefined : Conversion
 		{
-			Conversion before, after;
-			IMemberInfo method;
-			Type fromType, toType;
-			bool sxSubset, txSubset;
+			Conversion _before, _after;
+			IMemberInfo _method;
+			Type _fromType, _toType;
+			bool _sxSubset, _txSubset;
 
 			public UserDefined(Conversion before, IMemberInfo method, Conversion after)
 			{
-				this.before = before;
-				this.method = method;
-				this.fromType = method.ParameterTypes[0];
-				this.toType = method.ReturnType;
-				this.after = after;
+				this._before = before;
+				this._method = method;
+				this._fromType = method.ParameterTypes[0];
+				this._toType = method.ReturnType;
+				this._after = after;
 			}
 
 			public override void Emit(CodeGen g, Type from, Type to)
 			{
-				before.Emit(g, from, fromType);
-				g.IL.Emit(OpCodes.Call, (MethodInfo)method.Member);
-				after.Emit(g, toType, to);
+				_before.Emit(g, from, _fromType);
+				g.IL.Emit(OpCodes.Call, (MethodInfo)_method.Member);
+				_after.Emit(g, _toType, to);
 			}
 
 			public static Conversion FindImplicit(List<UserDefined> collection, Type from, Type to)
@@ -205,9 +205,9 @@ namespace TriAxis.RunSharp
 				{
 					UserDefined udc = collection[i];
 					any = true;
-					if (sx == null && udc.fromType == from)
+					if (sx == null && udc._fromType == from)
 						sx = from;
-					if (tx == null && udc.toType == to)
+					if (tx == null && udc._toType == to)
 						tx = to;
 				}
 
@@ -227,10 +227,10 @@ namespace TriAxis.RunSharp
 							if (udc2 == udc)
 								continue;
 
-							if (sxMatch && GetImplicit(udc.fromType, udc2.fromType, true) == null)
+							if (sxMatch && GetImplicit(udc._fromType, udc2._fromType, true) == null)
 								sxMatch = false;
 
-							if (txMatch && GetImplicit(udc2.toType, udc.toType, true) == null)
+							if (txMatch && GetImplicit(udc2._toType, udc._toType, true) == null)
 								txMatch = false;
 
 							if (!(sxMatch || txMatch))
@@ -238,9 +238,9 @@ namespace TriAxis.RunSharp
 						}
 
 						if (sxMatch)
-							sx = udc.fromType;
+							sx = udc._fromType;
 						if (txMatch)
-							tx = udc.toType;
+							tx = udc._toType;
 
 						if (sx != null && tx != null)
 							break;
@@ -255,7 +255,7 @@ namespace TriAxis.RunSharp
 				for (int i = 0; i < collection.Count; i++)
 				{
 					UserDefined udc = collection[i];
-					if (udc.fromType == sx && udc.toType == tx)
+					if (udc._fromType == sx && udc._toType == tx)
 					{
 						if (match != null)
 							return Ambiguous.Instance;	// ambiguous match
@@ -281,14 +281,14 @@ namespace TriAxis.RunSharp
 					UserDefined udc = collection[i];
 					any = true;
 
-					if (sx == null && udc.fromType == from)
+					if (sx == null && udc._fromType == from)
 						sx = from;
-					if (tx == null && udc.toType == to)
+					if (tx == null && udc._toType == to)
 						tx = to;
 
-					if (udc.sxSubset = GetImplicit(from, udc.fromType, true) != null)
+					if (udc._sxSubset = GetImplicit(from, udc._fromType, true) != null)
 						sxSubset = true;
-					if (udc.txSubset = GetImplicit(udc.toType, to, true) != null)
+					if (udc._txSubset = GetImplicit(udc._toType, to, true) != null)
 						txSubset = true;
 				}
 
@@ -300,8 +300,8 @@ namespace TriAxis.RunSharp
 					for (int i = 0; i < collection.Count; i++)
 					{
 						UserDefined udc = collection[i];
-						bool sxMatch = sx == null && !sxSubset || udc.sxSubset;
-						bool txMatch = tx == null && !txSubset || udc.txSubset;
+						bool sxMatch = sx == null && !sxSubset || udc._sxSubset;
+						bool txMatch = tx == null && !txSubset || udc._txSubset;
 
 						if (!(sxMatch || txMatch))
 							continue;
@@ -316,12 +316,12 @@ namespace TriAxis.RunSharp
 							{
 								if (sxSubset)
 								{
-									if (udc.sxSubset && GetImplicit(udc.fromType, udc2.fromType, true) == null)
+									if (udc._sxSubset && GetImplicit(udc._fromType, udc2._fromType, true) == null)
 										sxMatch = false;
 								}
 								else
 								{
-									if (GetImplicit(udc2.fromType, udc.fromType, true) == null)
+									if (GetImplicit(udc2._fromType, udc._fromType, true) == null)
 										sxMatch = false;
 								}
 							}
@@ -330,12 +330,12 @@ namespace TriAxis.RunSharp
 							{
 								if (txSubset)
 								{
-									if (udc.txSubset && GetImplicit(udc2.toType, udc.toType, true) == null)
+									if (udc._txSubset && GetImplicit(udc2._toType, udc._toType, true) == null)
 										txMatch = false;
 								}
 								else
 								{
-									if (GetImplicit(udc.toType, udc2.toType, true) == null)
+									if (GetImplicit(udc._toType, udc2._toType, true) == null)
 										txMatch = false;
 								}
 							}
@@ -345,9 +345,9 @@ namespace TriAxis.RunSharp
 						}
 
 						if (sxMatch)
-							sx = udc.fromType;
+							sx = udc._fromType;
 						if (txMatch)
-							tx = udc.toType;
+							tx = udc._toType;
 
 						if (sx != null && tx != null)
 							break;
@@ -362,7 +362,7 @@ namespace TriAxis.RunSharp
 				for (int i = 0; i < collection.Count; i++)
 				{
 					UserDefined udc = collection[i];
-					if (udc.fromType == sx && udc.toType == tx)
+					if (udc._fromType == sx && udc._toType == tx)
 					{
 						if (match != null)
 							return Ambiguous.Instance;	// ambiguous match
@@ -381,15 +381,15 @@ namespace TriAxis.RunSharp
 
 		sealed class FakeTypedOperand : Operand
 		{
-			Type t;
+			Type _t;
 
-			public FakeTypedOperand(Type t) { this.t = t; }
+			public FakeTypedOperand(Type t) { this._t = t; }
 
 			public override Type Type
 			{
 				get
 				{
-					return t;
+					return _t;
 				}
 			}
 		}
@@ -419,7 +419,7 @@ namespace TriAxis.RunSharp
 
 			TypeCode tcFrom = Type.GetTypeCode(from);
 			TypeCode tcTo = Type.GetTypeCode(to);
-			byte ct = convTable[(int)tcFrom][(int)tcTo];
+			byte ct = _convTable[(int)tcFrom][(int)tcTo];
 
 			// section 6.1.2 - Implicit numeric conversions
 			if (from != null && (from.IsPrimitive || Helpers.AreTypesEqual(from, typeof(decimal))) && (to.IsPrimitive || Helpers.AreTypesEqual(to, typeof(decimal))))
@@ -574,7 +574,7 @@ namespace TriAxis.RunSharp
 
 			TypeCode tcFrom = Type.GetTypeCode(from);
 			TypeCode tcTo = Type.GetTypeCode(to);
-			byte ct = convTable[(int)tcFrom][(int)tcTo];
+			byte ct = _convTable[(int)tcFrom][(int)tcTo];
 
 			// section 6.2.1 - Explicit numeric conversions, 6.2.2 - Explicit enumeration conversions
 			if ((from.IsPrimitive || from.IsEnum || Helpers.AreTypesEqual(from, typeof(decimal))) && (to.IsPrimitive || to.IsEnum || Helpers.AreTypesEqual(to, typeof(decimal))))

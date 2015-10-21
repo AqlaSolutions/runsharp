@@ -43,23 +43,23 @@ namespace TriAxis.RunSharp.Operands
 {
 	class ArrayAccess : Operand
 	{
-		Operand array;
-		Operand[] indexes;
+		Operand _array;
+		Operand[] _indexes;
 
 		public ArrayAccess(Operand array, Operand[] indexes)
 		{
 			if (array.Type.GetArrayRank() != indexes.Length)
 				throw new ArgumentException(Properties.Messages.ErrIndexCountMismatch);
 
-			this.array = array;
-			this.indexes = indexes;
+			this._array = array;
+			this._indexes = indexes;
 		}
 
 		void LoadArrayAndIndexes(CodeGen g)
 		{
-			array.EmitGet(g);
+			_array.EmitGet(g);
 
-			foreach (Operand op in indexes)
+			foreach (Operand op in _indexes)
 				g.EmitGetHelper(op, Operand.GetType(op) == typeof(int) ? typeof(int) : typeof(long), false);
 		}
 
@@ -67,7 +67,7 @@ namespace TriAxis.RunSharp.Operands
 		{
 			LoadArrayAndIndexes(g);
 
-			if (indexes.Length == 1)
+			if (_indexes.Length == 1)
 			{
 				g.EmitLdelemHelper(Type);
 			}
@@ -81,7 +81,7 @@ namespace TriAxis.RunSharp.Operands
 		{
 			LoadArrayAndIndexes(g);
 
-			if (indexes.Length == 1)
+			if (_indexes.Length == 1)
 			{
 				g.EmitStelemHelper(Type, value, allowExplicitConversion);
 			}
@@ -95,7 +95,7 @@ namespace TriAxis.RunSharp.Operands
 		{
 			LoadArrayAndIndexes(g);
 
-			if (indexes.Length == 1)
+			if (_indexes.Length == 1)
 			{
 				g.IL.Emit(OpCodes.Ldelema, Type);
 			}
@@ -109,7 +109,7 @@ namespace TriAxis.RunSharp.Operands
 		{
 			get
 			{
-				return array.Type.GetElementType();
+				return _array.Type.GetElementType();
 			}
 		}
 

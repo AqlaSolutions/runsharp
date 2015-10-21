@@ -66,8 +66,8 @@ namespace TriAxis.RunSharp
 
     class TypeInfo : ITypeInfo
     {
-        Dictionary<Type, ITypeInfoProvider> providers = new Dictionary<Type, ITypeInfoProvider>();
-        Dictionary<Type, WeakReference> cache = new Dictionary<Type, WeakReference>();
+        Dictionary<Type, ITypeInfoProvider> _providers = new Dictionary<Type, ITypeInfoProvider>();
+        Dictionary<Type, WeakReference> _cache = new Dictionary<Type, WeakReference>();
 
         public TypeInfo(ITypeMapper typeMapper)
         {
@@ -78,48 +78,48 @@ namespace TriAxis.RunSharp
 
         class CacheEntry
         {
-            Type t;
-            IMemberInfo[] constructors, fields, properties, events, methods;
-            static string nullStr = "$NULL";
-            string defaultMember = nullStr;
+            Type _t;
+            IMemberInfo[] _constructors, _fields, _properties, _events, _methods;
+            static string _nullStr = "$NULL";
+            string _defaultMember = _nullStr;
 
             TypeInfo _;
 
             public CacheEntry(Type t, TypeInfo owner)
             {
                 this._ = owner;
-                this.t = t;
+                this._t = t;
 
                 if (t.GetType() != typeof(object).GetType())
                 {
                     // not a runtime type, TypeInfoProvider missing - return nothing
-                    constructors = fields = properties = events = methods = empty;
-                    defaultMember = null;
+                    _constructors = _fields = _properties = _events = _methods = _empty;
+                    _defaultMember = null;
                 }
             }
 
             ~CacheEntry()
             {
-                lock (_.cache)
+                lock (_._cache)
                 {
                     WeakReference wr;
-                    if (_.cache.TryGetValue(t, out wr) && (wr.Target == this || wr.Target == null))
-                        _.cache.Remove(t);
+                    if (_._cache.TryGetValue(_t, out wr) && (wr.Target == this || wr.Target == null))
+                        _._cache.Remove(_t);
                 }
             }
 
-            static IMemberInfo[] empty = { };
+            static IMemberInfo[] _empty = { };
 
             public IMemberInfo[] Constructors
             {
                 get
                 {
-                    if (constructors == null)
+                    if (_constructors == null)
                     {
-                        ConstructorInfo[] ctors = t.GetConstructors(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Instance);
-                        constructors = Array.ConvertAll<ConstructorInfo, IMemberInfo>(ctors, delegate(ConstructorInfo ci) { return new StdMethodInfo(ci, _); });
+                        ConstructorInfo[] ctors = _t.GetConstructors(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Instance);
+                        _constructors = Array.ConvertAll<ConstructorInfo, IMemberInfo>(ctors, delegate(ConstructorInfo ci) { return new StdMethodInfo(ci, _); });
                     }
-                    return constructors;
+                    return _constructors;
                 }
             }
 
@@ -127,12 +127,12 @@ namespace TriAxis.RunSharp
             {
                 get
                 {
-                    if (fields == null)
+                    if (_fields == null)
                     {
-                        FieldInfo[] fis = t.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Static);
-                        fields = Array.ConvertAll<FieldInfo, IMemberInfo>(fis, delegate(FieldInfo fi) { return new StdFieldInfo(fi); });
+                        FieldInfo[] fis = _t.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Static);
+                        _fields = Array.ConvertAll<FieldInfo, IMemberInfo>(fis, delegate(FieldInfo fi) { return new StdFieldInfo(fi); });
                     }
-                    return fields;
+                    return _fields;
                 }
             }
 
@@ -140,12 +140,12 @@ namespace TriAxis.RunSharp
             {
                 get
                 {
-                    if (properties == null)
+                    if (_properties == null)
                     {
-                        PropertyInfo[] pis = t.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Static);
-                        properties = Array.ConvertAll<PropertyInfo, IMemberInfo>(pis, delegate(PropertyInfo pi) { return new StdPropertyInfo(pi); });
+                        PropertyInfo[] pis = _t.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Static);
+                        _properties = Array.ConvertAll<PropertyInfo, IMemberInfo>(pis, delegate(PropertyInfo pi) { return new StdPropertyInfo(pi); });
                     }
-                    return properties;
+                    return _properties;
                 }
             }
 
@@ -153,12 +153,12 @@ namespace TriAxis.RunSharp
             {
                 get
                 {
-                    if (events == null)
+                    if (_events == null)
                     {
-                        EventInfo[] eis = t.GetEvents(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Static);
-                        events = Array.ConvertAll<EventInfo, IMemberInfo>(eis, delegate(EventInfo ei) { return new StdEventInfo(ei); });
+                        EventInfo[] eis = _t.GetEvents(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Static);
+                        _events = Array.ConvertAll<EventInfo, IMemberInfo>(eis, delegate(EventInfo ei) { return new StdEventInfo(ei); });
                     }
-                    return events;
+                    return _events;
                 }
             }
 
@@ -166,12 +166,12 @@ namespace TriAxis.RunSharp
             {
                 get
                 {
-                    if (methods == null)
+                    if (_methods == null)
                     {
-                        MethodInfo[] mis = t.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Static);
-                        methods = Array.ConvertAll<MethodInfo, IMemberInfo>(mis, delegate(MethodInfo mi) { return new StdMethodInfo(mi, _); });
+                        MethodInfo[] mis = _t.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Static);
+                        _methods = Array.ConvertAll<MethodInfo, IMemberInfo>(mis, delegate(MethodInfo mi) { return new StdMethodInfo(mi, _); });
                     }
-                    return methods;
+                    return _methods;
                 }
             }
 
@@ -179,31 +179,31 @@ namespace TriAxis.RunSharp
             {
                 get
                 {
-                    if (defaultMember == nullStr)
+                    if (_defaultMember == _nullStr)
                     {
-                        foreach (var dma in Helpers.GetCustomAttributes(t, typeof(DefaultMemberAttribute), true))
+                        foreach (var dma in Helpers.GetCustomAttributes(_t, typeof(DefaultMemberAttribute), true))
                         { 
 #if FEAT_IKVM
-                            return defaultMember = dma.ConstructorArguments[0].Value as string;
+                            return _defaultMember = dma.ConstructorArguments[0].Value as string;
 #else
-                            return defaultMember = ((DefaultMemberAttribute)dma).MemberName;
+                            return _defaultMember = ((DefaultMemberAttribute)dma).MemberName;
 #endif
                         }
-                        defaultMember = null;
+                        _defaultMember = null;
                     }
-                    return defaultMember;
+                    return _defaultMember;
                 }
             }
         }
 
         public void RegisterProvider(Type t, ITypeInfoProvider prov)
         {
-            providers[t] = prov;
+            _providers[t] = prov;
         }
 
         public void UnregisterProvider(Type t)
         {
-            providers.Remove(t);
+            _providers.Remove(t);
         }
 
         CacheEntry GetCacheEntry(Type t)
@@ -211,12 +211,12 @@ namespace TriAxis.RunSharp
             if (t is TypeBuilder)
                 t = t.UnderlyingSystemType;
 
-            lock (cache)
+            lock (_cache)
             {
                 CacheEntry ce;
                 WeakReference wr;
 
-                if (cache.TryGetValue(t, out wr))
+                if (_cache.TryGetValue(t, out wr))
                 {
                     ce = wr.Target as CacheEntry;
                     if (ce != null)
@@ -224,7 +224,7 @@ namespace TriAxis.RunSharp
                 }
 
                 ce = new CacheEntry(t, this);
-                cache[t] = new WeakReference(ce);
+                _cache[t] = new WeakReference(ce);
                 return ce;
             }
         }
@@ -233,7 +233,7 @@ namespace TriAxis.RunSharp
         {
             ITypeInfoProvider prov;
 
-            if (providers.TryGetValue(t, out prov))
+            if (_providers.TryGetValue(t, out prov))
                 return prov.GetConstructors();
 
             return GetCacheEntry(t).Constructors;
@@ -243,7 +243,7 @@ namespace TriAxis.RunSharp
         {
             ITypeInfoProvider prov;
 
-            if (providers.TryGetValue(t, out prov))
+            if (_providers.TryGetValue(t, out prov))
                 return prov.GetFields();
 
             return GetCacheEntry(t).Fields;
@@ -253,7 +253,7 @@ namespace TriAxis.RunSharp
         {
             ITypeInfoProvider prov;
 
-            if (providers.TryGetValue(t, out prov))
+            if (_providers.TryGetValue(t, out prov))
                 return prov.GetProperties();
 
             return GetCacheEntry(t).Properties;
@@ -263,7 +263,7 @@ namespace TriAxis.RunSharp
         {
             ITypeInfoProvider prov;
 
-            if (providers.TryGetValue(t, out prov))
+            if (_providers.TryGetValue(t, out prov))
                 return prov.GetEvents();
 
             return GetCacheEntry(t).Events;
@@ -273,7 +273,7 @@ namespace TriAxis.RunSharp
         {
             ITypeInfoProvider prov;
 
-            if (providers.TryGetValue(t, out prov))
+            if (_providers.TryGetValue(t, out prov))
                 return prov.GetMethods();
 
             return GetCacheEntry(t).Methods;
@@ -283,7 +283,7 @@ namespace TriAxis.RunSharp
         {
             ITypeInfoProvider prov;
 
-            if (providers.TryGetValue(t, out prov))
+            if (_providers.TryGetValue(t, out prov))
                 return prov.DefaultMember;
 
             return GetCacheEntry(t).DefaultMember;
@@ -442,61 +442,61 @@ namespace TriAxis.RunSharp
 
         class StdMethodInfo : IMemberInfo
         {
-            MethodBase mb;
-            MethodInfo mi;
-            string name;
-            Type returnType;
-            Type[] parameterTypes;
-            bool hasVar;
+            MethodBase _mb;
+            MethodInfo _mi;
+            string _name;
+            Type _returnType;
+            Type[] _parameterTypes;
+            bool _hasVar;
             TypeInfo _;
 
             public StdMethodInfo(MethodInfo mi, TypeInfo owner)
                 : this((MethodBase)mi, owner)
             {
-                this.mi = mi;
+                this._mi = mi;
             }
 
             public StdMethodInfo(ConstructorInfo ci, TypeInfo owner)
                 : this((MethodBase)ci, owner)
             {
-                this.returnType =  owner.TypeMapper.MapType(typeof(void));
+                this._returnType =  owner.TypeMapper.MapType(typeof(void));
             }
 
             public StdMethodInfo(MethodBase mb, TypeInfo owner)
             {
-                this.mb = mb;
+                this._mb = mb;
                 _ = owner;
             }
 
             void RequireParameters()
             {
-                if (parameterTypes == null)
+                if (_parameterTypes == null)
                 {
-                    ParameterInfo[] pis = mb.GetParameters();
-                    parameterTypes = ArrayUtils.GetTypes(pis);
+                    ParameterInfo[] pis = _mb.GetParameters();
+                    _parameterTypes = ArrayUtils.GetTypes(pis);
 
-                    hasVar = pis.Length > 0 &&
+                    _hasVar = pis.Length > 0 &&
                         Helpers.GetCustomAttributes(pis[pis.Length - 1], typeof(ParamArrayAttribute), false).Count> 0;
                 }
             }
 
-            public MemberInfo Member { get { return mb; } }
+            public MemberInfo Member { get { return _mb; } }
             public string Name
             {
                 get
                 {
-                    if (name == null)
-                        name = mb.Name;
-                    return name;
+                    if (_name == null)
+                        _name = _mb.Name;
+                    return _name;
                 }
             }
             public Type ReturnType
             {
                 get
                 {
-                    if (returnType == null)
-                        returnType = mi.ReturnType;
-                    return returnType;
+                    if (_returnType == null)
+                        _returnType = _mi.ReturnType;
+                    return _returnType;
                 }
             }
             public Type[] ParameterTypes
@@ -504,7 +504,7 @@ namespace TriAxis.RunSharp
                 get
                 {
                     RequireParameters();
-                    return parameterTypes;
+                    return _parameterTypes;
                 }
             }
             public bool IsParameterArray
@@ -512,65 +512,65 @@ namespace TriAxis.RunSharp
                 get
                 {
                     RequireParameters();
-                    return hasVar;
+                    return _hasVar;
                 }
             }
-            public bool IsStatic { get { return mb.IsStatic; } }
-            public bool IsOverride { get { return Utils.IsOverride(mb.Attributes); } }
+            public bool IsStatic { get { return _mb.IsStatic; } }
+            public bool IsOverride { get { return Utils.IsOverride(_mb.Attributes); } }
 
             public override string ToString()
             {
-                return mb.ToString();
+                return _mb.ToString();
             }
         }
 
         class StdPropertyInfo : IMemberInfo
         {
-            PropertyInfo pi;
-            string name;
-            MethodInfo mi;
-            Type returnType;
-            Type[] parameterTypes;
-            bool hasVar;
+            PropertyInfo _pi;
+            string _name;
+            MethodInfo _mi;
+            Type _returnType;
+            Type[] _parameterTypes;
+            bool _hasVar;
 
             public StdPropertyInfo(PropertyInfo pi)
             {
-                this.pi = pi;
-                this.mi = pi.GetGetMethod();
-                if (mi == null)
-                    mi = pi.GetSetMethod();
+                this._pi = pi;
+                this._mi = pi.GetGetMethod();
+                if (_mi == null)
+                    _mi = pi.GetSetMethod();
                 // mi will remain null for abstract properties
             }
 
             void RequireParameters()
             {
-                if (parameterTypes == null)
+                if (_parameterTypes == null)
                 {
-                    ParameterInfo[] pis = pi.GetIndexParameters();
-                    parameterTypes = ArrayUtils.GetTypes(pis);
+                    ParameterInfo[] pis = _pi.GetIndexParameters();
+                    _parameterTypes = ArrayUtils.GetTypes(pis);
 
-                    hasVar = pis.Length > 0 &&
+                    _hasVar = pis.Length > 0 &&
                         Helpers.GetCustomAttributes(pis[pis.Length - 1], typeof(ParamArrayAttribute), false).Count > 0;
                 }
             }
 
-            public MemberInfo Member { get { return pi; } }
+            public MemberInfo Member { get { return _pi; } }
             public string Name
             {
                 get
                 {
-                    if (name == null)
-                        name = pi.Name;
-                    return name;
+                    if (_name == null)
+                        _name = _pi.Name;
+                    return _name;
                 }
             }
             public Type ReturnType
             {
                 get
                 {
-                    if (returnType == null)
-                        returnType = pi.PropertyType;
-                    return returnType;
+                    if (_returnType == null)
+                        _returnType = _pi.PropertyType;
+                    return _returnType;
                 }
             }
             public Type[] ParameterTypes
@@ -578,7 +578,7 @@ namespace TriAxis.RunSharp
                 get
                 {
                     RequireParameters();
-                    return parameterTypes;
+                    return _parameterTypes;
                 }
             }
             public bool IsParameterArray
@@ -586,71 +586,71 @@ namespace TriAxis.RunSharp
                 get
                 {
                     RequireParameters();
-                    return hasVar;
+                    return _hasVar;
                 }
             }
-            public bool IsOverride { get { return mi == null ? false : Utils.IsOverride(mi.Attributes); } }
-            public bool IsStatic { get { return mi == null ? false : mi.IsStatic; } }
+            public bool IsOverride { get { return _mi == null ? false : Utils.IsOverride(_mi.Attributes); } }
+            public bool IsStatic { get { return _mi == null ? false : _mi.IsStatic; } }
 
             public override string ToString()
             {
-                return pi.ToString();
+                return _pi.ToString();
             }
         }
 
         class StdEventInfo : IMemberInfo
         {
-            EventInfo ei;
-            string name;
-            MethodInfo mi;
+            EventInfo _ei;
+            string _name;
+            MethodInfo _mi;
 
             public StdEventInfo(EventInfo ei)
             {
-                this.ei = ei;
-                this.name = ei.Name;
+                this._ei = ei;
+                this._name = ei.Name;
 
-                this.mi = ei.GetAddMethod();
-                if (mi == null)
-                    mi = ei.GetRemoveMethod();
+                this._mi = ei.GetAddMethod();
+                if (_mi == null)
+                    _mi = ei.GetRemoveMethod();
                 // mi will remain null for abstract properties
             }
 
-            public MemberInfo Member { get { return ei; } }
-            public string Name { get { return name; } }
-            public Type ReturnType { get { return ei.EventHandlerType; } }
+            public MemberInfo Member { get { return _ei; } }
+            public string Name { get { return _name; } }
+            public Type ReturnType { get { return _ei.EventHandlerType; } }
             public Type[] ParameterTypes { get { return Type.EmptyTypes; } }
             public bool IsParameterArray { get { return false; } }
-            public bool IsOverride { get { return mi == null ? false : Utils.IsOverride(mi.Attributes); } }
-            public bool IsStatic { get { return mi == null ? false : mi.IsStatic; } }
+            public bool IsOverride { get { return _mi == null ? false : Utils.IsOverride(_mi.Attributes); } }
+            public bool IsStatic { get { return _mi == null ? false : _mi.IsStatic; } }
 
             public override string ToString()
             {
-                return ei.ToString();
+                return _ei.ToString();
             }
         }
 
         class StdFieldInfo : IMemberInfo
         {
-            FieldInfo fi;
-            string name;
+            FieldInfo _fi;
+            string _name;
 
             public StdFieldInfo(FieldInfo fi)
             {
-                this.fi = fi;
-                this.name = fi.Name;
+                this._fi = fi;
+                this._name = fi.Name;
             }
 
-            public MemberInfo Member { get { return fi; } }
-            public string Name { get { return name; } }
-            public Type ReturnType { get { return fi.FieldType; } }
+            public MemberInfo Member { get { return _fi; } }
+            public string Name { get { return _name; } }
+            public Type ReturnType { get { return _fi.FieldType; } }
             public Type[] ParameterTypes { get { return Type.EmptyTypes; } }
             public bool IsParameterArray { get { return false; } }
             public bool IsOverride { get { return false; } }
-            public bool IsStatic { get { return fi.IsStatic; } }
+            public bool IsStatic { get { return _fi.IsStatic; } }
 
             public override string ToString()
             {
-                return fi.ToString();
+                return _fi.ToString();
             }
         }
     }

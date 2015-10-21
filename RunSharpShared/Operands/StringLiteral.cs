@@ -43,13 +43,13 @@ namespace TriAxis.RunSharp.Operands
 {
 	class StringLiteral : Operand
 	{
-		string str;
+		string _str;
 
-		public StringLiteral(string str) { this.str = str; }
+		public StringLiteral(string str) { this._str = str; }
 
 		internal override void EmitGet(CodeGen g)
 		{
-			g.IL.Emit(OpCodes.Ldstr, str);
+			g.IL.Emit(OpCodes.Ldstr, _str);
 		}
 
 		public override Type Type
@@ -61,7 +61,7 @@ namespace TriAxis.RunSharp.Operands
 		{
 			get
 			{
-				return str;
+				return _str;
 			}
 		}
 	}

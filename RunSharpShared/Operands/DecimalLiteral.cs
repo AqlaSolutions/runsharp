@@ -43,17 +43,17 @@ namespace TriAxis.RunSharp.Operands
 {
 	class DecimalLiteral : Operand
 	{
-		static ConstructorInfo decimalIntConstructor = typeof(decimal).GetConstructor(new Type[] { typeof(int) });
-		static ConstructorInfo decimalLongConstructor = typeof(decimal).GetConstructor(new Type[] { typeof(long) });
-		static ConstructorInfo decimalExtConstructor = typeof(decimal).GetConstructor(new Type[] { typeof(int), typeof(int), typeof(int), typeof(bool), typeof(byte) });
+		static ConstructorInfo _decimalIntConstructor = typeof(decimal).GetConstructor(new Type[] { typeof(int) });
+		static ConstructorInfo _decimalLongConstructor = typeof(decimal).GetConstructor(new Type[] { typeof(long) });
+		static ConstructorInfo _decimalExtConstructor = typeof(decimal).GetConstructor(new Type[] { typeof(int), typeof(int), typeof(int), typeof(bool), typeof(byte) });
 
-		decimal value;
+		decimal _value;
 
-		public DecimalLiteral(decimal value) { this.value = value; }
+		public DecimalLiteral(decimal value) { this._value = value; }
 
 		internal override void EmitGet(CodeGen g)
 		{
-			int[] bits = decimal.GetBits(value);
+			int[] bits = decimal.GetBits(_value);
 			byte exponent = unchecked((byte)((bits[3] >> 16) & 0x1f));
 			bool sign = bits[3] < 0;
 
@@ -62,14 +62,14 @@ namespace TriAxis.RunSharp.Operands
 				if (bits[1] == 0 && (bits[0] > 0 || (bits[0] == 0 && !sign)))	// fits in int32 - use the basic int constructor
 				{
 					g.EmitI4Helper(sign ? -bits[0] : bits[0]);
-					g.IL.Emit(OpCodes.Newobj, decimalIntConstructor);
+					g.IL.Emit(OpCodes.Newobj, _decimalIntConstructor);
 					return;
 				}
 				if (bits[1] > 0)	// fits in int64
 				{
 					long l = unchecked((long)(((ulong)(uint)bits[1] << 32) | (ulong)(uint)bits[0]));
 					g.IL.Emit(OpCodes.Ldc_I8, sign ? -l : l);
-					g.IL.Emit(OpCodes.Newobj, decimalLongConstructor);
+					g.IL.Emit(OpCodes.Newobj, _decimalLongConstructor);
 					return;
 				}
 			}
@@ -79,7 +79,7 @@ namespace TriAxis.RunSharp.Operands
 			g.EmitI4Helper(bits[2]);
 			g.EmitI4Helper(sign ? 1 : 0);
 			g.EmitI4Helper(exponent);
-			g.IL.Emit(OpCodes.Newobj, decimalExtConstructor);
+			g.IL.Emit(OpCodes.Newobj, _decimalExtConstructor);
 		}
 
 		public override Type Type
@@ -94,7 +94,7 @@ namespace TriAxis.RunSharp.Operands
 		{
 			get
 			{
-				return value;
+				return _value;
 			}
 		}
 	}

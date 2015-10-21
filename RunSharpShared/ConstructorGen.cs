@@ -43,30 +43,30 @@ namespace TriAxis.RunSharp
 {
 	public sealed class ConstructorGen : RoutineGen<ConstructorGen>
 	{
-		MethodAttributes attributes;
-		ConstructorBuilder cb;
-		MethodImplAttributes implFlags;
+		MethodAttributes _attributes;
+		ConstructorBuilder _cb;
+		MethodImplAttributes _implFlags;
 
 		internal ConstructorBuilder GetConstructorBuilder()
 		{
 			LockSignature();
-			return cb;
+			return _cb;
 		}
 
 		internal ConstructorGen(TypeGen owner, MethodAttributes attributes, MethodImplAttributes implFlags)
 			: base(owner, null)
 		{
-			this.attributes = attributes;
-			this.implFlags = implFlags;
+			this._attributes = attributes;
+			this._implFlags = implFlags;
 
 			owner.RegisterForCompletion(this);
 		}
 
 		protected override void CreateMember()
 		{
-			this.cb = Owner.TypeBuilder.DefineConstructor(attributes | MethodAttributes.HideBySig, IsStatic ? CallingConventions.Standard : CallingConventions.HasThis, ParameterTypes);
-			if (implFlags != 0)
-				cb.SetImplementationFlags(implFlags);
+			this._cb = Owner.TypeBuilder.DefineConstructor(_attributes | MethodAttributes.HideBySig, IsStatic ? CallingConventions.Standard : CallingConventions.HasThis, ParameterTypes);
+			if (_implFlags != 0)
+				_cb.SetImplementationFlags(_implFlags);
 		}
 
 		protected override void RegisterMember()
@@ -85,7 +85,7 @@ namespace TriAxis.RunSharp
 
 		protected internal override bool IsStatic
 		{
-			get { return (attributes & MethodAttributes.Static) != 0; }
+			get { return (_attributes & MethodAttributes.Static) != 0; }
 		}
 
 		protected internal override bool IsOverride
@@ -95,22 +95,22 @@ namespace TriAxis.RunSharp
 
 		protected override bool HasCode
 		{
-			get { return (implFlags & MethodImplAttributes.Runtime) == 0; }
+			get { return (_implFlags & MethodImplAttributes.Runtime) == 0; }
 		}
 
 		protected override ILGenerator GetILGenerator()
 		{
-			return cb.GetILGenerator();
+			return _cb.GetILGenerator();
 		}
 
 		protected override ParameterBuilder DefineParameter(int position, ParameterAttributes attributes, string parameterName)
 		{
-			return cb.DefineParameter(position, attributes, parameterName);
+			return _cb.DefineParameter(position, attributes, parameterName);
 		}
 
 		protected override MemberInfo Member
 		{
-			get { return cb; }
+			get { return _cb; }
 		}
 
 		protected override AttributeTargets AttributeTarget
@@ -120,7 +120,7 @@ namespace TriAxis.RunSharp
 
 		protected override void SetCustomAttribute(CustomAttributeBuilder cab)
 		{
-			cb.SetCustomAttribute(cab);
+			_cb.SetCustomAttribute(cab);
 		}
 
 		#endregion

@@ -76,24 +76,24 @@ namespace TriAxis.RunSharp
             }
         }
 
-        private string targetFrameworkName, targetFrameworkDisplayName, outputPath, imageRuntimeVersion;
-        private int metaDataVersion;
+        private string _targetFrameworkName, _targetFrameworkDisplayName, _outputPath, _imageRuntimeVersion;
+        private int _metaDataVersion;
         /// <summary>
         /// The TargetFrameworkAttribute FrameworkName value to burn into the generated assembly
         /// </summary>
-        public string TargetFrameworkName { get { return targetFrameworkName; } set { targetFrameworkName = value; } }
+        public string TargetFrameworkName { get { return _targetFrameworkName; } set { _targetFrameworkName = value; } }
 
         /// <summary>
         /// The TargetFrameworkAttribute FrameworkDisplayName value to burn into the generated assembly
         /// </summary>
-        public string TargetFrameworkDisplayName { get { return targetFrameworkDisplayName; } set { targetFrameworkDisplayName = value; } }
+        public string TargetFrameworkDisplayName { get { return _targetFrameworkDisplayName; } set { _targetFrameworkDisplayName = value; } }
         
         public bool SymbolInfo { get; set; }
 
         /// <summary>
         /// The path for the new dll
         /// </summary>
-        public string OutputPath { get { return outputPath; } set { outputPath = value; } }
+        public string OutputPath { get { return _outputPath; } set { _outputPath = value; } }
         
 #if FEAT_IKVM
         /// <summary>
@@ -113,12 +113,12 @@ namespace TriAxis.RunSharp
         /// <summary>
         /// The runtime version for the generated assembly
         /// </summary>
-        public string ImageRuntimeVersion { get { return imageRuntimeVersion; } set { imageRuntimeVersion = value; } }
+        public string ImageRuntimeVersion { get { return _imageRuntimeVersion; } set { _imageRuntimeVersion = value; } }
 
         /// <summary>
         /// The runtime version for the generated assembly
         /// </summary>
-        public int MetaDataVersion { get { return metaDataVersion; } set { metaDataVersion = value; } }
+        public int MetaDataVersion { get { return _metaDataVersion; } set { _metaDataVersion = value; } }
 
 #endif
     }

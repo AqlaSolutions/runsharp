@@ -43,16 +43,16 @@ namespace TriAxis.RunSharp.Operands
 {
 	class TypeLiteral : Operand
 	{
-		static MethodInfo typeofMethod = typeof(Type).GetMethod("GetTypeFromHandle");
+		static MethodInfo _typeofMethod = typeof(Type).GetMethod("GetTypeFromHandle");
 
-		Type t;
+		Type _t;
 
-		public TypeLiteral(Type t) { this.t = t; }
+		public TypeLiteral(Type t) { this._t = t; }
 
 		internal override void EmitGet(CodeGen g)
 		{
-			g.IL.Emit(OpCodes.Ldtoken, t);
-			g.IL.Emit(OpCodes.Call, typeofMethod);
+			g.IL.Emit(OpCodes.Ldtoken, _t);
+			g.IL.Emit(OpCodes.Call, _typeofMethod);
 		}
 
 		public override Type Type { get { return typeof(Type); } }
@@ -61,7 +61,7 @@ namespace TriAxis.RunSharp.Operands
 		{
 			get
 			{
-				return t;
+				return _t;
 			}
 		}
 	}

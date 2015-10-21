@@ -50,38 +50,38 @@ namespace TriAxis.RunSharp
 
     public abstract class SignatureGen<T> : ISignatureGen where T : SignatureGen<T>
     {
-        ParameterGen returnParameter;
-        ParameterGenCollection parameters = new ParameterGenCollection();
-        bool signatureComplete;
-        internal readonly T typedThis;
+        ParameterGen _returnParameter;
+        ParameterGenCollection _parameters = new ParameterGenCollection();
+        bool _signatureComplete;
+        internal readonly T TypedThis;
 
         internal SignatureGen(Type returnType)
         {
-            typedThis = (T)this;
+            TypedThis = (T)this;
             if (returnType != null)
-                this.returnParameter = new ParameterGen(parameters, 0, returnType, 0, null, false);
+                this._returnParameter = new ParameterGen(_parameters, 0, returnType, 0, null, false);
         }
 
-        internal bool SignatureComplete { get { return signatureComplete; } }
+        internal bool SignatureComplete { get { return _signatureComplete; } }
 
-        public int ParameterCount { get { return parameters.Count; } }
+        public int ParameterCount { get { return _parameters.Count; } }
 
-        public Type ReturnType { get { return returnParameter == null ? null : returnParameter.Type; } }
-        public Type[] ParameterTypes { get { return parameters.TypeArray; } }
+        public Type ReturnType { get { return _returnParameter == null ? null : _returnParameter.Type; } }
+        public Type[] ParameterTypes { get { return _parameters.TypeArray; } }
 
-        public ParameterGen ReturnParameter { get { return returnParameter; } }
-        public IList<ParameterGen> Parameters { get { return parameters; } }
+        public ParameterGen ReturnParameter { get { return _returnParameter; } }
+        public IList<ParameterGen> Parameters { get { return _parameters; } }
 
         #region Parameter Definition
         enum ParamModifier { None, Ref, Out, Params };
-        ParamModifier paramMod = ParamModifier.None;
+        ParamModifier _paramMod = ParamModifier.None;
 
         T SetModifier(ParamModifier mod)
         {
-            if (paramMod != ParamModifier.None)
+            if (_paramMod != ParamModifier.None)
                 throw new InvalidOperationException(Properties.Messages.ErrMultiParamModifier);
-            paramMod = mod;
-            return typedThis;
+            _paramMod = mod;
+            return TypedThis;
         }
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -96,7 +96,7 @@ namespace TriAxis.RunSharp
             ParameterAttributes attrs = 0;
             bool va = false;
 
-            switch (paramMod)
+            switch (_paramMod)
             {
                 case ParamModifier.Out:
                     attrs |= ParameterAttributes.Out;
@@ -112,44 +112,44 @@ namespace TriAxis.RunSharp
                     break;
             }
 
-            ParameterGen<T> pgen = new ParameterGen<T>(typedThis, parameters, parameters.Count + 1, type, attrs, name, va);
-            parameters.Add(pgen);
-            paramMod = ParamModifier.None;
+            ParameterGen<T> pgen = new ParameterGen<T>(TypedThis, _parameters, _parameters.Count + 1, type, attrs, name, va);
+            _parameters.Add(pgen);
+            _paramMod = ParamModifier.None;
             return pgen;
         }
 
         internal T UncheckedParameter(Type type, string name)
         {
-            parameters.AddUnchecked(new ParameterGen(parameters, parameters.Count + 1, type, 0, name, false));
-            return typedThis;
+            _parameters.AddUnchecked(new ParameterGen(_parameters, _parameters.Count + 1, type, 0, name, false));
+            return TypedThis;
         }
 
         public T Parameter(Type type, string name)
         {
             BeginParameter(type, name);
-            return typedThis;
+            return TypedThis;
         }
 
         internal T CopyParameters(IList<ParameterGen> parameters)
         {
             for (int i = 0; i < parameters.Count; i++)
-                this.parameters.Add(parameters[i]);
+                this._parameters.Add(parameters[i]);
 
-            return typedThis;
+            return TypedThis;
         }
 
         internal T LockSignature()
         {
-            if (!signatureComplete)
+            if (!_signatureComplete)
             {
-                signatureComplete = true;
-                parameters.Lock();
+                _signatureComplete = true;
+                _parameters.Lock();
                 OnParametersLocked();
 
-                if (returnParameter != null)
-                    returnParameter.Complete(this);
+                if (_returnParameter != null)
+                    _returnParameter.Complete(this);
 
-                foreach (ParameterGen pgen in parameters)
+                foreach (ParameterGen pgen in _parameters)
                 {
                     if (pgen != null)
                         pgen.Complete(this);
@@ -157,7 +157,7 @@ namespace TriAxis.RunSharp
                 OnParametersCompleted();
             }
 
-            return typedThis;
+            return TypedThis;
         }
         #endregion
 
@@ -176,7 +176,7 @@ namespace TriAxis.RunSharp
 
         ParameterGen ISignatureGen.GetParameterByName(string name)
         {
-            foreach (ParameterGen pg in parameters)
+            foreach (ParameterGen pg in _parameters)
             {
                 if (pg.Name == name)
                     return pg;

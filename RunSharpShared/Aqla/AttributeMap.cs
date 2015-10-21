@@ -195,15 +195,15 @@ namespace TriAxis.RunSharp
         {
             public override object Target
             {
-                get { return attribute; }
+                get { return _attribute; }
             }
             public override Type AttributeType
             {
-                get { return attribute.GetType(); }
+                get { return _attribute.GetType(); }
             }
             public override bool TryGet(string key, bool publicOnly, out object value)
             {
-                MemberInfo[] members = Helpers.GetInstanceFieldsAndProperties(attribute.GetType(), publicOnly);
+                MemberInfo[] members = Helpers.GetInstanceFieldsAndProperties(_attribute.GetType(), publicOnly);
                 foreach (MemberInfo member in members)
                 {
 #if FX11
@@ -214,12 +214,12 @@ namespace TriAxis.RunSharp
                     {
                         PropertyInfo prop = member as PropertyInfo;
                         if (prop != null) {
-                            value = Helpers.GetPropertyValue(prop, attribute);
+                            value = Helpers.GetPropertyValue(prop, _attribute);
                             return true;
                         }
                         FieldInfo field = member as FieldInfo;
                         if (field != null) {
-                            value = field.GetValue(attribute);
+                            value = field.GetValue(_attribute);
                             return true;
                         }
 
@@ -229,10 +229,10 @@ namespace TriAxis.RunSharp
                 value = null;
                 return false;
             }
-            private readonly Attribute attribute;
+            private readonly Attribute _attribute;
             public ReflectionAttributeMap(Attribute attribute)
             {
-                this.attribute = attribute;
+                this._attribute = attribute;
             }
         }
 #endif

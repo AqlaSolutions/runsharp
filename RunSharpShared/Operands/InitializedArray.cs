@@ -43,25 +43,25 @@ namespace TriAxis.RunSharp.Operands
 {
 	class InitializedArray : Operand
 	{
-		Type type;
-		Operand[] elements;
+		Type _type;
+		Operand[] _elements;
 
 		public InitializedArray(Type type, Operand[] elements)
 		{
-			this.type = type;
-			this.elements = elements;
+			this._type = type;
+			this._elements = elements;
 		}
 
 		internal override void EmitGet(CodeGen g)
 		{
-			g.EmitI4Helper(elements.Length);
-			g.IL.Emit(OpCodes.Newarr, type);
+			g.EmitI4Helper(_elements.Length);
+			g.IL.Emit(OpCodes.Newarr, _type);
 
-			for (int i = 0; i < elements.Length; i++)
+			for (int i = 0; i < _elements.Length; i++)
 			{
 				g.IL.Emit(OpCodes.Dup);
 				g.EmitI4Helper(i);
-				g.EmitStelemHelper(type, elements[i], false);
+				g.EmitStelemHelper(_type, _elements[i], false);
 			}
 		}
 		
@@ -69,7 +69,7 @@ namespace TriAxis.RunSharp.Operands
 		{
 			get
 			{
-				return type.MakeArrayType();
+				return _type.MakeArrayType();
 			}
 		}
 	}

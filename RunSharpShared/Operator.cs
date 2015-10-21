@@ -53,88 +53,88 @@ namespace TriAxis.RunSharp
 		internal delegate IEnumerable<IMemberInfo> StandardCandidateProvider(Operand[] operands);
 
 		#region Standard operations
-		static IMemberInfo[] stdPlusOperators = {
+		static IMemberInfo[] _stdPlusOperators = {
 			UnaryOp<int>.Instance, UnaryOp<uint>.Instance, UnaryOp<long>.Instance, UnaryOp<ulong>.Instance, 
 			UnaryOp<float>.Instance, UnaryOp<double>.Instance
 		};
 
-		static IMemberInfo[] stdMinusOperators = {
+		static IMemberInfo[] _stdMinusOperators = {
 			UnaryOp<int>.Instance, UnaryOp<long>.Instance, UnaryOp<float>.Instance, UnaryOp<double>.Instance
 		};
 
-		static IMemberInfo[] stdNotOperators = {
+		static IMemberInfo[] _stdNotOperators = {
 			UnaryOp<int>.Instance, UnaryOp<uint>.Instance, UnaryOp<long>.Instance, UnaryOp<ulong>.Instance,
 		};
 
-		static SpecificOperatorProvider[] stdNotTemplates = {
+		static SpecificOperatorProvider[] _stdNotTemplates = {
 			UnaryEnumSpecific
 		};
 
-		static IMemberInfo[] stdUnaryBoolOperators = {
+		static IMemberInfo[] _stdUnaryBoolOperators = {
 			UnaryOp<bool>.Instance
 		};
 
-		static IMemberInfo[] stdIncOperators = {
+		static IMemberInfo[] _stdIncOperators = {
 			IncOp<sbyte>.Instance, IncOp<byte>.Instance, IncOp<short>.Instance, IncOp<ushort>.Instance,
 			IncOp<int>.Instance, IncOp<uint>.Instance, IncOp<long>.Instance, IncOp<ulong>.Instance,
 			IncOp<char>.Instance, IncOp<float>.Instance, IncOp<double>.Instance
 		};
 
-		static SpecificOperatorProvider[] stdIncTemplates = {
+		static SpecificOperatorProvider[] _stdIncTemplates = {
 			IncEnumSpecific
 		};
 
-		static IMemberInfo[] stdAddOperators = {
+		static IMemberInfo[] _stdAddOperators = {
 			SameOp<int>.Instance, SameOp<uint>.Instance, SameOp<long>.Instance, SameOp<ulong>.Instance, SameOp<float>.Instance, SameOp<double>.Instance,
 			StringConcatOp<string, string>.Instance, StringConcatOp<string, object>.Instance, StringConcatOp<object, string>.Instance
 		};
 
-		static SpecificOperatorProvider[] stdAddTemplates = {
+		static SpecificOperatorProvider[] _stdAddTemplates = {
 			AddEnumSpecific, AddDelegateSpecific
 		};
 
-		static IMemberInfo[] stdSubOperators = {
+		static IMemberInfo[] _stdSubOperators = {
 			SameOp<int>.Instance, SameOp<uint>.Instance, SameOp<long>.Instance, SameOp<ulong>.Instance, SameOp<float>.Instance, SameOp<double>.Instance
 		};
 
-		static SpecificOperatorProvider[] stdSubTemplates = {
+		static SpecificOperatorProvider[] _stdSubTemplates = {
 			SubEnumSpecific, SubDelegateSpecific
 		};
 
-		static IMemberInfo[] stdArithOperators = {
+		static IMemberInfo[] _stdArithOperators = {
 			SameOp<int>.Instance, SameOp<uint>.Instance, SameOp<long>.Instance, SameOp<ulong>.Instance, SameOp<float>.Instance, SameOp<double>.Instance
 		};
 
-		static IMemberInfo[] stdBitOperators = {
+		static IMemberInfo[] _stdBitOperators = {
 			SameOp<bool>.Instance, SameOp<int>.Instance, SameOp<uint>.Instance, SameOp<long>.Instance, SameOp<ulong>.Instance
 		};
 
-		static SpecificOperatorProvider[] stdBitTemplates = {
+		static SpecificOperatorProvider[] _stdBitTemplates = {
 			BitEnumSpecific
 		};
 
-		static IMemberInfo[] stdShiftOperators = {
+		static IMemberInfo[] _stdShiftOperators = {
 			ShiftOp<int>.Instance, ShiftOp<uint>.Instance, ShiftOp<long>.Instance, ShiftOp<ulong>.Instance
 		};
 
-		static IMemberInfo[] stdEqOperators = {
+		static IMemberInfo[] _stdEqOperators = {
 			CmpOp<bool>.Instance, CmpOp<int>.Instance, CmpOp<uint>.Instance, CmpOp<long>.Instance, CmpOp<ulong>.Instance, CmpOp<float>.Instance, CmpOp<double>.Instance,
 			CmpOp<object>.Instance
 		};
 
-		static SpecificOperatorProvider[] stdEqTemplates = {
+		static SpecificOperatorProvider[] _stdEqTemplates = {
 			CmpEnumSpecific
 		};
 
-		static IMemberInfo[] stdCmpOperators = {
+		static IMemberInfo[] _stdCmpOperators = {
 			CmpOp<int>.Instance, CmpOp<uint>.Instance, CmpOp<long>.Instance, CmpOp<ulong>.Instance, CmpOp<float>.Instance, CmpOp<double>.Instance
 		};
 
-		static SpecificOperatorProvider[] stdCmpTemplates = {
+		static SpecificOperatorProvider[] _stdCmpTemplates = {
 			CmpEnumSpecific
 		};
 
-		static IMemberInfo[] stdNone = { };
+		static IMemberInfo[] _stdNone = { };
 
 		sealed class UnaryOp<T> : StdOp
 		{
@@ -147,7 +147,7 @@ namespace TriAxis.RunSharp
 			Type t = Operand.GetType(args[0]);
 
 			if (t == null || !t.IsEnum)
-				return stdNone;
+				return _stdNone;
 
 			return new IMemberInfo[] { new StdOp(t, t) };
 		}
@@ -160,24 +160,24 @@ namespace TriAxis.RunSharp
 
 		class IncOp : StdOp
 		{
-			OpCode convCode;
+			OpCode _convCode;
 
 			public IncOp(Type t) : base(t, t)
 			{
 				switch (Type.GetTypeCode(t))
 				{
 					case TypeCode.Single:
-						convCode = OpCodes.Conv_R4;
+						_convCode = OpCodes.Conv_R4;
 						break;
 					case TypeCode.Double:
-						convCode = OpCodes.Conv_R8;
+						_convCode = OpCodes.Conv_R8;
 						break;
 					case TypeCode.Int64:
 					case TypeCode.UInt64:
-						convCode = OpCodes.Conv_I8;
+						_convCode = OpCodes.Conv_I8;
 						break;
 					default:
-						convCode = OpCodes.Nop;
+						_convCode = OpCodes.Nop;
 						break;
 				}
 			}
@@ -185,8 +185,8 @@ namespace TriAxis.RunSharp
 			public override void Emit(CodeGen g, Operator op)
 			{
 				g.IL.Emit(OpCodes.Ldc_I4_1);
-				if (convCode != OpCodes.Nop)
-					g.IL.Emit(convCode);
+				if (_convCode != OpCodes.Nop)
+					g.IL.Emit(_convCode);
 
 				base.Emit(g, op);
 			}
@@ -197,7 +197,7 @@ namespace TriAxis.RunSharp
 			Type t = Operand.GetType(args[0]);
 
 			if (t == null || !t.IsEnum)
-				return stdNone;
+				return _stdNone;
 
 			return new IMemberInfo[] { new IncOp(t) };
 		}
@@ -213,7 +213,7 @@ namespace TriAxis.RunSharp
 			Type t1 = Operand.GetType(args[0]), t2 = Operand.GetType(args[1]);
 
 			if (t1 == null || t2 == null || t1.IsEnum == t2.IsEnum)	// if none or both types are enum, no operator can be valid
-				return stdNone;
+				return _stdNone;
 
 			Type e = t1.IsEnum ? t1 : t2;
 
@@ -226,7 +226,7 @@ namespace TriAxis.RunSharp
 			Type t1 = Operand.GetType(args[0]), t2 = Operand.GetType(args[1]);
 
 			if (t1 != t2 || t1 == null || !t1.IsSubclassOf(typeof(Delegate)))	// if the types are not the same, no operator can be valid
-				return stdNone;
+				return _stdNone;
 
 			return new IMemberInfo[] { new DelegateCombineOp(t1) };
 		}
@@ -234,11 +234,11 @@ namespace TriAxis.RunSharp
 		sealed class DelegateCombineOp : StdOp
 		{
 			public DelegateCombineOp(Type t) : base(t, t, t) { }
-			static MethodInfo miCombine = typeof(Delegate).GetMethod("Combine", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(Delegate), typeof(Delegate) }, null);
+			static MethodInfo _miCombine = typeof(Delegate).GetMethod("Combine", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(Delegate), typeof(Delegate) }, null);
 
 			public override void Emit(CodeGen g, Operator op)
 			{
-				g.IL.Emit(OpCodes.Call, miCombine);
+				g.IL.Emit(OpCodes.Call, _miCombine);
 				g.IL.Emit(OpCodes.Castclass, ReturnType);
 			}
 		}
@@ -248,7 +248,7 @@ namespace TriAxis.RunSharp
 			Type t1 = Operand.GetType(args[0]), t2 = Operand.GetType(args[1]);
 
 			if (t1 == null || t2 == null || !t1.IsEnum || (t2.IsEnum && t2 != t1))	// if the types are not the same, no operator can be valid
-				return stdNone;
+				return _stdNone;
 
 			Type e = t1;
             Type u = Helpers.GetEnumEnderlyingType(e);
@@ -260,7 +260,7 @@ namespace TriAxis.RunSharp
 			Type t1 = Operand.GetType(args[0]), t2 = Operand.GetType(args[1]);
 
 			if (t1 != t2 || t1 == null || !t1.IsSubclassOf(typeof(Delegate)))	// if the types are not the same, no operator can be valid
-				return stdNone;
+				return _stdNone;
 
 			return new IMemberInfo[] { new DelegateRemoveOp(t1) };
 		}
@@ -268,11 +268,11 @@ namespace TriAxis.RunSharp
 		sealed class DelegateRemoveOp : StdOp
 		{
 			public DelegateRemoveOp(Type t) : base(t, t, t) { }
-			static MethodInfo miRemove = typeof(Delegate).GetMethod("Remove", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(Delegate), typeof(Delegate) }, null);
+			static MethodInfo _miRemove = typeof(Delegate).GetMethod("Remove", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(Delegate), typeof(Delegate) }, null);
 
 			public override void Emit(CodeGen g, Operator op)
 			{
-				g.IL.Emit(OpCodes.Call, miRemove);
+				g.IL.Emit(OpCodes.Call, _miRemove);
 				g.IL.Emit(OpCodes.Castclass, ReturnType);
 			}
 		}
@@ -281,15 +281,15 @@ namespace TriAxis.RunSharp
 		{
 			public static readonly StringConcatOp<T1, T2> Instance = new StringConcatOp<T1, T2>();
 
-			MethodInfo method;
+			MethodInfo _method;
 			private StringConcatOp() : base(typeof(string), typeof(T1), typeof(T2))
 			{
-				method = typeof(string).GetMethod("Concat", BindingFlags.Public | BindingFlags.Static, null, ParameterTypes, null);
+				_method = typeof(string).GetMethod("Concat", BindingFlags.Public | BindingFlags.Static, null, ParameterTypes, null);
 			}
 
 			public override void Emit(CodeGen g, Operator op)
 			{
-				g.IL.Emit(OpCodes.Call, method);
+				g.IL.Emit(OpCodes.Call, _method);
 			}
 		}
 
@@ -298,7 +298,7 @@ namespace TriAxis.RunSharp
 			Type t1 = Operand.GetType(args[0]), t2 = Operand.GetType(args[1]);
 
 			if (t1 != t2 || t1 == null || !t1.IsEnum)	// if both types are not the same enum, no operator can be valid
-				return stdNone;
+				return _stdNone;
 
 			return new IMemberInfo[] { new StdOp(t1, t1, t1) };
 		}
@@ -321,33 +321,33 @@ namespace TriAxis.RunSharp
 				: base(typeof(bool), typeof(T), typeof(T))
 			{
 				// unsigned is calculated from return type by default
-				unsigned = IsUnsigned(typeof(T));
+				Unsigned = IsUnsigned(typeof(T));
 			}
 		}
 
 		static IMemberInfo[] CmpEnumSpecific(Operand[] args)
 		{
 			if ((object)args[0] == null || (object)args[1] == null)	// if any of the operands is null, it can't be an enum
-				return stdNone;
+				return _stdNone;
 
 			Type t1 = args[0].Type, t2 = args[1].Type;
 
 			if (t1 != t2 || t1 == null || !t1.IsEnum)	// if both types are not the same enum, no operator can be valid
-				return stdNone;
+				return _stdNone;
 
 			return new IMemberInfo[] { new StdOp(typeof(bool), t1, t1) };
 		}
 
 		class StdOp : IMemberInfo, IStandardOperation
 		{
-			Type retType;
-			Type[] opTypes;
-			protected bool unsigned;
+			Type _retType;
+			Type[] _opTypes;
+			protected bool Unsigned;
 
 			public StdOp(Type returnType, params Type[] opTypes)
 			{
-				this.retType = returnType; this.opTypes = opTypes;
-				unsigned = IsUnsigned(returnType);
+				this._retType = returnType; this._opTypes = opTypes;
+				Unsigned = IsUnsigned(returnType);
 			}
 
 			protected static bool IsUnsigned(Type t)
@@ -366,7 +366,7 @@ namespace TriAxis.RunSharp
 				}
 			}
 
-			bool IStandardOperation.IsUnsigned { get { return unsigned; } }
+			bool IStandardOperation.IsUnsigned { get { return Unsigned; } }
 
 #region IMemberInfo Members
 
@@ -382,12 +382,12 @@ namespace TriAxis.RunSharp
 
 			public Type ReturnType
 			{
-				get { return retType; }
+				get { return _retType; }
 			}
 
 			public Type[] ParameterTypes
 			{
-				get { return opTypes; }
+				get { return _opTypes; }
 			}
 
 			public bool IsParameterArray
@@ -411,10 +411,10 @@ namespace TriAxis.RunSharp
 
 			public virtual void Emit(CodeGen g, Operator op)
 			{
-				if (op.opCode != OpCodes.Nop)
-					g.IL.Emit(unsigned ? op.opCodeUn : op.opCode);
+				if (op.OpCode != OpCodes.Nop)
+					g.IL.Emit(Unsigned ? op.OpCodeUn : op.OpCode);
 
-				if (op.invertOpResult)
+				if (op.InvertOpResult)
 				{
 					g.IL.Emit(OpCodes.Ldc_I4_0);
 					g.IL.Emit(OpCodes.Ceq);
@@ -428,115 +428,115 @@ namespace TriAxis.RunSharp
 #endregion
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "The type is immutable")]
-		public static readonly Operator Plus = new Operator(OpCodes.Nop, false, 0, "UnaryPlus", stdPlusOperators, null);
+		public static readonly Operator Plus = new Operator(OpCodes.Nop, false, 0, "UnaryPlus", _stdPlusOperators, null);
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "The type is immutable")]
-		public static readonly Operator Minus = new Operator(OpCodes.Neg, false, 0, "UnaryMinus", stdMinusOperators, null);
+		public static readonly Operator Minus = new Operator(OpCodes.Neg, false, 0, "UnaryMinus", _stdMinusOperators, null);
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "The type is immutable")]
-		public static readonly Operator LogicalNot = new Operator(OpCodes.Nop, true, BranchInstruction.False, "LogicalNot", stdUnaryBoolOperators, null);
+		public static readonly Operator LogicalNot = new Operator(OpCodes.Nop, true, BranchInstruction.False, "LogicalNot", _stdUnaryBoolOperators, null);
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "The type is immutable")]
-		public static readonly Operator Not = new Operator(OpCodes.Not, false, 0, "OnesComplement", stdNotOperators, stdNotTemplates);
+		public static readonly Operator Not = new Operator(OpCodes.Not, false, 0, "OnesComplement", _stdNotOperators, _stdNotTemplates);
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "The type is immutable")]
-		public static readonly Operator Increment = new Operator(OpCodes.Add, OpCodes.Add, OpCodes.Add_Ovf, OpCodes.Add_Ovf_Un, false, 0, "Increment", stdIncOperators, stdIncTemplates);
+		public static readonly Operator Increment = new Operator(OpCodes.Add, OpCodes.Add, OpCodes.Add_Ovf, OpCodes.Add_Ovf_Un, false, 0, "Increment", _stdIncOperators, _stdIncTemplates);
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "The type is immutable")]
-		public static readonly Operator Decrement = new Operator(OpCodes.Sub, OpCodes.Sub, OpCodes.Sub_Ovf, OpCodes.Sub_Ovf_Un, false, 0, "Decrement", stdIncOperators, stdIncTemplates);
+		public static readonly Operator Decrement = new Operator(OpCodes.Sub, OpCodes.Sub, OpCodes.Sub_Ovf, OpCodes.Sub_Ovf_Un, false, 0, "Decrement", _stdIncOperators, _stdIncTemplates);
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "The type is immutable")]
-		public static readonly Operator True = new Operator(OpCodes.Nop, false, BranchInstruction.True, "True", stdUnaryBoolOperators, null);
+		public static readonly Operator True = new Operator(OpCodes.Nop, false, BranchInstruction.True, "True", _stdUnaryBoolOperators, null);
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "The type is immutable")]
-		public static readonly Operator False = new Operator(OpCodes.Nop, true, BranchInstruction.False, "False", stdUnaryBoolOperators, null);
+		public static readonly Operator False = new Operator(OpCodes.Nop, true, BranchInstruction.False, "False", _stdUnaryBoolOperators, null);
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "The type is immutable")]
-		public static readonly Operator Add = new Operator(OpCodes.Add, OpCodes.Add, OpCodes.Add_Ovf, OpCodes.Add_Ovf_Un, false, 0, "Addition", stdAddOperators, stdAddTemplates);
+		public static readonly Operator Add = new Operator(OpCodes.Add, OpCodes.Add, OpCodes.Add_Ovf, OpCodes.Add_Ovf_Un, false, 0, "Addition", _stdAddOperators, _stdAddTemplates);
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "The type is immutable")]
-		public static readonly Operator Subtract = new Operator(OpCodes.Sub, OpCodes.Sub, OpCodes.Sub_Ovf, OpCodes.Sub_Ovf_Un, false, 0, "Subtraction", stdSubOperators, stdSubTemplates);
+		public static readonly Operator Subtract = new Operator(OpCodes.Sub, OpCodes.Sub, OpCodes.Sub_Ovf, OpCodes.Sub_Ovf_Un, false, 0, "Subtraction", _stdSubOperators, _stdSubTemplates);
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "The type is immutable")]
-		public static readonly Operator Multiply = new Operator(OpCodes.Mul, OpCodes.Mul, OpCodes.Mul_Ovf, OpCodes.Mul_Ovf_Un, false, 0, "Multiply", stdArithOperators, null);
+		public static readonly Operator Multiply = new Operator(OpCodes.Mul, OpCodes.Mul, OpCodes.Mul_Ovf, OpCodes.Mul_Ovf_Un, false, 0, "Multiply", _stdArithOperators, null);
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "The type is immutable")]
-		public static readonly Operator Divide = new Operator(OpCodes.Div, OpCodes.Div_Un, false, 0, "Division", stdArithOperators, null);
+		public static readonly Operator Divide = new Operator(OpCodes.Div, OpCodes.Div_Un, false, 0, "Division", _stdArithOperators, null);
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "The type is immutable")]
-		public static readonly Operator Modulus = new Operator(OpCodes.Rem, OpCodes.Rem_Un, false, 0, "Modulus", stdArithOperators, null);
+		public static readonly Operator Modulus = new Operator(OpCodes.Rem, OpCodes.Rem_Un, false, 0, "Modulus", _stdArithOperators, null);
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "The type is immutable")]
-		public static readonly Operator And = new Operator(OpCodes.And, false, 0, "BitwiseAnd", stdBitOperators, stdBitTemplates);
+		public static readonly Operator And = new Operator(OpCodes.And, false, 0, "BitwiseAnd", _stdBitOperators, _stdBitTemplates);
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "The type is immutable")]
-		public static readonly Operator Or = new Operator(OpCodes.Or, false, 0, "BitwiseOr", stdBitOperators, stdBitTemplates);
+		public static readonly Operator Or = new Operator(OpCodes.Or, false, 0, "BitwiseOr", _stdBitOperators, _stdBitTemplates);
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "The type is immutable")]
-		public static readonly Operator Xor = new Operator(OpCodes.Xor, false, 0, "ExclusiveOr", stdBitOperators, stdBitTemplates);
+		public static readonly Operator Xor = new Operator(OpCodes.Xor, false, 0, "ExclusiveOr", _stdBitOperators, _stdBitTemplates);
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "The type is immutable")]
-		public static readonly Operator LeftShift = new Operator(OpCodes.Shl, false, 0, "LeftShift", stdShiftOperators, null);
+		public static readonly Operator LeftShift = new Operator(OpCodes.Shl, false, 0, "LeftShift", _stdShiftOperators, null);
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "The type is immutable")]
-		public static readonly Operator RightShift = new Operator(OpCodes.Shr, OpCodes.Shr_Un, false, 0, "RightShift", stdShiftOperators, null);
+		public static readonly Operator RightShift = new Operator(OpCodes.Shr, OpCodes.Shr_Un, false, 0, "RightShift", _stdShiftOperators, null);
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "The type is immutable")]
-		public static readonly Operator Equality = new Operator(OpCodes.Ceq, false, BranchInstruction.Eq, "Equality", stdEqOperators, stdEqTemplates);
+		public static readonly Operator Equality = new Operator(OpCodes.Ceq, false, BranchInstruction.Eq, "Equality", _stdEqOperators, _stdEqTemplates);
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "The type is immutable")]
-		public static readonly Operator Inequality = new Operator(OpCodes.Ceq, true, BranchInstruction.Ne, "Inequality", stdEqOperators, stdEqTemplates);
+		public static readonly Operator Inequality = new Operator(OpCodes.Ceq, true, BranchInstruction.Ne, "Inequality", _stdEqOperators, _stdEqTemplates);
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "The type is immutable")]
-		public static readonly Operator LessThan = new Operator(OpCodes.Clt, OpCodes.Clt_Un, false, BranchInstruction.Lt, "LessThan", stdCmpOperators, stdCmpTemplates);
+		public static readonly Operator LessThan = new Operator(OpCodes.Clt, OpCodes.Clt_Un, false, BranchInstruction.Lt, "LessThan", _stdCmpOperators, _stdCmpTemplates);
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "The type is immutable")]
-		public static readonly Operator LessThanOrEqual = new Operator(OpCodes.Cgt, OpCodes.Cgt_Un, true, BranchInstruction.Le, "LessThanOrEqual", stdCmpOperators, stdCmpTemplates);
+		public static readonly Operator LessThanOrEqual = new Operator(OpCodes.Cgt, OpCodes.Cgt_Un, true, BranchInstruction.Le, "LessThanOrEqual", _stdCmpOperators, _stdCmpTemplates);
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "The type is immutable")]
-		public static readonly Operator GreaterThan = new Operator(OpCodes.Cgt, OpCodes.Cgt_Un, false, BranchInstruction.Gt, "GreaterThan", stdCmpOperators, stdCmpTemplates);
+		public static readonly Operator GreaterThan = new Operator(OpCodes.Cgt, OpCodes.Cgt_Un, false, BranchInstruction.Gt, "GreaterThan", _stdCmpOperators, _stdCmpTemplates);
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "The type is immutable")]
-		public static readonly Operator GreaterThanOrEqual = new Operator(OpCodes.Clt, OpCodes.Clt_Un, true, BranchInstruction.Ge, "GreaterThanOrEqual", stdCmpOperators, stdCmpTemplates);
+		public static readonly Operator GreaterThanOrEqual = new Operator(OpCodes.Clt, OpCodes.Clt_Un, true, BranchInstruction.Ge, "GreaterThanOrEqual", _stdCmpOperators, _stdCmpTemplates);
 
-		internal readonly OpCode opCode, opCodeUn;
+		internal readonly OpCode OpCode, OpCodeUn;
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "Prepared for future use")]
-		internal readonly OpCode opCodeChk, opCodeChkUn;
-		internal readonly bool invertOpResult;
-		internal readonly BranchInstruction branchOp;
-		internal readonly string methodName;
-		readonly IMemberInfo[] standardCandidates;
-		readonly SpecificOperatorProvider[] standardTemplates;
+		internal readonly OpCode OpCodeChk, OpCodeChkUn;
+		internal readonly bool InvertOpResult;
+		internal readonly BranchInstruction BranchOp;
+		internal readonly string MethodName;
+		readonly IMemberInfo[] _standardCandidates;
+		readonly SpecificOperatorProvider[] _standardTemplates;
 
 		private Operator(OpCode opCode, bool invertOpResult, BranchInstruction branchOp, string methodName, IMemberInfo[] standardCandidates, SpecificOperatorProvider[] standardTemplates)
 		{
-			this.opCode = this.opCodeUn = this.opCodeChk = this.opCodeChkUn = opCode;
-			this.invertOpResult = invertOpResult;
-			this.branchOp = branchOp;
-			this.methodName = methodName;
-			this.standardCandidates = standardCandidates;
-			this.standardTemplates = standardTemplates;
+			this.OpCode = this.OpCodeUn = this.OpCodeChk = this.OpCodeChkUn = opCode;
+			this.InvertOpResult = invertOpResult;
+			this.BranchOp = branchOp;
+			this.MethodName = methodName;
+			this._standardCandidates = standardCandidates;
+			this._standardTemplates = standardTemplates;
 		}
 
 		private Operator(OpCode opCode, OpCode opCodeUn, bool invertOpResult, BranchInstruction branchOp, string methodName, IMemberInfo[] standardCandidates, SpecificOperatorProvider[] standardTemplates)
 		{
-			this.opCode = this.opCodeChk = opCode;
-			this.opCodeUn = this.opCodeChkUn = opCodeUn;
-			this.invertOpResult = invertOpResult;
-			this.branchOp = branchOp;
-			this.methodName = methodName;
-			this.standardCandidates = standardCandidates;
-			this.standardTemplates = standardTemplates;
+			this.OpCode = this.OpCodeChk = opCode;
+			this.OpCodeUn = this.OpCodeChkUn = opCodeUn;
+			this.InvertOpResult = invertOpResult;
+			this.BranchOp = branchOp;
+			this.MethodName = methodName;
+			this._standardCandidates = standardCandidates;
+			this._standardTemplates = standardTemplates;
 		}
 
 		private Operator(OpCode opCode, OpCode opCodeUn, OpCode opCodeChk, OpCode opCodeChkUn, bool invertOpResult, BranchInstruction branchOp, string methodName, IMemberInfo[] standardCandidates, SpecificOperatorProvider[] standardTemplates)
 		{
-			this.opCode = opCode;
-			this.opCodeUn = opCodeUn;
-			this.opCodeChk = opCodeChk;
-			this.opCodeChkUn = opCodeChkUn;
-			this.invertOpResult = invertOpResult;
-			this.branchOp = branchOp;
-			this.methodName = methodName;
-			this.standardCandidates = standardCandidates;
-			this.standardTemplates = standardTemplates;
+			this.OpCode = opCode;
+			this.OpCodeUn = opCodeUn;
+			this.OpCodeChk = opCodeChk;
+			this.OpCodeChkUn = opCodeChkUn;
+			this.InvertOpResult = invertOpResult;
+			this.BranchOp = branchOp;
+			this.MethodName = methodName;
+			this._standardCandidates = standardCandidates;
+			this._standardTemplates = standardTemplates;
 		}
 
 		internal IEnumerable<IMemberInfo> GetStandardCandidates(params Operand[] args)
 		{
-			if (standardTemplates == null)
-				return standardCandidates;
+			if (_standardTemplates == null)
+				return _standardCandidates;
 			else
 				return GetStandardCandidatesT(args);
 		}
 
 		IEnumerable<IMemberInfo> GetStandardCandidatesT(Operand[] args)
 		{
-			foreach (IMemberInfo op in standardCandidates)
+			foreach (IMemberInfo op in _standardCandidates)
 				yield return op;
 
-			foreach (SpecificOperatorProvider tpl in standardTemplates)
+			foreach (SpecificOperatorProvider tpl in _standardTemplates)
 			{
 				foreach (IMemberInfo inst in tpl(args))
 					yield return inst;
@@ -547,7 +547,7 @@ namespace TriAxis.RunSharp
 		{
 			List<Type> usedTypes = new List<Type>();
 			List<ApplicableFunction> candidates = null;
-			string name = "op_" + methodName;
+			string name = "op_" + MethodName;
 			bool expandedCandidates = false;
 
 			foreach (Operand arg in args)

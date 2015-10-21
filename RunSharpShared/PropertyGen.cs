@@ -43,69 +43,69 @@ namespace TriAxis.RunSharp
 {
 	public sealed class PropertyGen : Operand, IMemberInfo, IDelayedCompletion
 	{
-		TypeGen owner;
-		MethodAttributes attrs;
-		Type type;
-		string name;
-		ParameterGenCollection indexParameters = new ParameterGenCollection();
-		PropertyBuilder pb;
-		Type interfaceType;
-		List<AttributeGen> customAttributes;
+		TypeGen _owner;
+		MethodAttributes _attrs;
+		Type _type;
+		string _name;
+		ParameterGenCollection _indexParameters = new ParameterGenCollection();
+		PropertyBuilder _pb;
+		Type _interfaceType;
+		List<AttributeGen> _customAttributes;
 
-		MethodGen getter, setter;
+		MethodGen _getter, _setter;
 
 		internal PropertyGen(TypeGen owner, MethodAttributes attrs, Type type, string name)
 		{
-			this.owner = owner;
-			this.attrs = attrs;
-			this.type = type;
-			this.name = name;
+			this._owner = owner;
+			this._attrs = attrs;
+			this._type = type;
+			this._name = name;
 		}
 
 		void LockSignature()
 		{
-			if (pb == null)
+			if (_pb == null)
 			{
-				indexParameters.Lock();
+				_indexParameters.Lock();
 
-				pb = owner.TypeBuilder.DefineProperty(interfaceType == null ? name : interfaceType.FullName + "." + name, PropertyAttributes.None, type, indexParameters.TypeArray);
-				owner.RegisterForCompletion(this);
+				_pb = _owner.TypeBuilder.DefineProperty(_interfaceType == null ? _name : _interfaceType.FullName + "." + _name, PropertyAttributes.None, _type, _indexParameters.TypeArray);
+				_owner.RegisterForCompletion(this);
 			}
 		}
 
 		internal Type ImplementedInterface
 		{
-			get { return interfaceType; }
-			set { interfaceType = value; }
+			get { return _interfaceType; }
+			set { _interfaceType = value; }
 		}
 
 		public MethodGen Getter()
 		{
-			if (getter == null)
+			if (_getter == null)
 			{
 				LockSignature();
-				getter = new MethodGen(owner, "get_" + name, attrs | MethodAttributes.SpecialName, type, 0);
-				getter.ImplementedInterface = interfaceType;
-				getter.CopyParameters(indexParameters);
-				pb.SetGetMethod(getter.GetMethodBuilder());
+				_getter = new MethodGen(_owner, "get_" + _name, _attrs | MethodAttributes.SpecialName, _type, 0);
+				_getter.ImplementedInterface = _interfaceType;
+				_getter.CopyParameters(_indexParameters);
+				_pb.SetGetMethod(_getter.GetMethodBuilder());
 			}
 
-			return getter;
+			return _getter;
 		}
 
 		public MethodGen Setter()
 		{
-			if (setter == null)
+			if (_setter == null)
 			{
 				LockSignature();
-				setter = new MethodGen(owner, "set_" + name, attrs | MethodAttributes.SpecialName, typeof(void), 0);
-				setter.ImplementedInterface = interfaceType;
-				setter.CopyParameters(indexParameters);
-				setter.UncheckedParameter(type, "value");
-				pb.SetSetMethod(setter.GetMethodBuilder());
+				_setter = new MethodGen(_owner, "set_" + _name, _attrs | MethodAttributes.SpecialName, typeof(void), 0);
+				_setter.ImplementedInterface = _interfaceType;
+				_setter.CopyParameters(_indexParameters);
+				_setter.UncheckedParameter(_type, "value");
+				_pb.SetSetMethod(_setter.GetMethodBuilder());
 			}
 
-			return setter;
+			return _setter;
 		}
 
 		#region Custom Attributes
@@ -129,7 +129,7 @@ namespace TriAxis.RunSharp
 
 		public AttributeGen<PropertyGen> BeginAttribute(AttributeType type, params object[] args)
 		{
-			return AttributeGen<PropertyGen>.CreateAndAdd(this, ref customAttributes, AttributeTargets.Property, type, args);
+			return AttributeGen<PropertyGen>.CreateAndAdd(this, ref _customAttributes, AttributeTargets.Property, type, args);
 		}
 
 		#endregion
@@ -137,8 +137,8 @@ namespace TriAxis.RunSharp
 		#region Index parameter definition
 		public ParameterGen BeginIndex(Type type, string name)
 		{
-			ParameterGen pgen = new ParameterGen(indexParameters, indexParameters.Count + 1, type, 0, name, false);
-			indexParameters.Add(pgen);
+			ParameterGen pgen = new ParameterGen(_indexParameters, _indexParameters.Count + 1, type, 0, name, false);
+			_indexParameters.Add(pgen);
 			return pgen;
 		}
 
@@ -149,65 +149,65 @@ namespace TriAxis.RunSharp
 		}
 		#endregion
 
-		public bool IsAbstract { get { return (attrs & MethodAttributes.Abstract) != 0; } }
-		public bool IsOverride { get { return Utils.IsOverride(attrs); } }
-		public bool IsStatic { get { return (attrs & MethodAttributes.Static) != 0; } }
+		public bool IsAbstract { get { return (_attrs & MethodAttributes.Abstract) != 0; } }
+		public bool IsOverride { get { return Utils.IsOverride(_attrs); } }
+		public bool IsStatic { get { return (_attrs & MethodAttributes.Static) != 0; } }
 
-		public string Name { get { return name; } }
+		public string Name { get { return _name; } }
 
 		internal override void EmitGet(CodeGen g)
 		{
-			if (getter == null)
+			if (_getter == null)
 				base.EmitGet(g);
 
-			if (indexParameters.Count != 0)
+			if (_indexParameters.Count != 0)
 				throw new InvalidOperationException(Properties.Messages.ErrMissingPropertyIndex);
 
-			if (!IsStatic && (g.Context.IsStatic || g.Context.OwnerType != owner.TypeBuilder))
+			if (!IsStatic && (g.Context.IsStatic || g.Context.OwnerType != _owner.TypeBuilder))
 				throw new InvalidOperationException(Properties.Messages.ErrInvalidPropertyContext);
 
 			g.IL.Emit(OpCodes.Ldarg_0);
-			g.EmitCallHelper(getter.GetMethodBuilder(), null);
+			g.EmitCallHelper(_getter.GetMethodBuilder(), null);
 		}
 
 		internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
 		{
-			if (setter == null)
+			if (_setter == null)
 				base.EmitSet(g, value, allowExplicitConversion);
 
-			if (indexParameters.Count != 0)
+			if (_indexParameters.Count != 0)
 				throw new InvalidOperationException(Properties.Messages.ErrMissingPropertyIndex);
 
-			if (!IsStatic && (g.Context.IsStatic || g.Context.OwnerType != owner.TypeBuilder))
+			if (!IsStatic && (g.Context.IsStatic || g.Context.OwnerType != _owner.TypeBuilder))
 				throw new InvalidOperationException(Properties.Messages.ErrInvalidPropertyContext);
 
 			g.IL.Emit(OpCodes.Ldarg_0);
 			g.EmitGetHelper(value, Type, allowExplicitConversion);
-			g.EmitCallHelper(setter.GetMethodBuilder(), null);
+			g.EmitCallHelper(_setter.GetMethodBuilder(), null);
 		}
 
-		public override Type Type { get { return type; } }
+		public override Type Type { get { return _type; } }
 
 		#region IMethodInfo Members
 
 		MemberInfo IMemberInfo.Member
 		{
-			get { return pb; }
+			get { return _pb; }
 		}
 
 		Type IMemberInfo.ReturnType
 		{
-			get { return type; }
+			get { return _type; }
 		}
 
 		Type[] IMemberInfo.ParameterTypes
 		{
-			get { return indexParameters.TypeArray; }
+			get { return _indexParameters.TypeArray; }
 		}
 
 		bool IMemberInfo.IsParameterArray
 		{
-			get { return indexParameters.Count > 0 && indexParameters[indexParameters.Count - 1].IsParameterArray; }
+			get { return _indexParameters.Count > 0 && _indexParameters[_indexParameters.Count - 1].IsParameterArray; }
 		}
 
 		#endregion
@@ -216,7 +216,7 @@ namespace TriAxis.RunSharp
 
 		void IDelayedCompletion.Complete()
 		{
-			AttributeGen.ApplyList(ref customAttributes, pb.SetCustomAttribute);
+			AttributeGen.ApplyList(ref _customAttributes, _pb.SetCustomAttribute);
 		}
 
 		#endregion

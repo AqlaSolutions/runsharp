@@ -43,35 +43,35 @@ namespace TriAxis.RunSharp.Operands
 {
 	class NewDelegate : Operand
 	{
-		Type delegateType;
-		Operand target;
-		MethodInfo method;
-		ConstructorInfo delegateConstructor;
-	    ITypeInfo typeInfo;
+		Type _delegateType;
+		Operand _target;
+		MethodInfo _method;
+		ConstructorInfo _delegateConstructor;
+	    ITypeInfo _typeInfo;
 
 		public NewDelegate(Type delegateType, Type targetType, string methodName, ITypeInfo typeInfo)
 		{
-			this.delegateType = delegateType;
-		    this.typeInfo = typeInfo;
+			this._delegateType = delegateType;
+		    this._typeInfo = typeInfo;
 		    Initialize(targetType, methodName);
 		}
 
 		public NewDelegate(Type delegateType, Operand target, string methodName, ITypeInfo typeInfo)
 		{
-			this.delegateType = delegateType;
-			this.target = target;
-		    this.typeInfo = typeInfo;
+			this._delegateType = delegateType;
+			this._target = target;
+		    this._typeInfo = typeInfo;
 		    Initialize(target.Type, methodName);
 		}
 
 		void Initialize(Type targetType, string methodName)
 		{
-			if (!delegateType.IsSubclassOf(typeof(Delegate)))
+			if (!_delegateType.IsSubclassOf(typeof(Delegate)))
 				throw new ArgumentException(Properties.Messages.ErrInvalidDelegateType, "delegateType");
 
 			IMemberInfo delegateInvocationMethod = null;
 
-			foreach (IMemberInfo mi in TypeInfo.GetMethods(delegateType))
+			foreach (IMemberInfo mi in TypeInfo.GetMethods(_delegateType))
 			{
 				if (mi.Name == "Invoke")
 				{
@@ -85,7 +85,7 @@ namespace TriAxis.RunSharp.Operands
 			if (delegateInvocationMethod == null)
 				throw new ArgumentException(Properties.Messages.ErrInvalidDelegateType, "delegateType");
 
-			foreach (IMemberInfo mi in TypeInfo.GetConstructors(delegateType))
+			foreach (IMemberInfo mi in TypeInfo.GetConstructors(_delegateType))
 			{
 				if (mi.IsStatic)
 					continue;
@@ -94,14 +94,14 @@ namespace TriAxis.RunSharp.Operands
 
 				if (ctorParamTypes.Length == 2 && ctorParamTypes[0] == typeof(object) && ctorParamTypes[1] == typeof(IntPtr))
 				{
-					if (delegateConstructor != null)
+					if (_delegateConstructor != null)
 						throw new ArgumentException(Properties.Messages.ErrInvalidDelegateType, "delegateType");
 
-					delegateConstructor = (ConstructorInfo)mi.Member;
+					_delegateConstructor = (ConstructorInfo)mi.Member;
 				}
 			}
 
-			if (delegateConstructor == null)
+			if (_delegateConstructor == null)
 				throw new ArgumentException(Properties.Messages.ErrInvalidDelegateType, "delegateType");
 
 			Type retType = delegateInvocationMethod.ReturnType;
@@ -109,37 +109,37 @@ namespace TriAxis.RunSharp.Operands
 
 			for ( ; targetType != null; targetType = targetType.BaseType)
 			{
-				foreach (IMemberInfo mi in TypeInfo.Filter(TypeInfo.GetMethods(targetType), methodName, false, (object)target == null, false))
+				foreach (IMemberInfo mi in TypeInfo.Filter(TypeInfo.GetMethods(targetType), methodName, false, (object)_target == null, false))
 				{
 					if (mi.ReturnType == retType && ArrayUtils.Equals(mi.ParameterTypes, parameterTypes))
 					{
-						if (method == null)
-							method = (MethodInfo)mi.Member;
+						if (_method == null)
+							_method = (MethodInfo)mi.Member;
 						else
 							throw new AmbiguousMatchException(Properties.Messages.ErrAmbiguousBinding);
 					}
 				}
 
-				if (method != null)
+				if (_method != null)
 					break;
 			}
 
-			if (method == null)
+			if (_method == null)
 				throw new MissingMethodException(Properties.Messages.ErrMissingMethod);
 		}
 
 		internal override void EmitGet(CodeGen g)
 		{
-			g.EmitGetHelper(target, typeof(object), false);
-			g.IL.Emit(OpCodes.Ldftn, method);
-			g.IL.Emit(OpCodes.Newobj, delegateConstructor);
+			g.EmitGetHelper(_target, typeof(object), false);
+			g.IL.Emit(OpCodes.Ldftn, _method);
+			g.IL.Emit(OpCodes.Newobj, _delegateConstructor);
 		}
 
 		public override Type Type
 		{
 			get
 			{
-				return delegateType;
+				return _delegateType;
 			}
 		}
 	}

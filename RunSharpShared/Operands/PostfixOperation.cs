@@ -43,20 +43,20 @@ namespace TriAxis.RunSharp.Operands
 {
 	class PostfixOperation : Operand, IStatement
 	{
-		Operand target;
-		OverloadableOperation baseOp;
+		Operand _target;
+		OverloadableOperation _baseOp;
 
 		public PostfixOperation(Operator op, Operand operand)
 		{
-			this.target = operand;
-			baseOp = new OverloadableOperation(op, operand);
+			this._target = operand;
+			_baseOp = new OverloadableOperation(op, operand);
 		}
 
 		internal override void EmitGet(CodeGen g)
 		{
-			Operand before = g.Local(target);
-			baseOp.SetOperand(before);
-			target.EmitSet(g, baseOp, false);
+			Operand before = g.Local(_target);
+			_baseOp.SetOperand(before);
+			_target.EmitSet(g, _baseOp, false);
 			before.EmitGet(g);
 		}
 
@@ -64,13 +64,13 @@ namespace TriAxis.RunSharp.Operands
 		{
 			get
 			{
-				return target.Type;
+				return _target.Type;
 			}
 		}
 
 		public void Emit(CodeGen g)
 		{
-			target.EmitSet(g, baseOp, false);
+			_target.EmitSet(g, _baseOp, false);
 		}
 	}
 }

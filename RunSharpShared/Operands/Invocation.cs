@@ -43,33 +43,33 @@ namespace TriAxis.RunSharp.Operands
 {
 	class Invocation : Operand
 	{
-		ApplicableFunction method;
-		Operand target;
-		Operand[] args;
+		ApplicableFunction _method;
+		Operand _target;
+		Operand[] _args;
 
 		public Invocation(ApplicableFunction method, Operand target, Operand[] args)
 		{
-			this.method = method;
-			this.target = target;
-			this.args = args;
+			this._method = method;
+			this._target = target;
+			this._args = args;
 		}
 
 		internal override void EmitGet(CodeGen g)
 		{
-			MethodBase mb = (MethodBase)method.Method.Member;
+			MethodBase mb = (MethodBase)_method.Method.Member;
 
 			if (!mb.IsStatic)
-				target.EmitRef(g);
+				_target.EmitRef(g);
 
-			method.EmitArgs(g, args);
-			g.EmitCallHelper(mb, target);
+			_method.EmitArgs(g, _args);
+			g.EmitCallHelper(mb, _target);
 		}
 
 		public override Type Type
 		{
 			get
 			{
-				return method.Method.ReturnType;
+				return _method.Method.ReturnType;
 			}
 		}
 	}

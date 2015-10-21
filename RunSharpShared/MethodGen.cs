@@ -43,36 +43,36 @@ namespace TriAxis.RunSharp
 {
 	public sealed class MethodGen : RoutineGen<MethodGen>
 	{
-		string name;
-		MethodAttributes attributes;
-		MethodBuilder mb;
-		MethodImplAttributes implFlags;
-		Type interfaceType;
+		string _name;
+		MethodAttributes _attributes;
+		MethodBuilder _mb;
+		MethodImplAttributes _implFlags;
+		Type _interfaceType;
 
 		internal MethodBuilder GetMethodBuilder()
 		{
 			LockSignature(); 
-			return mb;
+			return _mb;
 		}
 
 		internal MethodGen(TypeGen owner, string name, MethodAttributes attributes, Type returnType, MethodImplAttributes implFlags)
 			: base(owner, returnType)
 		{
-			this.name = name;
-			this.attributes = owner.PreprocessAttributes(this, attributes);
-			this.implFlags = implFlags;
+			this._name = name;
+			this._attributes = owner.PreprocessAttributes(this, attributes);
+			this._implFlags = implFlags;
 		}
 
 		protected override void CreateMember()
 		{
-			string methodName = name;
+			string methodName = _name;
 
-			if (interfaceType != null)
-				methodName = interfaceType + "." + name;
+			if (_interfaceType != null)
+				methodName = _interfaceType + "." + _name;
 
-			this.mb = Owner.TypeBuilder.DefineMethod(methodName, this.attributes | MethodAttributes.HideBySig, IsStatic ? CallingConventions.Standard : CallingConventions.HasThis, ReturnType, ParameterTypes);
-			if (implFlags != 0)
-				mb.SetImplementationFlags(implFlags);
+			this._mb = Owner.TypeBuilder.DefineMethod(methodName, this._attributes | MethodAttributes.HideBySig, IsStatic ? CallingConventions.Standard : CallingConventions.HasThis, ReturnType, ParameterTypes);
+			if (_implFlags != 0)
+				_mb.SetImplementationFlags(_implFlags);
 		}
 
 		protected override void RegisterMember()
@@ -82,58 +82,58 @@ namespace TriAxis.RunSharp
 
 		public bool IsPublic
 		{
-			get { return (attributes & MethodAttributes.Public) != 0; }
+			get { return (_attributes & MethodAttributes.Public) != 0; }
 		}
 
 		public bool IsAbstract
 		{
-			get { return (attributes & MethodAttributes.Abstract) != 0; }
+			get { return (_attributes & MethodAttributes.Abstract) != 0; }
 		}
 
 		internal Type ImplementedInterface
 		{
-			get { return interfaceType; }
-			set { interfaceType = value; }
+			get { return _interfaceType; }
+			set { _interfaceType = value; }
 		}
 
 		#region RoutineGen concrete implementation
 
 		protected internal override bool IsStatic
 		{
-			get { return (attributes & MethodAttributes.Static) != 0; }
+			get { return (_attributes & MethodAttributes.Static) != 0; }
 		}
 
 		protected internal override bool IsOverride
 		{
 			get
 			{
-				return Utils.IsOverride(attributes);
+				return Utils.IsOverride(_attributes);
 			}
 		}
 
 		public override string Name
 		{
-			get { return name; }
+			get { return _name; }
 		}
 
 		protected override bool HasCode
 		{
-			get { return !IsAbstract && (implFlags & MethodImplAttributes.Runtime) == 0; }
+			get { return !IsAbstract && (_implFlags & MethodImplAttributes.Runtime) == 0; }
 		}
 
 		protected override ILGenerator GetILGenerator()
 		{
-			return mb.GetILGenerator();
+			return _mb.GetILGenerator();
 		}
 
 		protected override ParameterBuilder DefineParameter(int position, ParameterAttributes attributes, string parameterName)
 		{
-			return mb.DefineParameter(position, attributes, parameterName);
+			return _mb.DefineParameter(position, attributes, parameterName);
 		}
 
 		protected override MemberInfo Member
 		{
-			get { return mb; }
+			get { return _mb; }
 		}
 
 		protected override AttributeTargets AttributeTarget
@@ -143,14 +143,14 @@ namespace TriAxis.RunSharp
 
 		protected override void SetCustomAttribute(CustomAttributeBuilder cab)
 		{
-			mb.SetCustomAttribute(cab);
+			_mb.SetCustomAttribute(cab);
 		}
 
 		#endregion
 		
 		public override string ToString()
 		{
-			return OwnerType.ToString() + "." + name;
+			return OwnerType.ToString() + "." + _name;
 		}
 	}
 }

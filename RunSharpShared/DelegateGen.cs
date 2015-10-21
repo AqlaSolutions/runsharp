@@ -42,29 +42,29 @@ namespace TriAxis.RunSharp
 {
 	public class DelegateGen : SignatureGen<DelegateGen>
 	{
-		AssemblyGen owner;
-		string name;
-		TypeAttributes attrs;
-		TypeGen delegateType;
-		List<AttributeGen> customAttributes;
-        TypeGen owner2;
+		AssemblyGen _owner;
+		string _name;
+		TypeAttributes _attrs;
+		TypeGen _delegateType;
+		List<AttributeGen> _customAttributes;
+        TypeGen _owner2;
 
-	    public ITypeMapper TypeMapper { get { return owner != null ? owner.TypeMapper : owner2.TypeMapper; } }
+	    public ITypeMapper TypeMapper { get { return _owner != null ? _owner.TypeMapper : _owner2.TypeMapper; } }
 
 	    public DelegateGen(AssemblyGen owner, string name, Type returnType, TypeAttributes attrs)
 			: base(returnType)
 		{
-			this.owner = owner;
-			this.name = name;
-			this.attrs = attrs;
+			this._owner = owner;
+			this._name = name;
+			this._attrs = attrs;
 		}
 
         public DelegateGen(TypeGen typeGen, string name, Type returnType, TypeAttributes typeAttributes)
             : base(returnType)
         {
-            this.owner2 = typeGen;
-            this.name = name;
-            this.attrs = typeAttributes;
+            this._owner2 = typeGen;
+            this._name = name;
+            this._attrs = typeAttributes;
 
         }
 
@@ -75,13 +75,13 @@ namespace TriAxis.RunSharp
 
         TypeGen GetDelegateType()
 		{
-			if (delegateType == null)
+			if (_delegateType == null)
 			{
 				LockSignature();
-				delegateType = ImplementDelegate();
+				_delegateType = ImplementDelegate();
 			}
 
-			return delegateType;
+			return _delegateType;
 		}
 
 #region Custom Attributes
@@ -105,7 +105,7 @@ namespace TriAxis.RunSharp
 
 		public AttributeGen<DelegateGen> BeginAttribute(AttributeType type, params object[] args)
 		{
-			return AttributeGen<DelegateGen>.CreateAndAdd(this, ref customAttributes, AttributeTargets.Delegate, type, args);
+			return AttributeGen<DelegateGen>.CreateAndAdd(this, ref _customAttributes, AttributeTargets.Delegate, type, args);
 		}
 
 #endregion
@@ -113,13 +113,13 @@ namespace TriAxis.RunSharp
 		TypeGen ImplementDelegate()
 		{
             TypeGen tg;
-            if (owner == null)
+            if (_owner == null)
             {
-                tg = new TypeGen(owner2, name, attrs, owner2.TypeMapper.MapType(typeof(MulticastDelegate)), Type.EmptyTypes);
+                tg = new TypeGen(_owner2, _name, _attrs, _owner2.TypeMapper.MapType(typeof(MulticastDelegate)), Type.EmptyTypes);
             }
             else
             {
-                tg = new TypeGen(owner, name, attrs, owner.TypeMapper.MapType(typeof(MulticastDelegate)), Type.EmptyTypes);
+                tg = new TypeGen(_owner, _name, _attrs, _owner.TypeMapper.MapType(typeof(MulticastDelegate)), Type.EmptyTypes);
             }
 
 			ConstructorBuilder cb = tg.Public.RuntimeImpl.Constructor()
@@ -145,7 +145,7 @@ namespace TriAxis.RunSharp
 				.GetMethodBuilder();
 			mb.SetImplementationFlags(MethodImplAttributes.Runtime | MethodImplAttributes.Managed);
 
-			AttributeGen.ApplyList(ref customAttributes, tg.TypeBuilder.SetCustomAttribute);
+			AttributeGen.ApplyList(ref _customAttributes, tg.TypeBuilder.SetCustomAttribute);
 
 			return tg;
 		}
