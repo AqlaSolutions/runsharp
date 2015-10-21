@@ -57,7 +57,7 @@ namespace TriAxis.RunSharp
             get
             {
                 List<Generator> list = new List<Generator>();
-
+                
                 foreach (Type t in typeof(Program).Assembly.GetTypes())
                 {
                     foreach (MethodInfo mi in t.GetMethods(BindingFlags.Public | BindingFlags.Static))

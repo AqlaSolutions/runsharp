@@ -2,29 +2,44 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunSharp", "RunSharp\RunSharp.csproj", "{C835BB75-7955-4315-B52C-FA59E25219F4}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Examples", "Examples\Examples.csproj", "{2267D578-07C3-46B8-9EC8-E2C33AC920E7}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "RunSharpShared", "RunSharpShared\RunSharpShared.shproj", "{1BE6AC53-2C95-466E-B1D2-61E31493F169}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunSharp_IKVM", "RunSharpIKVM\RunSharp_IKVM.csproj", "{C835BB75-7955-4315-B52C-FA59E25219F4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunSharp", "RunSharp\RunSharp.csproj", "{08F134AE-48E8-4A35-9DC7-2F31EAF4A66F}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		RunSharpShared\RunSharpShared.projitems*{c835bb75-7955-4315-b52c-fa59e25219f4}*SharedItemsImports = 4
+		RunSharpShared\RunSharpShared.projitems*{1be6ac53-2c95-466e-b1d2-61e31493f169}*SharedItemsImports = 13
+		RunSharpShared\RunSharpShared.projitems*{08f134ae-48e8-4a35-9dc7-2f31eaf4a66f}*SharedItemsImports = 4
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		CodeAnalysis|Any CPU = CodeAnalysis|Any CPU
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{C835BB75-7955-4315-B52C-FA59E25219F4}.CodeAnalysis|Any CPU.ActiveCfg = CodeAnalysis|Any CPU
-		{C835BB75-7955-4315-B52C-FA59E25219F4}.CodeAnalysis|Any CPU.Build.0 = CodeAnalysis|Any CPU
-		{C835BB75-7955-4315-B52C-FA59E25219F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C835BB75-7955-4315-B52C-FA59E25219F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C835BB75-7955-4315-B52C-FA59E25219F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C835BB75-7955-4315-B52C-FA59E25219F4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2267D578-07C3-46B8-9EC8-E2C33AC920E7}.CodeAnalysis|Any CPU.ActiveCfg = Release|Any CPU
 		{2267D578-07C3-46B8-9EC8-E2C33AC920E7}.CodeAnalysis|Any CPU.Build.0 = Release|Any CPU
 		{2267D578-07C3-46B8-9EC8-E2C33AC920E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2267D578-07C3-46B8-9EC8-E2C33AC920E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2267D578-07C3-46B8-9EC8-E2C33AC920E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2267D578-07C3-46B8-9EC8-E2C33AC920E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C835BB75-7955-4315-B52C-FA59E25219F4}.CodeAnalysis|Any CPU.ActiveCfg = CodeAnalysis|Any CPU
+		{C835BB75-7955-4315-B52C-FA59E25219F4}.CodeAnalysis|Any CPU.Build.0 = CodeAnalysis|Any CPU
+		{C835BB75-7955-4315-B52C-FA59E25219F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C835BB75-7955-4315-B52C-FA59E25219F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C835BB75-7955-4315-B52C-FA59E25219F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C835BB75-7955-4315-B52C-FA59E25219F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08F134AE-48E8-4A35-9DC7-2F31EAF4A66F}.CodeAnalysis|Any CPU.ActiveCfg = CodeAnalysis|Any CPU
+		{08F134AE-48E8-4A35-9DC7-2F31EAF4A66F}.CodeAnalysis|Any CPU.Build.0 = CodeAnalysis|Any CPU
+		{08F134AE-48E8-4A35-9DC7-2F31EAF4A66F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08F134AE-48E8-4A35-9DC7-2F31EAF4A66F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08F134AE-48E8-4A35-9DC7-2F31EAF4A66F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08F134AE-48E8-4A35-9DC7-2F31EAF4A66F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

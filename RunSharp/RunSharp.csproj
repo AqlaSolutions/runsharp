@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{C835BB75-7955-4315-B52C-FA59E25219F4}</ProjectGuid>
+    <ProjectGuid>{08F134AE-48E8-4A35-9DC7-2F31EAF4A66F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TriAxis.RunSharp</RootNamespace>
@@ -20,7 +20,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -34,92 +34,19 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'CodeAnalysis|AnyCPU' ">
     <OutputPath>bin\CodeAnalysis\</OutputPath>
-    <DefineConstants>TRACE;CODE_ANALYSIS</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="IKVM.Reflection">
-      <HintPath>..\lib\IKVM.Reflection.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArrayUtils.cs" />
-    <Compile Include="AssemblyGen.cs" />
-    <Compile Include="AttributeGen.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="BranchSet.cs" />
-    <Compile Include="IKVM\CompilerContext.cs" />
-    <Compile Include="IKVM\Local.cs" />
-    <Compile Include="SignatureGen.cs" />
-    <Compile Include="CodeGen.Statements.cs" />
-    <Compile Include="ConstructorGen.cs" />
-    <Compile Include="Conversion.cs" />
-    <Compile Include="DelegateGen.cs" />
-    <Compile Include="DynamicMethodGen.cs" />
-    <Compile Include="EventGen.cs" />
-    <Compile Include="Exp.cs" />
-    <Compile Include="FieldGen.cs" />
-    <Compile Include="Operands\NewDelegate.cs" />
-    <Compile Include="Operands\OverloadableOperation.cs" />
-    <Compile Include="Operands\NewArray.cs" />
-    <Compile Include="ParameterGen.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="RoutineGen.cs" />
-    <Compile Include="Static.cs" />
-    <Compile Include="Utils.cs" />
-    <Compile Include="TypeInfo.cs" />
-    <Compile Include="MethodGen.cs" />
-    <Compile Include="Operands\ArrayAccess.cs" />
-    <Compile Include="Operands\ArrayLength.cs" />
-    <Compile Include="Operands\Assignment.cs" />
-    <Compile Include="Operands\Cast.cs" />
-    <Compile Include="Operands\Conditional.cs" />
-    <Compile Include="Operands\EnumLiteral.cs" />
-    <Compile Include="Operands\Field.cs" />
-    <Compile Include="Operands\DecimalLiteral.cs" />
-    <Compile Include="Operands\DoubleLiteral.cs" />
-    <Compile Include="Operands\FloatLiteral.cs" />
-    <Compile Include="Operands\InitializedArray.cs" />
-    <Compile Include="Operands\IntLiteral.cs" />
-    <Compile Include="Operands\Invocation.cs" />
-    <Compile Include="Operands\LongLiteral.cs" />
-    <Compile Include="Operands\NewObject.cs" />
-    <Compile Include="Operands\PostfixOperation.cs" />
-    <Compile Include="Operands\PrefixOperation.cs" />
-    <Compile Include="Operands\Property.cs" />
-    <Compile Include="Operands\SimpleOperation.cs" />
-    <Compile Include="Operands\StringLiteral.cs" />
-    <Compile Include="Operands\TypeLiteral.cs" />
-    <Compile Include="Operator.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="CodeGen.cs" />
-    <Compile Include="CodeGen.Helpers.cs" />
-    <Compile Include="Operand.cs" />
-    <Compile Include="Properties\Messages.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Messages.resx</DependentUpon>
-    </Compile>
-    <Compile Include="PropertyGen.cs" />
-    <Compile Include="OverloadResolver.cs" />
-    <Compile Include="TypeGen.cs" />
+    <Folder Include="Properties\" />
   </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Properties\Messages.resx">
-      <SubType>Designer</SubType>
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-  </ItemGroup>
+  <Import Project="..\RunSharpShared\RunSharpShared.projitems" Label="Shared" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

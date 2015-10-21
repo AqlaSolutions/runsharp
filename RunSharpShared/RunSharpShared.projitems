@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>1be6ac53-2c95-466e-b1d2-61e31493f169</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>TryAxis.RunSharp</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ArrayUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AssemblyGen.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AssemblyInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AttributeGen.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)BranchSet.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CodeGen.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CodeGen.Helpers.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CodeGen.Statements.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConstructorGen.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Conversion.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DelegateGen.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DynamicMethodGen.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EventGen.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exp.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FieldGen.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messages.Designer.cs">
+      <DependentUpon>Messages.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)MethodGen.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Operand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Operands\ArrayAccess.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Operands\ArrayLength.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Operands\Assignment.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Operands\Cast.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Operands\Conditional.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Operands\DecimalLiteral.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Operands\DoubleLiteral.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Operands\EnumLiteral.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Operands\Field.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Operands\FloatLiteral.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Operands\InitializedArray.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Operands\IntLiteral.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Operands\Invocation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Operands\LongLiteral.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Operands\NewArray.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Operands\NewDelegate.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Operands\NewObject.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Operands\OverloadableOperation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Operands\PostfixOperation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Operands\PrefixOperation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Operands\Property.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Operands\SimpleOperation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Operands\StringLiteral.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Operands\TypeLiteral.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Operator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)OverloadResolver.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ParameterGen.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)PropertyGen.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RoutineGen.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SignatureGen.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Static.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TypeGen.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TypeInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Messages.resx">
+      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)app.config" />
+  </ItemGroup>
+</Project>

@@ -67,7 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RunSharp\RunSharp.csproj">
-      <Project>{c835bb75-7955-4315-b52c-fa59e25219f4}</Project>
+      <Project>{08f134ae-48e8-4a35-9dc7-2f31eaf4a66f}</Project>
       <Name>RunSharp</Name>
     </ProjectReference>
   </ItemGroup>
