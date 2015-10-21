@@ -77,12 +77,6 @@ namespace TriAxis.RunSharp.Operands
 			}
 		}
 
-		public override Type Type
-		{
-			get
-			{
-				return _lvalue.Type;
-			}
-		}
+		public override Type Type => _lvalue.Type;
 	}
 }

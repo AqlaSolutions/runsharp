@@ -72,12 +72,6 @@ namespace TriAxis.RunSharp.Operands
 			g.IL.Emit(OpCodes.Call, _asLong ? _arrGetLongLen : _arrGetLen);
 		}
 
-		public override Type Type
-		{
-			get
-			{
-				return _asLong ? typeof(long) : typeof(int);
-			}
-		}
+		public override Type Type => _asLong ? typeof(long) : typeof(int);
 	}
 }

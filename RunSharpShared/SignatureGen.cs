@@ -62,13 +62,13 @@ namespace TriAxis.RunSharp
 
         internal bool SignatureComplete { get; set; }
 
-        public int ParameterCount { get { return _parameters.Count; } }
+        public int ParameterCount => _parameters.Count;
 
-        public Type ReturnType { get { return ReturnParameter == null ? null : ReturnParameter.Type; } }
-        public Type[] ParameterTypes { get { return _parameters.TypeArray; } }
+        public Type ReturnType => ReturnParameter == null ? null : ReturnParameter.Type;
+        public Type[] ParameterTypes => _parameters.TypeArray;
 
         public ParameterGen ReturnParameter { get; }
-        public IList<ParameterGen> Parameters { get { return _parameters; } }
+        public IList<ParameterGen> Parameters => _parameters;
 
         #region Parameter Definition
         enum ParamModifier { None, Ref, Out, Params };
@@ -83,11 +83,13 @@ namespace TriAxis.RunSharp
         }
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        public T Ref { get { return SetModifier(ParamModifier.Ref); } }
+        public T Ref => SetModifier(ParamModifier.Ref);
+
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        public T Out { get { return SetModifier(ParamModifier.Ref); } }
+        public T Out => SetModifier(ParamModifier.Ref);
+
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        public T Params { get { return SetModifier(ParamModifier.Params); } }
+        public T Params => SetModifier(ParamModifier.Params);
 
         public ParameterGen<T> BeginParameter(Type type, string name)
         {

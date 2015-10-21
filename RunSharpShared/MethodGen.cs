@@ -79,44 +79,23 @@ namespace TriAxis.RunSharp
 			Owner.Register(this);
 		}
 
-		public bool IsPublic
-		{
-			get { return (_attributes & MethodAttributes.Public) != 0; }
-		}
+		public bool IsPublic => (_attributes & MethodAttributes.Public) != 0;
 
-		public bool IsAbstract
-		{
-			get { return (_attributes & MethodAttributes.Abstract) != 0; }
-		}
+	    public bool IsAbstract => (_attributes & MethodAttributes.Abstract) != 0;
 
-		internal Type ImplementedInterface { get; set; }
+	    internal Type ImplementedInterface { get; set; }
 
 	    #region RoutineGen concrete implementation
 
-		protected internal override bool IsStatic
-		{
-			get { return (_attributes & MethodAttributes.Static) != 0; }
-		}
+		protected internal override bool IsStatic => (_attributes & MethodAttributes.Static) != 0;
 
-		protected internal override bool IsOverride
-		{
-			get
-			{
-				return Utils.IsOverride(_attributes);
-			}
-		}
+	    protected internal override bool IsOverride => Utils.IsOverride(_attributes);
 
-		public override string Name
-		{
-			get { return _name; }
-		}
+	    public override string Name => _name;
 
-		protected override bool HasCode
-		{
-			get { return !IsAbstract && (_implFlags & MethodImplAttributes.Runtime) == 0; }
-		}
+	    protected override bool HasCode => !IsAbstract && (_implFlags & MethodImplAttributes.Runtime) == 0;
 
-		protected override ILGenerator GetILGenerator()
+	    protected override ILGenerator GetILGenerator()
 		{
 			return _mb.GetILGenerator();
 		}
@@ -126,17 +105,11 @@ namespace TriAxis.RunSharp
 			return _mb.DefineParameter(position, attributes, parameterName);
 		}
 
-		protected override MemberInfo Member
-		{
-			get { return _mb; }
-		}
+		protected override MemberInfo Member => _mb;
 
-		protected override AttributeTargets AttributeTarget
-		{
-			get { return AttributeTargets.Constructor; }
-		}
+	    protected override AttributeTargets AttributeTarget => AttributeTargets.Constructor;
 
-		protected override void SetCustomAttribute(CustomAttributeBuilder cab)
+	    protected override void SetCustomAttribute(CustomAttributeBuilder cab)
 		{
 			_mb.SetCustomAttribute(cab);
 		}

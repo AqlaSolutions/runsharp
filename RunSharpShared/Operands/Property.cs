@@ -91,12 +91,6 @@ namespace TriAxis.RunSharp.Operands
 			g.EmitCallHelper(mi, _target);
 		}
 
-		public override Type Type
-		{
-			get
-			{
-				return _property.Method.ReturnType;
-			}
-		}
+		public override Type Type => _property.Method.ReturnType;
 	}
 }

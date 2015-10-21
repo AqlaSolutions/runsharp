@@ -74,31 +74,19 @@ namespace TriAxis.RunSharp
 			Owner.Register(this);
 		}
 
-		public TypeGen Type { get { return Owner; } }
+		public TypeGen Type => Owner;
 
-		#region RoutineGen concrete implementation
+	    #region RoutineGen concrete implementation
 
-		public override string Name
-		{
-			get { return IsStatic ? ".cctor" : ".ctor"; }
-		}
+		public override string Name => IsStatic ? ".cctor" : ".ctor";
 
-		protected internal override bool IsStatic
-		{
-			get { return (_attributes & MethodAttributes.Static) != 0; }
-		}
+	    protected internal override bool IsStatic => (_attributes & MethodAttributes.Static) != 0;
 
-		protected internal override bool IsOverride
-		{
-			get { return false; }
-		}
+	    protected internal override bool IsOverride => false;
 
-		protected override bool HasCode
-		{
-			get { return (_implFlags & MethodImplAttributes.Runtime) == 0; }
-		}
+	    protected override bool HasCode => (_implFlags & MethodImplAttributes.Runtime) == 0;
 
-		protected override ILGenerator GetILGenerator()
+	    protected override ILGenerator GetILGenerator()
 		{
 			return _cb.GetILGenerator();
 		}
@@ -108,17 +96,11 @@ namespace TriAxis.RunSharp
 			return _cb.DefineParameter(position, attributes, parameterName);
 		}
 
-		protected override MemberInfo Member
-		{
-			get { return _cb; }
-		}
+		protected override MemberInfo Member => _cb;
 
-		protected override AttributeTargets AttributeTarget
-		{
-			get { return AttributeTargets.Constructor; }
-		}
+	    protected override AttributeTargets AttributeTarget => AttributeTargets.Constructor;
 
-		protected override void SetCustomAttribute(CustomAttributeBuilder cab)
+	    protected override void SetCustomAttribute(CustomAttributeBuilder cab)
 		{
 			_cb.SetCustomAttribute(cab);
 		}

@@ -156,42 +156,21 @@ namespace TriAxis.RunSharp
 
 		#region IMemberInfo Members
 
-		MemberInfo IMemberInfo.Member
-		{
-			get { return Member; }
-		}
+		MemberInfo IMemberInfo.Member => Member;
 
-		string IMemberInfo.Name
-		{
-			get { return Name; }
-		}
+	    string IMemberInfo.Name => Name;
 
-		Type IMemberInfo.ReturnType
-		{
-			get { return ReturnType; }
-		}
+	    Type IMemberInfo.ReturnType => ReturnType;
 
-		Type[] IMemberInfo.ParameterTypes
-		{
-			get { return ParameterTypes; }
-		}
+	    Type[] IMemberInfo.ParameterTypes => ParameterTypes;
 
-		bool IMemberInfo.IsParameterArray
-		{
-			get { return ParameterCount > 0 && Parameters[ParameterCount - 1].IsParameterArray; }
-		}
+	    bool IMemberInfo.IsParameterArray => ParameterCount > 0 && Parameters[ParameterCount - 1].IsParameterArray;
 
-		bool IMemberInfo.IsStatic
-		{
-			get { return IsStatic; }
-		}
+	    bool IMemberInfo.IsStatic => IsStatic;
 
-		bool IMemberInfo.IsOverride
-		{
-			get { return IsOverride; }
-		}
+	    bool IMemberInfo.IsOverride => IsOverride;
 
-		#endregion
+	    #endregion
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2225:OperatorOverloadsHaveNamedAlternates", Justification = "CodeGen can be retrieved using the Code property")]
 		public static implicit operator CodeGen(RoutineGen<T> rg)
@@ -216,11 +195,8 @@ namespace TriAxis.RunSharp
 
 		#region ICodeGenContext Members
 
-		bool ICodeGenContext.SupportsScopes
-		{
-			get { return true; }
-		}
+		bool ICodeGenContext.SupportsScopes => true;
 
-		#endregion
+	    #endregion
 	}
 }

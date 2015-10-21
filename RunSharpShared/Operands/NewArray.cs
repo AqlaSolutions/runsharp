@@ -74,12 +74,6 @@ namespace TriAxis.RunSharp.Operands
 			}
 		}
 
-		public override Type Type
-		{
-			get
-			{
-				return _indexes.Length == 1 ? _t.MakeArrayType() : _t.MakeArrayType(_indexes.Length);
-			}
-		}
+		public override Type Type => _indexes.Length == 1 ? _t.MakeArrayType() : _t.MakeArrayType(_indexes.Length);
 	}
 }

@@ -364,40 +364,25 @@ namespace TriAxis.RunSharp
 				}
 			}
 
-			bool IStandardOperation.IsUnsigned { get { return Unsigned; } }
+			bool IStandardOperation.IsUnsigned => Unsigned;
 
-#region IMemberInfo Members
+		    #region IMemberInfo Members
 
-			public MemberInfo Member
-			{
-				get { return null; }
-			}
+			public MemberInfo Member => null;
 
-			public string Name
-			{
-				get { return null; }
-			}
+		    public string Name => null;
 
-			public Type ReturnType { get; }
+		    public Type ReturnType { get; }
 
 		    public Type[] ParameterTypes { get; }
 
-		    public bool IsParameterArray
-			{
-				get { return false; }
-			}
+		    public bool IsParameterArray => false;
 
-			public bool IsStatic
-			{
-				get { return true; }
-			}
+		    public bool IsStatic => true;
 
-			public bool IsOverride
-			{
-				get { return false; }
-			}
+		    public bool IsOverride => false;
 
-#endregion
+		    #endregion
 
 #region IStandardOperation Members
 

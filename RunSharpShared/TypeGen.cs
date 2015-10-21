@@ -69,19 +69,19 @@ namespace TriAxis.RunSharp
 			}
 
 			public IMemberInfo InterfaceMethod { get; }
-		    public Type InterfaceType { get { return InterfaceMethod.Member.DeclaringType; } }
-			public MethodGen BoundMethod { get; set; }
+		    public Type InterfaceType => InterfaceMethod.Member.DeclaringType;
+		    public MethodGen BoundMethod { get; set; }
 
-		    public bool IsBound { get { return BoundMethod != null; } }
+		    public bool IsBound => BoundMethod != null;
 
-			public void Bind(MethodGen implementation)
+		    public void Bind(MethodGen implementation)
 			{
 				this.BoundMethod = implementation;
 			}
 		}
 
 	    readonly AssemblyGen _owner;
-        public ITypeMapper TypeMapper { get { return _owner.TypeMapper; } }
+        public ITypeMapper TypeMapper => _owner.TypeMapper;
 	    Type[] _interfaces;
 	    Type _type;
 		MethodGen _commonCtor = null;
@@ -646,12 +646,9 @@ namespace TriAxis.RunSharp
 			throw new InvalidOperationException(Properties.Messages.ErrTypeNotCompleted);
 		}
 
-		public bool IsCompleted
-		{
-			get { return _type != null; }
-		}
+		public bool IsCompleted => _type != null;
 
-		void FlushDefinitionQueue()
+	    void FlushDefinitionQueue()
 		{
 			// cannot use foreach, because it is possible that new objects
 			// will be appended while completing the existing ones
@@ -809,10 +806,8 @@ namespace TriAxis.RunSharp
 			return _methods;
 		}
 
-		string ITypeInfoProvider.DefaultMember
-		{
-			get { return _indexerName; }
-		}
-		#endregion
+		string ITypeInfoProvider.DefaultMember => _indexerName;
+
+	    #endregion
 	}
 }

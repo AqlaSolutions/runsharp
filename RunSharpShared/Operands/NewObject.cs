@@ -58,12 +58,6 @@ namespace TriAxis.RunSharp.Operands
 			g.IL.Emit(OpCodes.Newobj, (ConstructorInfo)_ctor.Method.Member);
 		}
 
-		public override Type Type
-		{
-			get
-			{
-				return _ctor.Method.Member.DeclaringType;
-			}
-		}
+		public override Type Type => _ctor.Method.Member.DeclaringType;
 	}
 }

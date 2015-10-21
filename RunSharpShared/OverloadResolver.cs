@@ -64,9 +64,9 @@ namespace TriAxis.RunSharp
 			this._conversions = conversions;
 		}
 		public IMemberInfo Method { get; }
-	    public bool IsExpanded { get { return _methodSignature != _appliedSignature; } }
+	    public bool IsExpanded => _methodSignature != _appliedSignature;
 
-		public bool SignatureEquals(ApplicableFunction other)
+	    public bool SignatureEquals(ApplicableFunction other)
 		{
 			return ArrayUtils.Equals(_appliedSignature, other._appliedSignature);
 		}

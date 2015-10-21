@@ -193,39 +193,21 @@ namespace TriAxis.RunSharp
 
 		#region IMemberInfo Members
 
-		public MemberInfo Member
-		{
-			get { return new EventInfoProxy(this); }
-		}
+		public MemberInfo Member => new EventInfoProxy(this);
 
-		public string Name { get; }
+	    public string Name { get; }
 
-	    Type IMemberInfo.ReturnType
-		{
-			get { return _type; }
-		}
+	    Type IMemberInfo.ReturnType => _type;
 
-		Type[] IMemberInfo.ParameterTypes
-		{
-			get { return Type.EmptyTypes; }
-		}
+	    Type[] IMemberInfo.ParameterTypes => Type.EmptyTypes;
 
-		bool IMemberInfo.IsParameterArray
-		{
-			get { return false; }
-		}
+	    bool IMemberInfo.IsParameterArray => false;
 
-		public bool IsStatic
-		{
-			get { return (_attrs & MethodAttributes.Static) != 0; }
-		}
+	    public bool IsStatic => (_attrs & MethodAttributes.Static) != 0;
 
-		public bool IsOverride
-		{
-			get { return Utils.IsOverride(_attrs); }
-		}
+	    public bool IsOverride => Utils.IsOverride(_attrs);
 
-		#endregion
+	    #endregion
 
 		class EventInfoProxy : EventInfo
 		{
@@ -233,10 +215,7 @@ namespace TriAxis.RunSharp
 
 			public EventInfoProxy(EventGen eg) { this._eg = eg; }
 
-			public override EventAttributes Attributes
-			{
-				get { return EventAttributes.None; }
-			}
+			public override EventAttributes Attributes => EventAttributes.None;
 
 		    public override MethodInfo GetAddMethod(bool nonPublic)
 			{
@@ -300,20 +279,11 @@ namespace TriAxis.RunSharp
 				return false;
 			}
 #endif
-            public override Type DeclaringType
-			{
-				get { return _eg._owner; }
-			}
+            public override Type DeclaringType => _eg._owner;
 
-			public override string Name
-			{
-				get { return _eg.Name; }
-			}
+		    public override string Name => _eg.Name;
 
-			public override Type ReflectedType
-			{
-				get { return DeclaringType; }
-			}
+		    public override Type ReflectedType => DeclaringType;
 		}
 	}
 }

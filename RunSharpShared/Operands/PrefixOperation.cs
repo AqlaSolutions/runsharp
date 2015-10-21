@@ -69,15 +69,9 @@ namespace TriAxis.RunSharp.Operands
 			}
 		}
 
-		public override Type Type
-		{
-			get
-			{
-				return _target.Type;
-			}
-		}
+		public override Type Type => _target.Type;
 
-		public void Emit(CodeGen g)
+	    public void Emit(CodeGen g)
 		{
 			_target.EmitSet(g, _baseOp, false);
 		}

@@ -52,23 +52,11 @@ namespace TriAxis.RunSharp.Operands
 			g.EmitI8Helper(Value, _t == typeof(long));
 		}
 
-		public override Type Type
-		{
-			get
-			{
-				return _t;
-			}
-		}
+		public override Type Type => _t;
 
-		public long Value { get; }
+	    public long Value { get; }
 
-	    internal override object ConstantValue
-		{
-			get
-			{
-				return Value;
-			}
-		}
+	    internal override object ConstantValue => Value;
 	}
 
 }

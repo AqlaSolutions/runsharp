@@ -106,12 +106,6 @@ namespace TriAxis.RunSharp.Operands
 			g.IL.Emit(branchSet.Get(_op.BranchOp, stdOp.IsUnsigned), label);
 		}
 
-		public override Type Type
-		{
-			get
-			{
-				return _af.Method.ReturnType;
-			}
-		}
+		public override Type Type => _af.Method.ReturnType;
 	}
 }

@@ -114,9 +114,9 @@ namespace TriAxis.RunSharp
 				return new _Base(Context.OwnerType.BaseType);
 		}
 
-		int ThisOffset { get { return Context.IsStatic ? 0 : 1; } }
+		int ThisOffset => Context.IsStatic ? 0 : 1;
 
-		public Operand PropertyValue()
+	    public Operand PropertyValue()
 		{
 			Type[] parameterTypes = Context.ParameterTypes;
 			return new _Arg(ThisOffset + parameterTypes.Length - 1, parameterTypes[parameterTypes.Length - 1]);
@@ -175,15 +175,9 @@ namespace TriAxis.RunSharp
 			_hasRetVar = true;
 		}
 
-		public bool IsCompleted
-		{
-			get
-			{
-				return _blocks.Count == 0 && !_reachable && _hasRetVar == _hasRetLabel;
-			}
-		}
+		public bool IsCompleted => _blocks.Count == 0 && !_reachable && _hasRetVar == _hasRetLabel;
 
-		internal void Complete()
+	    internal void Complete()
 		{
 			if (_blocks.Count > 0)
 				throw new InvalidOperationException(Properties.Messages.ErrOpenBlocksRemaining);
@@ -210,13 +204,7 @@ namespace TriAxis.RunSharp
 		{
 			public _Base(Type type) : base(0, type) { }
 
-			internal override bool SuppressVirtual
-			{
-				get
-				{
-					return true;
-				}
-			}
+			internal override bool SuppressVirtual => true;
 		}
 
 		class _Arg : Operand
@@ -267,23 +255,11 @@ namespace TriAxis.RunSharp
 				}
 			}
 
-			bool IsReference { get { return _type.IsByRef; } }
+			bool IsReference => _type.IsByRef;
 
-			public override Type Type
-			{
-				get
-				{
-					return IsReference ? _type.GetElementType() : _type;
-				}
-			}
+		    public override Type Type => IsReference ? _type.GetElementType() : _type;
 
-			internal override bool TrivialAccess
-			{
-				get
-				{
-					return true;
-				}
-			}
+		    internal override bool TrivialAccess => true;
 		}
 
 		internal class _Local : Operand
@@ -376,15 +352,9 @@ namespace TriAxis.RunSharp
 				}
 			}
 
-			internal override bool TrivialAccess
-			{
-				get
-				{
-					return true;
-				}
-			}
+			internal override bool TrivialAccess => true;
 
-			internal override void AssignmentHint(Operand op)
+		    internal override void AssignmentHint(Operand op)
 			{
 				if (_tHint == null)
 					_tHint = Operand.GetType(op);
@@ -397,13 +367,7 @@ namespace TriAxis.RunSharp
 
 			public override Type Type { get; }
 
-		    internal override bool IsStaticTarget
-			{
-				get
-				{
-					return true;
-				}
-			}
+		    internal override bool IsStaticTarget => true;
 		}
 
 		public Operand this[string localName] // Named locals support. 

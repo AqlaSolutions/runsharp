@@ -143,11 +143,11 @@ namespace TriAxis.RunSharp
 		}
 		#endregion
 
-		public bool IsAbstract { get { return (_attrs & MethodAttributes.Abstract) != 0; } }
-		public bool IsOverride { get { return Utils.IsOverride(_attrs); } }
-		public bool IsStatic { get { return (_attrs & MethodAttributes.Static) != 0; } }
+		public bool IsAbstract => (_attrs & MethodAttributes.Abstract) != 0;
+	    public bool IsOverride => Utils.IsOverride(_attrs);
+	    public bool IsStatic => (_attrs & MethodAttributes.Static) != 0;
 
-		public string Name { get; }
+	    public string Name { get; }
 
 	    internal override void EmitGet(CodeGen g)
 		{
@@ -180,31 +180,19 @@ namespace TriAxis.RunSharp
 			g.EmitCallHelper(_setter.GetMethodBuilder(), null);
 		}
 
-		public override Type Type { get { return _type; } }
+		public override Type Type => _type;
 
-		#region IMethodInfo Members
+	    #region IMethodInfo Members
 
-		MemberInfo IMemberInfo.Member
-		{
-			get { return _pb; }
-		}
+		MemberInfo IMemberInfo.Member => _pb;
 
-		Type IMemberInfo.ReturnType
-		{
-			get { return _type; }
-		}
+	    Type IMemberInfo.ReturnType => _type;
 
-		Type[] IMemberInfo.ParameterTypes
-		{
-			get { return _indexParameters.TypeArray; }
-		}
+	    Type[] IMemberInfo.ParameterTypes => _indexParameters.TypeArray;
 
-		bool IMemberInfo.IsParameterArray
-		{
-			get { return _indexParameters.Count > 0 && _indexParameters[_indexParameters.Count - 1].IsParameterArray; }
-		}
+	    bool IMemberInfo.IsParameterArray => _indexParameters.Count > 0 && _indexParameters[_indexParameters.Count - 1].IsParameterArray;
 
-		#endregion
+	    #endregion
 
 		#region IDelayedCompletion Members
 

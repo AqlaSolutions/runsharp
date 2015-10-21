@@ -82,11 +82,11 @@ namespace TriAxis.RunSharp
 		}
 		public abstract Type Type { get; }
 
-		internal virtual bool TrivialAccess { get { return false; } }
-		internal virtual bool IsStaticTarget { get { return false; } }
-		internal virtual bool SuppressVirtual { get { return false; } }
-		internal virtual object ConstantValue { get { return null; } }
-		internal virtual void AssignmentHint(Operand op) { }
+		internal virtual bool TrivialAccess => false;
+	    internal virtual bool IsStaticTarget => false;
+	    internal virtual bool SuppressVirtual => false;
+	    internal virtual object ConstantValue => null;
+	    internal virtual void AssignmentHint(Operand op) { }
 		#endregion
 
 		// emits the refrence to the operand (address-of for value types)
@@ -781,7 +781,7 @@ namespace TriAxis.RunSharp
 				_op.EmitAddressOf(g);
 			}
 
-			public override Type Type { get { return _op.Type.MakeByRefType(); } }
+			public override Type Type => _op.Type.MakeByRefType();
 		}
 	}
 }

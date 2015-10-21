@@ -480,7 +480,8 @@ namespace TriAxis.RunSharp
                 }
             }
 
-            public MemberInfo Member { get { return _mb; } }
+            public MemberInfo Member => _mb;
+
             public string Name
             {
                 get
@@ -515,8 +516,8 @@ namespace TriAxis.RunSharp
                     return _hasVar;
                 }
             }
-            public bool IsStatic { get { return _mb.IsStatic; } }
-            public bool IsOverride { get { return Utils.IsOverride(_mb.Attributes); } }
+            public bool IsStatic => _mb.IsStatic;
+            public bool IsOverride => Utils.IsOverride(_mb.Attributes);
 
             public override string ToString()
             {
@@ -554,7 +555,8 @@ namespace TriAxis.RunSharp
                 }
             }
 
-            public MemberInfo Member { get { return _pi; } }
+            public MemberInfo Member => _pi;
+
             public string Name
             {
                 get
@@ -589,8 +591,8 @@ namespace TriAxis.RunSharp
                     return _hasVar;
                 }
             }
-            public bool IsOverride { get { return _mi == null ? false : Utils.IsOverride(_mi.Attributes); } }
-            public bool IsStatic { get { return _mi == null ? false : _mi.IsStatic; } }
+            public bool IsOverride => _mi == null ? false : Utils.IsOverride(_mi.Attributes);
+            public bool IsStatic => _mi == null ? false : _mi.IsStatic;
 
             public override string ToString()
             {
@@ -614,13 +616,13 @@ namespace TriAxis.RunSharp
                 // mi will remain null for abstract properties
             }
 
-            public MemberInfo Member { get { return _ei; } }
+            public MemberInfo Member => _ei;
             public string Name { get; }
-            public Type ReturnType { get { return _ei.EventHandlerType; } }
-            public Type[] ParameterTypes { get { return Type.EmptyTypes; } }
-            public bool IsParameterArray { get { return false; } }
-            public bool IsOverride { get { return _mi == null ? false : Utils.IsOverride(_mi.Attributes); } }
-            public bool IsStatic { get { return _mi == null ? false : _mi.IsStatic; } }
+            public Type ReturnType => _ei.EventHandlerType;
+            public Type[] ParameterTypes => Type.EmptyTypes;
+            public bool IsParameterArray => false;
+            public bool IsOverride => _mi == null ? false : Utils.IsOverride(_mi.Attributes);
+            public bool IsStatic => _mi == null ? false : _mi.IsStatic;
 
             public override string ToString()
             {
@@ -638,13 +640,13 @@ namespace TriAxis.RunSharp
                 this.Name = fi.Name;
             }
 
-            public MemberInfo Member { get { return _fi; } }
+            public MemberInfo Member => _fi;
             public string Name { get; }
-            public Type ReturnType { get { return _fi.FieldType; } }
-            public Type[] ParameterTypes { get { return Type.EmptyTypes; } }
-            public bool IsParameterArray { get { return false; } }
-            public bool IsOverride { get { return false; } }
-            public bool IsStatic { get { return _fi.IsStatic; } }
+            public Type ReturnType => _fi.FieldType;
+            public Type[] ParameterTypes => Type.EmptyTypes;
+            public bool IsParameterArray => false;
+            public bool IsOverride => false;
+            public bool IsStatic => _fi.IsStatic;
 
             public override string ToString()
             {

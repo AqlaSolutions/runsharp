@@ -83,20 +83,8 @@ namespace TriAxis.RunSharp.Operands
 			}
 		}
 
-		public override Type Type
-		{
-			get
-			{
-				return _fi.FieldType;
-			}
-		}
+		public override Type Type => _fi.FieldType;
 
-		internal override bool TrivialAccess
-		{
-			get
-			{
-				return true;
-			}
-		}
+	    internal override bool TrivialAccess => true;
 	}
 }

@@ -132,7 +132,7 @@ namespace TriAxis.RunSharp
             // nothing to register
         }
 
-        public bool IsCompleted { get { return !(SignatureComplete && GetCode().IsCompleted); } }
+        public bool IsCompleted => !(SignatureComplete && GetCode().IsCompleted);
 
         public void Complete() { GetCode().Complete(); }
 
@@ -153,10 +153,7 @@ namespace TriAxis.RunSharp
 
         #region RoutineGen concrete implementation
 
-        protected override bool HasCode
-        {
-            get { return true; }
-        }
+        protected override bool HasCode => true;
 
         protected override ILGenerator GetILGenerator()
         {
@@ -168,25 +165,13 @@ namespace TriAxis.RunSharp
             return _dm.DefineParameter(position, attributes, parameterName);
         }
 
-        protected override MemberInfo Member
-        {
-            get { return _dm; }
-        }
+        protected override MemberInfo Member => _dm;
 
-        public override string Name
-        {
-            get { return _attrs.name; }
-        }
+        public override string Name => _attrs.name;
 
-        protected internal override bool IsStatic
-        {
-            get { return !_attrs.AsInstance; }
-        }
+        protected internal override bool IsStatic => !_attrs.AsInstance;
 
-        protected internal override bool IsOverride
-        {
-            get { return false; }
-        }
+        protected internal override bool IsOverride => false;
 
         protected override AttributeTargets AttributeTarget
         {
@@ -202,10 +187,8 @@ namespace TriAxis.RunSharp
 
         #region ICodeGenContext Members
 
-        bool ICodeGenContext.SupportsScopes
-        {
-            get { return false; }
-        }
+        bool ICodeGenContext.SupportsScopes => false;
+
         #endregion
     }
 }

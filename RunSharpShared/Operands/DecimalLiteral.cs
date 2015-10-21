@@ -82,20 +82,8 @@ namespace TriAxis.RunSharp.Operands
 			g.IL.Emit(OpCodes.Newobj, _decimalExtConstructor);
 		}
 
-		public override Type Type
-		{
-			get
-			{
-				return typeof(decimal);
-			}
-		}
+		public override Type Type => typeof(decimal);
 
-		internal override object ConstantValue
-		{
-			get
-			{
-				return _value;
-			}
-		}
+	    internal override object ConstantValue => _value;
 	}
 }

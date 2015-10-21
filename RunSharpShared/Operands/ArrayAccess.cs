@@ -105,20 +105,8 @@ namespace TriAxis.RunSharp.Operands
 			}
 		}
 
-		public override Type Type
-		{
-			get
-			{
-				return _array.Type.GetElementType();
-			}
-		}
+		public override Type Type => _array.Type.GetElementType();
 
-		internal override bool TrivialAccess
-		{
-			get
-			{
-				return true;
-			}
-		}
+	    internal override bool TrivialAccess => true;
 	}
 }

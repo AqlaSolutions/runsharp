@@ -60,20 +60,8 @@ namespace TriAxis.RunSharp.Operands
 				g.EmitI4Helper(Convert.ToInt32(_value, null));
 		}
 
-		public override Type Type
-		{
-			get
-			{
-				return _value.GetType();
-			}
-		}
+		public override Type Type => _value.GetType();
 
-		internal override object ConstantValue
-		{
-			get
-			{
-				return _value;
-			}
-		}
+	    internal override object ConstantValue => _value;
 	}
 }

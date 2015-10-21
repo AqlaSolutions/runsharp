@@ -54,12 +54,6 @@ namespace TriAxis.RunSharp.Operands
 
 	    public int Value { get; }
 
-	    internal override object ConstantValue
-		{
-			get
-			{
-				return Value;
-			}
-		}
+	    internal override object ConstantValue => Value;
 	}
 }

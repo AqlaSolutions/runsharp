@@ -193,14 +193,10 @@ namespace TriAxis.RunSharp
         public abstract object Target { get; }
         private sealed class ReflectionAttributeMap : AttributeMap
         {
-            public override object Target
-            {
-                get { return _attribute; }
-            }
-            public override Type AttributeType
-            {
-                get { return _attribute.GetType(); }
-            }
+            public override object Target => _attribute;
+
+            public override Type AttributeType => _attribute.GetType();
+
             public override bool TryGet(string key, bool publicOnly, out object value)
             {
                 MemberInfo[] members = Helpers.GetInstanceFieldsAndProperties(_attribute.GetType(), publicOnly);

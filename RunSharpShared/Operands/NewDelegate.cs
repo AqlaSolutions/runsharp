@@ -135,12 +135,6 @@ namespace TriAxis.RunSharp.Operands
 			g.IL.Emit(OpCodes.Newobj, _delegateConstructor);
 		}
 
-		public override Type Type
-		{
-			get
-			{
-				return _delegateType;
-			}
-		}
+		public override Type Type => _delegateType;
 	}
 }

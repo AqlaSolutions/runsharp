@@ -51,20 +51,8 @@ namespace TriAxis.RunSharp.Operands
 			g.IL.Emit(OpCodes.Ldc_R8, _value);
 		}
 
-		public override Type Type
-		{
-			get
-			{
-				return typeof(double);
-			}
-		}
+		public override Type Type => typeof(double);
 
-		internal override object ConstantValue
-		{
-			get
-			{
-				return _value;
-			}
-		}
+	    internal override object ConstantValue => _value;
 	}
 }

@@ -60,12 +60,6 @@ namespace TriAxis.RunSharp.Operands
 				g.IL.Emit(oc);
 		}
 
-		public override Type Type
-		{
-			get
-			{
-				return _op.Type;
-			}
-		}
+		public override Type Type => _op.Type;
 	}
 }

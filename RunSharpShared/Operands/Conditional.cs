@@ -71,12 +71,6 @@ namespace TriAxis.RunSharp.Operands
 			g.IL.MarkLabel(lbFalse);
 		}
 
-		public override Type Type
-		{
-			get
-			{
-				return Operand.GetType(_ifTrue);
-			}
-		}
+		public override Type Type => Operand.GetType(_ifTrue);
 	}
 }

@@ -65,12 +65,6 @@ namespace TriAxis.RunSharp.Operands
 			}
 		}
 		
-		public override Type Type
-		{
-			get
-			{
-				return _type.MakeArrayType();
-			}
-		}
+		public override Type Type => _type.MakeArrayType();
 	}
 }

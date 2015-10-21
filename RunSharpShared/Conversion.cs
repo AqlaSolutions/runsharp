@@ -46,10 +46,10 @@ namespace TriAxis.RunSharp
 	abstract class Conversion
 	{
 		public abstract void Emit(CodeGen g, Type from, Type to);
-		public virtual bool IsAmbiguous { get { return false; } }
-		public virtual bool IsValid { get { return true; } }
+		public virtual bool IsAmbiguous => false;
+	    public virtual bool IsValid => true;
 
-		const byte D = 0;	// direct conversion
+	    const byte D = 0;	// direct conversion
 		const byte I = 1;	// implicit conversion
 		const byte E = 2;	// explicit conversion
 		const byte X = 3;	// no conversion
@@ -138,13 +138,7 @@ namespace TriAxis.RunSharp
 				throw new InvalidCastException(string.Format(null, Properties.Messages.ErrInvalidConversion, from == null ? "<null>" : from.FullName, to.FullName));
 			}
 
-			public override bool IsValid
-			{
-				get
-				{
-					return false;
-				}
-			}
+			public override bool IsValid => false;
 		}
 
 		class Ambiguous : Conversion
@@ -156,21 +150,9 @@ namespace TriAxis.RunSharp
 				throw new AmbiguousMatchException(string.Format(null, Properties.Messages.ErrAmbiguousConversion, from.FullName, to.FullName));
 			}
 
-			public override bool IsAmbiguous
-			{
-				get
-				{
-					return true;
-				}
-			}
+			public override bool IsAmbiguous => true;
 
-			public override bool IsValid
-			{
-				get
-				{
-					return false;
-				}
-			}
+		    public override bool IsValid => false;
 		}
 
 		class UserDefined : Conversion

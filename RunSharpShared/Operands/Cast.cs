@@ -57,12 +57,6 @@ namespace TriAxis.RunSharp.Operands
 			g.EmitGetHelper(_op, _t, true);
 		}
 
-		public override Type Type
-		{
-			get
-			{
-				return _t;
-			}
-		}
+		public override Type Type => _t;
 	}
 }

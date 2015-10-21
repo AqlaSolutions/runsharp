@@ -60,18 +60,12 @@ namespace TriAxis.RunSharp
 			owner.RegisterForCompletion(this);
 		}
 
-		public override Type Type
-		{
-			get
-			{
-				return _type;
-			}
-		}
+		public override Type Type => _type;
 
-		public string Name { get; }
-	    public bool IsStatic { get { return (_attrs & FieldAttributes.Static) != 0; } }
+	    public string Name { get; }
+	    public bool IsStatic => (_attrs & FieldAttributes.Static) != 0;
 
-		#region Custom Attributes
+	    #region Custom Attributes
 
 		public FieldGen Attribute(AttributeType type)
 		{
@@ -139,42 +133,21 @@ namespace TriAxis.RunSharp
 				g.IL.Emit(OpCodes.Ldsflda, _fb);
 		}
 
-		internal override bool TrivialAccess
-		{
-			get
-			{
-				return true;
-			}
-		}
+		internal override bool TrivialAccess => true;
 
-		#region IMemberInfo Members
+	    #region IMemberInfo Members
 
-		MemberInfo IMemberInfo.Member
-		{
-			get { return _fb; }
-		}
+		MemberInfo IMemberInfo.Member => _fb;
 
-		Type IMemberInfo.ReturnType
-		{
-			get { return _type; }
-		}
+	    Type IMemberInfo.ReturnType => _type;
 
-		Type[] IMemberInfo.ParameterTypes
-		{
-			get { return Type.EmptyTypes; }
-		}
+	    Type[] IMemberInfo.ParameterTypes => Type.EmptyTypes;
 
-		bool IMemberInfo.IsParameterArray
-		{
-			get { return false; }
-		}
+	    bool IMemberInfo.IsParameterArray => false;
 
-		bool IMemberInfo.IsOverride
-		{
-			get { return false; }
-		}
+	    bool IMemberInfo.IsOverride => false;
 
-		#endregion
+	    #endregion
 
 		#region IDelayedCompletion Members
 
