@@ -1,3 +1,6 @@
+// TODO replace Exp with g.Exp and inline
+// TODO make methods return wrapper with operand with mapper already
+
 /*
  * Copyright (c) 2015, Stefan Simek, Vladyslav Taranov
  *
