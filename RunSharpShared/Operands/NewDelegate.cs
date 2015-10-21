@@ -66,7 +66,7 @@ namespace TriAxis.RunSharp.Operands
 
 		void Initialize(Type targetType, string methodName)
 		{
-			if (!_delegateType.IsSubclassOf(typeof(Delegate)))
+			if (!_delegateType.IsSubclassOf(_typeMapper.MapType(typeof(Delegate))))
 				throw new ArgumentException(Properties.Messages.ErrInvalidDelegateType, "delegateType");
 
 			IMemberInfo delegateInvocationMethod = null;
@@ -92,7 +92,7 @@ namespace TriAxis.RunSharp.Operands
 
 				Type[] ctorParamTypes = mi.ParameterTypes;
 
-				if (ctorParamTypes.Length == 2 && ctorParamTypes[0] == typeof(object) && ctorParamTypes[1] == typeof(IntPtr))
+				if (ctorParamTypes.Length == 2 && ctorParamTypes[0] == _typeMapper.MapType(typeof(object)) && ctorParamTypes[1] == _typeMapper.MapType(typeof(IntPtr)))
 				{
 					if (_delegateConstructor != null)
 						throw new ArgumentException(Properties.Messages.ErrInvalidDelegateType, "delegateType");
@@ -130,7 +130,7 @@ namespace TriAxis.RunSharp.Operands
 
 		internal override void EmitGet(CodeGen g)
 		{
-			g.EmitGetHelper(_target, typeof(object), false);
+			g.EmitGetHelper(_target, g.TypeMapper.MapType(typeof(object)), false);
 			g.IL.Emit(OpCodes.Ldftn, _method);
 			g.IL.Emit(OpCodes.Newobj, _delegateConstructor);
 		}

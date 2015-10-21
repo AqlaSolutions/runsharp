@@ -43,19 +43,17 @@ namespace TriAxis.RunSharp.Operands
 {
 	class TypeLiteral : Operand
 	{
-		static readonly MethodInfo _typeofMethod = typeof(Type).GetMethod("GetTypeFromHandle");
-
-	    readonly Type _t;
+		readonly Type _t;
 
 		public TypeLiteral(Type t) { _t = t; }
 
 		internal override void EmitGet(CodeGen g)
 		{
 			g.IL.Emit(OpCodes.Ldtoken, _t);
-			g.IL.Emit(OpCodes.Call, _typeofMethod);
+			g.IL.Emit(OpCodes.Call, g.TypeMapper.MapType(typeof(Type)).GetMethod("GetTypeFromHandle"));
 		}
 
-	    public override Type GetReturnType(ITypeMapper typeMapper) => typeof(Type);
+	    public override Type GetReturnType(ITypeMapper typeMapper) => typeMapper.MapType(typeof(Type));
 
 	    internal override object ConstantValue => _t;
 	}

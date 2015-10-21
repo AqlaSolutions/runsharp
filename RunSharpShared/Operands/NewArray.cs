@@ -55,7 +55,7 @@ namespace TriAxis.RunSharp.Operands
 		internal override void EmitGet(CodeGen g)
 		{
 			for (int i = 0; i < _indexes.Length; i++)
-				g.EmitGetHelper(_indexes[i], typeof(int), false);
+				g.EmitGetHelper(_indexes[i], g.TypeMapper.MapType(typeof(int)), false);
 
 			if (_indexes.Length == 1)
 				g.IL.Emit(OpCodes.Newarr, _t);
@@ -63,7 +63,7 @@ namespace TriAxis.RunSharp.Operands
 			{
 				Type[] argTypes = new Type[_indexes.Length];
 				for (int i = 0; i < argTypes.Length; i++)
-					argTypes[i] = typeof(int);
+					argTypes[i] = g.TypeMapper.MapType(typeof(int));
 
 				ModuleBuilder mb = _t.Module as ModuleBuilder;
 

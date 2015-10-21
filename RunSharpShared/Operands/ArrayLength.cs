@@ -46,10 +46,7 @@ namespace TriAxis.RunSharp.Operands
 	    readonly Operand _array;
 	    readonly bool _asLong;
 
-		static readonly MethodInfo _arrGetLen = typeof(Array).GetProperty("Length").GetGetMethod();
-		static readonly MethodInfo _arrGetLongLen = typeof(Array).GetProperty("LongLength").GetGetMethod();
-
-		public ArrayLength(Operand array, bool asLong)
+	    public ArrayLength(Operand array, bool asLong)
 		{
 			_array = array;
 			_asLong = asLong;
@@ -69,7 +66,8 @@ namespace TriAxis.RunSharp.Operands
 				return;
 			}
 
-			g.IL.Emit(OpCodes.Call, _asLong ? _arrGetLongLen : _arrGetLen);
+		    Type arrayType = g.TypeMapper.MapType(typeof(Array));
+		    g.IL.Emit(OpCodes.Call, _asLong ? (MethodInfo)arrayType.GetProperty("LongLength").GetGetMethod() : (MethodInfo)arrayType.GetProperty("Length").GetGetMethod());
 		}
 
 	    public override Type GetReturnType(ITypeMapper typeMapper) => typeMapper.MapType(_asLong ? typeof(long) : typeof(int));

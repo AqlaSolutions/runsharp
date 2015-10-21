@@ -49,18 +49,18 @@ namespace TriAxis.RunSharp.Operands
 
 		internal override void EmitGet(CodeGen g)
 		{
-			Type t = Enum.GetUnderlyingType(GetReturnType(g.TypeMapper));
-			if (t == typeof(long))
+			Type t = Helpers.GetEnumEnderlyingType(GetReturnType(g.TypeMapper));
+			if (Helpers.AreTypesEqual(t, typeof(long), g.TypeMapper))
 				g.EmitI8Helper(Convert.ToInt64(_value, null), true);
-			else if (t == typeof(ulong))
-				g.EmitI8Helper(unchecked((long)Convert.ToUInt64(_value, null)), false);
-			else if (t == typeof(uint))
-				g.EmitI4Helper(unchecked((int)Convert.ToUInt32(_value, null)));
+			else if (Helpers.AreTypesEqual(t, typeof(ulong), g.TypeMapper))
+                g.EmitI8Helper(unchecked((long)Convert.ToUInt64(_value, null)), false);
+			else if (Helpers.AreTypesEqual(t, typeof(uint), g.TypeMapper))
+                g.EmitI4Helper(unchecked((int)Convert.ToUInt32(_value, null)));
 			else
 				g.EmitI4Helper(Convert.ToInt32(_value, null));
 		}
 
-	    public override Type GetReturnType(ITypeMapper typeMapper) => _value.GetType();
+	    public override Type GetReturnType(ITypeMapper typeMapper) => typeMapper.MapType(_value.GetType());
 
 	    internal override object ConstantValue => _value;
 	}

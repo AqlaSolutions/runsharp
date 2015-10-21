@@ -673,7 +673,7 @@ namespace TriAxis.RunSharp
 
 			public IfBlock(Operand condition)
 			{
-				if (!Helpers.AreTypesEqual(condition.GetReturnType(G.TypeMapper), typeof(bool)))
+				if (!Helpers.AreTypesEqual(condition.GetReturnType(G.TypeMapper), typeof(bool), G.TypeMapper))
 					_condition = condition.IsTrue();
 				else
 					_condition = condition;
@@ -739,7 +739,7 @@ namespace TriAxis.RunSharp
 				_test = test;
 				_iter = iter;
 
-				if (!Helpers.AreTypesEqual(test.GetReturnType(G.TypeMapper), typeof(bool)))
+				if (!Helpers.AreTypesEqual(test.GetReturnType(G.TypeMapper), typeof(bool), G.TypeMapper))
 					test = test.IsTrue();
 			}
 
@@ -1014,7 +1014,7 @@ namespace TriAxis.RunSharp
 				bool duplicate;
 
 				// make sure the value is of the governing type
-				IComparable val = value == null ? null : (IComparable)value.ToType(_typeMapper.GetType(_govType.FullName), System.Globalization.CultureInfo.InvariantCulture);
+				IComparable val = value == null ? null : (IComparable)value.ToType(System.Type.GetType(_govType.FullName), System.Globalization.CultureInfo.InvariantCulture);
 
 				if (value == null)
 					duplicate = _defaultExists;

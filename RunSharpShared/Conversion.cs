@@ -432,11 +432,11 @@ namespace TriAxis.RunSharp
 			byte ct = _convTable[(int)tcFrom][(int)tcTo];
 
 			// section 6.1.2 - Implicit numeric conversions
-			if (from != null && (from.IsPrimitive || Helpers.AreTypesEqual(from, typeof(decimal))) && (to.IsPrimitive || Helpers.AreTypesEqual(to, typeof(decimal))))
+			if (from != null && (from.IsPrimitive || Helpers.AreTypesEqual(from, typeof(decimal), typeMapper)) && (to.IsPrimitive || Helpers.AreTypesEqual(to, typeof(decimal), typeMapper)))
 			{
 				if (ct <= I)
 				{
-				    if (Helpers.AreTypesEqual(from, typeof(decimal)) || Helpers.AreTypesEqual(to, typeof(decimal)))
+				    if (Helpers.AreTypesEqual(from, typeof(decimal), typeMapper) || Helpers.AreTypesEqual(to, typeof(decimal), typeMapper))
 						// decimal is handled as user-defined conversion, but as it is a standard one, always enable UDC processing
 						onlyStandard = false;
 					else
@@ -471,7 +471,7 @@ namespace TriAxis.RunSharp
 			}
 
 			// section 6.1.6 - Implicit constant expression conversions
-			if ((object)intLit != null && Helpers.AreTypesEqual(from, typeof(int)) && to.IsPrimitive)
+			if ((object)intLit != null && Helpers.AreTypesEqual(from, typeof(int), typeMapper) && to.IsPrimitive)
 			{
 				int val = intLit.Value;
 
@@ -503,7 +503,7 @@ namespace TriAxis.RunSharp
                         break;
 				}
 			}
-			if (Helpers.AreTypesEqual(from, typeof(long)))
+			if (Helpers.AreTypesEqual(from, typeof(long), typeMapper))
 			{
 				LongLiteral longLit = op as LongLiteral;
 				if ((object)longLit != null && longLit.Value > 0)
@@ -511,7 +511,7 @@ namespace TriAxis.RunSharp
 			}
 
 			// section 6.1.7 - User-defined implicit conversions (details in section 6.4.3)
-			if (onlyStandard || Helpers.AreTypesEqual(from, typeof(object)) || Helpers.AreTypesEqual(to, typeof(object)) || from.IsInterface || to.IsInterface ||
+			if (onlyStandard || Helpers.AreTypesEqual(from, typeof(object), typeMapper) || Helpers.AreTypesEqual(to, typeof(object), typeMapper) || from.IsInterface || to.IsInterface ||
 				to.IsSubclassOf(from) || from.IsSubclassOf(to))
                 return new Invalid(typeMapper);  // skip not-permitted conversion attempts (section 6.4.1)
 
@@ -587,14 +587,14 @@ namespace TriAxis.RunSharp
 			byte ct = _convTable[(int)tcFrom][(int)tcTo];
 
 			// section 6.2.1 - Explicit numeric conversions, 6.2.2 - Explicit enumeration conversions
-			if ((from.IsPrimitive || from.IsEnum || Helpers.AreTypesEqual(from, typeof(decimal))) && (to.IsPrimitive || to.IsEnum || Helpers.AreTypesEqual(to, typeof(decimal))))
+			if ((from.IsPrimitive || from.IsEnum || Helpers.AreTypesEqual(from, typeof(decimal), typeMapper)) && (to.IsPrimitive || to.IsEnum || Helpers.AreTypesEqual(to, typeof(decimal), typeMapper)))
 			{
 				if (ct == D)
 					return new Direct(typeMapper);	// this can happen for conversions involving enum-s
 
 				if (ct <= E)
 				{
-				    if (Helpers.AreTypesEqual(from, typeof(decimal)) || Helpers.AreTypesEqual(to, typeof(decimal)))
+				    if (Helpers.AreTypesEqual(from, typeof(decimal), typeMapper) || Helpers.AreTypesEqual(to, typeof(decimal), typeMapper))
 						// decimal is handled as user-defined conversion, but as it is a standard one, always enable UDC processing
 						onlyStandard = false;
 					else
@@ -603,7 +603,7 @@ namespace TriAxis.RunSharp
 			}
 
 			// section 6.2.5 - User-defined explicit conversions (details in section 6.4.4)
-		    if (!(onlyStandard || Helpers.AreTypesEqual(from, typeof(object)) || Helpers.AreTypesEqual(to, typeof(object)) || from.IsInterface || to.IsInterface ||
+		    if (!(onlyStandard || Helpers.AreTypesEqual(from, typeof(object), typeMapper) || Helpers.AreTypesEqual(to, typeof(object), typeMapper) || from.IsInterface || to.IsInterface ||
 				to.IsSubclassOf(from) || from.IsSubclassOf(to)))
 			{
 				List<UserDefined> candidates = null;

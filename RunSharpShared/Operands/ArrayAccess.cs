@@ -60,7 +60,7 @@ namespace TriAxis.RunSharp.Operands
             _array.EmitGet(g);
 
 			foreach (Operand op in _indexes)
-				g.EmitGetHelper(op, GetType(op, g.TypeMapper) == typeof(int) ? typeof(int) : typeof(long), false);
+			    g.EmitGetHelper(op, g.TypeMapper.MapType(Helpers.AreTypesEqual(GetType(op, g.TypeMapper), typeof(int), g.TypeMapper) ? typeof(int) : typeof(long)), false);
 		}
 
 		internal override void EmitGet(CodeGen g)

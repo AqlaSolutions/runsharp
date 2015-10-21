@@ -50,11 +50,11 @@ namespace TriAxis.RunSharp.Operands
 			g.EmitI4Helper(Value);
 		}
 
-	    readonly Type _type;
+	    readonly System.Type _type;
 
 	    public override Type GetReturnType(ITypeMapper typeMapper)
 	    {
-	        return _type;
+	        return typeMapper.MapType(_type);
 	    }
 
 	    public int Value { get; }

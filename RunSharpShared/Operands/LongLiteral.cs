@@ -43,16 +43,16 @@ namespace TriAxis.RunSharp.Operands
 {
 	class LongLiteral : Operand
 	{
-	    readonly Type _t;
+	    readonly System.Type _t;
 
-	    public LongLiteral(Type t, long value) { _t = t; Value = value; }
+	    public LongLiteral(System.Type t, long value) { _t = t; Value = value; }
 
 		internal override void EmitGet(CodeGen g)
 		{
 			g.EmitI8Helper(Value, _t == typeof(long));
 		}
 
-	    public override Type GetReturnType(ITypeMapper typeMapper) => _t;
+	    public override Type GetReturnType(ITypeMapper typeMapper) => typeMapper.MapType(_t);
 
 	    public long Value { get; }
 

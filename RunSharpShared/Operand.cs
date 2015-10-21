@@ -218,7 +218,7 @@ namespace TriAxis.RunSharp
 			if (str != null)
 				return str;
 
-			Type t = operandOrLiteral.GetType();
+			System.Type t = operandOrLiteral.GetType();
 
 			if (t.IsEnum)
 				return new EnumLiteral((Enum)operandOrLiteral);

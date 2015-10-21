@@ -52,7 +52,7 @@ namespace TriAxis.RunSharp.Operands
 			g.IL.Emit(OpCodes.Ldc_R4, _value);
 		}
 
-	    public override Type GetReturnType(ITypeMapper typeMapper) => typeof(float);
+	    public override Type GetReturnType(ITypeMapper typeMapper) => typeMapper.MapType(typeof(float));
 
 	    internal override object ConstantValue => _value;
 	}

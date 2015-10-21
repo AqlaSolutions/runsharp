@@ -43,10 +43,6 @@ namespace TriAxis.RunSharp.Operands
 {
 	class DecimalLiteral : Operand
 	{
-		static readonly ConstructorInfo _decimalIntConstructor = typeof(decimal).GetConstructor(new Type[] { typeof(int) });
-		static readonly ConstructorInfo _decimalLongConstructor = typeof(decimal).GetConstructor(new Type[] { typeof(long) });
-		static readonly ConstructorInfo _decimalExtConstructor = typeof(decimal).GetConstructor(new Type[] { typeof(int), typeof(int), typeof(int), typeof(bool), typeof(byte) });
-
 	    readonly decimal _value;
 
 		public DecimalLiteral(decimal value) { _value = value; }
@@ -57,19 +53,20 @@ namespace TriAxis.RunSharp.Operands
 			byte exponent = unchecked((byte)((bits[3] >> 16) & 0x1f));
 			bool sign = bits[3] < 0;
 
-			if (exponent == 0 && bits[2] == 0)
+		    Type intType = g.TypeMapper.MapType(typeof(int));
+		    if (exponent == 0 && bits[2] == 0)
 			{
 				if (bits[1] == 0 && (bits[0] > 0 || (bits[0] == 0 && !sign)))	// fits in int32 - use the basic int constructor
 				{
 					g.EmitI4Helper(sign ? -bits[0] : bits[0]);
-					g.IL.Emit(OpCodes.Newobj, _decimalIntConstructor);
+					g.IL.Emit(OpCodes.Newobj, (ConstructorInfo)g.TypeMapper.MapType(typeof(decimal)).GetConstructor(new Type[] { intType }));
 					return;
 				}
 				if (bits[1] > 0)	// fits in int64
 				{
 					long l = unchecked((long)(((ulong)(uint)bits[1] << 32) | (ulong)(uint)bits[0]));
 					g.IL.Emit(OpCodes.Ldc_I8, sign ? -l : l);
-					g.IL.Emit(OpCodes.Newobj, _decimalLongConstructor);
+					g.IL.Emit(OpCodes.Newobj, (ConstructorInfo)g.TypeMapper.MapType(typeof(decimal)).GetConstructor(new Type[] { g.TypeMapper.MapType(typeof(long)) }));
 					return;
 				}
 			}
@@ -79,10 +76,11 @@ namespace TriAxis.RunSharp.Operands
 			g.EmitI4Helper(bits[2]);
 			g.EmitI4Helper(sign ? 1 : 0);
 			g.EmitI4Helper(exponent);
-			g.IL.Emit(OpCodes.Newobj, _decimalExtConstructor);
+			g.IL.Emit(OpCodes.Newobj, (ConstructorInfo)g.TypeMapper.MapType(typeof(decimal)).GetConstructor(
+                new Type[] { intType, intType, intType, g.TypeMapper.MapType(typeof(bool)), g.TypeMapper.MapType(typeof(byte)) }));
 		}
 
-	    public override Type GetReturnType(ITypeMapper typeMapper) => typeof(decimal);
+	    public override Type GetReturnType(ITypeMapper typeMapper) => typeMapper.MapType(typeof(decimal));
 
 	    internal override object ConstantValue => _value;
 	}
