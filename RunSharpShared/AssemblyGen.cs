@@ -49,7 +49,7 @@ namespace TriAxis.RunSharp
 	{
 		AssemblyBuilder _asm;
 		ModuleBuilder _mod;
-		List<TypeGen> _types = new List<TypeGen>();
+        readonly List<TypeGen> _types = new List<TypeGen>();
 		List<AttributeGen> _assemblyAttributes;
 		List<AttributeGen> _moduleAttributes;
 		string _ns = null;
@@ -64,8 +64,8 @@ namespace TriAxis.RunSharp
 
 		class NamespaceContext : IDisposable
 		{
-			AssemblyGen _ag;
-			string _oldNs;
+		    readonly AssemblyGen _ag;
+		    readonly string _oldNs;
 
 			public NamespaceContext(AssemblyGen ag)
 			{

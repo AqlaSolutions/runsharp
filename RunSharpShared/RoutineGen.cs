@@ -42,8 +42,8 @@ namespace TriAxis.RunSharp
 {
 	public abstract class RoutineGen<T> : SignatureGen<T>, ICodeGenContext where T : RoutineGen<T>
 	{
-		TypeGen _owner;
-		Type _ownerType;
+	    readonly TypeGen _owner;
+	    readonly Type _ownerType;
 		CodeGen _code;
 		List<AttributeGen> _customAttributes;
 

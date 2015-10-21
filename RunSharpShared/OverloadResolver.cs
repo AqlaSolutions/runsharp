@@ -48,9 +48,11 @@ namespace TriAxis.RunSharp
 
 	class ApplicableFunction
 	{
-		IMemberInfo _method;
-		Type[] _methodSignature, _appliedSignature, _paramsSignature;
-		Conversion[] _conversions;
+	    readonly IMemberInfo _method;
+	    readonly Type[] _methodSignature;
+	    readonly Type[] _appliedSignature;
+	    readonly Type[] _paramsSignature;
+	    readonly Conversion[] _conversions;
 
 		internal ApplicableFunction(IMemberInfo method, Type[] methodSignature,
 			Type[] appliedSignature, Type[] paramsSignature,

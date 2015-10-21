@@ -56,17 +56,17 @@ namespace TriAxis.RunSharp
 
 	public partial class CodeGen
 	{
-		ILGenerator _il;
-		ICodeGenContext _context;
-		ConstructorGen _cg;
+	    readonly ILGenerator _il;
+	    readonly ICodeGenContext _context;
+	    readonly ConstructorGen _cg;
 		bool _chainCalled = false;
 		bool _reachable = true;
 		bool _hasRetVar = false, _hasRetLabel = false;
 		LocalBuilder _retVar = null;
 		Label _retLabel;
-		Stack<Block> _blocks = new Stack<Block>();
-		Dictionary<string, Label> _labels = new Dictionary<string, Label>();
-		Dictionary<string, Operand> _namedLocals = new Dictionary<string, Operand>();
+	    readonly Stack<Block> _blocks = new Stack<Block>();
+	    readonly Dictionary<string, Label> _labels = new Dictionary<string, Label>();
+	    readonly Dictionary<string, Operand> _namedLocals = new Dictionary<string, Operand>();
 
 		internal ILGenerator IL { get { return _il; } }
 		internal ICodeGenContext Context { get { return _context; } }
@@ -223,8 +223,8 @@ namespace TriAxis.RunSharp
 
 		class _Arg : Operand
 		{
-			ushort _index;
-			Type _type;
+		    readonly ushort _index;
+		    readonly Type _type;
 
 			public _Arg(int index, Type type)
 			{
@@ -290,9 +290,9 @@ namespace TriAxis.RunSharp
 
 		internal class _Local : Operand
 		{
-			CodeGen _owner;
+		    readonly CodeGen _owner;
 			LocalBuilder _var;
-			Block _scope;
+		    readonly Block _scope;
 			Type _t, _tHint;
 
 			public _Local(CodeGen owner)
@@ -395,7 +395,7 @@ namespace TriAxis.RunSharp
 
 		class StaticTarget : Operand
 		{
-			Type _t;
+		    readonly Type _t;
 
 			public StaticTarget(Type t) { this._t = t; }
 

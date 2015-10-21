@@ -772,7 +772,7 @@ namespace TriAxis.RunSharp
 
 		class Reference : Operand
 		{
-			Operand _op;
+		    readonly Operand _op;
 
 			public Reference(Operand op) { this._op = op; }
 

@@ -43,8 +43,8 @@ namespace TriAxis.RunSharp.Operands
 {
 	class SimpleOperation : Operand
 	{
-		Operand _op;
-		OpCode[] _opCodes;
+	    readonly Operand _op;
+	    readonly OpCode[] _opCodes;
 
 		public SimpleOperation(Operand op, params OpCode[] opCodes)
 		{

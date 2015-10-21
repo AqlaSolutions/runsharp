@@ -43,9 +43,9 @@ namespace TriAxis.RunSharp
 {
 	public sealed class ConstructorGen : RoutineGen<ConstructorGen>
 	{
-		MethodAttributes _attributes;
+	    readonly MethodAttributes _attributes;
 		ConstructorBuilder _cb;
-		MethodImplAttributes _implFlags;
+	    readonly MethodImplAttributes _implFlags;
 
 		internal ConstructorBuilder GetConstructorBuilder()
 		{

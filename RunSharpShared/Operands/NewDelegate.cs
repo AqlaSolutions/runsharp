@@ -43,8 +43,8 @@ namespace TriAxis.RunSharp.Operands
 {
 	class NewDelegate : Operand
 	{
-		Type _delegateType;
-		Operand _target;
+	    readonly Type _delegateType;
+	    readonly Operand _target;
 		MethodInfo _method;
 		ConstructorInfo _delegateConstructor;
 	    ITypeInfo _typeInfo;

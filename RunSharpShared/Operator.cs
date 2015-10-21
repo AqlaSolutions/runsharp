@@ -53,88 +53,88 @@ namespace TriAxis.RunSharp
 		internal delegate IEnumerable<IMemberInfo> StandardCandidateProvider(Operand[] operands);
 
 		#region Standard operations
-		static IMemberInfo[] _stdPlusOperators = {
+		static readonly IMemberInfo[] _stdPlusOperators = {
 			UnaryOp<int>.Instance, UnaryOp<uint>.Instance, UnaryOp<long>.Instance, UnaryOp<ulong>.Instance, 
 			UnaryOp<float>.Instance, UnaryOp<double>.Instance
 		};
 
-		static IMemberInfo[] _stdMinusOperators = {
+		static readonly IMemberInfo[] _stdMinusOperators = {
 			UnaryOp<int>.Instance, UnaryOp<long>.Instance, UnaryOp<float>.Instance, UnaryOp<double>.Instance
 		};
 
-		static IMemberInfo[] _stdNotOperators = {
+		static readonly IMemberInfo[] _stdNotOperators = {
 			UnaryOp<int>.Instance, UnaryOp<uint>.Instance, UnaryOp<long>.Instance, UnaryOp<ulong>.Instance,
 		};
 
-		static SpecificOperatorProvider[] _stdNotTemplates = {
+		static readonly SpecificOperatorProvider[] _stdNotTemplates = {
 			UnaryEnumSpecific
 		};
 
-		static IMemberInfo[] _stdUnaryBoolOperators = {
+		static readonly IMemberInfo[] _stdUnaryBoolOperators = {
 			UnaryOp<bool>.Instance
 		};
 
-		static IMemberInfo[] _stdIncOperators = {
+		static readonly IMemberInfo[] _stdIncOperators = {
 			IncOp<sbyte>.Instance, IncOp<byte>.Instance, IncOp<short>.Instance, IncOp<ushort>.Instance,
 			IncOp<int>.Instance, IncOp<uint>.Instance, IncOp<long>.Instance, IncOp<ulong>.Instance,
 			IncOp<char>.Instance, IncOp<float>.Instance, IncOp<double>.Instance
 		};
 
-		static SpecificOperatorProvider[] _stdIncTemplates = {
+		static readonly SpecificOperatorProvider[] _stdIncTemplates = {
 			IncEnumSpecific
 		};
 
-		static IMemberInfo[] _stdAddOperators = {
+		static readonly IMemberInfo[] _stdAddOperators = {
 			SameOp<int>.Instance, SameOp<uint>.Instance, SameOp<long>.Instance, SameOp<ulong>.Instance, SameOp<float>.Instance, SameOp<double>.Instance,
 			StringConcatOp<string, string>.Instance, StringConcatOp<string, object>.Instance, StringConcatOp<object, string>.Instance
 		};
 
-		static SpecificOperatorProvider[] _stdAddTemplates = {
+		static readonly SpecificOperatorProvider[] _stdAddTemplates = {
 			AddEnumSpecific, AddDelegateSpecific
 		};
 
-		static IMemberInfo[] _stdSubOperators = {
+		static readonly IMemberInfo[] _stdSubOperators = {
 			SameOp<int>.Instance, SameOp<uint>.Instance, SameOp<long>.Instance, SameOp<ulong>.Instance, SameOp<float>.Instance, SameOp<double>.Instance
 		};
 
-		static SpecificOperatorProvider[] _stdSubTemplates = {
+		static readonly SpecificOperatorProvider[] _stdSubTemplates = {
 			SubEnumSpecific, SubDelegateSpecific
 		};
 
-		static IMemberInfo[] _stdArithOperators = {
+		static readonly IMemberInfo[] _stdArithOperators = {
 			SameOp<int>.Instance, SameOp<uint>.Instance, SameOp<long>.Instance, SameOp<ulong>.Instance, SameOp<float>.Instance, SameOp<double>.Instance
 		};
 
-		static IMemberInfo[] _stdBitOperators = {
+		static readonly IMemberInfo[] _stdBitOperators = {
 			SameOp<bool>.Instance, SameOp<int>.Instance, SameOp<uint>.Instance, SameOp<long>.Instance, SameOp<ulong>.Instance
 		};
 
-		static SpecificOperatorProvider[] _stdBitTemplates = {
+		static readonly SpecificOperatorProvider[] _stdBitTemplates = {
 			BitEnumSpecific
 		};
 
-		static IMemberInfo[] _stdShiftOperators = {
+		static readonly IMemberInfo[] _stdShiftOperators = {
 			ShiftOp<int>.Instance, ShiftOp<uint>.Instance, ShiftOp<long>.Instance, ShiftOp<ulong>.Instance
 		};
 
-		static IMemberInfo[] _stdEqOperators = {
+		static readonly IMemberInfo[] _stdEqOperators = {
 			CmpOp<bool>.Instance, CmpOp<int>.Instance, CmpOp<uint>.Instance, CmpOp<long>.Instance, CmpOp<ulong>.Instance, CmpOp<float>.Instance, CmpOp<double>.Instance,
 			CmpOp<object>.Instance
 		};
 
-		static SpecificOperatorProvider[] _stdEqTemplates = {
+		static readonly SpecificOperatorProvider[] _stdEqTemplates = {
 			CmpEnumSpecific
 		};
 
-		static IMemberInfo[] _stdCmpOperators = {
+		static readonly IMemberInfo[] _stdCmpOperators = {
 			CmpOp<int>.Instance, CmpOp<uint>.Instance, CmpOp<long>.Instance, CmpOp<ulong>.Instance, CmpOp<float>.Instance, CmpOp<double>.Instance
 		};
 
-		static SpecificOperatorProvider[] _stdCmpTemplates = {
+		static readonly SpecificOperatorProvider[] _stdCmpTemplates = {
 			CmpEnumSpecific
 		};
 
-		static IMemberInfo[] _stdNone = { };
+		static readonly IMemberInfo[] _stdNone = { };
 
 		sealed class UnaryOp<T> : StdOp
 		{
@@ -160,7 +160,7 @@ namespace TriAxis.RunSharp
 
 		class IncOp : StdOp
 		{
-			OpCode _convCode;
+		    readonly OpCode _convCode;
 
 			public IncOp(Type t) : base(t, t)
 			{
@@ -234,7 +234,7 @@ namespace TriAxis.RunSharp
 		sealed class DelegateCombineOp : StdOp
 		{
 			public DelegateCombineOp(Type t) : base(t, t, t) { }
-			static MethodInfo _miCombine = typeof(Delegate).GetMethod("Combine", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(Delegate), typeof(Delegate) }, null);
+			static readonly MethodInfo _miCombine = typeof(Delegate).GetMethod("Combine", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(Delegate), typeof(Delegate) }, null);
 
 			public override void Emit(CodeGen g, Operator op)
 			{
@@ -268,7 +268,7 @@ namespace TriAxis.RunSharp
 		sealed class DelegateRemoveOp : StdOp
 		{
 			public DelegateRemoveOp(Type t) : base(t, t, t) { }
-			static MethodInfo _miRemove = typeof(Delegate).GetMethod("Remove", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(Delegate), typeof(Delegate) }, null);
+			static readonly MethodInfo _miRemove = typeof(Delegate).GetMethod("Remove", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(Delegate), typeof(Delegate) }, null);
 
 			public override void Emit(CodeGen g, Operator op)
 			{
@@ -281,7 +281,7 @@ namespace TriAxis.RunSharp
 		{
 			public static readonly StringConcatOp<T1, T2> Instance = new StringConcatOp<T1, T2>();
 
-			MethodInfo _method;
+		    readonly MethodInfo _method;
 			private StringConcatOp() : base(typeof(string), typeof(T1), typeof(T2))
 			{
 				_method = typeof(string).GetMethod("Concat", BindingFlags.Public | BindingFlags.Static, null, ParameterTypes, null);
@@ -340,8 +340,8 @@ namespace TriAxis.RunSharp
 
 		class StdOp : IMemberInfo, IStandardOperation
 		{
-			Type _retType;
-			Type[] _opTypes;
+		    readonly Type _retType;
+		    readonly Type[] _opTypes;
 			protected bool Unsigned;
 
 			public StdOp(Type returnType, params Type[] opTypes)

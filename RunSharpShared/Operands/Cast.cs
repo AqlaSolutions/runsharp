@@ -43,8 +43,8 @@ namespace TriAxis.RunSharp.Operands
 {
 	class Cast : Operand
 	{
-		Operand _op;
-		Type _t;
+	    readonly Operand _op;
+	    readonly Type _t;
 
 		public Cast(Operand op, Type t)
 		{

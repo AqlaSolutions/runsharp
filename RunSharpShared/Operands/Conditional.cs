@@ -43,9 +43,11 @@ namespace TriAxis.RunSharp.Operands
 {
 	class Conditional : Operand
 	{
-		Operand _cond, _ifTrue, _ifFalse;
+	    readonly Operand _cond;
+	    readonly Operand _ifTrue;
+	    readonly Operand _ifFalse;
 
-		public Conditional(Operand cond, Operand ifTrue, Operand ifFalse)
+	    public Conditional(Operand cond, Operand ifTrue, Operand ifFalse)
 		{
 			// TODO: proper checking as in specification
 			if (Operand.GetType(ifTrue) != Operand.GetType(ifFalse))

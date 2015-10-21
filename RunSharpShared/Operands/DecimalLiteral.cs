@@ -43,11 +43,11 @@ namespace TriAxis.RunSharp.Operands
 {
 	class DecimalLiteral : Operand
 	{
-		static ConstructorInfo _decimalIntConstructor = typeof(decimal).GetConstructor(new Type[] { typeof(int) });
-		static ConstructorInfo _decimalLongConstructor = typeof(decimal).GetConstructor(new Type[] { typeof(long) });
-		static ConstructorInfo _decimalExtConstructor = typeof(decimal).GetConstructor(new Type[] { typeof(int), typeof(int), typeof(int), typeof(bool), typeof(byte) });
+		static readonly ConstructorInfo _decimalIntConstructor = typeof(decimal).GetConstructor(new Type[] { typeof(int) });
+		static readonly ConstructorInfo _decimalLongConstructor = typeof(decimal).GetConstructor(new Type[] { typeof(long) });
+		static readonly ConstructorInfo _decimalExtConstructor = typeof(decimal).GetConstructor(new Type[] { typeof(int), typeof(int), typeof(int), typeof(bool), typeof(byte) });
 
-		decimal _value;
+	    readonly decimal _value;
 
 		public DecimalLiteral(decimal value) { this._value = value; }
 

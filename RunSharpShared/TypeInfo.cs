@@ -66,8 +66,8 @@ namespace TriAxis.RunSharp
 
     class TypeInfo : ITypeInfo
     {
-        Dictionary<Type, ITypeInfoProvider> _providers = new Dictionary<Type, ITypeInfoProvider>();
-        Dictionary<Type, WeakReference> _cache = new Dictionary<Type, WeakReference>();
+        readonly Dictionary<Type, ITypeInfoProvider> _providers = new Dictionary<Type, ITypeInfoProvider>();
+        readonly Dictionary<Type, WeakReference> _cache = new Dictionary<Type, WeakReference>();
 
         public TypeInfo(ITypeMapper typeMapper)
         {
@@ -78,12 +78,12 @@ namespace TriAxis.RunSharp
 
         class CacheEntry
         {
-            Type _t;
+            readonly Type _t;
             IMemberInfo[] _constructors, _fields, _properties, _events, _methods;
-            static string _nullStr = "$NULL";
+            static readonly string _nullStr = "$NULL";
             string _defaultMember = _nullStr;
 
-            TypeInfo _;
+            readonly TypeInfo _;
 
             public CacheEntry(Type t, TypeInfo owner)
             {
@@ -108,7 +108,7 @@ namespace TriAxis.RunSharp
                 }
             }
 
-            static IMemberInfo[] _empty = { };
+            static readonly IMemberInfo[] _empty = { };
 
             public IMemberInfo[] Constructors
             {
@@ -442,8 +442,8 @@ namespace TriAxis.RunSharp
 
         class StdMethodInfo : IMemberInfo
         {
-            MethodBase _mb;
-            MethodInfo _mi;
+            readonly MethodBase _mb;
+            readonly MethodInfo _mi;
             string _name;
             Type _returnType;
             Type[] _parameterTypes;
@@ -526,9 +526,9 @@ namespace TriAxis.RunSharp
 
         class StdPropertyInfo : IMemberInfo
         {
-            PropertyInfo _pi;
+            readonly PropertyInfo _pi;
             string _name;
-            MethodInfo _mi;
+            readonly MethodInfo _mi;
             Type _returnType;
             Type[] _parameterTypes;
             bool _hasVar;
@@ -600,9 +600,9 @@ namespace TriAxis.RunSharp
 
         class StdEventInfo : IMemberInfo
         {
-            EventInfo _ei;
-            string _name;
-            MethodInfo _mi;
+            readonly EventInfo _ei;
+            readonly string _name;
+            readonly MethodInfo _mi;
 
             public StdEventInfo(EventInfo ei)
             {
@@ -631,8 +631,8 @@ namespace TriAxis.RunSharp
 
         class StdFieldInfo : IMemberInfo
         {
-            FieldInfo _fi;
-            string _name;
+            readonly FieldInfo _fi;
+            readonly string _name;
 
             public StdFieldInfo(FieldInfo fi)
             {

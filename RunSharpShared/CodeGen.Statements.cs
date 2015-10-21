@@ -280,7 +280,7 @@ namespace TriAxis.RunSharp
 			DoInvoke(targetDelegate.InvokeDelegate(args));
 		}
 
-	    ITypeMapper _typeMapper;
+	    readonly ITypeMapper _typeMapper;
 
 	    public CodeGen(ITypeMapper typeMapper)
 	    {
@@ -666,7 +666,7 @@ namespace TriAxis.RunSharp
 
 		class IfBlock : Block
 		{
-			Operand _condition;
+		    readonly Operand _condition;
 
 			public IfBlock(Operand condition)
 			{
@@ -695,7 +695,7 @@ namespace TriAxis.RunSharp
 
 		class ElseBlock : Block
 		{
-			IfBlock _ifBlk;
+		    readonly IfBlock _ifBlk;
 			Label _lbSkip;
 			bool _canSkip;
 
@@ -726,9 +726,9 @@ namespace TriAxis.RunSharp
 
 		class LoopBlock : Block, IBreakable, IContinuable
 		{
-			IStatement _init;
-			Operand _test;
-			IStatement _iter;
+		    readonly IStatement _init;
+		    readonly Operand _test;
+		    readonly IStatement _iter;
 
 			public LoopBlock(IStatement init, Operand test, IStatement iter)
 			{
@@ -801,9 +801,9 @@ namespace TriAxis.RunSharp
 		// TODO: proper implementation, including dispose
 		class ForeachBlock : Block, IBreakable, IContinuable
 		{
-			Type _elementType;
+		    readonly Type _elementType;
 			Operand _collection;
-		    ITypeMapper _typeMapper;
+		    readonly ITypeMapper _typeMapper;
 
 			public ForeachBlock(Type elementType, Operand collection, ITypeMapper typeMapper)
 			{
@@ -870,7 +870,7 @@ namespace TriAxis.RunSharp
 			bool _endReachable = false;
 			bool _isFinally = false;
 
-		    ITypeMapper _typeMapper;
+		    readonly ITypeMapper _typeMapper;
 
 		    public ExceptionBlock(ITypeMapper typeMapper)
 		    {
@@ -937,23 +937,24 @@ namespace TriAxis.RunSharp
 
 		class SwitchBlock : Block, IBreakable
 		{
-			static System.Type[] _validTypes = { 
+			static readonly System.Type[] _validTypes = { 
 				typeof(sbyte), typeof(byte), typeof(short), typeof(ushort), typeof(int), typeof(uint), typeof(long), typeof(ulong), typeof(char), typeof(string)
 			};
-			MethodInfo _strCmp;
 
-			Operand _expression;
-			Conversion _conv;
-			Type _govType;
+		    readonly MethodInfo _strCmp;
+
+		    readonly Operand _expression;
+		    readonly Conversion _conv;
+		    readonly Type _govType;
 			Label _lbDecision;
 			Label _lbEnd;
 			Label _lbDefault;
 			LocalBuilder _exp;
 			bool _defaultExists = false;
 			bool _endReachable = false;
-			SortedList<IComparable, Label> _cases = new SortedList<IComparable, Label>();
+		    readonly SortedList<IComparable, Label> _cases = new SortedList<IComparable, Label>();
 
-		    ITypeMapper _typeMapper;
+		    readonly ITypeMapper _typeMapper;
 
 			public SwitchBlock(Operand expression, ITypeMapper typeMapper)
 			{

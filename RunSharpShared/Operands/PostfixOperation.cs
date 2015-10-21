@@ -43,8 +43,8 @@ namespace TriAxis.RunSharp.Operands
 {
 	class PostfixOperation : Operand, IStatement
 	{
-		Operand _target;
-		OverloadableOperation _baseOp;
+	    readonly Operand _target;
+	    readonly OverloadableOperation _baseOp;
 
 		public PostfixOperation(Operator op, Operand operand)
 		{

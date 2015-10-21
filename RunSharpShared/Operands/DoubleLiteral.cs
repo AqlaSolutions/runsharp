@@ -42,7 +42,7 @@ namespace TriAxis.RunSharp.Operands
 {
 	class DoubleLiteral : Operand
 	{
-		double _value;
+	    readonly double _value;
 
 		public DoubleLiteral(double value) { this._value = value; }
 

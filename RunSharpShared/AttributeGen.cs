@@ -42,7 +42,7 @@ namespace TriAxis.RunSharp
 {
 	public struct AttributeType
 	{
-		Type _t;
+	    readonly Type _t;
 
 		private AttributeType(Type t)
 		{
@@ -73,9 +73,9 @@ namespace TriAxis.RunSharp
 
 	public class AttributeGen
 	{
-		Type _attributeType;
-		object[] _args;
-		ApplicableFunction _ctor;
+	    readonly Type _attributeType;
+	    readonly object[] _args;
+	    readonly ApplicableFunction _ctor;
 		Dictionary<PropertyInfo, object> _namedProperties;
 		Dictionary<FieldInfo, object> _namedFields;
 
@@ -258,7 +258,7 @@ namespace TriAxis.RunSharp
 
 	public class AttributeGen<TOuterContext> : AttributeGen
 	{
-		TOuterContext _context;
+	    readonly TOuterContext _context;
 
 		internal AttributeGen(TOuterContext context, AttributeTargets target, AttributeType attributeType, object[] args)
 			: base(target, attributeType, args)

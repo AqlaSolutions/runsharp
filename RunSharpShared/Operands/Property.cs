@@ -43,9 +43,9 @@ namespace TriAxis.RunSharp.Operands
 {
 	class Property : Operand
 	{
-		ApplicableFunction _property;
-		Operand _target;
-		Operand[] _indexes;
+	    readonly ApplicableFunction _property;
+	    readonly Operand _target;
+	    readonly Operand[] _indexes;
 
 		public Property(ApplicableFunction property, Operand target, Operand[] indexes)
 		{

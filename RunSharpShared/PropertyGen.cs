@@ -43,11 +43,11 @@ namespace TriAxis.RunSharp
 {
 	public sealed class PropertyGen : Operand, IMemberInfo, IDelayedCompletion
 	{
-		TypeGen _owner;
-		MethodAttributes _attrs;
-		Type _type;
-		string _name;
-		ParameterGenCollection _indexParameters = new ParameterGenCollection();
+	    readonly TypeGen _owner;
+	    readonly MethodAttributes _attrs;
+	    readonly Type _type;
+	    readonly string _name;
+	    readonly ParameterGenCollection _indexParameters = new ParameterGenCollection();
 		PropertyBuilder _pb;
 		Type _interfaceType;
 		List<AttributeGen> _customAttributes;

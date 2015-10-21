@@ -43,9 +43,9 @@ namespace TriAxis.RunSharp.Operands
 {
 	class Invocation : Operand
 	{
-		ApplicableFunction _method;
-		Operand _target;
-		Operand[] _args;
+	    readonly ApplicableFunction _method;
+	    readonly Operand _target;
+	    readonly Operand[] _args;
 
 		public Invocation(ApplicableFunction method, Operand target, Operand[] args)
 		{

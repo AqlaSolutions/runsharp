@@ -43,8 +43,8 @@ namespace TriAxis.RunSharp.Operands
 {
 	class NewObject : Operand
 	{
-		ApplicableFunction _ctor;
-		Operand[] _args;
+	    readonly ApplicableFunction _ctor;
+	    readonly Operand[] _args;
 
 		public NewObject(ApplicableFunction ctor, Operand[] args)
 		{

@@ -54,7 +54,7 @@ namespace TriAxis.RunSharp
 		const byte E = 2;	// explicit conversion
 		const byte X = 3;	// no conversion
 
-		static byte[][] _convTable = { // indexed by TypeCode [from,to]
+		static readonly byte[][] _convTable = { // indexed by TypeCode [from,to]
 			// FROM      TO:       NA,OB,DN,BL,CH,I1,U1,I2,U2,I4,U4,I8,U8,R4,R8,DC,DT,--,ST
 			/* NA */ new byte[] { X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X },
 			/* OB */ new byte[] { X, D, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X },
@@ -175,10 +175,12 @@ namespace TriAxis.RunSharp
 
 		class UserDefined : Conversion
 		{
-			Conversion _before, _after;
-			IMemberInfo _method;
-			Type _fromType, _toType;
-			bool _sxSubset, _txSubset;
+		    readonly Conversion _before;
+		    readonly Conversion _after;
+		    readonly IMemberInfo _method;
+		    readonly Type _fromType;
+		    readonly Type _toType;
+		    bool _sxSubset, _txSubset;
 
 			public UserDefined(Conversion before, IMemberInfo method, Conversion after)
 			{
@@ -381,7 +383,7 @@ namespace TriAxis.RunSharp
 
 		sealed class FakeTypedOperand : Operand
 		{
-			Type _t;
+		    readonly Type _t;
 
 			public FakeTypedOperand(Type t) { this._t = t; }
 

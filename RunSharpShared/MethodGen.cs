@@ -43,10 +43,10 @@ namespace TriAxis.RunSharp
 {
 	public sealed class MethodGen : RoutineGen<MethodGen>
 	{
-		string _name;
-		MethodAttributes _attributes;
+	    readonly string _name;
+	    readonly MethodAttributes _attributes;
 		MethodBuilder _mb;
-		MethodImplAttributes _implFlags;
+	    readonly MethodImplAttributes _implFlags;
 		Type _interfaceType;
 
 		internal MethodBuilder GetMethodBuilder()

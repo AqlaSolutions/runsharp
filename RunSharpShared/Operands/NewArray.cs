@@ -43,8 +43,8 @@ namespace TriAxis.RunSharp.Operands
 {
 	class NewArray : Operand
 	{
-		Type _t;
-		Operand[] _indexes;
+	    readonly Type _t;
+	    readonly Operand[] _indexes;
 
 		public NewArray(Type t, Operand[] indexes)
 		{

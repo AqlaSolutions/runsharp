@@ -43,8 +43,8 @@ namespace TriAxis.RunSharp.Operands
 {
 	class InitializedArray : Operand
 	{
-		Type _type;
-		Operand[] _elements;
+	    readonly Type _type;
+	    readonly Operand[] _elements;
 
 		public InitializedArray(Type type, Operand[] elements)
 		{

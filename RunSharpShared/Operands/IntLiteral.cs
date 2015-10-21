@@ -43,8 +43,8 @@ namespace TriAxis.RunSharp.Operands
 {
 	class IntLiteral : Operand
 	{
-		Type _t;
-		int _value;
+	    readonly Type _t;
+	    readonly int _value;
 
 		public IntLiteral(Type t, int value) { this._t = t; this._value = value; }
 

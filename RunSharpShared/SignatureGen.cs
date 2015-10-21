@@ -50,8 +50,8 @@ namespace TriAxis.RunSharp
 
     public abstract class SignatureGen<T> : ISignatureGen where T : SignatureGen<T>
     {
-        ParameterGen _returnParameter;
-        ParameterGenCollection _parameters = new ParameterGenCollection();
+        readonly ParameterGen _returnParameter;
+        readonly ParameterGenCollection _parameters = new ParameterGenCollection();
         bool _signatureComplete;
         internal readonly T TypedThis;
 

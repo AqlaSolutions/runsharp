@@ -43,7 +43,7 @@ namespace TriAxis.RunSharp.Operands
 {
 	class FloatLiteral : Operand
 	{
-		float _value;
+	    readonly float _value;
 
 		public FloatLiteral(float value) { this._value = value; }
 

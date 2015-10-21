@@ -43,7 +43,7 @@ namespace TriAxis.RunSharp
 {
     public sealed class DynamicMethodGen : RoutineGen<DynamicMethodGen>, ICodeGenContext
     {
-        Attributes _attrs;
+        readonly Attributes _attrs;
         DynamicMethod _dm;
 
         public static Attributes Static(Type owner)

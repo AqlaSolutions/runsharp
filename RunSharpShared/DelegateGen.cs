@@ -42,12 +42,12 @@ namespace TriAxis.RunSharp
 {
 	public class DelegateGen : SignatureGen<DelegateGen>
 	{
-		AssemblyGen _owner;
-		string _name;
-		TypeAttributes _attrs;
+	    readonly AssemblyGen _owner;
+	    readonly string _name;
+	    readonly TypeAttributes _attrs;
 		TypeGen _delegateType;
 		List<AttributeGen> _customAttributes;
-        TypeGen _owner2;
+	    readonly TypeGen _owner2;
 
 	    public ITypeMapper TypeMapper { get { return _owner != null ? _owner.TypeMapper : _owner2.TypeMapper; } }
 

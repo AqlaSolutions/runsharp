@@ -43,8 +43,8 @@ namespace TriAxis.RunSharp.Operands
 {
 	class LongLiteral : Operand
 	{
-		Type _t;
-		long _value;
+	    readonly Type _t;
+	    readonly long _value;
 
 		public LongLiteral(Type t, long value) { this._t = t; this._value = value; }
 

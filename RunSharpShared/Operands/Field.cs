@@ -43,8 +43,8 @@ namespace TriAxis.RunSharp.Operands
 {
 	class Field : Operand
 	{
-		FieldInfo _fi;
-		Operand _target;
+	    readonly FieldInfo _fi;
+	    readonly Operand _target;
 
 		public Field(FieldInfo fi, Operand target)
 		{

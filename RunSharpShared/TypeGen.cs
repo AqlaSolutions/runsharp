@@ -56,7 +56,7 @@ namespace TriAxis.RunSharp
 	{
 		class InterfaceImplEntry
 		{
-			IMemberInfo _interfaceMethod;
+		    readonly IMemberInfo _interfaceMethod;
 			MethodGen _implementation;
 
 			public InterfaceImplEntry(IMemberInfo interfaceMethod)
@@ -83,24 +83,24 @@ namespace TriAxis.RunSharp
 			}
 		}
 
-		AssemblyGen _owner;
+	    readonly AssemblyGen _owner;
         public ITypeMapper TypeMapper { get { return _owner.TypeMapper; } }
-		string _name;
-		Type _baseType;
+	    readonly string _name;
+	    readonly Type _baseType;
 		Type[] _interfaces;
-		TypeBuilder _tb;
+	    readonly TypeBuilder _tb;
 		Type _type;
 		MethodGen _commonCtor = null;
 		ConstructorGen _staticCtor = null;
-		List<IDelayedDefinition> _definitionQueue = new List<IDelayedDefinition>();
-		List<IDelayedCompletion> _completionQueue = new List<IDelayedCompletion>();
-		List<TypeGen> _nestedTypes = new List<TypeGen>();
-		List<InterfaceImplEntry> _implementations = new List<InterfaceImplEntry>();
-		List<IMemberInfo> _constructors = new List<IMemberInfo>();
-		List<IMemberInfo> _fields = new List<IMemberInfo>();
-		List<IMemberInfo> _properties = new List<IMemberInfo>();
-		List<IMemberInfo> _events = new List<IMemberInfo>();
-		List<IMemberInfo> _methods = new List<IMemberInfo>();
+	    readonly List<IDelayedDefinition> _definitionQueue = new List<IDelayedDefinition>();
+	    readonly List<IDelayedCompletion> _completionQueue = new List<IDelayedCompletion>();
+	    readonly List<TypeGen> _nestedTypes = new List<TypeGen>();
+	    readonly List<InterfaceImplEntry> _implementations = new List<InterfaceImplEntry>();
+	    readonly List<IMemberInfo> _constructors = new List<IMemberInfo>();
+	    readonly List<IMemberInfo> _fields = new List<IMemberInfo>();
+	    readonly List<IMemberInfo> _properties = new List<IMemberInfo>();
+	    readonly List<IMemberInfo> _events = new List<IMemberInfo>();
+	    readonly List<IMemberInfo> _methods = new List<IMemberInfo>();
 		List<AttributeGen> _customAttributes = new List<AttributeGen>();
 		string _indexerName;
 		

@@ -43,11 +43,11 @@ namespace TriAxis.RunSharp
 {
 	public sealed class FieldGen : Operand, IMemberInfo, IDelayedCompletion
 	{
-		TypeGen _owner;
-		FieldAttributes _attrs;
-		string _name;
-		Type _type;
-		FieldBuilder _fb;
+	    readonly TypeGen _owner;
+	    readonly FieldAttributes _attrs;
+	    readonly string _name;
+	    readonly Type _type;
+	    readonly FieldBuilder _fb;
 		List<AttributeGen> _customAttributes = new List<AttributeGen>();
 
 		internal FieldGen(TypeGen owner, string name, Type type, FieldAttributes attrs)

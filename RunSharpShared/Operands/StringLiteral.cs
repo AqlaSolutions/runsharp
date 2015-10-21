@@ -43,7 +43,7 @@ namespace TriAxis.RunSharp.Operands
 {
 	class StringLiteral : Operand
 	{
-		string _str;
+	    readonly string _str;
 
 		public StringLiteral(string str) { this._str = str; }
 

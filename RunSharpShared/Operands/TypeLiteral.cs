@@ -43,9 +43,9 @@ namespace TriAxis.RunSharp.Operands
 {
 	class TypeLiteral : Operand
 	{
-		static MethodInfo _typeofMethod = typeof(Type).GetMethod("GetTypeFromHandle");
+		static readonly MethodInfo _typeofMethod = typeof(Type).GetMethod("GetTypeFromHandle");
 
-		Type _t;
+	    readonly Type _t;
 
 		public TypeLiteral(Type t) { this._t = t; }
 

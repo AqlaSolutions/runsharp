@@ -43,9 +43,9 @@ namespace TriAxis.RunSharp.Operands
 {
 	class OverloadableOperation : Operand
 	{
-		Operator _op;
-		Operand[] _operands;
-		ApplicableFunction _af;
+	    readonly Operator _op;
+	    readonly Operand[] _operands;
+	    readonly ApplicableFunction _af;
 
 		public OverloadableOperation(Operator op, params Operand[] operands)
 		{

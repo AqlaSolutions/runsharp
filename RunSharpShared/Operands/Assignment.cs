@@ -43,8 +43,9 @@ namespace TriAxis.RunSharp.Operands
 {
 	public class Assignment : Operand, IStatement
 	{
-		Operand _lvalue, _rvalue;
-		bool _allowExplicitConversion;
+	    readonly Operand _lvalue;
+	    readonly Operand _rvalue;
+	    readonly bool _allowExplicitConversion;
 
 		internal Assignment(Operand lvalue, Operand rvalue, bool allowExplicitConversion)
 		{

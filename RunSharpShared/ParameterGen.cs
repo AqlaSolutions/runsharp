@@ -43,11 +43,11 @@ namespace TriAxis.RunSharp
 	public class ParameterGen
 	{
 		ParameterGenCollection _owner;
-		int _position;
-		Type _parameterType;
-		ParameterAttributes _attributes = ParameterAttributes.None;
-		string _name;
-		bool _va;
+	    readonly int _position;
+	    readonly Type _parameterType;
+	    readonly ParameterAttributes _attributes = ParameterAttributes.None;
+	    readonly string _name;
+	    readonly bool _va;
 		internal List<AttributeGen> CustomAttributes;
 
 		internal ParameterGen(ParameterGenCollection owner, int position, Type parameterType, ParameterAttributes attributes, string name, bool va)
@@ -105,7 +105,7 @@ namespace TriAxis.RunSharp
 
 	public class ParameterGen<TOuterContext> : ParameterGen
 	{
-		TOuterContext _context;
+	    readonly TOuterContext _context;
 
 		internal ParameterGen(TOuterContext context, ParameterGenCollection owner, int position, Type parameterType, ParameterAttributes attributes, string name, bool va)
 			: base(owner, position, parameterType, attributes, name, va)

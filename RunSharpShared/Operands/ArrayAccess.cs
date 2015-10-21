@@ -43,8 +43,8 @@ namespace TriAxis.RunSharp.Operands
 {
 	class ArrayAccess : Operand
 	{
-		Operand _array;
-		Operand[] _indexes;
+	    readonly Operand _array;
+	    readonly Operand[] _indexes;
 
 		public ArrayAccess(Operand array, Operand[] indexes)
 		{

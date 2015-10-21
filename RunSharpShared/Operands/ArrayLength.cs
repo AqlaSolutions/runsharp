@@ -43,11 +43,11 @@ namespace TriAxis.RunSharp.Operands
 {
 	class ArrayLength : Operand
 	{
-		Operand _array;
-		bool _asLong;
+	    readonly Operand _array;
+	    readonly bool _asLong;
 
-		static MethodInfo _arrGetLen = typeof(Array).GetProperty("Length").GetGetMethod();
-		static MethodInfo _arrGetLongLen = typeof(Array).GetProperty("LongLength").GetGetMethod();
+		static readonly MethodInfo _arrGetLen = typeof(Array).GetProperty("Length").GetGetMethod();
+		static readonly MethodInfo _arrGetLongLen = typeof(Array).GetProperty("LongLength").GetGetMethod();
 
 		public ArrayLength(Operand array, bool asLong)
 		{

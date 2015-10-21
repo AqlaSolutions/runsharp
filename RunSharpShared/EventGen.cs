@@ -43,10 +43,10 @@ namespace TriAxis.RunSharp
 {
 	public sealed class EventGen : Operand, IMemberInfo, IDelayedCompletion
 	{
-		TypeGen _owner;
-		MethodAttributes _attrs;
-		Type _type;
-		string _name;
+	    readonly TypeGen _owner;
+	    readonly MethodAttributes _attrs;
+	    readonly Type _type;
+	    readonly string _name;
 		EventBuilder _eb;
 		FieldGen _handler = null;
 		List<AttributeGen> _customAttributes;
@@ -239,7 +239,7 @@ namespace TriAxis.RunSharp
 
 		class EventInfoProxy : EventInfo
 		{
-			EventGen _eg;
+		    readonly EventGen _eg;
 
 			public EventInfoProxy(EventGen eg) { this._eg = eg; }
 

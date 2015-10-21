@@ -43,7 +43,7 @@ namespace TriAxis.RunSharp.Operands
 {
 	class EnumLiteral : Operand
 	{
-		Enum _value;
+	    readonly Enum _value;
 
 		public EnumLiteral(Enum value) { this._value = value; }
 
