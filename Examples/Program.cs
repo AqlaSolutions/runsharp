@@ -118,11 +118,10 @@ namespace TriAxis.RunSharp
             {
                 string testName = GetTestName(gen);
                 Console.WriteLine(">>> GEN {0}", testName);
-                string name = noexe ? testName : Path.Combine(exePath, testName + ".exe");
+                string name = testName;
                 AssemblyGen asm;
-                asm = noexe ? new AssemblyGen(Thread.GetDomain(), new AssemblyName(name),
-                                                                    AssemblyBuilderAccess.Run, null, false)
-                            : new AssemblyGen(name);
+                asm = noexe ? new AssemblyGen(name, new CompilerOptions())
+                          : new AssemblyGen(name, new CompilerOptions() { OutputPath = Path.Combine(exePath, name + ".exe") });
                 gen(asm);
                 if (!noexe)
                     asm.Save();

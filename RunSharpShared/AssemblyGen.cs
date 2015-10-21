@@ -23,6 +23,7 @@
  */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
@@ -39,11 +40,12 @@ using BindingFlags = IKVM.Reflection.BindingFlags;
 #else
 using System.Reflection;
 using System.Reflection.Emit;
+using Universe = System.AppDomain;
 #endif
 
 namespace TriAxis.RunSharp
 {
-	public class AssemblyGen
+    public class AssemblyGen
 	{
 		AssemblyBuilder asm;
 		ModuleBuilder mod;
@@ -158,7 +160,7 @@ namespace TriAxis.RunSharp
 		#region Types
 		public TypeGen Class(string name)
 		{
-			return Class(name, typeof(object));
+			return Class(name, TypeMapper.MapType(typeof(object)));
 		}
 
 		public TypeGen Class(string name, Type baseType)
@@ -180,7 +182,7 @@ namespace TriAxis.RunSharp
 
 		public TypeGen Struct(string name, params Type[] interfaces)
 		{
-			TypeGen tg = new TypeGen(this, Qualify(name), (attrs | TypeAttributes.Sealed | TypeAttributes.SequentialLayout) ^ TypeAttributes.BeforeFieldInit, typeof(ValueType), interfaces);
+			TypeGen tg = new TypeGen(this, Qualify(name), (attrs | TypeAttributes.Sealed | TypeAttributes.SequentialLayout) ^ TypeAttributes.BeforeFieldInit, TypeMapper.MapType(typeof(ValueType)), interfaces);
 			attrs = 0;
 			return tg;
 		}
@@ -201,54 +203,106 @@ namespace TriAxis.RunSharp
 		{
 			return new DelegateGen(this, Qualify(name), returnType, (attrs | TypeAttributes.Sealed) & ~(TypeAttributes.Abstract | TypeAttributes.BeforeFieldInit));
 		}
-		#endregion
+        #endregion
 
-		#region Construction
-		public AssemblyGen(string name) : this(name, false) {}
-		public AssemblyGen(string name, bool debugInfo)
-		{
-			if (name.IndexOfAny(new char[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar, Path.VolumeSeparatorChar }) != -1 ||
-				name.EndsWith(".dll", StringComparison.OrdinalIgnoreCase) ||
-				name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
-			{
-				// treat as filename
-				Initialize(AppDomain.CurrentDomain, new AssemblyName(Path.GetFileNameWithoutExtension(name)), AssemblyBuilderAccess.RunAndSave,
-					name, debugInfo);
-			}
-			else
-			{
-				Initialize(AppDomain.CurrentDomain, new AssemblyName(name), AssemblyBuilderAccess.Run, null, debugInfo);
-			}
-		}
+        #region Construction
 
-		AssemblyBuilderAccess access;
-		string fileName;
+        AssemblyBuilderAccess access;
+        public ITypeMapper TypeMapper { get; private set; }
+        public Universe Universe { get; private set; }
 
-		public AssemblyGen(AppDomain domain, AssemblyName name, AssemblyBuilderAccess access, string fileName, bool symbolInfo)
-		{
-			Initialize(domain, name, access, fileName, symbolInfo);
-		}
+#if !FEAT_IKVM
 
-		void Initialize(AppDomain domain, AssemblyName name, AssemblyBuilderAccess access, string fileName, bool symbolInfo)
-		{
-			this.access = access;
-			this.fileName = fileName;
+        public AssemblyGen(string name, CompilerOptions options, ITypeMapper typeMapper = null)
+        {
+            Initialize(AppDomain.CurrentDomain, name, !Helpers.IsNullOrEmpty(options.OutputPath) ?AssemblyBuilderAccess.RunAndSave : AssemblyBuilderAccess.Run, options, typeMapper);
+
+        }
+
+        public AssemblyGen(AppDomain domain, string name, CompilerOptions options, ITypeMapper typeMapper = null)
+        {
+            Initialize(domain, name, AssemblyBuilderAccess.Run, options, typeMapper);
+        }
+        
+#else
+        public AssemblyGen(Universe universe, string assemblyName, CompilerOptions options, ITypeMapper typeMapper)
+	    {
+	        Initialize(universe, assemblyName, AssemblyBuilderAccess.Save, options, typeMapper);
+	    }
+
+        private byte[] FromHex(string value)
+        {
+            if (Helpers.IsNullOrEmpty(value)) throw new ArgumentNullException("value");
+            int len = value.Length / 2;
+            byte[] result = new byte[len];
+            for (int i = 0; i < len; i++)
+            {
+                result[i] = Convert.ToByte(value.Substring(i * 2, 2), 16);
+            }
+            return result;
+        }
+#endif
+        string fileName;
+
+        void Initialize(Universe universe, string assemblyName, AssemblyBuilderAccess access, CompilerOptions options, ITypeMapper typeMapper)
+        {
+            if (universe == null) throw new ArgumentNullException(nameof(universe));
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            if (typeMapper == null)
+#if FEAT_IKVM
+                throw new ArgumentNullException(nameof(typeMapper));
+#else
+                typeMapper = new TypeMapper();
+#endif
+
+            bool save = (access & AssemblyBuilderAccess.Save) != 0;
+            string path = options.OutputPath;
+            if (path == null && save) throw new ArgumentNullException("options.OutputPath");
+
+            this.Universe = universe;
+
+            this.TypeMapper = typeMapper;
+            this.access = access;
+
+            if (Helpers.IsNullOrEmpty(assemblyName))
+            {
+                if (save) throw new ArgumentNullException("assemblyName");
+                assemblyName = Guid.NewGuid().ToString();
+            }
             
-			if (fileName == null && (access & AssemblyBuilderAccess.Save) != 0)
-				throw new ArgumentNullException("fileName", Properties.Messages.ErrAsmMissingSaveFile);
+            string moduleName = path == null ? assemblyName + ".dll" : assemblyName + Path.GetExtension(path);
 
-			if (fileName == null)
-				asm = domain.DefineDynamicAssembly(name, access);
-			else
-				asm = domain.DefineDynamicAssembly(name, access, Path.GetDirectoryName(fileName));
+            fileName = path;
 
-			if (fileName == null)
-				mod = asm.DefineDynamicModule(name.Name, symbolInfo);
-			else
-				mod = asm.DefineDynamicModule(Path.GetFileName(fileName), Path.GetFileName(fileName), symbolInfo);
-		}
+            AssemblyName an = new AssemblyName();
+            an.Name = assemblyName;
 
-		public void Save()
+            asm = Universe.DefineDynamicAssembly(an, access);
+#if FEAT_IKVM
+            if (!Helpers.IsNullOrEmpty(options.KeyFile))
+            {
+                asm.__SetAssemblyKeyPair(new StrongNameKeyPair(File.OpenRead(options.KeyFile)));
+            }
+            else if (!Helpers.IsNullOrEmpty(options.KeyContainer))
+            {
+                asm.__SetAssemblyKeyPair(new StrongNameKeyPair(options.KeyContainer));
+            }
+            else if (!Helpers.IsNullOrEmpty(options.PublicKey))
+            {
+                asm.__SetAssemblyPublicKey(FromHex(options.PublicKey));
+            }
+            if (!Helpers.IsNullOrEmpty(options.ImageRuntimeVersion) && options.MetaDataVersion != 0)
+            {
+                asm.__SetImageRuntimeVersion(options.ImageRuntimeVersion, options.MetaDataVersion);
+            }
+            mod = asm.DefineDynamicModule(moduleName, path, options.SymbolInfo);
+#else
+            mod = save ? asm.DefineDynamicModule(moduleName, path) : asm.DefineDynamicModule(moduleName);
+#endif
+        }
+
+
+        public void Save()
 		{
 			Complete();
 
@@ -262,14 +316,94 @@ namespace TriAxis.RunSharp
 			return asm;
 		}
 
-		public void Complete()
+
+        private void WriteAssemblyAttributes(CompilerOptions options, string assemblyName, AssemblyBuilder asm)
+        {
+            if (!Helpers.IsNullOrEmpty(options.TargetFrameworkName))
+            {
+                // get [TargetFramework] from mscorlib/equivalent and burn into the new assembly
+                Type versionAttribType = null;
+                try
+                { // this is best-endeavours only
+                    versionAttribType = TypeMapper.GetType("System.Runtime.Versioning.TargetFrameworkAttribute", TypeMapper.MapType(typeof(string)).Assembly);
+                }
+                catch { /* don't stress */ }
+                if (versionAttribType != null)
+                {
+                    PropertyInfo[] props;
+                    object[] propValues;
+                    if (Helpers.IsNullOrEmpty(options.TargetFrameworkDisplayName))
+                    {
+                        props = new PropertyInfo[0];
+                        propValues = new object[0];
+                    }
+                    else
+                    {
+                        props = new PropertyInfo[1] { versionAttribType.GetProperty("FrameworkDisplayName") };
+                        propValues = new object[1] { options.TargetFrameworkDisplayName };
+                    }
+                    CustomAttributeBuilder builder = new CustomAttributeBuilder(
+                        versionAttribType.GetConstructor(new Type[] { TypeMapper.MapType(typeof(string)) }),
+                        new object[] { options.TargetFrameworkName },
+                        props,
+                        propValues);
+                    asm.SetCustomAttribute(builder);
+                }
+            }
+
+            // copy assembly:InternalsVisibleTo
+            Type internalsVisibleToAttribType = null;
+#if !FX11
+            try
+            {
+                internalsVisibleToAttribType = TypeMapper.MapType(typeof(System.Runtime.CompilerServices.InternalsVisibleToAttribute));
+            }
+            catch { /* best endeavors only */ }
+#endif
+            if (internalsVisibleToAttribType != null)
+            {
+                List<string> internalAssemblies = new List<string>();
+                List<Assembly> consideredAssemblies = new List<Assembly>();
+                foreach (Type type in types)
+                {
+                    Assembly assembly = type.Assembly;
+                    if (consideredAssemblies.IndexOf(assembly) >= 0) continue;
+                    consideredAssemblies.Add(assembly);
+
+                    AttributeMap[] assemblyAttribsMap = AttributeMap.Create(TypeMapper, assembly);
+                    for (int i = 0; i < assemblyAttribsMap.Length; i++)
+                    {
+
+                        if (assemblyAttribsMap[i].AttributeType != internalsVisibleToAttribType) continue;
+
+                        object privelegedAssemblyObj;
+                        assemblyAttribsMap[i].TryGet("AssemblyName", out privelegedAssemblyObj);
+                        string privelegedAssemblyName = (string)privelegedAssemblyObj;
+                        if (privelegedAssemblyName == assemblyName || Helpers.IsNullOrEmpty(privelegedAssemblyName)) continue; // ignore
+
+                        if (internalAssemblies.IndexOf(privelegedAssemblyName) >= 0) continue; // seen it before
+                        internalAssemblies.Add(privelegedAssemblyName);
+
+                        CustomAttributeBuilder builder = new CustomAttributeBuilder(
+                            internalsVisibleToAttribType.GetConstructor(new Type[] { TypeMapper.MapType(typeof(string)) }),
+                            new object[] { privelegedAssemblyName });
+                        asm.SetCustomAttribute(builder);
+                    }
+                }
+            }
+        }
+
+        CompilerOptions compilerOptions;
+
+        public void Complete()
 		{
 			foreach (TypeGen tg in types)
 				tg.Complete();
 
 			AttributeGen.ApplyList(ref assemblyAttributes, asm.SetCustomAttribute);
 			AttributeGen.ApplyList(ref moduleAttributes, mod.SetCustomAttribute);
+            WriteAssemblyAttributes(compilerOptions, asm.GetName().Name, asm);
 		}
-		#endregion
+#endregion
 	}
 }

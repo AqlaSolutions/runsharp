@@ -9,6 +9,11 @@
     <Import_RootNamespace>TryAxis.RunSharp</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Aqla\Accessibility.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Aqla\AttributeMap.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Aqla\CompilerOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Aqla\ITypeMapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Aqla\TypeMapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ArrayUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AssemblyGen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AssemblyInfo.cs" />
