@@ -84,6 +84,7 @@ namespace TriAxis.RunSharp
 		}
 
 		AssemblyGen owner;
+        public ITypeMapper TypeMapper { get { return owner.TypeMapper; } }
 		string name;
 		Type baseType;
 		Type[] interfaces;

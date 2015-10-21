@@ -49,6 +49,8 @@ namespace TriAxis.RunSharp
 		List<AttributeGen> customAttributes;
         TypeGen owner2;
 
+	    public ITypeMapper TypeMapper { get { return owner != null ? owner.TypeMapper : owner2.TypeMapper; } }
+
 	    public DelegateGen(AssemblyGen owner, string name, Type returnType, TypeAttributes attrs)
 			: base(returnType)
 		{
@@ -113,28 +115,28 @@ namespace TriAxis.RunSharp
             TypeGen tg;
             if (owner == null)
             {
-                tg = new TypeGen(owner2, name, attrs, typeof(MulticastDelegate), Type.EmptyTypes);
+                tg = new TypeGen(owner2, name, attrs, owner2.TypeMapper.MapType(typeof(MulticastDelegate)), Type.EmptyTypes);
             }
             else
             {
-                tg = new TypeGen(owner, name, attrs, typeof(MulticastDelegate), Type.EmptyTypes);
+                tg = new TypeGen(owner, name, attrs, owner.TypeMapper.MapType(typeof(MulticastDelegate)), Type.EmptyTypes);
             }
 
 			ConstructorBuilder cb = tg.Public.RuntimeImpl.Constructor()
-				.Parameter(typeof(object), "object")
-				.Parameter(typeof(IntPtr), "method")
+				.Parameter(Helpers.TypeOf<object>(TypeMapper), "object")
+				.Parameter(Helpers.TypeOf<IntPtr>(TypeMapper), "method")
 				.GetConstructorBuilder();
 			cb.SetImplementationFlags(MethodImplAttributes.Runtime | MethodImplAttributes.Managed);
 
-			MethodBuilder mb = tg.Public.Virtual.RuntimeImpl.Method(typeof(IAsyncResult), "BeginInvoke")
+			MethodBuilder mb = tg.Public.Virtual.RuntimeImpl.Method(Helpers.TypeOf<IAsyncResult>(TypeMapper), "BeginInvoke")
 				.CopyParameters(Parameters)
-				.UncheckedParameter(typeof(AsyncCallback), "callback")
-				.UncheckedParameter(typeof(object), "object")
+				.UncheckedParameter(Helpers.TypeOf<AsyncCallback>(TypeMapper), "callback")
+				.UncheckedParameter(Helpers.TypeOf<object>(TypeMapper), "object")
 				.GetMethodBuilder();
 			mb.SetImplementationFlags(MethodImplAttributes.Runtime | MethodImplAttributes.Managed);
 
 			mb = tg.Public.Virtual.RuntimeImpl.Method(ReturnType, "EndInvoke")
-				.Parameter(typeof(IAsyncResult), "result")
+				.Parameter(Helpers.TypeOf<IAsyncResult>(TypeMapper), "result")
 				.GetMethodBuilder();
 			mb.SetImplementationFlags(MethodImplAttributes.Runtime | MethodImplAttributes.Managed);
 

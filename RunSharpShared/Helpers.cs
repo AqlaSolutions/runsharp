@@ -19,6 +19,10 @@ namespace TriAxis.RunSharp
 {
     static class Helpers
     {
+        public static Type TypeOf<T>(ITypeMapper typeMapper)
+        {
+            return typeMapper.MapType(typeof(T));
+        }
 
         public static bool AreTypesEqual(Type a, Type b)
         {
@@ -148,6 +152,49 @@ namespace TriAxis.RunSharp
             return Enum.GetUnderlyingType(type);
 #endif
         }
+        
+#if FEAT_IKVM
+        public static IList<CustomAttributeData> GetCustomAttributes(MemberInfo m, System.Type type, bool inherit)
+        {
+            return GetCustomAttributes(m, type.FullName, inherit);
+        }
+
+        public static IList<CustomAttributeData> GetCustomAttributes(ParameterInfo m, System.Type type, bool inherit)
+        {
+            return GetCustomAttributes(m, type.FullName, inherit);
+        }
+
+        public static IList<CustomAttributeData> GetCustomAttributes(MemberInfo m, string attribute, bool inherit)
+        {
+            var t = m.DeclaringType;
+            while (t.FullName != "System.Object") t = t.BaseType;
+
+            var list = GetCustomAttributes(m, t, inherit);
+            var list2 = new List<CustomAttributeData>(list);
+            list2.RemoveAll(el => !IsAssignableFrom(attribute, el.AttributeType));
+            return list2;
+        }
+
+        public static IList<CustomAttributeData> GetCustomAttributes(ParameterInfo m, string attribute, bool inherit)
+        {
+            var t = m.ParameterType;
+            while (t.FullName != "System.Object") t = t.BaseType;
+
+            var list = GetCustomAttributes(m, t, inherit);
+            var list2 = new List<CustomAttributeData>(list);
+            list2.RemoveAll(el => !IsAssignableFrom(attribute, el.AttributeType));
+            return list2;
+        }
+
+#else
+        public static IList<object> GetCustomAttributes(MemberInfo m, string attribute, bool inherit)
+        {
+            var list = GetCustomAttributes(m, typeof(object), inherit);
+            var list2 = new List<object>(list);
+            list2.RemoveAll(el => IsAssignableFrom(attribute, el.GetType()));
+            return list2;
+        }
+#endif
 
 #if FEAT_IKVM
         public static IList<CustomAttributeData> GetCustomAttributes(MemberInfo m, Type attribute, bool inherit)

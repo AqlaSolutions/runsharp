@@ -171,9 +171,14 @@ namespace TriAxis.RunSharp
                 {
                     if (defaultMember == nullStr)
                     {
-                        foreach (DefaultMemberAttribute dma in Helpers.GetCustomAttributes(t, typeof(DefaultMemberAttribute), true))
-                            return defaultMember = dma.MemberName;
-
+                        foreach (var dma in Helpers.GetCustomAttributes(t, typeof(DefaultMemberAttribute), true))
+                        { 
+#if FEAT_IKVM
+                            return defaultMember = dma.ConstructorArguments[0].Value as string;
+#else
+                            return defaultMember = ((DefaultMemberAttribute)dma).MemberName;
+#endif
+                        }
                         defaultMember = null;
                     }
                     return defaultMember;
