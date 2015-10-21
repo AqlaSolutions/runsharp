@@ -32,6 +32,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Exp.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FieldGen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ITypeInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages.Designer.cs">
       <DependentUpon>Messages.resx</DependentUpon>
       <DesignTime>True</DesignTime>

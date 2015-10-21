@@ -64,10 +64,17 @@ namespace TriAxis.RunSharp
         string DefaultMember { get; }
     }
 
-    static class TypeInfo
+    class TypeInfo : ITypeInfo
     {
-        static Dictionary<Type, ITypeInfoProvider> providers = new Dictionary<Type, ITypeInfoProvider>();
-        static Dictionary<Type, WeakReference> cache = new Dictionary<Type, WeakReference>();
+        Dictionary<Type, ITypeInfoProvider> providers = new Dictionary<Type, ITypeInfoProvider>();
+        Dictionary<Type, WeakReference> cache = new Dictionary<Type, WeakReference>();
+
+        public TypeInfo(ITypeMapper typeMapper)
+        {
+            TypeMapper = typeMapper;
+        }
+
+        public ITypeMapper TypeMapper { get; private set; }
 
         class CacheEntry
         {
@@ -76,8 +83,11 @@ namespace TriAxis.RunSharp
             static string nullStr = "$NULL";
             string defaultMember = nullStr;
 
-            public CacheEntry(Type t)
+            TypeInfo _;
+
+            public CacheEntry(Type t, TypeInfo owner)
             {
+                this._ = owner;
                 this.t = t;
 
                 if (t.GetType() != typeof(object).GetType())
@@ -90,11 +100,11 @@ namespace TriAxis.RunSharp
 
             ~CacheEntry()
             {
-                lock (cache)
+                lock (_.cache)
                 {
                     WeakReference wr;
-                    if (cache.TryGetValue(t, out wr) && (wr.Target == this || wr.Target == null))
-                        cache.Remove(t);
+                    if (_.cache.TryGetValue(t, out wr) && (wr.Target == this || wr.Target == null))
+                        _.cache.Remove(t);
                 }
             }
 
@@ -107,7 +117,7 @@ namespace TriAxis.RunSharp
                     if (constructors == null)
                     {
                         ConstructorInfo[] ctors = t.GetConstructors(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Instance);
-                        constructors = Array.ConvertAll<ConstructorInfo, IMemberInfo>(ctors, delegate(ConstructorInfo ci) { return new StdMethodInfo(ci); });
+                        constructors = Array.ConvertAll<ConstructorInfo, IMemberInfo>(ctors, delegate(ConstructorInfo ci) { return new StdMethodInfo(ci, _); });
                     }
                     return constructors;
                 }
@@ -159,7 +169,7 @@ namespace TriAxis.RunSharp
                     if (methods == null)
                     {
                         MethodInfo[] mis = t.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Static);
-                        methods = Array.ConvertAll<MethodInfo, IMemberInfo>(mis, delegate(MethodInfo mi) { return new StdMethodInfo(mi); });
+                        methods = Array.ConvertAll<MethodInfo, IMemberInfo>(mis, delegate(MethodInfo mi) { return new StdMethodInfo(mi, _); });
                     }
                     return methods;
                 }
@@ -186,17 +196,17 @@ namespace TriAxis.RunSharp
             }
         }
 
-        public static void RegisterProvider(Type t, ITypeInfoProvider prov)
+        public void RegisterProvider(Type t, ITypeInfoProvider prov)
         {
             providers[t] = prov;
         }
 
-        public static void UnregisterProvider(Type t)
+        public void UnregisterProvider(Type t)
         {
             providers.Remove(t);
         }
 
-        static CacheEntry GetCacheEntry(Type t)
+        CacheEntry GetCacheEntry(Type t)
         {
             if (t is TypeBuilder)
                 t = t.UnderlyingSystemType;
@@ -213,13 +223,13 @@ namespace TriAxis.RunSharp
                         return ce;
                 }
 
-                ce = new CacheEntry(t);
+                ce = new CacheEntry(t, this);
                 cache[t] = new WeakReference(ce);
                 return ce;
             }
         }
 
-        public static IEnumerable<IMemberInfo> GetConstructors(Type t)
+        public IEnumerable<IMemberInfo> GetConstructors(Type t)
         {
             ITypeInfoProvider prov;
 
@@ -229,7 +239,7 @@ namespace TriAxis.RunSharp
             return GetCacheEntry(t).Constructors;
         }
 
-        public static IEnumerable<IMemberInfo> GetFields(Type t)
+        public IEnumerable<IMemberInfo> GetFields(Type t)
         {
             ITypeInfoProvider prov;
 
@@ -239,7 +249,7 @@ namespace TriAxis.RunSharp
             return GetCacheEntry(t).Fields;
         }
 
-        public static IEnumerable<IMemberInfo> GetProperties(Type t)
+        public IEnumerable<IMemberInfo> GetProperties(Type t)
         {
             ITypeInfoProvider prov;
 
@@ -249,7 +259,7 @@ namespace TriAxis.RunSharp
             return GetCacheEntry(t).Properties;
         }
 
-        public static IEnumerable<IMemberInfo> GetEvents(Type t)
+        public IEnumerable<IMemberInfo> GetEvents(Type t)
         {
             ITypeInfoProvider prov;
 
@@ -259,7 +269,7 @@ namespace TriAxis.RunSharp
             return GetCacheEntry(t).Events;
         }
 
-        public static IEnumerable<IMemberInfo> GetMethods(Type t)
+        public IEnumerable<IMemberInfo> GetMethods(Type t)
         {
             ITypeInfoProvider prov;
 
@@ -269,7 +279,7 @@ namespace TriAxis.RunSharp
             return GetCacheEntry(t).Methods;
         }
 
-        public static string GetDefaultMember(Type t)
+        public string GetDefaultMember(Type t)
         {
             ITypeInfoProvider prov;
 
@@ -279,7 +289,7 @@ namespace TriAxis.RunSharp
             return GetCacheEntry(t).DefaultMember;
         }
 
-        public static IEnumerable<IMemberInfo> Filter(IEnumerable<IMemberInfo> source, string name, bool ignoreCase, bool isStatic, bool allowOverrides)
+        public IEnumerable<IMemberInfo> Filter(IEnumerable<IMemberInfo> source, string name, bool ignoreCase, bool isStatic, bool allowOverrides)
         {
             foreach (IMemberInfo mi in source)
             {
@@ -307,7 +317,7 @@ namespace TriAxis.RunSharp
             }
         }
 
-        public static ApplicableFunction FindConstructor(Type t, Operand[] args)
+        public ApplicableFunction FindConstructor(Type t, Operand[] args)
         {
             ApplicableFunction ctor = OverloadResolver.Resolve(GetConstructors(t), args);
 
@@ -317,7 +327,7 @@ namespace TriAxis.RunSharp
             return ctor;
         }
 
-        public static IMemberInfo FindField(Type t, string name, bool @static)
+        public IMemberInfo FindField(Type t, string name, bool @static)
         {
             foreach (Type type in SearchableTypes(t))
             {
@@ -340,7 +350,7 @@ namespace TriAxis.RunSharp
             throw new MissingFieldException(Properties.Messages.ErrMissingField);
         }
 
-        public static ApplicableFunction FindProperty(Type t, string name, Operand[] indexes, bool @static)
+        public ApplicableFunction FindProperty(Type t, string name, Operand[] indexes, bool @static)
         {
             if (name == null)
                 name = GetDefaultMember(t);
@@ -360,7 +370,7 @@ namespace TriAxis.RunSharp
             throw new MissingMemberException(Properties.Messages.ErrMissingProperty);
         }
 
-        public static IMemberInfo FindEvent(Type t, string name, bool @static)
+        public IMemberInfo FindEvent(Type t, string name, bool @static)
         {
             foreach (Type type in SearchableTypes(t))
             {
@@ -374,7 +384,7 @@ namespace TriAxis.RunSharp
             throw new MissingMemberException(Properties.Messages.ErrMissingEvent);
         }
 
-        private static IEnumerable<Type> SearchableTypes(Type t)
+        private IEnumerable<Type> SearchableTypes(Type t)
         {
             if (t.IsInterface)
             {
@@ -392,7 +402,7 @@ namespace TriAxis.RunSharp
             }
         }
 
-        private static IEnumerable<Type> SearchBaseTypes(Type t)
+        private IEnumerable<Type> SearchBaseTypes(Type t)
         {
             yield return t;
             t = t.BaseType;
@@ -405,7 +415,7 @@ namespace TriAxis.RunSharp
             }
         }
 
-        public static IEnumerable<Type> SearchInterfaces(Type t)
+        public IEnumerable<Type> SearchInterfaces(Type t)
         {
             yield return t;
             foreach (Type @interface in t.GetInterfaces())
@@ -417,7 +427,7 @@ namespace TriAxis.RunSharp
             }
         }
 
-        public static ApplicableFunction FindMethod(Type t, string name, Operand[] args, bool @static)
+        public ApplicableFunction FindMethod(Type t, string name, Operand[] args, bool @static)
         {
             foreach (Type type in SearchableTypes(t))
             {
@@ -438,22 +448,24 @@ namespace TriAxis.RunSharp
             Type returnType;
             Type[] parameterTypes;
             bool hasVar;
+            TypeInfo _;
 
-            public StdMethodInfo(MethodInfo mi)
-                : this((MethodBase)mi)
+            public StdMethodInfo(MethodInfo mi, TypeInfo owner)
+                : this((MethodBase)mi, owner)
             {
                 this.mi = mi;
             }
 
-            public StdMethodInfo(ConstructorInfo ci)
-                : this((MethodBase)ci)
+            public StdMethodInfo(ConstructorInfo ci, TypeInfo owner)
+                : this((MethodBase)ci, owner)
             {
-                this.returnType = typeof(void);
+                this.returnType =  owner.TypeMapper.MapType(typeof(void));
             }
 
-            public StdMethodInfo(MethodBase mb)
+            public StdMethodInfo(MethodBase mb, TypeInfo owner)
             {
                 this.mb = mb;
+                _ = owner;
             }
 
             void RequireParameters()
