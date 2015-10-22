@@ -248,6 +248,7 @@ namespace TriAxis.RunSharp
         {
             if (universe == null) throw new ArgumentNullException(nameof(universe));
             if (options == null) throw new ArgumentNullException(nameof(options));
+            _compilerOptions = options;
             if (typeMapper == null)
 #if FEAT_IKVM
                 throw new ArgumentNullException(nameof(typeMapper));
@@ -272,14 +273,16 @@ namespace TriAxis.RunSharp
                 assemblyName = Guid.NewGuid().ToString();
             }
             
-            string moduleName = path == null ? assemblyName + ".dll" : assemblyName + Path.GetExtension(path);
+            string moduleName = path == null ? assemblyName : assemblyName + Path.GetExtension(path);
 
             _fileName = path;
 
             AssemblyName an = new AssemblyName();
             an.Name = assemblyName;
 
-            AssemblyBuilder = Universe.DefineDynamicAssembly(an, access);
+            AssemblyBuilder = path != null
+                                  ? Universe.DefineDynamicAssembly(an, access, Path.GetDirectoryName(path))
+                                  : Universe.DefineDynamicAssembly(an, access);
 #if FEAT_IKVM
             if (!Helpers.IsNullOrEmpty(options.KeyFile))
             {
@@ -299,7 +302,7 @@ namespace TriAxis.RunSharp
             }
             ModuleBuilder = AssemblyBuilder.DefineDynamicModule(moduleName, path, options.SymbolInfo);
 #else
-            ModuleBuilder = save ? AssemblyBuilder.DefineDynamicModule(moduleName, path) : AssemblyBuilder.DefineDynamicModule(moduleName);
+            ModuleBuilder = save ? AssemblyBuilder.DefineDynamicModule(moduleName, Path.GetFileNameWithoutExtension(path)) : AssemblyBuilder.DefineDynamicModule(moduleName);
 #endif
         }
 

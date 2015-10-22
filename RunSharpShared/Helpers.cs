@@ -52,7 +52,11 @@ namespace TriAxis.RunSharp
 #endif
         public static bool IsAttribute(Type t)
         {
-            return IsAssignableFrom("System.Attribute", t);
+#if FEAT_IKVM
+            return IsAssignableDirectlyFrom("System.Attribute", t);
+#else
+            return IsAssignableFrom(typeof(System.Attribute), t);
+#endif
         }
 
         public static bool IsAssignableFrom(Type t, Type @from, ITypeMapper typeMapper)
@@ -63,7 +67,11 @@ namespace TriAxis.RunSharp
         public static bool IsAssignableFrom(Type t, Type @from)
         {
             if (t == null) throw new ArgumentNullException(nameof(t));
+#if FEAT_IKVM
             return IsAssignableFrom(t.FullName, @from);
+#else
+            return t.IsAssignableFrom(@from);
+#endif
         }
 #if FEAT_IKVM
         public static bool IsAssignableFrom(System.Type t, Type @from, ITypeMapper typeMapper)
@@ -78,6 +86,7 @@ namespace TriAxis.RunSharp
             return IsAssignableFrom(t.FullName, @from);
         }
 #endif
+#if FEAT_IKVM
         public static bool IsAssignableFrom(string typeFullName, Type @from)
         {
             if (@from == null) throw new ArgumentNullException(nameof(@from));
@@ -88,6 +97,22 @@ namespace TriAxis.RunSharp
                 if (typeFullName == @interface.FullName) return true;
             }
 
+            from = from.BaseType;
+
+            while (@from != null && @from.FullName != "System.Object" && @from.FullName != "System.ValueType")
+            {
+                if (typeFullName == from.FullName) return true;
+                @from = @from.BaseType;
+            }
+            return false;
+        }
+#endif
+        public static bool IsAssignableDirectlyFrom(string typeFullName, Type @from)
+        {
+            if (@from == null) throw new ArgumentNullException(nameof(@from));
+            if (IsNullOrEmpty(typeFullName)) return false;
+            if (typeFullName == @from.FullName) return true;
+            
             from = from.BaseType;
 
             while (@from != null && @from.FullName != "System.Object" && @from.FullName != "System.ValueType")
@@ -191,7 +216,7 @@ namespace TriAxis.RunSharp
         {
             var list = GetCustomAttributes(m, typeof(object), inherit);
             var list2 = new List<object>(list);
-            list2.RemoveAll(el => IsAssignableFrom(attribute, el.GetType()));
+            list2.RemoveAll(el => IsAssignableDirectlyFrom(attribute, el.GetType()));
             return list2;
         }
 #endif

@@ -515,7 +515,7 @@ namespace TriAxis.RunSharp
 			InvertOpResult = invertOpResult;
 			BranchOp = branchOp;
 			MethodName = methodName;
-			_standardCandidates = standardCandidates;
+			_standardCandidates = standardCandidates ?? new IMemberInfo[0];
 			_standardTemplates = standardTemplates;
 		}
 
@@ -528,7 +528,7 @@ namespace TriAxis.RunSharp
 			InvertOpResult = invertOpResult;
 			BranchOp = branchOp;
 			MethodName = methodName;
-			_standardCandidates = standardCandidates;
+			_standardCandidates = standardCandidates ?? new IMemberInfo[0];
 			_standardTemplates = standardTemplates;
 		}
 

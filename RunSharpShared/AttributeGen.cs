@@ -83,7 +83,8 @@ namespace TriAxis.RunSharp
 
 	    internal AttributeGen(AttributeTargets target, AttributeType attributeType, object[] args, ITypeMapper typeMapper)
 		{
-			if (args != null)
+            _typeMapper = typeMapper;
+            if (args != null)
 			{
 				foreach (object arg in args)
 				{
@@ -94,8 +95,7 @@ namespace TriAxis.RunSharp
 			// TODO: target validation
 
 			_attributeType = attributeType;
-		    _typeMapper = typeMapper;
-
+		    
 		    Operand[] argOperands;
 			if (args == null || args.Length == 0)
 			{

@@ -35,11 +35,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)FieldGen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ITypeInfo.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Messages.Designer.cs">
-      <DependentUpon>Messages.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)MethodGen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Operand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Operands\ArrayAccess.cs" />
@@ -80,12 +75,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)TypeGen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TypeInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Messages.resx">
-      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
-      <Generator>ResXFileCodeGenerator</Generator>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)app.config" />

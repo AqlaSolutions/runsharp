@@ -78,7 +78,7 @@ namespace TriAxis.RunSharp.Examples
                         var i = g.Local();
 						g.For(i.Assign(begin), i <= end, i.Increment());
 						{
-                            var isLetter = g.Local(i < end && st.Invoke(typeof(char), "IsLetterOrDigit"));
+                            var isLetter = g.Local(i < end && st.Invoke(typeof(char), "IsLetterOrDigit", text[i]));
 
 							g.If(inWord >= 0);
 							{

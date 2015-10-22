@@ -103,7 +103,7 @@ namespace TriAxis.RunSharp.Examples
 
 				g = Shape.Public.Override.Method(typeof(string), "ToString");
 				{
-					g.Return(Id + " Area = " + st.Invoke(typeof(string), "Format", Area));
+					g.Return(Id + " Area = " + st.Invoke(typeof(string), "Format", "{0:F2}", Area));
 				}
 			}
 

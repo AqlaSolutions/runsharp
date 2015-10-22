@@ -258,7 +258,7 @@ namespace TriAxis.RunSharp
 
 		public void Invoke(Type target, string method, params Operand[] args)
 		{
-			DoInvoke(_staticFactory.Invoke(target, method));
+			DoInvoke(_staticFactory.Invoke(target, method, args));
 		}
 
 		public void Invoke(Operand target, string method)
@@ -486,12 +486,12 @@ namespace TriAxis.RunSharp
 
 		public void For(IStatement init, Operand test, IStatement iterator)
 		{
-			Begin(new LoopBlock(init, test, iterator));
+			Begin(new LoopBlock(init, test, iterator, TypeMapper));
 		}
 
 		public void While(Operand test)
 		{
-			Begin(new LoopBlock(null, test, null));
+			Begin(new LoopBlock(null, test, null, TypeMapper));
 		}
 
 		public ContextualOperand ForEach(Type elementType, Operand expression)
@@ -503,7 +503,7 @@ namespace TriAxis.RunSharp
 
 		public void If(Operand condition)
 		{
-			Begin(new IfBlock(condition));
+			Begin(new IfBlock(condition, TypeMapper));
 		}
 
 		public void Else()
@@ -670,9 +670,9 @@ namespace TriAxis.RunSharp
 		{
 		    readonly Operand _condition;
 
-			public IfBlock(Operand condition)
+			public IfBlock(Operand condition, ITypeMapper typeMapper)
 			{
-				if (!Helpers.AreTypesEqual(condition.GetReturnType(G.TypeMapper), typeof(bool), G.TypeMapper))
+				if (!Helpers.AreTypesEqual(condition.GetReturnType(typeMapper), typeof(bool), typeMapper))
 					_condition = condition.IsTrue();
 				else
 					_condition = condition;
@@ -732,13 +732,13 @@ namespace TriAxis.RunSharp
 		    readonly Operand _test;
 		    readonly IStatement _iter;
 
-			public LoopBlock(IStatement init, Operand test, IStatement iter)
+			public LoopBlock(IStatement init, Operand test, IStatement iter, ITypeMapper typeMapper)
 			{
 				_init = init;
 				_test = test;
 				_iter = iter;
 
-				if (!Helpers.AreTypesEqual(test.GetReturnType(G.TypeMapper), typeof(bool), G.TypeMapper))
+				if (!Helpers.AreTypesEqual(test.GetReturnType(typeMapper), typeof(bool), typeMapper))
 					test = test.IsTrue();
 			}
 
@@ -969,7 +969,7 @@ namespace TriAxis.RunSharp
 
                 _expression = expression;
 
-				Type exprType = expression.GetReturnType(G.TypeMapper);
+				Type exprType = expression.GetReturnType(typeMapper);
 				if (Array.IndexOf(_validTypes, exprType) != -1)
 					_govType = exprType;
 				else if (exprType.IsEnum)

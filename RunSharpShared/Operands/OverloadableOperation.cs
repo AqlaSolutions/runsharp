@@ -58,29 +58,29 @@ namespace TriAxis.RunSharp.Operands
 			_operands[0] = newOp;
 		}
 
-	    void PrepareAf(CodeGen g)
+	    void PrepareAf(ITypeMapper typeMapper)
 	    {
 	        if (_af != null) return;
 	        List<ApplicableFunction> candidates = null;
-
-            foreach (Operand operand in _operands)
+            
+	        foreach (Operand operand in _operands)
             {
-                if ((object)operand != null && !operand.GetReturnType(g.TypeMapper).IsPrimitive)
+                if ((object)operand != null && !operand.GetReturnType(typeMapper).IsPrimitive)
                 {
                     // try overloads
-                    candidates = _op.FindUserCandidates(g.TypeMapper, _operands);
+                    candidates = _op.FindUserCandidates(typeMapper, _operands);
                     break;
                 }
             }
 
             if (candidates == null)
-                candidates = OverloadResolver.FindApplicable(_op.GetStandardCandidates(g.TypeMapper, _operands), g.TypeMapper, _operands);
+                candidates = OverloadResolver.FindApplicable(_op.GetStandardCandidates(typeMapper, _operands), typeMapper, _operands);
 
             if (candidates == null)
                 throw new InvalidOperationException(string.Format(null, Properties.Messages.ErrInvalidOperation, _op.MethodName,
-                    string.Join(", ", Array.ConvertAll<Operand, string>(_operands, op=>op.GetReturnType(g.TypeMapper).FullName))));
+                    string.Join(", ", Array.ConvertAll<Operand, string>(_operands, op=>op.GetReturnType(typeMapper).FullName))));
 
-            _af = OverloadResolver.FindBest(candidates, g.TypeMapper);
+            _af = OverloadResolver.FindBest(candidates, typeMapper);
 
             if (_af == null)
                 throw new AmbiguousMatchException(Properties.Messages.ErrAmbiguousBinding);
@@ -88,7 +88,7 @@ namespace TriAxis.RunSharp.Operands
 
 		internal override void EmitGet(CodeGen g)
 		{
-		    PrepareAf(g);
+		    PrepareAf(g.TypeMapper);
             _af.EmitArgs(g, _operands);
 
 			IStandardOperation sop = _af.Method as IStandardOperation;
@@ -100,7 +100,7 @@ namespace TriAxis.RunSharp.Operands
 
 		internal override void EmitBranch(CodeGen g, BranchSet branchSet, Label label)
 		{
-            PrepareAf(g);
+            PrepareAf(g.TypeMapper);
             IStandardOperation stdOp = _af.Method as IStandardOperation;
 			if (_op.BranchOp == 0 || stdOp == null)
 			{
@@ -112,6 +112,10 @@ namespace TriAxis.RunSharp.Operands
 			g.IL.Emit(branchSet.Get(_op.BranchOp, stdOp.IsUnsigned), label);
 		}
 
-	    public override Type GetReturnType(ITypeMapper typeMapper) => _af.Method.ReturnType;
+	    public override Type GetReturnType(ITypeMapper typeMapper)
+	    {
+            PrepareAf(typeMapper);
+	        return _af.Method.ReturnType;
+	    }
 	}
 }
