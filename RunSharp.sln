@@ -10,8 +10,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunSharp_IKVM", "RunSharpIK
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunSharp", "RunSharp\RunSharp.csproj", "{08F134AE-48E8-4A35-9DC7-2F31EAF4A66F}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "RunSharp.TestsShared", "RunSharp.TestsShared\RunSharp.TestsShared.shproj", "{9225DF43-7709-4522-AFCA-F01DF2BF6E83}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunSharp.Tests.Standard", "RunSharp.Tests.Standard\RunSharp.Tests.Standard.csproj", "{6B5D07F1-94F2-4ADD-8931-7188B3A142BD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunSharp.Tests.IKVM", "RunSharp.Tests.IKVM\RunSharp.Tests.IKVM.csproj", "{D6F7CE55-853F-4E64-92C9-60C380BFB02F}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		RunSharp.TestsShared\RunSharp.Tests.projitems*{6b5d07f1-94f2-4add-8931-7188b3a142bd}*SharedItemsImports = 4
+		RunSharp.TestsShared\RunSharp.Tests.projitems*{2267d578-07c3-46b8-9ec8-e2c33ac920e7}*SharedItemsImports = 4
+		RunSharp.TestsShared\RunSharp.Tests.projitems*{9225df43-7709-4522-afca-f01df2bf6e83}*SharedItemsImports = 13
+		RunSharp.TestsShared\RunSharp.Tests.projitems*{d6f7ce55-853f-4e64-92c9-60c380bfb02f}*SharedItemsImports = 4
 		RunSharpShared\RunSharpShared.projitems*{c835bb75-7955-4315-b52c-fa59e25219f4}*SharedItemsImports = 4
 		RunSharpShared\RunSharpShared.projitems*{1be6ac53-2c95-466e-b1d2-61e31493f169}*SharedItemsImports = 13
 		RunSharpShared\RunSharpShared.projitems*{08f134ae-48e8-4a35-9dc7-2f31eaf4a66f}*SharedItemsImports = 4
@@ -40,6 +50,18 @@ Global
 		{08F134AE-48E8-4A35-9DC7-2F31EAF4A66F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{08F134AE-48E8-4A35-9DC7-2F31EAF4A66F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{08F134AE-48E8-4A35-9DC7-2F31EAF4A66F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B5D07F1-94F2-4ADD-8931-7188B3A142BD}.CodeAnalysis|Any CPU.ActiveCfg = Release|Any CPU
+		{6B5D07F1-94F2-4ADD-8931-7188B3A142BD}.CodeAnalysis|Any CPU.Build.0 = Release|Any CPU
+		{6B5D07F1-94F2-4ADD-8931-7188B3A142BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B5D07F1-94F2-4ADD-8931-7188B3A142BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B5D07F1-94F2-4ADD-8931-7188B3A142BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B5D07F1-94F2-4ADD-8931-7188B3A142BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6F7CE55-853F-4E64-92C9-60C380BFB02F}.CodeAnalysis|Any CPU.ActiveCfg = Release|Any CPU
+		{D6F7CE55-853F-4E64-92C9-60C380BFB02F}.CodeAnalysis|Any CPU.Build.0 = Release|Any CPU
+		{D6F7CE55-853F-4E64-92C9-60C380BFB02F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6F7CE55-853F-4E64-92C9-60C380BFB02F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6F7CE55-853F-4E64-92C9-60C380BFB02F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6F7CE55-853F-4E64-92C9-60C380BFB02F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

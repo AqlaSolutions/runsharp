@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>9225df43-7709-4522-afca-f01df2bf6e83</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>RunSharp.Tests</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)01_HelloWorld.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)02_CommandLine.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)03_Arrays.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)04_Properties.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)05_Versioning.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)06_CollectionClasses.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)07_Structs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)08_Indexers.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)09_IndexedProperties.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)10_Conversions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)11_OperatorOverloading.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)12_Delegates.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)13_Events.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)14_ExplicitImplementation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)A1_BreakContinue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)A2_Attributes.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Bugs\X14_StaticConstructor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugs\X17_IsNull.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugs\X1864084_ValueTypeVirtual.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
+  </ItemGroup>
+</Project>

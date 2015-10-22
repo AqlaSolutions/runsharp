@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;FEAT_IKVM</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <LangVersion>default</LangVersion>
@@ -27,7 +27,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;FEAT_IKVM</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -41,39 +41,18 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="01_HelloWorld.cs" />
-    <Compile Include="02_CommandLine.cs" />
-    <Compile Include="03_Arrays.cs" />
-    <Compile Include="04_Properties.cs" />
-    <Compile Include="05_Versioning.cs" />
-    <Compile Include="06_CollectionClasses.cs" />
-    <Compile Include="07_Structs.cs" />
-    <Compile Include="08_Indexers.cs" />
-    <Compile Include="09_IndexedProperties.cs" />
-    <Compile Include="10_Conversions.cs" />
-    <Compile Include="11_OperatorOverloading.cs" />
-    <Compile Include="12_Delegates.cs" />
-    <Compile Include="13_Events.cs" />
-    <Compile Include="14_ExplicitImplementation.cs" />
-    <Compile Include="A1_BreakContinue.cs" />
-    <Compile Include="A2_Attributes.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Bugs\X14_StaticConstructor.cs" />
-    <Compile Include="Bugs\X17_IsNull.cs" />
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Bugs\X1864084_ValueTypeVirtual.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\RunSharpIKVM\RunSharp_IKVM.csproj">
-      <Project>{c835bb75-7955-4315-b52c-fa59e25219f4}</Project>
-      <Name>RunSharp_IKVM</Name>
+    <ProjectReference Include="..\RunSharp\RunSharp.csproj">
+      <Project>{08f134ae-48e8-4a35-9dc7-2f31eaf4a66f}</Project>
+      <Name>RunSharp</Name>
     </ProjectReference>
   </ItemGroup>
+  <Import Project="..\RunSharp.TestsShared\RunSharp.Tests.projitems" Label="Shared" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
