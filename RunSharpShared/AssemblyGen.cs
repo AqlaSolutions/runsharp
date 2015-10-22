@@ -329,7 +329,7 @@ namespace TriAxis.RunSharp
             }
             ModuleBuilder = AssemblyBuilder.DefineDynamicModule(moduleName, path, options.SymbolInfo);
 #else
-            ModuleBuilder = save ? AssemblyBuilder.DefineDynamicModule(moduleName, Path.GetFileNameWithoutExtension(path)) : AssemblyBuilder.DefineDynamicModule(moduleName);
+            ModuleBuilder = save ? AssemblyBuilder.DefineDynamicModule(moduleName, Path.GetFileName(path)) : AssemblyBuilder.DefineDynamicModule(moduleName);
 #endif
         }
 
