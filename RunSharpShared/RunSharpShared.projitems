@@ -52,6 +52,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Operands\EnumLiteral.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Operands\Field.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Operands\FloatLiteral.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Operands\IAssignment.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Operands\IAssignmentInternal.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Operands\InitializedArray.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Operands\IntLiteral.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Operands\Invocation.cs" />

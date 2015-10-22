@@ -84,7 +84,7 @@ namespace TryAxis.RunSharp
 
         public new ContextualAssignment Assign(Operand value, bool allowExplicitConversion)
         {
-            return new ContextualAssignment(this, value, allowExplicitConversion, TypeMapper);
+            return new ContextualAssignment(new Assignment(this, value, allowExplicitConversion), TypeMapper);
         }
 
         public new ContextualOperand Eq(Operand value)

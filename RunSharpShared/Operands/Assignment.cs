@@ -41,8 +41,8 @@ using System.Reflection.Emit;
 
 namespace TriAxis.RunSharp.Operands
 {
-	public class Assignment : Operand, IStatement
-	{
+	public class Assignment : Operand, IAssignmentInternal
+    {
 	    readonly Operand _lvalue;
 	    readonly Operand _rvalue;
 	    readonly bool _allowExplicitConversion;
