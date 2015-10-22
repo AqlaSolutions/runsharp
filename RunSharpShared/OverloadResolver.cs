@@ -167,24 +167,30 @@ namespace TriAxis.RunSharp
 			if (rlConv.IsValid && !lrConv.IsValid)
 				return Better.Right;
 
-			if (BetterSign(left, right))
+			if (BetterSign(left, right, typeMapper))
 				return Better.Left;
-			if (BetterSign(right, left))
+			if (BetterSign(right, left, typeMapper))
 				return Better.Right;
 
 			return Better.Neither;
 		}
 
-		static bool BetterSign(Type better, Type than)
+		static bool BetterSign(Type better, Type than, ITypeMapper typeMapper)
 		{
-			if (better == typeof(sbyte))
-				return than == typeof(byte) || than == typeof(ushort) || than == typeof(uint) || than == typeof(ulong);
-			if (better == typeof(short))
-				return than == typeof(ushort) || than == typeof(uint) || than == typeof(ulong);
-			if (better == typeof(int))
-				return than == typeof(uint) || than == typeof(ulong);
-			if (better == typeof(long))
-				return than == typeof(ulong);
+			if (Helpers.AreTypesEqual(better, typeof(sbyte), typeMapper))
+				return Helpers.AreTypesEqual(than, typeof(byte), typeMapper) || 
+                    Helpers.AreTypesEqual(than, typeof(ushort), typeMapper) 
+                    || Helpers.AreTypesEqual(than, typeof(uint), typeMapper) 
+                    || Helpers.AreTypesEqual(than, typeof(ulong), typeMapper);
+			if (Helpers.AreTypesEqual(better, typeof(short), typeMapper))
+				return Helpers.AreTypesEqual(than, typeof(ushort), typeMapper) 
+                    || Helpers.AreTypesEqual(than, typeof(uint), typeMapper) 
+                    || Helpers.AreTypesEqual(than, typeof(ulong), typeMapper);
+			if (Helpers.AreTypesEqual(better, typeof(int), typeMapper))
+				return Helpers.AreTypesEqual(than, typeof(uint), typeMapper) 
+                    || Helpers.AreTypesEqual(than, typeof(ulong), typeMapper);
+			if (Helpers.AreTypesEqual(better, typeof(long), typeMapper))
+				return Helpers.AreTypesEqual(than, typeof(ulong), typeMapper);
 
 			return false;
 		}

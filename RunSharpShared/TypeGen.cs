@@ -292,7 +292,7 @@ namespace TriAxis.RunSharp
 
 			if (BaseType == null)
 				target = AttributeTargets.Interface;
-			else if (BaseType == typeof(ValueType))
+			else if (BaseType == TypeMapper.MapType(typeof(ValueType)))
 				target = AttributeTargets.Struct;
 			else
 				target = AttributeTargets.Class;
@@ -312,7 +312,7 @@ namespace TriAxis.RunSharp
 
 			if (_commonCtor == null)
 			{
-				_commonCtor = new MethodGen(this, "$$ctor", 0, typeof(void), 0).LockSignature();
+				_commonCtor = new MethodGen(this, "$$ctor", 0, TypeMapper.MapType(typeof(void)), 0).LockSignature();
 			}
 
 			return _commonCtor;
@@ -533,7 +533,7 @@ namespace TriAxis.RunSharp
 
 		public TypeGen Class(string name)
 		{
-			return Class(name, typeof(object), Type.EmptyTypes);
+			return Class(name, TypeMapper.MapType(typeof(object)), Type.EmptyTypes);
 		}
 
 		public TypeGen Class(string name, Type baseType)
@@ -567,7 +567,7 @@ namespace TriAxis.RunSharp
 			if (_typeVis == 0)
 				_typeVis |= TypeAttributes.NestedPrivate;
 
-			TypeGen tg = new TypeGen(this, name, (_typeVis | _typeVirt | _typeFlags | TypeAttributes.Sealed | TypeAttributes.SequentialLayout) ^ TypeAttributes.BeforeFieldInit, typeof(ValueType), interfaces, _typeMapper);
+			TypeGen tg = new TypeGen(this, name, (_typeVis | _typeVirt | _typeFlags | TypeAttributes.Sealed | TypeAttributes.SequentialLayout) ^ TypeAttributes.BeforeFieldInit, TypeMapper.MapType(typeof(ValueType)), interfaces, _typeMapper);
 			ResetAttrs();
 			return tg;
 		}
@@ -701,7 +701,7 @@ namespace TriAxis.RunSharp
 			if (_indexerName != null)
 			{
 				CustomAttributeBuilder cab = new CustomAttributeBuilder(
-					typeof(DefaultMemberAttribute).GetConstructor(new Type[] { typeof(string) }),
+                    TypeMapper.MapType(typeof(DefaultMemberAttribute)).GetConstructor(new Type[] { TypeMapper.MapType(typeof(string)) }),
 					new object[] { _indexerName });
 				TypeBuilder.SetCustomAttribute(cab);
 			}
@@ -755,7 +755,7 @@ namespace TriAxis.RunSharp
 		{
 			if (_owner.AssemblyBuilder.EntryPoint == null && method.Name == "Main" && method.IsStatic && (
 				method.ParameterCount == 0 ||
-				(method.ParameterCount == 1 && method.ParameterTypes[0] == typeof(string[]))))
+				(method.ParameterCount == 1 && method.ParameterTypes[0] == TypeMapper.MapType(typeof(string[])))))
 				_owner.AssemblyBuilder.SetEntryPoint(method.GetMethodBuilder());
 
 			// match explicit interface implementations

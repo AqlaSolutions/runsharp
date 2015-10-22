@@ -94,7 +94,7 @@ namespace TriAxis.RunSharp
 			if (_setter == null)
 			{
 				LockSignature();
-				_setter = new MethodGen(_owner, "set_" + Name, _attrs | MethodAttributes.SpecialName, typeof(void), 0);
+				_setter = new MethodGen(_owner, "set_" + Name, _attrs | MethodAttributes.SpecialName, TypeMapper.MapType(typeof(void)), 0);
 				_setter.ImplementedInterface = ImplementedInterface;
 				_setter.CopyParameters(_indexParameters);
 				_setter.UncheckedParameter(_type, "value");
