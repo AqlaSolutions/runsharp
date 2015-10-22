@@ -120,25 +120,5 @@ namespace TriAxis.RunSharp
 		{
 			return OwnerType.ToString() + "." + _name;
 		}
-
-	    public override MethodGen Attribute(AttributeType type)
-	    {
-	        throw new NotSupportedException();
-	    }
-
-	    public override MethodGen Attribute(AttributeType type, params object[] args)
-	    {
-            throw new NotSupportedException();
-        }
-
-	    public override AttributeGen<MethodGen> BeginAttribute(AttributeType type)
-	    {
-            throw new NotSupportedException();
-        }
-
-	    public override AttributeGen<MethodGen> BeginAttribute(AttributeType type, params object[] args)
-	    {
-            throw new NotSupportedException();
-        }
 	}
 }

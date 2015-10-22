@@ -128,7 +128,7 @@ namespace TriAxis.RunSharp
 
 #if FEAT_IKVM
             const bool inherit = false;
-            System.Collections.Generic.IList<CustomAttributeData> all = assembly.__GetCustomAttributes(model.MapType(typeof(Attribute), true), inherit);
+            System.Collections.Generic.IList<CustomAttributeData> all = assembly.__GetCustomAttributes(model.MapType(typeof(System.Attribute), true), inherit);
             AttributeMap[] result = new AttributeMap[all.Count];
             int index = 0;
             foreach (CustomAttributeData attrib in all)

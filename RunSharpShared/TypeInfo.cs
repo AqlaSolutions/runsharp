@@ -90,12 +90,14 @@ namespace TriAxis.RunSharp
                 _ = owner;
                 _t = t;
 
+#if !FEAT_IKVM
                 if (t.GetType() != typeof(object).GetType())
                 {
                     // not a runtime type, TypeInfoProvider missing - return nothing
                     _constructors = _fields = _properties = _events = _methods = _empty;
                     _defaultMember = null;
                 }
+#endif
             }
 
             ~CacheEntry()
@@ -431,7 +433,9 @@ namespace TriAxis.RunSharp
         {
             foreach (Type type in SearchableTypes(t))
             {
-                ApplicableFunction af = OverloadResolver.Resolve(Filter(GetMethods(type), name, false, @static, false), TypeMapper, args);
+                IEnumerable<IMemberInfo> methods = GetMethods(type);
+                IEnumerable<IMemberInfo> filter = Filter(methods, name, false, @static, false);
+                ApplicableFunction af = OverloadResolver.Resolve(filter, TypeMapper, args);
 
                 if (af != null)
                     return af;

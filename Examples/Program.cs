@@ -159,10 +159,10 @@ namespace TriAxis.RunSharp
                     }
                     else
                     {
-                        AppDomain.CurrentDomain.ExecuteAssembly(name, null, GetTestArguments(gen));
+                        AppDomain.CurrentDomain.ExecuteAssembly(Path.Combine(exePath, name + ".exe"), null, GetTestArguments(gen));
                     }
 #else
-                    AppDomain.CurrentDomain.ExecuteAssembly(name, null, GetTestArguments(gen));
+                    AppDomain.CurrentDomain.ExecuteAssembly(Path.Combine(exePath, name + ".exe"), null, GetTestArguments(gen));
 #endif
 
                 }
