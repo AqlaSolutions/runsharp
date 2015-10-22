@@ -145,7 +145,7 @@ namespace TriAxis.RunSharp
                     if (_properties == null)
                     {
                         PropertyInfo[] pis = _t.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Static);
-                        _properties = Array.ConvertAll<PropertyInfo, IMemberInfo>(pis, delegate(PropertyInfo pi) { return new StdPropertyInfo(pi); });
+                        _properties = Array.ConvertAll<PropertyInfo, IMemberInfo>(pis, delegate(PropertyInfo pi) { return new StdPropertyInfo(pi, _); });
                     }
                     return _properties;
                 }
@@ -183,7 +183,7 @@ namespace TriAxis.RunSharp
                 {
                     if (_defaultMember == _nullStr)
                     {
-                        foreach (var dma in Helpers.GetCustomAttributes(_t, typeof(DefaultMemberAttribute), true))
+                        foreach (var dma in Helpers.GetCustomAttributes(_t, typeof(DefaultMemberAttribute), true, _.TypeMapper))
                         { 
 #if FEAT_IKVM
                             return _defaultMember = dma.ConstructorArguments[0].Value as string;
@@ -480,7 +480,7 @@ namespace TriAxis.RunSharp
                     _parameterTypes = ArrayUtils.GetTypes(pis);
 
                     _hasVar = pis.Length > 0 &&
-                        Helpers.GetCustomAttributes(pis[pis.Length - 1], typeof(ParamArrayAttribute), false).Count> 0;
+                        Helpers.GetCustomAttributes(pis[pis.Length - 1], typeof(ParamArrayAttribute), false, _.TypeMapper).Count> 0;
                 }
             }
 
@@ -537,10 +537,11 @@ namespace TriAxis.RunSharp
             Type _returnType;
             Type[] _parameterTypes;
             bool _hasVar;
-
-            public StdPropertyInfo(PropertyInfo pi)
+            readonly TypeInfo _;
+            public StdPropertyInfo(PropertyInfo pi, TypeInfo owner)
             {
                 _pi = pi;
+                _ = owner;
                 _mi = pi.GetGetMethod();
                 if (_mi == null)
                     _mi = pi.GetSetMethod();
@@ -555,7 +556,7 @@ namespace TriAxis.RunSharp
                     _parameterTypes = ArrayUtils.GetTypes(pis);
 
                     _hasVar = pis.Length > 0 &&
-                        Helpers.GetCustomAttributes(pis[pis.Length - 1], typeof(ParamArrayAttribute), false).Count > 0;
+                        Helpers.GetCustomAttributes(pis[pis.Length - 1], typeof(ParamArrayAttribute), false, _.TypeMapper).Count > 0;
                 }
             }
 

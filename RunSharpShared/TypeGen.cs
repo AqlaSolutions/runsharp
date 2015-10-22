@@ -100,7 +100,8 @@ namespace TriAxis.RunSharp
 	    readonly List<IMemberInfo> _methods = new List<IMemberInfo>();
 		List<AttributeGen> _customAttributes = new List<AttributeGen>();
 		string _indexerName;
-		
+
+        internal AssemblyBuilder AssemblyBuilder => _owner.AssemblyBuilder;
 		internal TypeBuilder TypeBuilder { get; }
 	    internal Type BaseType { get; }
 
@@ -505,8 +506,8 @@ namespace TriAxis.RunSharp
 				_mthVirt |= MethodAttributes.Virtual | MethodAttributes.Abstract;
 
 			MethodGen mg = new MethodGen(this, name, _mthVis | _mthVirt | _mthFlags, returnType, _implFlags);
-			ResetAttrs();
-			return mg;
+            ResetAttrs();
+            return mg;
 		}
 
 #if FEAT_IKVM

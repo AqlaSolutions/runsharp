@@ -669,9 +669,11 @@ namespace TriAxis.RunSharp
 			{
 				if (!_hasScope)
 				{
-					if (G.Context.SupportsScopes)
+#if !FEAT_IKVM
+                    if (G.Context.SupportsScopes)
 						G.IL.BeginScope();
-					_hasScope = true;
+#endif
+                    _hasScope = true;
 				}
 			}
 
@@ -679,9 +681,11 @@ namespace TriAxis.RunSharp
 			{
 				if (_hasScope)
 				{
-					if (G.Context.SupportsScopes)
+#if !FEAT_IKVM
+                    if (G.Context.SupportsScopes)
 						G.IL.EndScope();
-					_hasScope = false;
+#endif
+                    _hasScope = false;
 				}
 			}
 
@@ -1004,28 +1008,39 @@ namespace TriAxis.RunSharp
                 _expression = expression;
 
 				Type exprType = expression.GetReturnType(typeMapper);
-				if (Array.IndexOf(_validTypes, exprType) != -1)
-					_govType = exprType;
-				else if (exprType.IsEnum)
-					_govType = Helpers.GetEnumEnderlyingType(exprType);
-				else
-				{
-					// if a single implicit coversion from expression to one of the valid types exists, it's ok
-					foreach (System.Type t in _validTypes)
-					{
-						Conversion tmp = Conversion.GetImplicit(expression, typeMapper.MapType(t), false, typeMapper);
-						if (tmp.IsValid)
-						{
-							if (_conv == null)
-							{
-								_conv = tmp;
-								_govType = typeMapper.MapType(t);
-							}
-							else
-								throw new AmbiguousMatchException(Properties.Messages.ErrAmbiguousSwitchExpression);
-						}
-					}
-				}
+			    foreach (var t in _validTypes)
+			    {
+			        Type mapped = typeMapper.MapType(t);
+			        if (mapped == exprType)
+			        {
+			            _govType = mapped;
+                        break;
+			        }
+			    }
+			    if (_govType == null)
+			    {
+			        if (exprType.IsEnum)
+			            _govType = Helpers.GetEnumEnderlyingType(exprType);
+			        else
+			        {
+			            // if a single implicit coversion from expression to one of the valid types exists, it's ok
+			            foreach (System.Type t in _validTypes)
+			            {
+			                Conversion tmp = Conversion.GetImplicit(expression, typeMapper.MapType(t), false, typeMapper);
+			                if (tmp.IsValid)
+			                {
+			                    if (_conv == null)
+			                    {
+			                        _conv = tmp;
+			                        _govType = typeMapper.MapType(t);
+			                        //if (_govType==expression.)
+			                    }
+			                    else
+			                        throw new AmbiguousMatchException(Properties.Messages.ErrAmbiguousSwitchExpression);
+			                }
+			            }
+			        }
+			    }
 			}
 
 			protected override void BeginImpl()

@@ -179,21 +179,23 @@ namespace TriAxis.RunSharp
         }
         
 #if FEAT_IKVM
-        public static IList<CustomAttributeData> GetCustomAttributes(MemberInfo m, System.Type type, bool inherit)
+        public static IList<CustomAttributeData> GetCustomAttributes(MemberInfo m, System.Type type, bool inherit, ITypeMapper mapper = null)
         {
+            if (mapper != null) return m.__GetCustomAttributes(mapper.MapType(type), inherit);
             return GetCustomAttributes(m, type.FullName, inherit);
         }
 
-        public static IList<CustomAttributeData> GetCustomAttributes(ParameterInfo m, System.Type type, bool inherit)
+        public static IList<CustomAttributeData> GetCustomAttributes(ParameterInfo m, System.Type type, bool inherit, ITypeMapper mapper = null)
         {
+            if (mapper != null) return m.__GetCustomAttributes(mapper.MapType(type), inherit);
             return GetCustomAttributes(m, type.FullName, inherit);
         }
-
+        
         public static IList<CustomAttributeData> GetCustomAttributes(MemberInfo m, string attribute, bool inherit)
         {
             var t = m.DeclaringType;
-            while (t.FullName != "System.Object") t = t.BaseType;
-
+            while (t != null && t.FullName != "System.Object") t = t.BaseType;
+            if (t == null) return new List<CustomAttributeData>();
             var list = GetCustomAttributes(m, t, inherit);
             var list2 = new List<CustomAttributeData>(list);
             list2.RemoveAll(el => !IsAssignableFrom(attribute, el.AttributeType));
@@ -203,7 +205,8 @@ namespace TriAxis.RunSharp
         public static IList<CustomAttributeData> GetCustomAttributes(ParameterInfo m, string attribute, bool inherit)
         {
             var t = m.ParameterType;
-            while (t.FullName != "System.Object") t = t.BaseType;
+            while (t != null && t.FullName != "System.Object") t = t.BaseType;
+            if (t == null) return new List<CustomAttributeData>();
 
             var list = GetCustomAttributes(m, t, inherit);
             var list2 = new List<CustomAttributeData>(list);
@@ -227,7 +230,7 @@ namespace TriAxis.RunSharp
             return m.__GetCustomAttributes(attribute, inherit);
         }
 #else
-        public static IList<object> GetCustomAttributes(MemberInfo m, Type attribute, bool inherit)
+        public static IList<object> GetCustomAttributes(MemberInfo m, Type attribute, bool inherit, ITypeMapper mapper = null)
         {
             return m.GetCustomAttributes(attribute, inherit);
         }
@@ -238,7 +241,7 @@ namespace TriAxis.RunSharp
             return m.__GetCustomAttributes(attribute, inherit);
         }
 #else
-        public static IList<object> GetCustomAttributes(ParameterInfo m, Type attribute, bool inherit)
+        public static IList<object> GetCustomAttributes(ParameterInfo m, Type attribute, bool inherit, ITypeMapper mapper = null)
         {
             return m.GetCustomAttributes(attribute, inherit);
         }

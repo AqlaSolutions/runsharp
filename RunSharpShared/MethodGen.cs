@@ -70,9 +70,9 @@ namespace TriAxis.RunSharp
 				methodName = ImplementedInterface + "." + _name;
 
 			_mb = Owner.TypeBuilder.DefineMethod(methodName, _attributes | MethodAttributes.HideBySig, IsStatic ? CallingConventions.Standard : CallingConventions.HasThis, ReturnType, ParameterTypes);
-			if (_implFlags != 0)
+            if (_implFlags != 0)
 				_mb.SetImplementationFlags(_implFlags);
-		}
+        }
 
 		protected override void RegisterMember()
 		{

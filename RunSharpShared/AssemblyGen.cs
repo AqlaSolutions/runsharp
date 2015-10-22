@@ -339,10 +339,14 @@ namespace TriAxis.RunSharp
 			Complete();
 
 			if ((_access & AssemblyBuilderAccess.Save) != 0)
-				AssemblyBuilder.Save(Path.GetFileName(_fileName));
-		}
+#if FEAT_IKVM
+                AssemblyBuilder.Save(_fileName);
+#else
+                AssemblyBuilder.Save(Path.GetFileName(_fileName));
+#endif
+        }
 
-		public Assembly GetAssembly()
+        public Assembly GetAssembly()
 		{
 			Complete();
 			return AssemblyBuilder;

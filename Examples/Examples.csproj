@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;FEAT_IKVM</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <LangVersion>default</LangVersion>
@@ -69,9 +69,9 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\RunSharp\RunSharp.csproj">
-      <Project>{08f134ae-48e8-4a35-9dc7-2f31eaf4a66f}</Project>
-      <Name>RunSharp</Name>
+    <ProjectReference Include="..\RunSharpIKVM\RunSharp_IKVM.csproj">
+      <Project>{c835bb75-7955-4315-b52c-fa59e25219f4}</Project>
+      <Name>RunSharp_IKVM</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
