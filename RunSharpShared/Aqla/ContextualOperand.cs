@@ -237,6 +237,15 @@ namespace TryAxis.RunSharp
             return new ContextualOperand(base.Conditional(ifTrue, ifFalse), TypeMapper);
         }
 
+#if FEAT_IKVM
+
+        public Operand Cast(System.Type type)
+        {
+            return Cast(TypeMapper.MapType(type));
+        }
+        
+#endif
+
         public new ContextualOperand Cast(Type type)
         {
             return new ContextualOperand(base.Cast(type), TypeMapper);

@@ -619,8 +619,8 @@ namespace TriAxis.RunSharp
 		{
 			return new Conditional(this, ifTrue, ifFalse);
 		}
-        
-		public Operand Cast(Type type)
+
+	    public Operand Cast(Type type)
 		{
 			return new Cast(this, type);
 		}

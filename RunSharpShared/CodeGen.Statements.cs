@@ -250,13 +250,32 @@ namespace TriAxis.RunSharp
 				IL.Emit(OpCodes.Pop);
 		}
 
-		#region Invocation
-		public void Invoke(Type target, string method)
+        #region Invocation
+
+#if FEAT_IKVM
+
+        public void Invoke(System.Type target, string method)
+	    {
+	        Invoke(TypeMapper.MapType(target), method);
+	    }
+        
+#endif
+
+	    public void Invoke(Type target, string method)
 		{
 			Invoke(target, method, Operand.EmptyArray);
 		}
 
-		public void Invoke(Type target, string method, params Operand[] args)
+#if FEAT_IKVM
+
+        public void Invoke(System.Type target, string method, params Operand[] args)
+	    {
+	        Invoke(TypeMapper.MapType(target), method, args);
+	    }
+        
+#endif
+
+	    public void Invoke(Type target, string method, params Operand[] args)
 		{
 			DoInvoke(_staticFactory.Invoke(target, method, args));
 		}
@@ -494,7 +513,13 @@ namespace TriAxis.RunSharp
 			Begin(new LoopBlock(null, test, null, TypeMapper));
 		}
 
-		public ContextualOperand ForEach(Type elementType, Operand expression)
+#if FEAT_IKVM
+        public ContextualOperand ForEach(System.Type elementType, Operand expression)
+	    {
+	        return ForEach(TypeMapper.MapType(elementType), expression);
+	    }
+#endif
+        public ContextualOperand ForEach(Type elementType, Operand expression)
 		{
 			ForeachBlock fb = new ForeachBlock(elementType, expression, TypeMapper);
 			Begin(fb);
@@ -542,7 +567,16 @@ namespace TriAxis.RunSharp
 			return null;
 		}
 
-		public ContextualOperand Catch(Type exceptionType)
+#if FEAT_IKVM
+
+        public ContextualOperand Catch(System.Type exceptionType)
+	    {
+	        return Catch(TypeMapper.MapType(exceptionType));
+	    }
+        
+#endif
+
+	    public ContextualOperand Catch(Type exceptionType)
 		{
 			return new ContextualOperand(GetTryBlock().BeginCatch(exceptionType), TypeMapper);
 		}

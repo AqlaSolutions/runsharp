@@ -57,10 +57,28 @@ namespace TriAxis.RunSharp
 
         #region Construction expressions
 
+#if FEAT_IKVM
+
+        public ContextualOperand New(System.Type type)
+        {
+            return New(_typeMapper.MapType(type));
+        }
+#endif
+
+
         public ContextualOperand New(Type type)
         {
             return new ContextualOperand(New(type, Operand.EmptyArray), _typeMapper);
         }
+
+#if FEAT_IKVM
+
+        public ContextualOperand New(System.Type type, params Operand[] args)
+        {
+            return New(_typeMapper.MapType(type), args);
+        }
+#endif
+
 
         public ContextualOperand New(Type type, params Operand[] args)
         {
@@ -72,20 +90,56 @@ namespace TriAxis.RunSharp
             return new ContextualOperand(new NewObject(ctor, args), _typeMapper);
         }
 
+#if FEAT_IKVM
+
+        public ContextualOperand NewArray(System.Type type, params Operand[] indexes)
+        {
+            return NewArray(_typeMapper.MapType(type), indexes);
+        }
+        
+#endif
+
         public ContextualOperand NewArray(Type type, params Operand[] indexes)
         {
             return new ContextualOperand(new NewArray(type, indexes), _typeMapper);
         }
+
+#if FEAT_IKVM
+
+        public ContextualOperand NewInitializedArray(System.Type type, params Operand[] elements)
+        {
+            return NewInitializedArray(_typeMapper.MapType(type), elements);
+        }
+#endif
+
 
         public ContextualOperand NewInitializedArray(Type type, params Operand[] elements)
         {
             return new ContextualOperand(new InitializedArray(type, elements), _typeMapper);
         }
 
+#if FEAT_IKVM
+
+        public ContextualOperand NewDelegate(System.Type type, Type target, string method)
+        {
+            return NewDelegate(_typeMapper.MapType(type), target, method);
+        }
+#endif
+
+
         public ContextualOperand NewDelegate(Type delegateType, Type target, string method)
         {
             return new ContextualOperand(new NewDelegate(delegateType, target, method, _typeMapper), _typeMapper);
         }
+
+#if FEAT_IKVM
+
+        public ContextualOperand NewDelegate(System.Type type, Operand target, string method)
+        {
+            return NewDelegate(_typeMapper.MapType(type), target, method);
+        }
+#endif
+
 
         public ContextualOperand NewDelegate(Type delegateType, Operand target, string method)
         {

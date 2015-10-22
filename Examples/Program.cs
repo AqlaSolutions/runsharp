@@ -29,9 +29,16 @@ using System.Security.Permissions;
 using System.Security.Policy;
 using System.Text;
 using System.IO;
-using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading;
+#if FEAT_IKVM
+using IKVM.Reflection;
+#endif
+using Assembly = System.Reflection.Assembly;
+using BindingFlags = System.Reflection.BindingFlags;
+using MethodInfo = System.Reflection.MethodInfo;
+using ParameterInfo = System.Reflection.ParameterInfo;
+using Type = System.Type;
 
 namespace TriAxis.RunSharp
 {
@@ -120,14 +127,20 @@ namespace TriAxis.RunSharp
                 Console.WriteLine(">>> GEN {0}", testName);
                 string name = testName;
                 AssemblyGen asm;
+#if FEAT_IKVM
+                var universe = new Universe();
+                asm = new AssemblyGen(universe, name, new CompilerOptions() { OutputPath = Path.Combine(exePath, name + ".exe") }, new TypeMapper(universe));
+#else
                 asm = noexe ? new AssemblyGen(name, new CompilerOptions())
                           : new AssemblyGen(name, new CompilerOptions() { OutputPath = Path.Combine(exePath, name + ".exe") });
+#endif
                 gen(asm);
                 if (!noexe)
                     asm.Save();
                 Console.WriteLine("=== RUN {0}", testName);
                 try
                 {
+#if !FEAT_IKVM
                     if (noexe)
                     {
                         Type entryType = ((TypeBuilder)asm.GetAssembly().EntryPoint.DeclaringType).CreateType();
@@ -148,6 +161,10 @@ namespace TriAxis.RunSharp
                     {
                         AppDomain.CurrentDomain.ExecuteAssembly(name, null, GetTestArguments(gen));
                     }
+#else
+                    AppDomain.CurrentDomain.ExecuteAssembly(name, null, GetTestArguments(gen));
+#endif
+
                 }
                 catch (Exception e)
                 {
@@ -166,12 +183,15 @@ namespace TriAxis.RunSharp
             }
 
             // dynamic method examples
+#if !FEAT_IKVM
             DynamicMethodExamples(new TypeMapper());
+#endif
         }
 
-        #region Dynamic Method examples
+#region Dynamic Method examples
         static void DynamicMethodExamples(ITypeMapper typeMapper)
         {
+#if !FEAT_IKVM
             DynamicMethodGen dmg = DynamicMethodGen.Static(typeof(Program)).Method(typeof(void), typeMapper).Parameter(typeof(string), "name");
             CodeGen g = dmg.GetCode();
             g.Try();
@@ -194,7 +214,8 @@ namespace TriAxis.RunSharp
             Action<string> hello = (Action<string>)dm.CreateDelegate(typeof(Action<string>));
 
             hello("Delegate");
+#endif
         }
-        #endregion
+#endregion
     }
 }

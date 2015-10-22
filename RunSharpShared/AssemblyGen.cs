@@ -163,12 +163,30 @@ namespace TriAxis.RunSharp
 			return Class(name, TypeMapper.MapType(typeof(object)));
 		}
 
-		public TypeGen Class(string name, Type baseType)
+#if FEAT_IKVM
+
+        public TypeGen Class(System.Type baseType, string name)
+        {
+            return Class(name, TypeMapper.MapType(baseType));
+        }
+#endif
+
+
+        public TypeGen Class(string name, Type baseType)
 		{
 			return Class(name, baseType, Type.EmptyTypes);
 		}
 
-		public TypeGen Class(string name, Type baseType, params Type[] interfaces)
+#if FEAT_IKVM
+
+        public TypeGen Class(string name, System.Type baseType, params Type[] interfaces)
+        {
+            return Class(name, TypeMapper.MapType(baseType), interfaces);
+        }
+        
+#endif
+
+        public TypeGen Class(string name, Type baseType, params Type[] interfaces)
 		{
 			TypeGen tg = new TypeGen(this, Qualify(name), (_attrs | TypeAttributes.Class) ^ TypeAttributes.BeforeFieldInit, baseType, interfaces, TypeMapper);
 			_attrs = 0;
@@ -199,7 +217,16 @@ namespace TriAxis.RunSharp
 			return tg;
 		}
 
-		public DelegateGen Delegate(Type returnType, string name)
+#if FEAT_IKVM
+
+        public DelegateGen Delegate(System.Type returnType, string name)
+        {
+            return Delegate(TypeMapper.MapType(returnType), name);
+        }
+        
+#endif
+
+        public DelegateGen Delegate(Type returnType, string name)
 		{
 			return new DelegateGen(this, Qualify(name), returnType, (_attrs | TypeAttributes.Sealed) & ~(TypeAttributes.Abstract | TypeAttributes.BeforeFieldInit));
 		}

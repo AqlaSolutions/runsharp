@@ -150,12 +150,30 @@ namespace TriAxis.RunSharp
 			return new ContextualOperand(var, TypeMapper);
 		}
 
-		public ContextualOperand Local(Type type)
+#if FEAT_IKVM
+
+        public ContextualOperand Local(System.Type type)
+	    {
+	        return Local(TypeMapper.MapType(type));
+	    }
+        
+#endif
+
+	    public ContextualOperand Local(Type type)
 		{
 			return new ContextualOperand(new _Local(this, type), TypeMapper);
 		}
 
-		public ContextualOperand Local(Type type, Operand init)
+#if FEAT_IKVM
+
+        public ContextualOperand Local(System.Type type, Operand init)
+	    {
+	        return Local(TypeMapper.MapType(type), init);
+	    }
+        
+#endif
+
+	    public ContextualOperand Local(Type type, Operand init)
 		{
 			Operand var = Local(type);
 			Assign(var, init);

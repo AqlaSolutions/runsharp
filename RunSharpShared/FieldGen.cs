@@ -50,6 +50,8 @@ namespace TriAxis.RunSharp
 	    readonly FieldBuilder _fb;
 		List<AttributeGen> _customAttributes = new List<AttributeGen>();
 
+	    public ITypeMapper TypeMapper => _owner.TypeMapper;
+
 		internal FieldGen(TypeGen owner, string name, Type type, FieldAttributes attrs)
 		{
 			_owner = owner;
@@ -66,26 +68,61 @@ namespace TriAxis.RunSharp
 	    public string Name { get; }
 	    public bool IsStatic => (_attrs & FieldAttributes.Static) != 0;
 
-	    #region Custom Attributes
+        #region Custom Attributes
 
-		public FieldGen Attribute(AttributeType type)
+#if FEAT_IKVM
+
+        public FieldGen Attribute(System.Type attributeType)
+	    {
+	        return Attribute(TypeMapper.MapType(attributeType));
+	    }
+        
+#endif
+
+	    public FieldGen Attribute(AttributeType type)
 		{
 			BeginAttribute(type);
 			return this;
 		}
 
-		public FieldGen Attribute(AttributeType type, params object[] args)
+#if FEAT_IKVM
+        public FieldGen Attribute(System.Type attributeType, params object[] args)
+	    {
+	        return Attribute(TypeMapper.MapType(attributeType), args);
+	    }
+        
+#endif
+
+	    public FieldGen Attribute(AttributeType type, params object[] args)
 		{
 			BeginAttribute(type, args);
 			return this;
 		}
 
-		public AttributeGen<FieldGen> BeginAttribute(AttributeType type)
+#if FEAT_IKVM
+
+        public AttributeGen<FieldGen> BeginAttribute(System.Type attributeType)
+	    {
+	        return BeginAttribute(TypeMapper.MapType(attributeType));
+	    }
+        
+#endif
+
+	    public AttributeGen<FieldGen> BeginAttribute(AttributeType type)
 		{
 			return BeginAttribute(type, EmptyArray<object>.Instance);
 		}
 
-		public AttributeGen<FieldGen> BeginAttribute(AttributeType type, params object[] args)
+#if FEAT_IKVM
+
+        public AttributeGen<FieldGen> BeginAttribute(System.Type attributeType, params object[] args)
+	    {
+	        return BeginAttribute(TypeMapper.MapType(attributeType), args);
+	    }
+        
+#endif
+
+	    public AttributeGen<FieldGen> BeginAttribute(AttributeType type, params object[] args)
 		{
 			return AttributeGen<FieldGen>.CreateAndAdd(this, ref _customAttributes, AttributeTargets.Field, type, args, _owner.TypeMapper);
 		}

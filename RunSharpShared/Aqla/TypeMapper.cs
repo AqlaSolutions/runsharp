@@ -42,6 +42,7 @@ using MissingMemberException = System.MissingMemberException;
 using DefaultMemberAttribute = System.Reflection.DefaultMemberAttribute;
 using Attribute = IKVM.Reflection.CustomAttributeData;
 using BindingFlags = IKVM.Reflection.BindingFlags;
+
 #else
 using System.Reflection;
 using System.Reflection.Emit;
@@ -58,8 +59,16 @@ namespace TriAxis.RunSharp
         {
             if (universe == null) throw new ArgumentNullException(nameof(universe));
             this.universe = universe;
+            TypeInfo = new TypeInfo(this);
+        }
+#else
+        
+        public TypeMapper()
+        {
+            TypeInfo = new TypeInfo(this);
         }
 #endif
+
         /// <summary>
         /// Translate a System.Type into the universe's type representation
         /// </summary>
@@ -70,9 +79,10 @@ namespace TriAxis.RunSharp
 
             if (type.Assembly == typeof(IKVM.Reflection.Type).Assembly)
             {
-                throw new InvalidOperationException(string.Format(
-                    "Somebody is passing me IKVM types! {0} should be fully-qualified at the call-site",
-                    type.Name));
+                throw new InvalidOperationException(
+                    string.Format(
+                        "Somebody is passing me IKVM types! {0} should be fully-qualified at the call-site",
+                        type.Name));
             }
 
             Type result = universe.GetType(type.AssemblyQualifiedName);
@@ -113,11 +123,6 @@ namespace TriAxis.RunSharp
             }
             return Type.GetType(fullName, false);
 #endif
-        }
-
-        public TypeMapper()
-        {
-            TypeInfo = new TypeInfo(this);
         }
         
         public virtual ITypeInfo TypeInfo { get; }

@@ -48,13 +48,14 @@ namespace TriAxis.RunSharp
         ParameterGen GetParameterByName(string parameterName);
     }
 
-    public abstract class SignatureGen<T> : ISignatureGen where T : SignatureGen<T>
+    public abstract class SignatureGen<T> : MemberGenBase<T>, ISignatureGen where T : SignatureGen<T>
     {
         public ITypeMapper TypeMapper { get; }
         readonly ParameterGenCollection _parameters;
         internal readonly T TypedThis;
 
         internal SignatureGen(Type returnType, ITypeMapper typeMapper)
+            : base(typeMapper)
         {
             TypeMapper = typeMapper;
             _parameters = new ParameterGenCollection(typeMapper);
@@ -127,6 +128,12 @@ namespace TriAxis.RunSharp
             return TypedThis;
         }
 
+#if FEAT_IKVM
+        public T Parameter(System.Type type, string name)
+        {
+            return Parameter(TypeMapper.MapType(type), name);
+        }
+#endif
         public T Parameter(Type type, string name)
         {
             BeginParameter(type, name);

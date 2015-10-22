@@ -52,7 +52,7 @@ namespace TriAxis.RunSharp
 		void Complete();
 	}
 
-    public class TypeGen : ITypeInfoProvider, ICodeGenBasicContext
+    public class TypeGen : MemberGenBase<TypeGen>, ITypeInfoProvider, ICodeGenBasicContext
 	{
 		class InterfaceImplEntry
 		{
@@ -81,7 +81,7 @@ namespace TriAxis.RunSharp
 		}
 
 	    readonly AssemblyGen _owner;
-        public ITypeMapper TypeMapper => _owner.TypeMapper;
+        
 	    public ExpressionFactory ExpressionFactory => _owner.ExpressionFactory;
 	    public StaticFactory StaticFactory => _owner.StaticFactory;
 	    Type[] _interfaces;
@@ -107,7 +107,8 @@ namespace TriAxis.RunSharp
 	    public string Name { get; }
 
 	    internal TypeGen(AssemblyGen owner, string name, TypeAttributes attrs, Type baseType, Type[] interfaces, ITypeMapper typeMapper)
-		{
+	        : base(typeMapper)
+	    {
             _owner = owner;
 			Name = name;
 			BaseType = baseType;
@@ -123,6 +124,7 @@ namespace TriAxis.RunSharp
 		}
 
 		internal TypeGen(TypeGen owner, string name, TypeAttributes attrs, Type baseType, Type[] interfaces, ITypeMapper typeMapper)
+		    : base(typeMapper)
 		{
 		    _owner = owner._owner;
 			Name = name;
@@ -267,28 +269,31 @@ namespace TriAxis.RunSharp
 			_typeVis = _typeVirt = _typeFlags = 0;
 			_implFlags = 0;
 		}
-		#endregion
+        #endregion
 
-		#region Custom Attributes
+        #region Custom Attributes
+        
 
-		public TypeGen Attribute(AttributeType type)
+        public override TypeGen Attribute(AttributeType type)
 		{
 			BeginAttribute(type);
 			return this;
 		}
+        
 
-		public TypeGen Attribute(AttributeType type, params object[] args)
+        public override TypeGen Attribute(AttributeType type, params object[] args)
 		{
 			BeginAttribute(type, args);
 			return this;
 		}
+        
 
-		public AttributeGen<TypeGen> BeginAttribute(AttributeType type)
+        public override AttributeGen<TypeGen> BeginAttribute(AttributeType type)
 		{
 			return BeginAttribute(type, EmptyArray<object>.Instance);
 		}
-
-		public AttributeGen<TypeGen> BeginAttribute(AttributeType type, params object[] args)
+        
+        public override AttributeGen<TypeGen> BeginAttribute(AttributeType type, params object[] args)
 		{
 			AttributeTargets target = AttributeTargets.Class;
 
@@ -343,7 +348,16 @@ namespace TriAxis.RunSharp
 			return _staticCtor;
 		}
 
-		public FieldGen Field(Type type, string name)
+#if FEAT_IKVM
+
+        public FieldGen Field(System.Type type, string name)
+        {
+            return Field(TypeMapper.MapType(type), name);
+        }
+        
+#endif
+
+        public FieldGen Field(Type type, string name)
 		{
 			if (TypeBuilder.IsInterface)
 				throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoField);
@@ -357,7 +371,16 @@ namespace TriAxis.RunSharp
 			return fld;
 		}
 
-		public FieldGen Field(Type type, string name, Operand initialValue)
+#if FEAT_IKVM
+
+        public FieldGen Field(System.Type type, string name, Operand initialValue)
+        {
+            return Field(TypeMapper.MapType(type), name, initialValue);
+        }
+        
+#endif
+
+        public FieldGen Field(Type type, string name, Operand initialValue)
 		{
 			FieldGen fld = Field(type, name);
 
@@ -366,7 +389,16 @@ namespace TriAxis.RunSharp
 			return fld;
 		}
 
-		public PropertyGen Property(Type type, string name)
+#if FEAT_IKVM
+
+        public PropertyGen Property(System.Type type, string name)
+        {
+            return Property(TypeMapper.MapType(type), name);
+        }
+        
+#endif
+
+        public PropertyGen Property(Type type, string name)
 		{
 			if (_mthVis == 0)
 				_mthVis |= MethodAttributes.Private;
@@ -381,12 +413,30 @@ namespace TriAxis.RunSharp
 			return pg;
 		}
 
-		public PropertyGen Indexer(Type type)
+#if FEAT_IKVM
+
+        public PropertyGen Indexer(System.Type type)
+        {
+            return Indexer(TypeMapper.MapType(type));
+        }
+        
+#endif
+
+        public PropertyGen Indexer(Type type)
 		{
 			return Indexer(type, "Item");
 		}
 
-		public PropertyGen Indexer(Type type, string name)
+#if FEAT_IKVM
+
+        public PropertyGen Indexer(System.Type type, string name)
+        {
+            return Indexer(TypeMapper.MapType(type), name);
+        }
+        
+#endif
+
+        public PropertyGen Indexer(Type type, string name)
 		{
 			if (_indexerName != null && _indexerName != name)
 				throw new InvalidOperationException(Properties.Messages.ErrAmbiguousIndexerName);
@@ -408,12 +458,30 @@ namespace TriAxis.RunSharp
 			return pg;
 		}
 
-		public EventGen Event(Type handlerType, string name)
+#if FEAT_IKVM
+
+        public EventGen Event(System.Type handlerType, string name)
+        {
+            return Event(TypeMapper.MapType(handlerType), name);
+        }
+        
+#endif
+
+        public EventGen Event(Type handlerType, string name)
 		{
 			return CustomEvent(handlerType, name).WithStandardImplementation();
 		}
 
-		public EventGen CustomEvent(Type handlerType, string name)
+#if FEAT_IKVM
+
+        public EventGen CustomEvent(System.Type handlerType, string name)
+        {
+            return CustomEvent(TypeMapper.MapType(handlerType), name);
+        }
+        
+#endif
+
+        public EventGen CustomEvent(Type handlerType, string name)
 		{
 			EventGen eg = new EventGen(this, name, handlerType, _mthVis | _mthVirt | _mthFlags);
 			_events.Add(eg);
@@ -422,7 +490,14 @@ namespace TriAxis.RunSharp
 			return eg;
 		}
 
-		public MethodGen Method(Type returnType, string name)
+#if FEAT_IKVM
+        public MethodGen Method(System.Type returnType, string name)
+        {
+            return Method(TypeMapper.MapType(returnType), name);
+        }
+#endif
+
+        public MethodGen Method(Type returnType, string name)
 		{
 			if (_mthVis == 0)
 				_mthVis |= MethodAttributes.Private;
@@ -434,12 +509,28 @@ namespace TriAxis.RunSharp
 			return mg;
 		}
 
-		public MethodGen ImplicitConversionFrom(Type fromType)
+#if FEAT_IKVM
+
+        public MethodGen ImplicitConversionFrom(System.Type fromType)
+        {
+            return ImplicitConversionFrom(TypeMapper.MapType(fromType));
+        }
+        
+#endif
+
+        public MethodGen ImplicitConversionFrom(Type fromType)
 		{
 			return ImplicitConversionFrom(fromType, "value");
 		}
 
-		public MethodGen ImplicitConversionFrom(Type fromType, string parameterName)
+#if FEAT_IKVM
+        public MethodGen ImplicitConversionFrom(System.Type fromType, string parameterName)
+        {
+            return ImplicitConversionFrom(TypeMapper.MapType(fromType), parameterName);
+        }
+        
+#endif
+        public MethodGen ImplicitConversionFrom(Type fromType, string parameterName)
 		{
 			if (TypeBuilder.IsInterface)
 				throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoConversion);
@@ -450,12 +541,30 @@ namespace TriAxis.RunSharp
 			return Method(TypeBuilder, "op_Implicit").Parameter(fromType, parameterName);
 		}
 
-		public MethodGen ImplicitConversionTo(Type toType)
+#if FEAT_IKVM
+
+        public MethodGen ImplicitConversionTo(System.Type toType)
+        {
+            return ImplicitConversionTo(TypeMapper.MapType(toType));
+        }
+        
+#endif
+
+        public MethodGen ImplicitConversionTo(Type toType)
 		{
 			return ImplicitConversionTo(toType, "value");
 		}
 
-		public MethodGen ImplicitConversionTo(Type toType, string parameterName)
+#if FEAT_IKVM
+
+        public MethodGen ImplicitConversionTo(System.Type toType, string parameterName)
+        {
+            return ImplicitConversionTo(TypeMapper.MapType(toType), parameterName);
+        }
+        
+#endif
+
+        public MethodGen ImplicitConversionTo(Type toType, string parameterName)
 		{
 			if (TypeBuilder.IsInterface)
 				throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoConversion);
@@ -466,12 +575,29 @@ namespace TriAxis.RunSharp
 			return Method(toType, "op_Implicit").Parameter(TypeBuilder, parameterName);
 		}
 
-		public MethodGen ExplicitConversionFrom(Type fromType)
+#if FEAT_IKVM
+
+        public MethodGen ExplicitConversionFrom(System.Type fromType)
+        {
+            return ExplicitConversionFrom(TypeMapper.MapType(fromType));
+        }
+        
+#endif
+
+        public MethodGen ExplicitConversionFrom(Type fromType)
 		{
 			return ExplicitConversionFrom(fromType, "value");
 		}
 
-		public MethodGen ExplicitConversionFrom(Type fromType, string parameterName)
+#if FEAT_IKVM
+
+        public MethodGen ExplicitConversionFrom(System.Type fromType, string parameterName)
+        {
+            return ExplicitConversionFrom(TypeMapper.MapType(fromType), parameterName);
+        }
+#endif
+	
+        public MethodGen ExplicitConversionFrom(Type fromType, string parameterName)
 		{
 			if (TypeBuilder.IsInterface)
 				throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoConversion);
@@ -482,12 +608,29 @@ namespace TriAxis.RunSharp
 			return Method(TypeBuilder, "op_Explicit").Parameter(fromType, parameterName);
 		}
 
-		public MethodGen ExplicitConversionTo(Type toType)
+#if FEAT_IKVM
+
+        public MethodGen ExplicitConversionTo(System.Type toType)
+        {
+            return ExplicitConversionTo(TypeMapper.MapType(toType));
+        }
+        
+#endif
+
+        public MethodGen ExplicitConversionTo(Type toType)
 		{
 			return ExplicitConversionTo(toType, "value");
 		}
 
-		public MethodGen ExplicitConversionTo(Type toType, string parameterName)
+#if FEAT_IKVM
+        public MethodGen ExplicitConversionTo(System.Type toType, string parameterName)
+        {
+            return ExplicitConversionTo(TypeMapper.MapType(toType), parameterName);
+        }
+
+#endif
+
+        public MethodGen ExplicitConversionTo(Type toType, string parameterName)
 		{
 			if (TypeBuilder.IsInterface)
 				throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoConversion);
@@ -498,12 +641,40 @@ namespace TriAxis.RunSharp
 			return Method(toType, "op_Explicit").Parameter(TypeBuilder, parameterName);
 		}
 
-		public MethodGen Operator(Operator op, Type returnType, Type operandType)
+#if FEAT_IKVM
+
+        public MethodGen Operator(Operator op, System.Type returnType, System.Type operandType)
+        {
+            return Operator(op, TypeMapper.MapType(returnType), TypeMapper.MapType(operandType));
+        }
+        
+#endif
+
+        public MethodGen Operator(Operator op, Type returnType, Type operandType)
 		{
 			return Operator(op, returnType, operandType, "operand");
 		}
 
-		public MethodGen Operator(Operator op, Type returnType, Type operandType, string operandName)
+#if FEAT_IKVM
+
+        public MethodGen Operator(Operator op, System.Type returnType, System.Type operandType, string operandName)
+        {
+            return Operator(op, TypeMapper.MapType(returnType), TypeMapper.MapType(operandType), operandName);
+        }
+
+        public MethodGen Operator(Operator op, Type returnType, System.Type operandType, string operandName)
+        {
+            return Operator(op, returnType, TypeMapper.MapType(operandType), operandName);
+        }
+
+        public MethodGen Operator(Operator op, System.Type returnType, Type operandType, string operandName)
+        {
+            return Operator(op, TypeMapper.MapType(returnType), operandType, operandName);
+        }
+        
+#endif
+
+        public MethodGen Operator(Operator op, Type returnType, Type operandType, string operandName)
 		{
 			if (op == null)
 				throw new ArgumentNullException(nameof(op));
@@ -514,12 +685,30 @@ namespace TriAxis.RunSharp
 			return Method(returnType, "op_" + op.MethodName).Parameter(operandType, operandName);
 		}
 
-		public MethodGen Operator(Operator op, Type returnType, Type leftType, Type rightType)
+#if FEAT_IKVM
+
+        public MethodGen Operator(Operator op, System.Type returnType, System.Type leftType, System.Type rightType)
+        {
+            return Operator(op, TypeMapper.MapType(returnType), TypeMapper.MapType(leftType), TypeMapper.MapType(rightType));
+        }
+#endif
+
+
+        public MethodGen Operator(Operator op, Type returnType, Type leftType, Type rightType)
 		{
 			return Operator(op, returnType, leftType, "left", rightType, "right");
 		}
 
-		public MethodGen Operator(Operator op, Type returnType, Type leftType, string leftName, Type rightType, string rightName)
+#if FEAT_IKVM
+
+        public MethodGen Operator(Operator op, System.Type returnType, System.Type leftType, string leftName, System.Type rightType, string rightName)
+        {
+            return Operator(op, TypeMapper.MapType(returnType), TypeMapper.MapType(leftType), leftName, TypeMapper.MapType(rightType), rightName);
+        }
+        
+#endif
+
+        public MethodGen Operator(Operator op, Type returnType, Type leftType, string leftName, Type rightType, string rightName)
 		{
 			if (op == null)
 				throw new ArgumentNullException(nameof(op));
@@ -538,12 +727,30 @@ namespace TriAxis.RunSharp
 			return Class(name, TypeMapper.MapType(typeof(object)), Type.EmptyTypes);
 		}
 
-		public TypeGen Class(string name, Type baseType)
+#if FEAT_IKVM
+
+        public TypeGen Class(string name, System.Type baseType)
+        {
+            return Class(name, TypeMapper.MapType(baseType));
+        }
+        
+#endif
+
+        public TypeGen Class(string name, Type baseType)
 		{
 			return Class(name, baseType, Type.EmptyTypes);
 		}
 
-		public TypeGen Class(string name, Type baseType, params Type[] interfaces)
+#if FEAT_IKVM
+
+        public TypeGen Class(string name, System.Type baseType, params Type[] interfaces)
+        {
+            return Class(name, TypeMapper.MapType(baseType), interfaces);
+        }
+        
+#endif
+
+        public TypeGen Class(string name, Type baseType, params Type[] interfaces)
 		{
 			if (TypeBuilder.IsInterface)
 				throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoNested);
@@ -574,6 +781,15 @@ namespace TriAxis.RunSharp
 			return tg;
 		}
 
+#if FEAT_IKVM
+
+        public DelegateGen Delegate(System.Type returnType, string name)
+        {
+            return Delegate(TypeMapper.MapType(returnType), name);
+        }
+        
+#endif
+
         public DelegateGen Delegate(Type returnType, string name)
         {
             DelegateGen dg = new DelegateGen(this, name, returnType, (_typeVis | _typeVirt | _typeFlags | TypeAttributes.Class | TypeAttributes.Sealed) ^ TypeAttributes.BeforeFieldInit);
@@ -595,7 +811,26 @@ namespace TriAxis.RunSharp
 			}
 		}
 
-		public MethodGen MethodImplementation(Type interfaceType, Type returnType, string name)
+#if FEAT_IKVM
+
+        public MethodGen MethodImplementation(System.Type interfaceType, System.Type returnType, string name)
+        {
+            return MethodImplementation(TypeMapper.MapType(interfaceType), TypeMapper.MapType(returnType), name);
+        }
+
+        public MethodGen MethodImplementation(System.Type interfaceType, Type returnType, string name)
+        {
+            return MethodImplementation(TypeMapper.MapType(interfaceType), returnType, name);
+        }
+
+        public MethodGen MethodImplementation(Type interfaceType, System.Type returnType, string name)
+        {
+            return MethodImplementation(interfaceType, TypeMapper.MapType(returnType), name);
+        }
+        
+#endif
+
+        public MethodGen MethodImplementation(Type interfaceType, Type returnType, string name)
 		{
 			if (TypeBuilder.IsInterface)
 				throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoExplicitImpl);
@@ -607,7 +842,16 @@ namespace TriAxis.RunSharp
 			return mg;
 		}
 
-		public PropertyGen PropertyImplementation(Type interfaceType, Type type, string name)
+#if FEAT_IKVM
+
+        public PropertyGen PropertyImplementation(System.Type interfaceType, System.Type type, string name)
+        {
+            return PropertyImplementation(TypeMapper.MapType(interfaceType), TypeMapper.MapType(type), name);
+        }
+#endif
+
+
+        public PropertyGen PropertyImplementation(Type interfaceType, Type type, string name)
 		{
 			if (TypeBuilder.IsInterface)
 				throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoExplicitImpl);
@@ -618,6 +862,15 @@ namespace TriAxis.RunSharp
 			pg.ImplementedInterface = interfaceType;
 			return pg;
 		}
+
+#if FEAT_IKVM
+
+        public EventGen EventImplementation(System.Type interfaceType, System.Type eventHandlerType, string name)
+        {
+            return EventImplementation(TypeMapper.MapType(interfaceType), TypeMapper.MapType(eventHandlerType), name);
+        }
+        
+#endif
 
         public EventGen EventImplementation(Type interfaceType, Type eventHandlerType, string name)
         {

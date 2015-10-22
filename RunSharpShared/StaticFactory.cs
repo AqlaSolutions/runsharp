@@ -54,27 +54,67 @@ namespace TriAxis.RunSharp
 	        _typeMapper = typeMapper;
 	    }
 
+#if FEAT_IKVM
+        public ContextualOperand Field(System.Type type, string name)
+	    {
+	        return Field(_typeMapper.MapType(type), name);
+	    }
+        
+#endif
+
 	    public ContextualOperand Field(Type type, string name)
 		{
 			return new ContextualOperand(new Field((FieldInfo)_typeMapper.TypeInfo.FindField(type, name, true).Member, null), _typeMapper);
 		}
 
-		public ContextualOperand Property(Type type, string name)
+#if FEAT_IKVM
+        public ContextualOperand Property(System.Type type, string name)
+	    {
+	        return Property(_typeMapper.MapType(type), name);
+	    }
+#endif
+
+
+	    public ContextualOperand Property(Type type, string name)
 		{
 			return Property(type, name, Operand.EmptyArray);
 		}
 
-		public ContextualOperand Property(Type type, string name, params Operand[] indexes)
+#if FEAT_IKVM
+
+        public ContextualOperand Property(System.Type type, string name, params Operand[] indexes)
+	    {
+	        return Property(_typeMapper.MapType(type), name, indexes);
+	    }
+#endif
+
+
+	    public ContextualOperand Property(Type type, string name, params Operand[] indexes)
 		{
 			return new ContextualOperand(new Property(_typeMapper.TypeInfo.FindProperty(type, name, indexes, true), null, indexes), _typeMapper);
 		}
 
-		public ContextualOperand Invoke(Type type, string name)
+#if FEAT_IKVM
+        public ContextualOperand Invoke(System.Type type, string name)
+	    {
+	        return Invoke(_typeMapper.MapType(type), name);
+	    }
+        
+#endif
+
+	    public ContextualOperand Invoke(Type type, string name)
 		{
 			return Invoke(type, name, Operand.EmptyArray);
 		}
 
-		public ContextualOperand Invoke(Type type, string name, params Operand[] args)
+#if FEAT_IKVM
+        public ContextualOperand Invoke(System.Type type, string name, params Operand[] args)
+	    {
+	        return Invoke(_typeMapper.MapType(type), name, args);
+	    }
+#endif
+
+        public ContextualOperand Invoke(Type type, string name, params Operand[] args)
 		{
 			return new ContextualOperand(new Invocation(_typeMapper.TypeInfo.FindMethod(type, name, args, true), null, args), _typeMapper);
 		}

@@ -164,9 +164,43 @@ namespace TriAxis.RunSharp
 	        return _type;
 	    }
 
-	    #region Custom Attributes
+        #region Custom Attributes
+#if FEAT_IKVM
 
-		public EventGen Attribute(AttributeType type)
+        public EventGen Attribute(System.Type attributeType)
+        {
+            return Attribute(TypeMapper.MapType(attributeType));
+        }
+
+#endif
+
+#if FEAT_IKVM
+
+        public EventGen Attribute(System.Type attributeType, params object[] args)
+        {
+            return Attribute(TypeMapper.MapType(attributeType), args);
+        }
+#endif
+
+
+#if FEAT_IKVM
+
+        public AttributeGen<EventGen> BeginAttribute(System.Type attributeType)
+        {
+            return BeginAttribute(TypeMapper.MapType(attributeType));
+        }
+#endif
+
+#if FEAT_IKVM
+
+        public AttributeGen<EventGen> BeginAttribute(System.Type attributeType, params object[] args)
+        {
+            return BeginAttribute(TypeMapper.MapType(attributeType), args);
+        }
+
+#endif
+
+        public EventGen Attribute(AttributeType type)
 		{
 			BeginAttribute(type);
 			return this;

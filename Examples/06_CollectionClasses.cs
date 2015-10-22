@@ -38,7 +38,7 @@ namespace TriAxis.RunSharp.Examples
             var exp = ag.ExpressionFactory;
 
             ITypeMapper m = ag.TypeMapper;
-            TypeGen Tokens = ag.Public.Class("Tokens", typeof(object), typeof(IEnumerable));
+            TypeGen Tokens = ag.Public.Class("Tokens", typeof(object), m.MapType(typeof(IEnumerable)));
 			{
 				FieldGen elements = Tokens.Private.Field(typeof(string[]), "elements");
 
@@ -52,7 +52,7 @@ namespace TriAxis.RunSharp.Examples
 
 				// Inner class implements IEnumerator interface:
 
-				TypeGen TokenEnumerator = Tokens.Public.Class("TokenEnumerator", typeof(object), typeof(IEnumerator));
+				TypeGen TokenEnumerator = Tokens.Public.Class("TokenEnumerator", typeof(object), m.MapType(typeof(IEnumerator)));
 				{
 					FieldGen position = TokenEnumerator.Field(typeof(int), "position", -1);
 					FieldGen t = TokenEnumerator.Field(Tokens, "t");

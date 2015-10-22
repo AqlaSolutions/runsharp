@@ -15,6 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Aqla\ContextualAssignment.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Aqla\ContextualOperand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Aqla\ITypeMapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Aqla\MemberGenBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Aqla\TypeMapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ArrayUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AssemblyGen.cs" />

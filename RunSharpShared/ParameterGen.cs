@@ -40,12 +40,12 @@ using System.Reflection.Emit;
 
 namespace TriAxis.RunSharp
 {
-	public class ParameterGen
+    public class ParameterGen : MemberGenBase<ParameterGen>
 	{
 		ParameterGenCollection _owner;
 	    internal List<AttributeGen> CustomAttributes;
-	    public ITypeMapper TypeMapper => _owner.TypeMapper;
 		internal ParameterGen(ParameterGenCollection owner, int position, Type parameterType, ParameterAttributes attributes, string name, bool va)
+		    : base(owner.TypeMapper)
 		{
 			_owner = owner;
 			Position = position;
@@ -62,25 +62,25 @@ namespace TriAxis.RunSharp
 	    internal bool IsParameterArray { get; }
 
 	    #region Custom Attributes
-
-		public ParameterGen Attribute(AttributeType type)
+        
+	    public override ParameterGen Attribute(AttributeType type)
 		{
 			BeginAttribute(type);
 			return this;
 		}
-
-		public ParameterGen Attribute(AttributeType type, params object[] args)
+        
+	    public override ParameterGen Attribute(AttributeType type, params object[] args)
 		{
 			BeginAttribute(type, args);
 			return this;
 		}
-
-		public AttributeGen<ParameterGen> BeginAttribute(AttributeType type)
+        
+	    public override AttributeGen<ParameterGen> BeginAttribute(AttributeType type)
 		{
 			return BeginAttribute(type, EmptyArray<object>.Instance);
 		}
-
-		public AttributeGen<ParameterGen> BeginAttribute(AttributeType type, params object[] args)
+        
+	    public override AttributeGen<ParameterGen> BeginAttribute(AttributeType type, params object[] args)
 		{
 			return AttributeGen<ParameterGen>.CreateAndAdd(this, ref CustomAttributes, Position == 0 ? AttributeTargets.ReturnValue : AttributeTargets.Parameter, type, args, TypeMapper);
 		}

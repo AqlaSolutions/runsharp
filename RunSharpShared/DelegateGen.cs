@@ -86,24 +86,24 @@ namespace TriAxis.RunSharp
 
 #region Custom Attributes
 
-		public DelegateGen Attribute(AttributeType type)
+		public override DelegateGen Attribute(AttributeType type)
 		{
 			BeginAttribute(type);
 			return this;
 		}
 
-		public DelegateGen Attribute(AttributeType type, params object[] args)
+		public override DelegateGen Attribute(AttributeType type, params object[] args)
 		{
 			BeginAttribute(type, args);
 			return this;
 		}
 
-		public AttributeGen<DelegateGen> BeginAttribute(AttributeType type)
+		public override AttributeGen<DelegateGen> BeginAttribute(AttributeType type)
 		{
 			return BeginAttribute(type, EmptyArray<object>.Instance);
 		}
 
-		public AttributeGen<DelegateGen> BeginAttribute(AttributeType type, params object[] args)
+		public override AttributeGen<DelegateGen> BeginAttribute(AttributeType type, params object[] args)
 		{
 			return AttributeGen<DelegateGen>.CreateAndAdd(this, ref _customAttributes, AttributeTargets.Delegate, type, args, TypeMapper);
 		}

@@ -112,7 +112,15 @@ namespace TriAxis.RunSharp
 			return this;
 		}
 
-		public PropertyGen Attribute(AttributeType type, params object[] args)
+#if FEAT_IKVM
+        public PropertyGen Attribute(System.Type attributeType, params object[] args)
+	    {
+	        return Attribute(TypeMapper.MapType(attributeType), args);
+	    }
+        
+#endif
+
+	    public PropertyGen Attribute(AttributeType type, params object[] args)
 		{
 			BeginAttribute(type, args);
 			return this;
@@ -128,17 +136,36 @@ namespace TriAxis.RunSharp
 			return AttributeGen<PropertyGen>.CreateAndAdd(this, ref _customAttributes, AttributeTargets.Property, type, args, TypeMapper);
 		}
 
-		#endregion
+        #endregion
 
-		#region Index parameter definition
-		public ParameterGen BeginIndex(Type type, string name)
+        #region Index parameter definition
+
+#if FEAT_IKVM
+
+        public ParameterGen BeginIndex(System.Type type, string name)
+	    {
+	        return BeginIndex(TypeMapper.MapType(type), name);
+	    }
+        
+#endif
+
+	    public ParameterGen BeginIndex(Type type, string name)
 		{
 			ParameterGen pgen = new ParameterGen(_indexParameters, _indexParameters.Count + 1, type, 0, name, false);
 			_indexParameters.Add(pgen);
 			return pgen;
 		}
 
-		public PropertyGen Index(Type type, string name)
+#if FEAT_IKVM
+
+        public PropertyGen Index(System.Type type, string name)
+	    {
+	        return Index(TypeMapper.MapType(type), name);
+	    }
+#endif
+
+
+	    public PropertyGen Index(Type type, string name)
 		{
 			BeginIndex(type, name);
 			return this;
