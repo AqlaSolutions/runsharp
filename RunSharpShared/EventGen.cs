@@ -231,8 +231,13 @@ namespace TriAxis.RunSharp
 				return _eg._remover == null ? null : _eg._remover.GetMethodBuilder();
 			}
 #if FEAT_IKVM
+		    protected override bool IsPublic => (_eg._adder?.IsPublic?? true) && (_eg._remover?.IsPublic ?? true);
+            protected override bool IsNonPrivate => (_eg._adder?.IsPublic?? true) || (_eg._remover?.IsPublic ?? true);
+            protected override bool IsStatic => _eg.IsStatic;
+            protected override bool IsBaked => false;
+            protected override int GetCurrentToken() => (_eg._adder?.GetMethodBuilder().MetadataToken ?? _eg._remover?.GetMethodBuilder().MetadataToken ?? 0);
 
-		    public override Type EventHandlerType
+            public override Type EventHandlerType
 		    {
 		        get { return _eg._type; }
 		    }
@@ -262,6 +267,7 @@ namespace TriAxis.RunSharp
             {
                 get { return _eg._type.Module; }
             }
+            
 #else
             public override object[] GetCustomAttributes(Type attributeType, bool inherit)
 			{

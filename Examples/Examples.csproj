@@ -52,7 +52,7 @@
     <Compile Include="12_Delegates.cs" />
     <Compile Include="13_Events.cs" />
     <Compile Include="14_ExplicitImplementation.cs" />
-    <Compile Include="A1BreakContinueExample.cs" />
+    <Compile Include="A1_BreakContinue.cs" />
     <Compile Include="A2_Attributes.cs">
       <SubType>Code</SubType>
     </Compile>
