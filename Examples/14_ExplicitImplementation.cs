@@ -33,7 +33,10 @@ namespace TriAxis.RunSharp.Examples
 	{
 		// example based on the MSDN Explicit Interface Implementation Sample (explicit.cs)
 		public static void GenExplicit2(AssemblyGen ag)
-		{
+        {
+            var st = ag.StaticFactory;
+            var exp = ag.ExpressionFactory;
+
             ITypeMapper m = ag.TypeMapper;
             // Declare the English units interface:
             TypeGen IEnglishDimensions = ag.Interface("IEnglishDimensions");
@@ -85,7 +88,7 @@ namespace TriAxis.RunSharp.Examples
 				g = Box.Public.Static.Method(typeof(void), "Main");
 				{
                     // Declare a class instance "myBox":
-                    var myBox = g.Local(Exp.New(Box, m, 30.0f, 20.0f));
+                    var myBox = g.Local(exp.New(Box, 30.0f, 20.0f));
                     // Declare an instance of the English units interface:
                     var eDimensions = g.Local(myBox.Cast(IEnglishDimensions));
                     // Declare an instance of the metric units interface:

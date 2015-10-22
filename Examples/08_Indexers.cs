@@ -36,7 +36,10 @@ namespace TriAxis.RunSharp.Examples
 		[TestArguments("indexertest.txt")]
 		public static void GenIndexer(AssemblyGen ag)
 		{
-		    ITypeMapper m = ag.TypeMapper;
+            var st = ag.StaticFactory;
+            var exp = ag.ExpressionFactory;
+
+            ITypeMapper m = ag.TypeMapper;
             // Class to provide access to a large file
             // as if it were a byte array.
             TypeGen FileByteArray = ag.Public.Class("FileByteArray");
@@ -47,7 +50,7 @@ namespace TriAxis.RunSharp.Examples
 				// Create a new FileByteArray encapsulating a particular file.
 				CodeGen g = FileByteArray.Public.Constructor().Parameter(typeof(string), "fileName");
 				{
-					g.Assign(stream, Exp.New(typeof(FileStream), m, g.Arg("fileName"), FileMode.Open));
+					g.Assign(stream, exp.New(typeof(FileStream), g.Arg("fileName"), FileMode.Open));
 				}
 
 				// Close the stream. This should be the last thing done
@@ -64,7 +67,7 @@ namespace TriAxis.RunSharp.Examples
 					// Read one byte at offset index and return it.
 					g = Item.Getter();
 					{
-                        var buffer = g.Local(Exp.NewArray(typeof(byte), 1));
+                        var buffer = g.Local(exp.NewArray(typeof(byte), 1));
 						g.Invoke(stream, "Seek", g.Arg("index"), SeekOrigin.Begin);
 						g.Invoke(stream, "Read", buffer, 0, 1);
 						g.Return(buffer[0]);
@@ -72,7 +75,7 @@ namespace TriAxis.RunSharp.Examples
 					// Write one byte at offset index and return it.
 					g = Item.Setter();
 					{
-                        var buffer = g.Local(Exp.NewInitializedArray(typeof(byte), g.PropertyValue()));
+                        var buffer = g.Local(exp.NewInitializedArray(typeof(byte), g.PropertyValue()));
 						g.Invoke(stream, "Seek", g.Arg("index"), SeekOrigin.Begin);
 						g.Invoke(stream, "Write", buffer, 0, 1);
 					}
@@ -100,14 +103,14 @@ namespace TriAxis.RunSharp.Examples
 					g.End();
 
 					// Check for file existence
-					g.If(!Static.Invoke(typeof(File), "Exists", m, args[0]));
+					g.If(!st.Invoke(typeof(File), "Exists", args[0]));
 					{
 						g.WriteLine("File " + args[0] + " not found.");
 						g.Return();
 					}
 					g.End();
 
-                    var file = g.Local(Exp.New(FileByteArray, m, args[0]));
+                    var file = g.Local(exp.New(FileByteArray, args[0]));
                     var len = g.Local(file.Property("Length"));
 
                     // Swap bytes in the file to reverse it.

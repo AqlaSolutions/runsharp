@@ -34,6 +34,9 @@ namespace TriAxis.RunSharp.Examples
 		// example based on the MSDN Collection Classes Sample (tokens2.cs)
 		public static void GenTokens2(AssemblyGen ag)
 		{
+            var st = ag.StaticFactory;
+            var exp = ag.ExpressionFactory;
+
             ITypeMapper m = ag.TypeMapper;
             TypeGen Tokens = ag.Public.Class("Tokens", typeof(object), typeof(IEnumerable));
 			{
@@ -96,21 +99,21 @@ namespace TriAxis.RunSharp.Examples
 				// non-IEnumerable version
 				g = Tokens.Public.Method(TokenEnumerator, "GetEnumerator");
 				{
-					g.Return(Exp.New(TokenEnumerator, m, g.This()));
+					g.Return(exp.New(TokenEnumerator, g.This()));
 				}
 
 				// IEnumerable version
 				g = Tokens.Public.MethodImplementation(typeof(IEnumerable), typeof(IEnumerator), "GetEnumerator");
 				{
-					g.Return(Exp.New(TokenEnumerator, m, g.This()).Cast(typeof(IEnumerator)));
+					g.Return(exp.New(TokenEnumerator, g.This()).Cast(typeof(IEnumerator)));
 				}
 
 				// Test Tokens, TokenEnumerator
 
 				g = Tokens.Static.Method(typeof(void), "Main");
 				{
-                    var f = g.Local(Exp.New(Tokens, m, "This is a well-done program.",
-						Exp.NewInitializedArray(typeof(char), ' ', '-')));
+                    var f = g.Local(exp.New(Tokens, "This is a well-done program.",
+						exp.NewInitializedArray(typeof(char), ' ', '-')));
                     var item = g.ForEach(typeof(string), f);	// try changing string to int
 					{
 						g.WriteLine(item);

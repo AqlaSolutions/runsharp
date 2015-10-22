@@ -34,7 +34,10 @@ namespace TriAxis.RunSharp.Examples
 		// example based on the MSDN Structs Sample (struct1.cs)
 		public static void GenStruct1(AssemblyGen ag)
 		{
-			CodeGen g;
+            var st = ag.StaticFactory;
+            var exp = ag.ExpressionFactory;
+
+            CodeGen g;
 
 			TypeGen SimpleStruct = ag.Struct("SimpleStruct");
 			{
@@ -74,8 +77,11 @@ namespace TriAxis.RunSharp.Examples
 
 		// example based on the MSDN Structs Sample (struct2.cs)
 		public static void GenStruct2(AssemblyGen ag)
-		{
-			TypeGen TheClass = ag.Class("TheClass");
+        {
+            var st = ag.StaticFactory;
+            var exp = ag.ExpressionFactory;
+
+            TypeGen TheClass = ag.Class("TheClass");
 			{
 				TheClass.Public.Field(typeof(int), "x");
 			}
@@ -103,7 +109,8 @@ namespace TriAxis.RunSharp.Examples
 				{
                     var a = g.Local(TheStruct);
 					g.InitObj(a);
-                    var b = g.Local(Exp.New(TheClass, ag.TypeMapper));
+				    ITypeMapper typeMapper4 = ag.TypeMapper;
+				    var b = g.Local(exp.New(TheClass));
 
 				    ITypeMapper typeMapper = ag.TypeMapper;
 				    g.Assign(a.Field("x"), 1);

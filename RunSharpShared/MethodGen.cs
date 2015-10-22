@@ -55,7 +55,7 @@ namespace TriAxis.RunSharp
 		}
 
 		internal MethodGen(TypeGen owner, string name, MethodAttributes attributes, Type returnType, MethodImplAttributes implFlags)
-			: base(owner, returnType)
+			: base(owner, returnType, owner)
 		{
 			_name = name;
 			_attributes = owner.PreprocessAttributes(this, attributes);

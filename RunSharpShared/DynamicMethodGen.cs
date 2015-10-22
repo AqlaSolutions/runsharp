@@ -90,14 +90,35 @@ namespace TriAxis.RunSharp
                 return this;
             }
 
-            public DynamicMethodGen Method(Type returnType, ITypeMapper typeMapper)
+            public DynamicMethodGen Method(Type returnType, ICodeGenBasicContext context)
             {
-                return new DynamicMethodGen(this, returnType, typeMapper);
+                if (context == null) throw new ArgumentNullException(nameof(context));
+                return new DynamicMethodGen(this, returnType, context);
+            }
+
+            public DynamicMethodGen Method(Type returnType, ITypeMapper typeMapper = null)
+            {
+                ITypeMapper mapper = typeMapper ?? new TypeMapper();
+                return new DynamicMethodGen(this, returnType, new Context(mapper, new StaticFactory(mapper), new ExpressionFactory(mapper)));
+            }
+
+            class Context : ICodeGenBasicContext
+            {
+                public Context(ITypeMapper typeMapper, StaticFactory staticFactory, ExpressionFactory expressionFactory)
+                {
+                    TypeMapper = typeMapper;
+                    StaticFactory = staticFactory;
+                    ExpressionFactory = expressionFactory;
+                }
+
+                public ITypeMapper TypeMapper { get; }
+                public StaticFactory StaticFactory { get; }
+                public ExpressionFactory ExpressionFactory { get; }
             }
         }
 
-        private DynamicMethodGen(Attributes attrs, Type returnType, ITypeMapper typeMapper)
-            : base(attrs.ownerType, returnType, typeMapper)
+        private DynamicMethodGen(Attributes attrs, Type returnType, ICodeGenBasicContext context)
+            : base(attrs.ownerType, returnType, context)
         {
             _attrs = attrs;
 

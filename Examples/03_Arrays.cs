@@ -33,24 +33,27 @@ namespace TriAxis.RunSharp.Examples
 		// example based on the MSDN Arrays Sample (arrays.cs)
 		public static void GenArrays(AssemblyGen ag)
 		{
-			TypeGen DeclareArraysSample = ag.Class("DecalreArraysSample");
+            var st = ag.StaticFactory;
+            var exp = ag.ExpressionFactory;
+
+            TypeGen DeclareArraysSample = ag.Class("DecalreArraysSample");
 			{
 				CodeGen g = DeclareArraysSample.Public.Static.Method(typeof(void), "Main");
 				{
                     // Single-dimensional array
-                    var numbers = g.Local(Exp.NewArray(typeof(int), 5));
+                    var numbers = g.Local(exp.NewArray(typeof(int), 5));
 
                     // Multidimensional array
-                    var names = g.Local(Exp.NewArray(typeof(string), 5, 4));
+                    var names = g.Local(exp.NewArray(typeof(string), 5, 4));
 
                     // Array-of-arrays (jagged array)
-                    var scores = g.Local(Exp.NewArray(typeof(byte[]), 5));
+                    var scores = g.Local(exp.NewArray(typeof(byte[]), 5));
 
                     // Create the jagged array
                     var i = g.Local();
 					g.For(i.Assign(0), i < scores.ArrayLength(), i.Increment());
 					{
-						g.Assign(scores[i], Exp.NewArray(typeof(byte), i + 3));
+						g.Assign(scores[i], exp.NewArray(typeof(byte), i + 3));
 					}
 					g.End();
 

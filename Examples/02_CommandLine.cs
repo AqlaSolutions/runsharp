@@ -45,6 +45,8 @@ namespace TriAxis.RunSharp.Examples
         public static void GenCmdLine2(AssemblyGen ag)
         {
             ITypeMapper m = ag.TypeMapper;
+            var st = ag.StaticFactory;
+            var exp = ag.ExpressionFactory;
             TypeGen commandLine3 = ag.Public.Class("CommandLine3");
             {
                 CodeGen g = commandLine3.Public.Method(typeof(void), "Main3").Parameter(typeof(string[]), "args");
@@ -59,7 +61,7 @@ namespace TriAxis.RunSharp.Examples
                     g.End();
                     g.WriteLine(g.This().Invoke("GetType").Property("BaseType").Property("Name"));
 
-                    var inst = Static.Field(typeof(CmdLineTestClass), "Default", m);
+                    var inst = st.Field(typeof(CmdLineTestClass), "Default");
                     g.WriteLine(inst.Invoke("GetValue"));
                     //inst.Field("value").Assign(2);
                     /*g.Assign(inst.Field("value"), 2);
@@ -76,7 +78,7 @@ namespace TriAxis.RunSharp.Examples
                 CodeGen g = commandLine2.Public.Static.Method(typeof(void), "Main").Parameter(typeof(string[]), "args");
                 {
                     //g.Invoke(CommandLine3, "Main3", g.Arg("args"));
-                    var cl = g.Local(Exp.New(commandLine3, m));
+                    var cl = g.Local(exp.New(commandLine3));
                     g.WriteLine(0);
                     g.Invoke(cl, "Main3", g.Arg("args"));
                     var args = g.Arg("args");

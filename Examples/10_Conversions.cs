@@ -34,6 +34,9 @@ namespace TriAxis.RunSharp.Examples
 		// example based on the MSDN User-Defined Conversions Sample (conversion.cs)
 		public static void GenConversion(AssemblyGen ag)
 		{
+            var st = ag.StaticFactory;
+            var exp = ag.ExpressionFactory;
+
 			TypeGen RomanNumeral = ag.Struct("RomanNumeral");
 			{
 				FieldGen value = RomanNumeral.Private.Field(typeof(int), "value");
@@ -51,7 +54,7 @@ namespace TriAxis.RunSharp.Examples
 					// Note that because RomanNumeral is declared as a struct, 
 					// calling new on the struct merely calls the constructor 
 					// rather than allocating an object on the heap:
-					g.Return(Exp.New(RomanNumeral, ag.TypeMapper, g.Arg("value")));
+					g.Return(exp.New(RomanNumeral, g.Arg("value")));
 				}
 
 				// Declare an explicit conversion from a RomanNumeral to an int:
@@ -97,8 +100,11 @@ namespace TriAxis.RunSharp.Examples
 
 		// example based on the MSDN User-Defined Conversions Sample (structconversion.cs)
 		public static void GenStructConversion(AssemblyGen ag)
-		{
-			TypeGen BinaryNumeral = ag.Struct("BinaryNumeral");
+        {
+            var st = ag.StaticFactory;
+            var exp = ag.ExpressionFactory;
+
+            TypeGen BinaryNumeral = ag.Struct("BinaryNumeral");
 			{
 				FieldGen value = BinaryNumeral.Private.Field(typeof(int), "value");
 
@@ -109,7 +115,7 @@ namespace TriAxis.RunSharp.Examples
 
 				g = BinaryNumeral.Public.ImplicitConversionFrom(typeof(int));
 				{
-					g.Return(Exp.New(BinaryNumeral, ag.TypeMapper, g.Arg("value")));
+					g.Return(exp.New(BinaryNumeral, g.Arg("value")));
 				}
 
 				g = BinaryNumeral.Public.ImplicitConversionTo(typeof(string));
@@ -135,12 +141,12 @@ namespace TriAxis.RunSharp.Examples
 
 				g = RomanNumeral.Public.ImplicitConversionFrom(typeof(int));
 				{
-					g.Return(Exp.New(RomanNumeral, ag.TypeMapper, g.Arg("value")));
+					g.Return(exp.New(RomanNumeral, g.Arg("value")));
 				}
 
 				g = RomanNumeral.Public.ImplicitConversionFrom(BinaryNumeral, "binary");
 				{
-					g.Return(Exp.New(RomanNumeral, ag.TypeMapper, g.Arg("binary").Cast(typeof(int))));
+					g.Return(exp.New(RomanNumeral, g.Arg("binary").Cast(typeof(int))));
 				}
 
 				g = RomanNumeral.Public.ExplicitConversionTo(typeof(int), "roman");

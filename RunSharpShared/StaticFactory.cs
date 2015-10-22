@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TryAxis.RunSharp;
 #if FEAT_IKVM
 using IKVM.Reflection;
 using IKVM.Reflection.Emit;
@@ -42,45 +43,40 @@ using System.Reflection.Emit;
 namespace TriAxis.RunSharp
 {
 	using Operands;
-
-	public static class Exp
+    
+	public class StaticFactory
 	{
-		#region Construction expressions
+	    readonly ITypeMapper _typeMapper;
 
-		public static Operand New(Type type, ITypeMapper typeMapper)
+	    internal StaticFactory(ITypeMapper typeMapper)
+	    {
+	        if (typeMapper == null) throw new ArgumentNullException(nameof(typeMapper));
+	        _typeMapper = typeMapper;
+	    }
+
+	    public ContextualOperand Field(Type type, string name)
 		{
-			return New(type, typeMapper, Operand.EmptyArray);
+			return new ContextualOperand(new Field((FieldInfo)_typeMapper.TypeInfo.FindField(type, name, true).Member, null), _typeMapper);
 		}
 
-		public static Operand New(Type type, ITypeMapper typeMapper, params Operand[] args)
+		public ContextualOperand Property(Type type, string name)
 		{
-			ApplicableFunction ctor = OverloadResolver.Resolve(typeMapper.TypeInfo.GetConstructors(type), typeMapper, args);
-
-			if (ctor == null)
-				throw new MissingMethodException(Properties.Messages.ErrMissingConstructor);
-
-			return new NewObject(ctor, args);
+			return Property(type, name, Operand.EmptyArray);
 		}
 
-		public static Operand NewArray(Type type, params Operand[] indexes)
+		public ContextualOperand Property(Type type, string name, params Operand[] indexes)
 		{
-			return new NewArray(type, indexes);
+			return new ContextualOperand(new Property(_typeMapper.TypeInfo.FindProperty(type, name, indexes, true), null, indexes), _typeMapper);
 		}
 
-		public static Operand NewInitializedArray(Type type, params Operand[] elements)
+		public ContextualOperand Invoke(Type type, string name)
 		{
-			return new InitializedArray(type, elements);
+			return Invoke(type, name, Operand.EmptyArray);
 		}
 
-		public static Operand NewDelegate(Type delegateType, Type target, string method, ITypeMapper typeMapper)
+		public ContextualOperand Invoke(Type type, string name, params Operand[] args)
 		{
-			return new NewDelegate(delegateType, target, method, typeMapper);
+			return new ContextualOperand(new Invocation(_typeMapper.TypeInfo.FindMethod(type, name, args, true), null, args), _typeMapper);
 		}
-
-		public static Operand NewDelegate(Type delegateType, Operand target, string method, ITypeMapper typeMapper)
-		{
-			return new NewDelegate(delegateType, target, method, typeMapper);
-		}
-		#endregion
 	}
 }

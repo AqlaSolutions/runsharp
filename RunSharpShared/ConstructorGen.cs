@@ -54,7 +54,7 @@ namespace TriAxis.RunSharp
 		}
 
 		internal ConstructorGen(TypeGen owner, MethodAttributes attributes, MethodImplAttributes implFlags)
-			: base(owner, null)
+			: base(owner, null, owner)
 		{
 			_attributes = attributes;
 			_implFlags = implFlags;

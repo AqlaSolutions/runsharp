@@ -34,7 +34,10 @@ namespace TriAxis.RunSharp.Examples
 		// example based on the MSDN Indexed Properties Sample (indexedproperty.cs)
 		public static void GenIndexedProperty(AssemblyGen ag)
 		{
-			CodeGen g;
+            var st = ag.StaticFactory;
+            var exp = ag.ExpressionFactory;
+
+            CodeGen g;
 		    ITypeMapper m = ag.TypeMapper;
 		    
             TypeGen Document = ag.Public.Class("Document");
@@ -75,7 +78,7 @@ namespace TriAxis.RunSharp.Examples
                         var i = g.Local();
 						g.For(i.Assign(begin), i <= end, i.Increment());
 						{
-                            var isLetter = g.Local(i < end && Static.Invoke(typeof(char), "IsLetterOrDigit", m, text[i]));
+                            var isLetter = g.Local(i < end && st.Invoke(typeof(char), "IsLetterOrDigit"));
 
 							g.If(inWord >= 0);
 							{
@@ -120,11 +123,11 @@ namespace TriAxis.RunSharp.Examples
 
 							g.If(g.This().Invoke("GetWord", document_TextArray, 0, index, start.Ref(), length.Ref()));
 							{
-								g.Return(Exp.New(typeof(string), m, document_TextArray, start, length));
+								g.Return(exp.New(typeof(string), document_TextArray, start, length));
 							}
 							g.Else();
 							{
-								g.Throw(Exp.New(typeof(IndexOutOfRangeException), m));
+								g.Throw(exp.New(typeof(IndexOutOfRangeException)));
 							}
 							g.End();
 						}
@@ -147,7 +150,7 @@ namespace TriAxis.RunSharp.Examples
 								}
 								g.Else();
 								{
-                                    var newText = g.Local(Exp.NewArray(typeof(char),
+                                    var newText = g.Local(exp.NewArray(typeof(char),
 										document_TextArray.ArrayLength() + value.Property("Length") - length));
 
 									g.Invoke(typeof(Array), "Copy", document_TextArray, 0, newText,
@@ -164,7 +167,7 @@ namespace TriAxis.RunSharp.Examples
 							}
 							g.Else();
 							{
-								g.Throw(Exp.New(typeof(IndexOutOfRangeException), m));
+								g.Throw(exp.New(typeof(IndexOutOfRangeException)));
 							}
 							g.End();
 						}
@@ -225,13 +228,13 @@ namespace TriAxis.RunSharp.Examples
 				g = Document.Public.Constructor().Parameter(typeof(string), "initialText");
 				{
 					g.Assign(TextArray, g.Arg("initialText").Invoke("ToCharArray"));
-					g.Assign(Words, Exp.New(WordCollection, m, g.This()));
-					g.Assign(Characters, Exp.New(CharacterCollection, m, g.This()));
+					g.Assign(Words, exp.New(WordCollection, g.This()));
+					g.Assign(Characters, exp.New(CharacterCollection, g.This()));
 				}
 
 				g = Document.Public.Property(typeof(string), "Text").Getter();
 				{
-					g.Return(Exp.New(typeof(string), m, TextArray));
+					g.Return(exp.New(typeof(string), TextArray));
 				}
 			}
 
@@ -239,7 +242,7 @@ namespace TriAxis.RunSharp.Examples
 			{
 				g = Test.Public.Static.Method(typeof(void), "Main");
 				{
-					var d = g.Local(Exp.New(Document, m, "peter piper picked a peck of pickled peppers. How many pickled peppers did peter piper pick?"));
+					var d = g.Local(exp.New(Document, "peter piper picked a peck of pickled peppers. How many pickled peppers did peter piper pick?"));
 
                     // Change word "peter" to "penelope":
                     var i = g.Local();

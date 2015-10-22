@@ -33,8 +33,11 @@ namespace TriAxis.RunSharp.Examples
 	{
 		// example based on the MSDN Events Sample (events1.cs)
 		public static void GenEvents1(AssemblyGen ag)
-		{
-		    ITypeMapper m = ag.TypeMapper;
+        {
+            var st = ag.StaticFactory;
+            var exp = ag.ExpressionFactory;
+
+            ITypeMapper m = ag.TypeMapper;
 		    TypeGen ChangedEventHandler, ListWithChangedEvent;
 
 		    using (ag.Namespace("MyCollections"))
@@ -65,20 +68,20 @@ namespace TriAxis.RunSharp.Examples
 					g = ListWithChangedEvent.Public.Override.Method(typeof(int), "Add").Parameter(typeof(object), "value");
 					{
                         var i = g.Local(g.Base().Invoke("Add", new[] { g.Arg("value") }));
-						g.Invoke(g.This(), "OnChanged", Static.Field(typeof(EventArgs), "Empty", m));
+						g.Invoke(g.This(), "OnChanged", st.Field(typeof(EventArgs), "Empty"));
 						g.Return(i);
 					}
 
 					g = ListWithChangedEvent.Public.Override.Method(typeof(void), "Clear");
 					{
 						g.Invoke(g.Base(), "Clear");
-						g.Invoke(g.This(), "OnChanged", Static.Field(typeof(EventArgs), "Empty", m));
+						g.Invoke(g.This(), "OnChanged", st.Field(typeof(EventArgs), "Empty"));
 					}
 
 					g = ListWithChangedEvent.Public.Override.Indexer(typeof(object)).Index(typeof(int), "index").Setter();
 					{
 						g.Assign(g.Base()[g.Arg("index")], g.PropertyValue());
-						g.Invoke(g.This(), "OnChanged", Static.Field(typeof(EventArgs), "Empty", m));
+						g.Invoke(g.This(), "OnChanged", st.Field(typeof(EventArgs), "Empty"));
 					}
 				}
 			}
@@ -99,13 +102,13 @@ namespace TriAxis.RunSharp.Examples
 					{
 						g.Assign(List, g.Arg("list"));
 						// Add "ListChanged" to the Changed event on "List".
-						g.SubscribeEvent(List, "Changed", Exp.NewDelegate(ChangedEventHandler, g.This(), "ListChanged", m));
+						g.SubscribeEvent(List, "Changed", exp.NewDelegate(ChangedEventHandler, g.This(), "ListChanged"));
 					}
 
 					g = EventListener.Public.Method(typeof(void), "Detach");
 					{
 						// Detach the event and delete the list
-						g.UnsubscribeEvent(List, "Changed", Exp.NewDelegate(ChangedEventHandler, g.This(), "ListChanged", m));
+						g.UnsubscribeEvent(List, "Changed", exp.NewDelegate(ChangedEventHandler, g.This(), "ListChanged"));
 						g.Assign(List, null);
 					}
 				}
@@ -116,10 +119,10 @@ namespace TriAxis.RunSharp.Examples
 					CodeGen g = Test.Public.Static.Method(typeof(void), "Main");
 					{
                         // Create a new list.
-                        var list = g.Local(Exp.New(ListWithChangedEvent, m));
+                        var list = g.Local(exp.New(ListWithChangedEvent));
 
                         // Create a class that listens to the list's change event.
-                        var listener = g.Local(Exp.New(EventListener, m, list));
+                        var listener = g.Local(exp.New(EventListener, list));
 
 						// Add and remove items from the list.
 						g.Invoke(list, "Add", "item 1");

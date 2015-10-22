@@ -46,14 +46,21 @@ namespace TriAxis.RunSharp
 {
 	using Operands;
 
-	interface ICodeGenContext : IMemberInfo, ISignatureGen, IDelayedDefinition, IDelayedCompletion
-	{
+    public interface ICodeGenBasicContext
+    {
+        ITypeMapper TypeMapper { get; }
+        StaticFactory StaticFactory { get; }
+        ExpressionFactory ExpressionFactory { get; }
+    }
+
+    interface ICodeGenContext : IMemberInfo, ISignatureGen, IDelayedDefinition, IDelayedCompletion, ICodeGenBasicContext
+    {
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Typical implementation invokes XxxBuilder.GetILGenerator() which is a method as well.")]
 		ILGenerator GetILGenerator();
 
 		Type OwnerType { get; }
 		bool SupportsScopes { get; }
-	}
+    }
 
 	public partial class CodeGen
 	{

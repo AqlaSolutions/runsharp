@@ -50,7 +50,10 @@ namespace TriAxis.RunSharp
 
 	partial class CodeGen
 	{
-		#region Assignment
+	    StaticFactory _staticFactory => Context.StaticFactory;
+	    ExpressionFactory _expressionFactory => Context.ExpressionFactory;
+
+	    #region Assignment
 		public void Assign(Operand target, Operand value)
 		{
 			Assign(target, value, false);
@@ -255,7 +258,7 @@ namespace TriAxis.RunSharp
 
 		public void Invoke(Type target, string method, params Operand[] args)
 		{
-			DoInvoke(Static.Invoke(target, method, TypeMapper, args));
+			DoInvoke(_staticFactory.Invoke(target, method));
 		}
 
 		public void Invoke(Operand target, string method)
@@ -284,12 +287,7 @@ namespace TriAxis.RunSharp
 			DoInvoke(targetDelegate.InvokeDelegate(TypeMapper, args));
 		}
 
-	    public ITypeMapper TypeMapper { get; }
-
-	    public CodeGen(ITypeMapper typeMapper)
-	    {
-	        TypeMapper = typeMapper;
-	    }
+	    public ITypeMapper TypeMapper => Context.TypeMapper;
         
 	    public void WriteLine(params Operand[] args)
 		{

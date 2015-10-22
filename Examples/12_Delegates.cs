@@ -33,8 +33,11 @@ namespace TriAxis.RunSharp.Examples
 	{
 		// example based on the MSDN Delegates Sample (bookstore.cs)
 		public static void GenBookstore(AssemblyGen ag)
-		{
-		    ITypeMapper m = ag.TypeMapper;
+        {
+            var st = ag.StaticFactory;
+            var exp = ag.ExpressionFactory;
+
+            ITypeMapper m = ag.TypeMapper;
 		    TypeGen book, processBookDelegate, BookDBLocal;
 
 		    // A set of classes for handling a bookstore:
@@ -68,7 +71,7 @@ namespace TriAxis.RunSharp.Examples
 				BookDBLocal = ag.Public.Class("BookDB");
 				{
 					// List of all books in the database:
-					FieldGen list = BookDBLocal.Field(typeof(ArrayList), "list", Exp.New(typeof(ArrayList), m));
+					FieldGen list = BookDBLocal.Field(typeof(ArrayList), "list", exp.New(typeof(ArrayList)));
 
 					// Add a book to the database:
 					CodeGen g = BookDBLocal.Public.Method(typeof(void), "AddBook")
@@ -78,7 +81,7 @@ namespace TriAxis.RunSharp.Examples
 						.Parameter(typeof(bool), "paperBack")
 						;
 					{
-						g.Invoke(list, "Add", Exp.New(book, m, g.Arg("title"), g.Arg("author"), g.Arg("price"), g.Arg("paperBack")));
+						g.Invoke(list, "Add", exp.New(book, g.Arg("title"), g.Arg("author"), g.Arg("price"), g.Arg("paperBack")));
 					}
 
 					// Call a passed-in delegate on each paperback book to process it: 
@@ -145,7 +148,7 @@ namespace TriAxis.RunSharp.Examples
 					// Execution starts here.
 					g = test.Public.Static.Method(typeof(void), "Main");
 					{
-                        var bookDb = g.Local(Exp.New(BookDBLocal, m));
+                        var bookDb = g.Local(exp.New(BookDBLocal));
 
 						// Initialize the database with some books:
 						g.Invoke(test, "AddBooks", bookDb);
@@ -154,14 +157,14 @@ namespace TriAxis.RunSharp.Examples
 						g.WriteLine("Paperback Book Titles:");
 						// Create a new delegate object associated with the static 
 						// method Test.PrintTitle:
-						g.Invoke(bookDb, "ProcessPaperbackBooks", Exp.NewDelegate(processBookDelegate, test, "PrintTitle", m));
+						g.Invoke(bookDb, "ProcessPaperbackBooks", (Operand)exp.NewDelegate(processBookDelegate, test, "PrintTitle"));
 
                         // Get the average price of a paperback by using
                         // a PriceTotaller object:
-                        var totaller = g.Local(Exp.New(priceTotaller, m));
+                        var totaller = g.Local(exp.New(priceTotaller));
 						// Create a new delegate object associated with the nonstatic 
 						// method AddBookToTotal on the object totaller:
-						g.Invoke(bookDb, "ProcessPaperbackBooks", Exp.NewDelegate(processBookDelegate, totaller, "AddBookToTotal", m));
+						g.Invoke(bookDb, "ProcessPaperbackBooks", (Operand)exp.NewDelegate(processBookDelegate, totaller, "AddBookToTotal"));
 						g.WriteLine("Average Paperback Book Price: ${0:#.##}",
 						   totaller.Invoke("AveragePrice"));
 					}
@@ -171,8 +174,11 @@ namespace TriAxis.RunSharp.Examples
 
 		// example based on the MSDN Delegates Sample (compose.cs)
 		public static void GenCompose(AssemblyGen ag)
-		{
-			TypeGen myDelegate = ag.Delegate(typeof(void), "MyDelegate").Parameter(typeof(string), "string");
+        {
+            var st = ag.StaticFactory;
+            var exp = ag.ExpressionFactory;
+
+            TypeGen myDelegate = ag.Delegate(typeof(void), "MyDelegate").Parameter(typeof(string), "string");
 
 			TypeGen myClass = ag.Class("MyClass");
 			{
@@ -192,10 +198,12 @@ namespace TriAxis.RunSharp.Examples
 
 					// Create the delegate object a that references 
 					// the method Hello:
-					g.Assign(a, Exp.NewDelegate(myDelegate, myClass, "Hello", ag.TypeMapper));
+				    ITypeMapper typeMapper = ag.TypeMapper;
+				    g.Assign(a, exp.NewDelegate(myDelegate, myClass, "Hello"));
 					// Create the delegate object b that references 
 					// the method Goodbye:
-					g.Assign(b, Exp.NewDelegate(myDelegate, myClass, "Goodbye", ag.TypeMapper));
+				    ITypeMapper typeMapper1 = ag.TypeMapper;
+				    g.Assign(b, exp.NewDelegate(myDelegate, myClass, "Goodbye"));
 					// The two delegates, a and b, are composed to form c, 
 					// which calls both methods in order:
 					g.Assign(c, a + b);

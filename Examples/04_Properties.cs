@@ -34,7 +34,10 @@ namespace TriAxis.RunSharp.Examples
 		// example based on the MSDN Properties Sample (person.cs)
 		public static void GenPerson(AssemblyGen ag)
 		{
-			TypeGen Person = ag.Class("Person");
+            var st = ag.StaticFactory;
+            var exp = ag.ExpressionFactory;
+
+            TypeGen Person = ag.Class("Person");
 			{
 				FieldGen myName = Person.Private.Field(typeof(string), "myName", "N/A");
 				FieldGen myAge = Person.Private.Field(typeof(int), "myAge", 0);
@@ -55,7 +58,7 @@ namespace TriAxis.RunSharp.Examples
 					g.WriteLine("Simple Properties");
 
                     // Create a new Person object:
-                    var person = g.Local(Exp.New(Person, ag.TypeMapper));
+                    var person = g.Local(exp.New(Person));
 
 					// Print out the name and the age associated with the person:
 					g.WriteLine("Person details - {0}", person);
@@ -78,7 +81,10 @@ namespace TriAxis.RunSharp.Examples
 		// example based on the MSDN Properties Sample (abstractshape.cs, shapes.cs, shapetest.cs)
 		public static void GenShapeTest(AssemblyGen ag)
 		{
-		    ITypeMapper m = ag.TypeMapper;
+            var st = ag.StaticFactory;
+            var exp = ag.ExpressionFactory;
+
+            ITypeMapper m = ag.TypeMapper;
 		    // abstractshape.cs
 		    TypeGen Shape = ag.Public.Abstract.Class("Shape");
 		    {
@@ -97,7 +103,7 @@ namespace TriAxis.RunSharp.Examples
 
 				g = Shape.Public.Override.Method(typeof(string), "ToString");
 				{
-					g.Return(Id + " Area = " + Static.Invoke(typeof(string), "Format", m, "{0:F2}", Area));
+					g.Return(Id + " Area = " + st.Invoke(typeof(string), "Format", Area));
 				}
 			}
 
@@ -167,10 +173,10 @@ namespace TriAxis.RunSharp.Examples
 			{
 				CodeGen g = TestClass.Public.Static.Method(typeof(void), "Main");
 				{
-                    var shapes = g.Local(Exp.NewInitializedArray(Shape,
-						Exp.New(Square, m, 5, "Square #1"),
-						Exp.New(Circle, m, 3, "Circle #1"),
-						Exp.New(Rectangle, m, 4, 5, "Rectangle #1")));
+                    var shapes = g.Local(exp.NewInitializedArray(Shape,
+						exp.New(Square, 5, "Square #1"),
+						exp.New(Circle, 3, "Circle #1"),
+						exp.New(Rectangle, 4, 5, "Rectangle #1")));
 
 					g.WriteLine("Shapes Collection");
 					Operand s = g.ForEach(Shape, shapes);

@@ -31,7 +31,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)DelegateGen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DynamicMethodGen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EventGen.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Exp.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ExpressionFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FieldGen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ITypeInfo.cs" />
@@ -76,7 +76,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)PropertyGen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RoutineGen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SignatureGen.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Static.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StaticFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TypeGen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TypeInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils.cs" />

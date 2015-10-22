@@ -33,7 +33,10 @@ namespace TriAxis.RunSharp.Examples
 	{
 		// example based on the MSDN Operator Overloading Sample (complex.cs)
 		public static void GenComplex(AssemblyGen ag)
-		{
+        {
+            var st = ag.StaticFactory;
+            var exp = ag.ExpressionFactory;
+
             ITypeMapper m = ag.TypeMapper;
 			TypeGen Complex = ag.Public.Struct("Complex");
 			{
@@ -57,19 +60,19 @@ namespace TriAxis.RunSharp.Examples
 			    {
 			        var c1 = g.Arg("c1");
                     var c2 = g.Arg("c2");
-					g.Return(Exp.New(Complex, m, c1.Field("real") + c2.Field("real"), c1.Field("imaginary") + c2.Field("imaginary")));
+					g.Return(exp.New(Complex, c1.Field("real") + c2.Field("real"), c1.Field("imaginary") + c2.Field("imaginary")));
 				}
 
 				// Override the ToString method to display an complex number in the suitable format:
 				g = Complex.Public.Override.Method(typeof(string), "ToString");
 				{
-					g.Return(Static.Invoke(typeof(string), "Format", m, "{0} + {1}i", real, imaginary));
+					g.Return(st.Invoke(typeof(string), "Format", "{0} + {1}i", real, imaginary));
 				}
 
 				g = Complex.Public.Static.Method(typeof(void), "Main");
 				{
-                    var num1 = g.Local(Exp.New(Complex, m, 2, 3));
-                    var num2 = g.Local(Exp.New(Complex, m, 3, 4));
+                    var num1 = g.Local(exp.New(Complex, 2, 3));
+                    var num2 = g.Local(exp.New(Complex, 3, 4));
 
                     // Add two Complex objects (num1 and num2) through the
                     // overloaded plus operator:
@@ -85,7 +88,10 @@ namespace TriAxis.RunSharp.Examples
 
 		// example based on the MSDN Operator Overloading Sample (dbbool.cs)
 		public static void GenDbBool(AssemblyGen ag)
-		{
+        {
+            var st = ag.StaticFactory;
+            var exp = ag.ExpressionFactory;
+
             ITypeMapper m = ag.TypeMapper;
             TypeGen DBBool = ag.Public.Struct("DBBool");
 			{
@@ -99,9 +105,9 @@ namespace TriAxis.RunSharp.Examples
 				}
 
 				// The three possible DBBool values:
-			    FieldGen dbNull = DBBool.Public.Static.ReadOnly.Field(DBBool, "dbNull", Exp.New(DBBool, m, 0));
-				FieldGen dbFalse = DBBool.Public.Static.ReadOnly.Field(DBBool, "dbFalse", Exp.New(DBBool, m, -1));
-				FieldGen dbTrue = DBBool.Public.Static.ReadOnly.Field(DBBool, "dbTrue", Exp.New(DBBool, m, 1));
+			    FieldGen dbNull = DBBool.Public.Static.ReadOnly.Field(DBBool, "dbNull", exp.New(DBBool, 0));
+				FieldGen dbFalse = DBBool.Public.Static.ReadOnly.Field(DBBool, "dbFalse", exp.New(DBBool, -1));
+				FieldGen dbTrue = DBBool.Public.Static.ReadOnly.Field(DBBool, "dbTrue", exp.New(DBBool, 1));
 
 				// Implicit conversion from bool to DBBool. Maps true to 
 				// DBBool.dbTrue and false to DBBool.dbFalse:
@@ -119,7 +125,7 @@ namespace TriAxis.RunSharp.Examples
                     var x = g.Arg("x");
 					g.If(x.Field("value") == 0);
 					{
-						g.Throw(Exp.New(typeof(InvalidOperationException), m));
+						g.Throw(exp.New(typeof(InvalidOperationException)));
 					}
 					g.End();
 
@@ -162,7 +168,7 @@ namespace TriAxis.RunSharp.Examples
 				g = DBBool.Operator(Operator.LogicalNot, DBBool, DBBool, "x");
 				{
                     var x = g.Arg("x");
-					g.Return(Exp.New(DBBool, m, -x.Field("value")));
+					g.Return(exp.New(DBBool, -x.Field("value")));
 				}
 
 				// Logical AND operator. Returns dbFalse if either operand is 
@@ -171,7 +177,7 @@ namespace TriAxis.RunSharp.Examples
 			    {
 			        var x = g.Arg("x");
                     var y = g.Arg("y");
-					g.Return(Exp.New(DBBool, m, (x.Field("value") < y.Field("value")).Conditional(x.Field("value"), y.Field("value"))));
+					g.Return(exp.New(DBBool, (x.Field("value") < y.Field("value")).Conditional(x.Field("value"), y.Field("value"))));
 				}
 
 				// Logical OR operator. Returns dbTrue if either operand is 
@@ -180,7 +186,7 @@ namespace TriAxis.RunSharp.Examples
 			    {
 			        var x = g.Arg("x");
                     var y = g.Arg("y");
-					g.Return(Exp.New(DBBool, m, (x.Field("value") > y.Field("value")).Conditional(x.Field("value"), y.Field("value"))));
+					g.Return(exp.New(DBBool, (x.Field("value") > y.Field("value")).Conditional(x.Field("value"), y.Field("value"))));
 				}
 
 				// Definitely true operator. Returns true if the operand is 
@@ -241,7 +247,7 @@ namespace TriAxis.RunSharp.Examples
 						g.Case(1);
 						g.Return("DBBool.True");
 						g.DefaultCase();
-						g.Throw(Exp.New(typeof(InvalidOperationException), m));
+						g.Throw(exp.New(typeof(InvalidOperationException)));
 					}
 					g.End();
 				}
@@ -253,8 +259,8 @@ namespace TriAxis.RunSharp.Examples
 				{
                     var a = g.Local(DBBool);
                     var b = g.Local(DBBool);
-					g.Assign(a, Static.Field(DBBool, "dbTrue", m));
-					g.Assign(b, Static.Field(DBBool, "dbNull", m));
+					g.Assign(a, st.Field(DBBool, "dbTrue"));
+					g.Assign(b, st.Field(DBBool, "dbNull"));
 
 					g.WriteLine("!{0} = {1}", a, !a);
 					g.WriteLine("!{0} = {1}", b, !b);

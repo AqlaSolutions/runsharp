@@ -34,6 +34,9 @@ namespace TriAxis.RunSharp.Examples
 		// example based on the MSDN Versioning Sample (versioning.cs)
 		public static void GenVersioning(AssemblyGen ag)
 		{
+            var st = ag.StaticFactory;
+            var exp = ag.ExpressionFactory;
+
             ITypeMapper m = ag.TypeMapper;
             TypeGen MyBase = ag.Public.Class("MyBase");
 			{
@@ -68,7 +71,7 @@ namespace TriAxis.RunSharp.Examples
 
 				CodeGen g = MyDerived.Public.Static.Method(typeof(void), "Main");
 				{
-                    var mD = g.Local(Exp.New(MyDerived, m));
+                    var mD = g.Local(exp.New(MyDerived));
                     var mB = g.Local(mD.Cast(MyBase));
 
 					g.WriteLine(mB.Invoke("Meth1"));

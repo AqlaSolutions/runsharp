@@ -45,7 +45,7 @@ using Universe = System.AppDomain;
 
 namespace TriAxis.RunSharp
 {
-    public class AssemblyGen
+    public class AssemblyGen : ICodeGenBasicContext
 	{
         readonly List<TypeGen> _types = new List<TypeGen>();
 		List<AttributeGen> _assemblyAttributes;
@@ -54,6 +54,8 @@ namespace TriAxis.RunSharp
         
 		internal AssemblyBuilder AssemblyBuilder { get; set; }
         internal ModuleBuilder ModuleBuilder { get; set; }
+        public ExpressionFactory ExpressionFactory { get; private set; }
+        public StaticFactory StaticFactory { get; private set; }
 
         internal void AddType(TypeGen tg)
 		{
@@ -252,6 +254,9 @@ namespace TriAxis.RunSharp
 #else
                 typeMapper = new TypeMapper();
 #endif
+            ExpressionFactory = new ExpressionFactory(typeMapper);
+            StaticFactory = new StaticFactory(typeMapper);
+
             bool save = (access & AssemblyBuilderAccess.Save) != 0;
             string path = options.OutputPath;
             if (path == null && save) throw new ArgumentNullException("options.OutputPath");

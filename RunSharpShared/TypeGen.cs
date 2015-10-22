@@ -52,7 +52,7 @@ namespace TriAxis.RunSharp
 		void Complete();
 	}
 
-	public class TypeGen : ITypeInfoProvider
+    public class TypeGen : ITypeInfoProvider, ICodeGenBasicContext
 	{
 		class InterfaceImplEntry
 		{
@@ -82,6 +82,8 @@ namespace TriAxis.RunSharp
 
 	    readonly AssemblyGen _owner;
         public ITypeMapper TypeMapper => _owner.TypeMapper;
+	    public ExpressionFactory ExpressionFactory => _owner.ExpressionFactory;
+	    public StaticFactory StaticFactory => _owner.StaticFactory;
 	    Type[] _interfaces;
 	    readonly ITypeMapper _typeMapper;
 	    Type _type;
