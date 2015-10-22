@@ -39,8 +39,8 @@ namespace TriAxis.RunSharp.Examples.Bugs
 			{
 				CodeGen g = Test.Static.Method(typeof(void), "Main");
 				{
-					Operand a = g.Local(typeof(object), "notnull");
-					Operand b = g.Local(typeof(object), null);
+					var a = g.Local(typeof(object), "notnull");
+					var b = g.Local(typeof(object), null);
 
 					g.If(a == null);
 					{

@@ -51,14 +51,15 @@ namespace TriAxis.RunSharp.Examples
 			{
 				CodeGen g = Hello3.Public.Static.Method(typeof(void), "Main").Parameter(typeof(string[]), "args");
 				{
-					Operand args = g.Arg("args");
+					var args = g.Arg("args");
 					g.WriteLine("Hello, World!");
 					g.WriteLine("You entered the following {0} command line arguments:",
 						args.ArrayLength());
-					Operand i = g.Local();
+
+                    var i = g.Local();
 					g.For(i.Assign(0), i < args.ArrayLength(), i.Increment());
 				    {
-				        g.WriteLine("{0}", args[m, i]);
+				        g.WriteLine("{0}", args[i]);
 				    }
 				    g.End();
 				}

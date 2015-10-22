@@ -25,6 +25,7 @@
 using System;
 using System.Collections;
 using System.Text;
+using TryAxis.RunSharp;
 
 namespace TriAxis.RunSharp.Examples
 {
@@ -63,7 +64,7 @@ namespace TriAxis.RunSharp.Examples
 					// invoke event after each
 					g = ListWithChangedEvent.Public.Override.Method(typeof(int), "Add").Parameter(typeof(object), "value");
 					{
-						Operand i = g.Local(g.Base().Invoke("Add", m, g.Arg("value")));
+                        var i = g.Local(g.Base().Invoke("Add", new[] { g.Arg("value") }));
 						g.Invoke(g.This(), "OnChanged", Static.Field(typeof(EventArgs), "Empty", m));
 						g.Return(i);
 					}
@@ -76,7 +77,7 @@ namespace TriAxis.RunSharp.Examples
 
 					g = ListWithChangedEvent.Public.Override.Indexer(typeof(object)).Index(typeof(int), "index").Setter();
 					{
-						g.Assign(g.Base()[m, g.Arg("index")], g.PropertyValue());
+						g.Assign(g.Base()[g.Arg("index")], g.PropertyValue());
 						g.Invoke(g.This(), "OnChanged", Static.Field(typeof(EventArgs), "Empty", m));
 					}
 				}
@@ -114,11 +115,11 @@ namespace TriAxis.RunSharp.Examples
 					// Test the ListWithChangedEvent class.
 					CodeGen g = Test.Public.Static.Method(typeof(void), "Main");
 					{
-						// Create a new list.
-						Operand list = g.Local(Exp.New(ListWithChangedEvent, m));
+                        // Create a new list.
+                        var list = g.Local(Exp.New(ListWithChangedEvent, m));
 
-						// Create a class that listens to the list's change event.
-						Operand listener = g.Local(Exp.New(EventListener, m, list));
+                        // Create a class that listens to the list's change event.
+                        var listener = g.Local(Exp.New(EventListener, m, list));
 
 						// Add and remove items from the list.
 						g.Invoke(list, "Add", "item 1");

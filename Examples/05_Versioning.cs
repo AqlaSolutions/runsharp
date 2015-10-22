@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TryAxis.RunSharp;
 
 namespace TriAxis.RunSharp.Examples
 {
@@ -67,12 +68,12 @@ namespace TriAxis.RunSharp.Examples
 
 				CodeGen g = MyDerived.Public.Static.Method(typeof(void), "Main");
 				{
-				    Operand mD = g.Local(Exp.New(MyDerived, m));
-					Operand mB = g.Local(mD.Cast(MyBase));
+                    var mD = g.Local(Exp.New(MyDerived, m));
+                    var mB = g.Local(mD.Cast(MyBase));
 
-					g.WriteLine(mB.Invoke("Meth1", m));
-					g.WriteLine(mB.Invoke("Meth2", m));
-					g.WriteLine(mB.Invoke("Meth3", m));
+					g.WriteLine(mB.Invoke("Meth1"));
+					g.WriteLine(mB.Invoke("Meth2"));
+					g.WriteLine(mB.Invoke("Meth3"));
 				}
 			}
 		}

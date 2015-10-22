@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TryAxis.RunSharp;
 
 namespace TriAxis.RunSharp.Examples
 {
@@ -62,9 +63,10 @@ namespace TriAxis.RunSharp.Examples
 			{
 				g = TestClass.Public.Static.Method(typeof(void), "Main");
 				{
-					Operand ss = g.Local(SimpleStruct);
+                    var ss = g.Local(SimpleStruct);
 					g.InitObj(ss);
-					g.Assign(ss.Property("X", ag.TypeMapper), 5);
+				    ITypeMapper typeMapper = ag.TypeMapper;
+				    g.Assign(ss.Property("X"), 5);
 					g.Invoke(ss, "DisplayX");
 				}
 			}
@@ -86,27 +88,33 @@ namespace TriAxis.RunSharp.Examples
 			TypeGen TestClass = ag.Class("TestClass");
 			{
 				CodeGen g = TestClass.Public.Static.Method(typeof(void), "structtaker").Parameter(TheStruct, "s");
-				{
-					g.Assign(g.Arg("s").Field("x", ag.TypeMapper), 5);
-				}
+			    {
+			        ITypeMapper typeMapper = ag.TypeMapper;
+			        g.Assign(g.Arg("s").Field("x"), 5);
+			    }
 
-				g = TestClass.Public.Static.Method(typeof(void), "classtaker").Parameter(TheClass, "c");
-				{
-					g.Assign(g.Arg("c").Field("x", ag.TypeMapper), 5);
-				}
+			    g = TestClass.Public.Static.Method(typeof(void), "classtaker").Parameter(TheClass, "c");
+			    {
+			        ITypeMapper typeMapper = ag.TypeMapper;
+			        g.Assign(g.Arg("c").Field("x"), 5);
+			    }
 
-				g = TestClass.Public.Static.Method(typeof(void), "Main");
+			    g = TestClass.Public.Static.Method(typeof(void), "Main");
 				{
-					Operand a = g.Local(TheStruct);
+                    var a = g.Local(TheStruct);
 					g.InitObj(a);
-					Operand b = g.Local(Exp.New(TheClass, ag.TypeMapper));
+                    var b = g.Local(Exp.New(TheClass, ag.TypeMapper));
 
-					g.Assign(a.Field("x", ag.TypeMapper), 1);
-					g.Assign(b.Field("x", ag.TypeMapper), 1);
+				    ITypeMapper typeMapper = ag.TypeMapper;
+				    g.Assign(a.Field("x"), 1);
+				    ITypeMapper typeMapper2 = ag.TypeMapper;
+				    g.Assign(b.Field("x"), 1);
 					g.Invoke(TestClass, "structtaker", a);
 					g.Invoke(TestClass, "classtaker", b);
-					g.WriteLine("a.x = {0}", a.Field("x", ag.TypeMapper));
-					g.WriteLine("b.x = {0}", b.Field("x", ag.TypeMapper));
+				    ITypeMapper typeMapper3 = ag.TypeMapper;
+				    g.WriteLine("a.x = {0}", a.Field("x"));
+				    ITypeMapper typeMapper1 = ag.TypeMapper;
+				    g.WriteLine("b.x = {0}", b.Field("x"));
 				}
 			}
 		}

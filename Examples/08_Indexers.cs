@@ -26,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using TryAxis.RunSharp;
 
 namespace TriAxis.RunSharp.Examples
 {
@@ -63,15 +64,15 @@ namespace TriAxis.RunSharp.Examples
 					// Read one byte at offset index and return it.
 					g = Item.Getter();
 					{
-						Operand buffer = g.Local(Exp.NewArray(typeof(byte), 1));
+                        var buffer = g.Local(Exp.NewArray(typeof(byte), 1));
 						g.Invoke(stream, "Seek", g.Arg("index"), SeekOrigin.Begin);
 						g.Invoke(stream, "Read", buffer, 0, 1);
-						g.Return(buffer[m, 0]);
+						g.Return(buffer[0]);
 					}
 					// Write one byte at offset index and return it.
 					g = Item.Setter();
 					{
-						Operand buffer = g.Local(Exp.NewInitializedArray(typeof(byte), g.PropertyValue()));
+                        var buffer = g.Local(Exp.NewInitializedArray(typeof(byte), g.PropertyValue()));
 						g.Invoke(stream, "Seek", g.Arg("index"), SeekOrigin.Begin);
 						g.Invoke(stream, "Write", buffer, 0, 1);
 					}
@@ -88,7 +89,7 @@ namespace TriAxis.RunSharp.Examples
 			{
 				CodeGen g = Reverse.Public.Static.Method(typeof(void), "Main").Parameter(typeof(string[]), "args");
 				{
-					Operand args = g.Arg("args");
+                    var args = g.Arg("args");
 
 					// Check for arguments.
 					g.If(args.ArrayLength() != 1);
@@ -99,28 +100,28 @@ namespace TriAxis.RunSharp.Examples
 					g.End();
 
 					// Check for file existence
-					g.If(!Static.Invoke(typeof(File), "Exists", m, args[m, 0]));
+					g.If(!Static.Invoke(typeof(File), "Exists", m, args[0]));
 					{
-						g.WriteLine("File " + args[m, 0] + " not found.");
+						g.WriteLine("File " + args[0] + " not found.");
 						g.Return();
 					}
 					g.End();
 
-					Operand file = g.Local(Exp.New(FileByteArray, m, args[m, 0]));
-					Operand len = g.Local(file.Property("Length", m));
+                    var file = g.Local(Exp.New(FileByteArray, m, args[0]));
+                    var len = g.Local(file.Property("Length"));
 
-					// Swap bytes in the file to reverse it.
-					Operand i = g.Local(typeof(long));
+                    // Swap bytes in the file to reverse it.
+                    var i = g.Local(typeof(long));
 					g.For(i.Assign(0), i < len / 2, i.Increment());
 					{
-						Operand t = g.Local();
+                        var t = g.Local();
 
 						// Note that indexing the "file" variable invokes the
 						// indexer on the FileByteStream class, which reads
 						// and writes the bytes in the file.
-						g.Assign(t, file[m, i]);
-						g.Assign(file[m, i], file[m, len - i - 1]);
-						g.Assign(file[m, len - i - 1], t);
+						g.Assign(t, file[i]);
+						g.Assign(file[i], file[len - i - 1]);
+						g.Assign(file[len - i - 1], t);
 					}
 					g.End();
 

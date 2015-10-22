@@ -26,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using TryAxis.RunSharp;
 #if FEAT_IKVM
 using IKVM.Reflection;
 using IKVM.Reflection.Emit;
@@ -700,48 +701,48 @@ namespace TriAxis.RunSharp
 		}
 		*/
 
-		public Operand Field(string name, ITypeMapper typeMapper)
+		public ContextualOperand Field(string name, ITypeMapper typeMapper)
 		{
-			return new Field((FieldInfo)typeMapper.TypeInfo.FindField(GetReturnType(typeMapper), name, IsStaticTarget).Member, this);
-		}
+			return new ContextualOperand(new Field((FieldInfo)typeMapper.TypeInfo.FindField(GetReturnType(typeMapper), name, IsStaticTarget).Member, this), typeMapper);
+        }
 
-		public Operand Property(string name, ITypeMapper typeMapper)
+		public ContextualOperand Property(string name, ITypeMapper typeMapper)
 		{
 			return Property(name, typeMapper, EmptyArray);
 		}
 
-		public Operand Property(string name, ITypeMapper typeMapper, params Operand[] indexes)
+		public ContextualOperand Property(string name, ITypeMapper typeMapper, params Operand[] indexes)
 		{
-			return new Property(typeMapper.TypeInfo.FindProperty(GetReturnType(typeMapper), name, indexes, IsStaticTarget), this, indexes);
-		}
+			return new ContextualOperand(new Property(typeMapper.TypeInfo.FindProperty(GetReturnType(typeMapper), name, indexes, IsStaticTarget), this, indexes), typeMapper);
+        }
 
-		public Operand Invoke(string name, ITypeMapper typeMapper)
+		public ContextualOperand Invoke(string name, ITypeMapper typeMapper)
 		{
 			return Invoke(name, typeMapper, EmptyArray);
 		}
 
-		public Operand Invoke(string name, ITypeMapper typeMapper, params Operand[] args)
+		public ContextualOperand Invoke(string name, ITypeMapper typeMapper, params Operand[] args)
 		{
-			return new Invocation(typeMapper.TypeInfo.FindMethod(GetReturnType(typeMapper), name, args, IsStaticTarget), this, args);
-		}
+			return new ContextualOperand(new Invocation(typeMapper.TypeInfo.FindMethod(GetReturnType(typeMapper), name, args, IsStaticTarget), this, args), typeMapper);
+        }
 
-		public Operand InvokeDelegate(ITypeMapper typeMapper)
+		public ContextualOperand InvokeDelegate(ITypeMapper typeMapper)
 		{
 			return InvokeDelegate(typeMapper, EmptyArray);
 		}
 
-		public Operand InvokeDelegate(ITypeMapper typeMapper, params Operand[] args)
+		public ContextualOperand InvokeDelegate(ITypeMapper typeMapper, params Operand[] args)
 		{
 			return Invoke("Invoke", typeMapper, args);
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1043:UseIntegralOrStringArgumentForIndexers", Justification = "Intentional, to simulate standard indexer 'feel'")]
-		public Operand this[ITypeMapper typeMapper, params Operand[] indexes]
+		public ContextualOperand this[ITypeMapper typeMapper, params Operand[] indexes]
 		{
 			get
 			{
 				if (GetReturnType(typeMapper).IsArray)
-					return new ArrayAccess(this, indexes);
+					return new ContextualOperand(new ArrayAccess(this, indexes), typeMapper);
 
 				return Property(null, typeMapper, indexes);
 			}

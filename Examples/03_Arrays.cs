@@ -37,27 +37,27 @@ namespace TriAxis.RunSharp.Examples
 			{
 				CodeGen g = DeclareArraysSample.Public.Static.Method(typeof(void), "Main");
 				{
-					// Single-dimensional array
-					Operand numbers = g.Local(Exp.NewArray(typeof(int), 5));
-					
-					// Multidimensional array
-					Operand names = g.Local(Exp.NewArray(typeof(string), 5, 4));
-					
-					// Array-of-arrays (jagged array)
-					Operand scores = g.Local(Exp.NewArray(typeof(byte[]), 5));
+                    // Single-dimensional array
+                    var numbers = g.Local(Exp.NewArray(typeof(int), 5));
 
-					// Create the jagged array
-					Operand i = g.Local();
+                    // Multidimensional array
+                    var names = g.Local(Exp.NewArray(typeof(string), 5, 4));
+
+                    // Array-of-arrays (jagged array)
+                    var scores = g.Local(Exp.NewArray(typeof(byte[]), 5));
+
+                    // Create the jagged array
+                    var i = g.Local();
 					g.For(i.Assign(0), i < scores.ArrayLength(), i.Increment());
 					{
-						g.Assign(scores[ag.TypeMapper, i], Exp.NewArray(typeof(byte), i + 3));
+						g.Assign(scores[i], Exp.NewArray(typeof(byte), i + 3));
 					}
 					g.End();
 
 					// Print length of each row
 					g.For(i.Assign(0), i < scores.ArrayLength(), i.Increment());
 					{
-						g.WriteLine("Length of row {0} is {1}", i, scores[ag.TypeMapper, i].ArrayLength());
+						g.WriteLine("Length of row {0} is {1}", i, scores[i].ArrayLength());
 					}
 					g.End();
 				}

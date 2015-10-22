@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TryAxis.RunSharp;
 
 namespace TriAxis.RunSharp.Examples
 {
@@ -53,19 +54,22 @@ namespace TriAxis.RunSharp.Examples
 				{
 					g.WriteLine("Simple Properties");
 
-					// Create a new Person object:
-					Operand person = g.Local(Exp.New(Person, ag.TypeMapper));
+                    // Create a new Person object:
+                    var person = g.Local(Exp.New(Person, ag.TypeMapper));
 
 					// Print out the name and the age associated with the person:
 					g.WriteLine("Person details - {0}", person);
 
 					// Set some values on the person object:
-					g.Assign(person.Property("Name", ag.TypeMapper), "Joe");
-					g.Assign(person.Property("Age", ag.TypeMapper), 99);
+				    ITypeMapper typeMapper = ag.TypeMapper;
+				    g.Assign(person.Property("Name"), "Joe");
+				    ITypeMapper typeMapper1 = ag.TypeMapper;
+				    g.Assign(person.Property("Age"), 99);
 					g.WriteLine("Person details - {0}", person);
 
 					// Increment the Age property:
-					g.AssignAdd(person.Property("Age", ag.TypeMapper), 1);
+				    ITypeMapper typeMapper2 = ag.TypeMapper;
+				    g.AssignAdd(person.Property("Age"), 1);
 					g.WriteLine("Person details - {0}", person);
 				}
 			}
@@ -163,7 +167,7 @@ namespace TriAxis.RunSharp.Examples
 			{
 				CodeGen g = TestClass.Public.Static.Method(typeof(void), "Main");
 				{
-					Operand shapes = g.Local(Exp.NewInitializedArray(Shape,
+                    var shapes = g.Local(Exp.NewInitializedArray(Shape,
 						Exp.New(Square, m, 5, "Square #1"),
 						Exp.New(Circle, m, 3, "Circle #1"),
 						Exp.New(Rectangle, m, 4, 5, "Rectangle #1")));

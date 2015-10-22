@@ -29,6 +29,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using TryAxis.RunSharp;
 #if FEAT_IKVM
 using IKVM.Reflection;
 using IKVM.Reflection.Emit;
@@ -495,11 +496,11 @@ namespace TriAxis.RunSharp
 			Begin(new LoopBlock(null, test, null));
 		}
 
-		public Operand ForEach(Type elementType, Operand expression)
+		public ContextualOperand ForEach(Type elementType, Operand expression)
 		{
 			ForeachBlock fb = new ForeachBlock(elementType, expression, TypeMapper);
 			Begin(fb);
-			return fb.Element;
+			return new ContextualOperand(fb.Element, TypeMapper);
 		}
 
 		public void If(Operand condition)
@@ -543,9 +544,9 @@ namespace TriAxis.RunSharp
 			return null;
 		}
 
-		public Operand Catch(Type exceptionType)
+		public ContextualOperand Catch(Type exceptionType)
 		{
-			return GetTryBlock().BeginCatch(exceptionType);
+			return new ContextualOperand(GetTryBlock().BeginCatch(exceptionType), TypeMapper);
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", Justification = "Intentional")]

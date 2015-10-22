@@ -176,7 +176,7 @@ namespace TriAxis.RunSharp
             CodeGen g = dmg.GetCode();
             g.Try();
             {
-                Operand name = g.Local(typeof(string), g.Arg("name"));
+                var name = g.Local(typeof(string), g.Arg("name"));
                 g.WriteLine("Hello {0}!", name);
             }
             g.CatchAll();

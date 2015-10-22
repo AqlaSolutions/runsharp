@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TryAxis.RunSharp;
 
 namespace TriAxis.RunSharp.Examples.Bugs
 {
@@ -41,8 +42,8 @@ namespace TriAxis.RunSharp.Examples.Bugs
             {
                 CodeGen g = Test.Public.Static.Method(typeof(void), "Main");
                 {
-                    Operand value = g.Local(typeof(int), 3);
-                    g.WriteLine("Hash code of {0} is {1}", value, value.Invoke("GetHashCode", m));
+                    var value = g.Local(typeof(int), 3);
+                    g.WriteLine("Hash code of {0} is {1}", value, value.Invoke("GetHashCode"));
                 }
             }
         }
@@ -54,13 +55,13 @@ namespace TriAxis.RunSharp.Examples.Bugs
 			{
 				CodeGen g = Test.Public.Static.Method(typeof(void), "Main");
 				{
-					// test calling virtual member directly on a literal
-					// g.Local(Operand.FromObject(3).Invoke("GetHashCode"));
+                    // test calling virtual member directly on a literal
+                    // g.Local(Operand.FromObject(3).Invoke("GetHashCode"));
 
-					// test special case where the value type target doesn't implement the virtual function
-					Operand value = g.Local(Test);
+                    // test special case where the value type target doesn't implement the virtual function
+                    var value = g.Local(Test);
 					g.InitObj(value);
-				    g.WriteLine("Hash code of {0} is {1}", value, value.Invoke("GetHashCode", m));
+				    g.WriteLine("Hash code of {0} is {1}", value, value.Invoke("GetHashCode"));
 				}
 
 				g = Test.Public.Override.Method(typeof(int), "GetHashCode");

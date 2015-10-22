@@ -27,6 +27,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using TryAxis.RunSharp;
 #if FEAT_IKVM
 using IKVM.Reflection;
 using IKVM.Reflection.Emit;
@@ -98,60 +99,60 @@ namespace TriAxis.RunSharp
 		}*/
 
 		#region Arguments
-		public Operand This()
+		public ContextualOperand This()
 		{
 			if (Context.IsStatic)
 				throw new InvalidOperationException(Properties.Messages.ErrCodeStaticThis);
 
-			return new _Arg(0, Context.OwnerType);
+			return new ContextualOperand(new _Arg(0, Context.OwnerType), TypeMapper);
 		}
 
-		public Operand Base()
+		public ContextualOperand Base()
 		{
 			if (Context.IsStatic)
-				return new StaticTarget(Context.OwnerType.BaseType);
+				return new ContextualOperand(new StaticTarget(Context.OwnerType.BaseType), TypeMapper);
 			else
-				return new _Base(Context.OwnerType.BaseType);
+				return new ContextualOperand(new _Base(Context.OwnerType.BaseType), TypeMapper);
 		}
 
 		int ThisOffset => Context.IsStatic ? 0 : 1;
 
-	    public Operand PropertyValue()
+	    public ContextualOperand PropertyValue()
 		{
 			Type[] parameterTypes = Context.ParameterTypes;
-			return new _Arg(ThisOffset + parameterTypes.Length - 1, parameterTypes[parameterTypes.Length - 1]);
+			return new ContextualOperand(new _Arg(ThisOffset + parameterTypes.Length - 1, parameterTypes[parameterTypes.Length - 1]), TypeMapper);
 		}
 
-		public Operand Arg(string name)
+		public ContextualOperand Arg(string name)
 		{
 			ParameterGen param = Context.GetParameterByName(name);
-			return new _Arg(ThisOffset + param.Position - 1, param.Type);
+			return new ContextualOperand(new _Arg(ThisOffset + param.Position - 1, param.Type), TypeMapper);
 		}
 		#endregion
 
 		#region Locals
-		public Operand Local()
+		public ContextualOperand Local()
 		{
-			return new _Local(this);
+			return new ContextualOperand(new _Local(this), TypeMapper);
 		}
 
-		public Operand Local(Operand init)
+		public ContextualOperand Local(Operand init)
 		{
 			Operand var = Local();
 			Assign(var, init);
-			return var;
+			return new ContextualOperand(var, TypeMapper);
 		}
 
-		public Operand Local(Type type)
+		public ContextualOperand Local(Type type)
 		{
-			return new _Local(this, type);
+			return new ContextualOperand(new _Local(this, type), TypeMapper);
 		}
 
-		public Operand Local(Type type, Operand init)
+		public ContextualOperand Local(Type type, Operand init)
 		{
 			Operand var = Local(type);
 			Assign(var, init);
-			return var;
+			return new ContextualOperand(var, TypeMapper);
 		}
 		#endregion
 

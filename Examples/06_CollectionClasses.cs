@@ -25,6 +25,7 @@
 using System;
 using System.Collections;
 using System.Text;
+using TryAxis.RunSharp;
 
 namespace TriAxis.RunSharp.Examples
 {
@@ -43,7 +44,7 @@ namespace TriAxis.RunSharp.Examples
 					.Parameter(typeof(char[]), "delimiters")
 					;
 			    {
-					g.Assign(elements, g.Arg("source").Invoke("Split", m, g.Arg("delimiters")));
+					g.Assign(elements, g.Arg("source").Invoke("Split", new[] { g.Arg("delimiters") }));
 				}
 
 				// Inner class implements IEnumerator interface:
@@ -80,13 +81,13 @@ namespace TriAxis.RunSharp.Examples
 					// non-IEnumerator version: type-safe
 					g = TokenEnumerator.Public.Property(typeof(string), "Current").Getter();
 					{
-						g.Return(t.Field("elements", m)[m, position]);
+						g.Return(t.Field("elements", m)[position]);
 					}
 
 					// IEnumerator version: returns object
 					g = TokenEnumerator.Public.PropertyImplementation(typeof(IEnumerator), typeof(object), "Current").Getter();
 					{
-						g.Return(t.Field("elements", m)[m, position]);
+						g.Return(t.Field("elements", m)[position]);
 					}
 				}
 
@@ -108,9 +109,9 @@ namespace TriAxis.RunSharp.Examples
 
 				g = Tokens.Static.Method(typeof(void), "Main");
 				{
-					Operand f = g.Local(Exp.New(Tokens, m, "This is a well-done program.",
+                    var f = g.Local(Exp.New(Tokens, m, "This is a well-done program.",
 						Exp.NewInitializedArray(typeof(char), ' ', '-')));
-					Operand item = g.ForEach(typeof(string), f);	// try changing string to int
+                    var item = g.ForEach(typeof(string), f);	// try changing string to int
 					{
 						g.WriteLine(item);
 					}

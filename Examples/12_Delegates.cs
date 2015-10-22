@@ -25,6 +25,7 @@
 using System;
 using System.Collections;
 using System.Text;
+using TryAxis.RunSharp;
 
 namespace TriAxis.RunSharp.Examples
 {
@@ -83,9 +84,9 @@ namespace TriAxis.RunSharp.Examples
 					// Call a passed-in delegate on each paperback book to process it: 
 					g = BookDBLocal.Public.Method(typeof(void), "ProcessPaperbackBooks").Parameter(processBookDelegate, "processBook");
 					{
-						Operand b = g.ForEach(book, list);
+                        var b = g.ForEach(book, list);
 						{
-							g.If(b.Field("Paperback", m));
+							g.If(b.Field("Paperback"));
 							{
 								g.InvokeDelegate(g.Arg("processBook"), b);
 							}
@@ -108,7 +109,7 @@ namespace TriAxis.RunSharp.Examples
 					CodeGen g = priceTotaller.Internal.Method(typeof(void), "AddBookToTotal").Parameter(book, "book");
 					{
 						g.AssignAdd(countBooks, 1);
-						g.AssignAdd(priceBooks, g.Arg("book").Field("Price", m));
+						g.AssignAdd(priceBooks, g.Arg("book").Field("Price"));
 					}
 
 					g = priceTotaller.Internal.Method(typeof(decimal), "AveragePrice");
@@ -123,13 +124,13 @@ namespace TriAxis.RunSharp.Examples
 					// Print the title of the book.
 					CodeGen g = test.Static.Method(typeof(void), "PrintTitle").Parameter(book, "book");
 					{
-						g.WriteLine("   {0}", g.Arg("book").Field("Title", m));
+						g.WriteLine("   {0}", g.Arg("book").Field("Title"));
 					}
 
 					// Initialize the book database with some test books:
 					g = test.Static.Method(typeof(void), "AddBooks").Parameter(BookDBLocal, "bookDB");
 					{
-						Operand bookDb = g.Arg("bookDB");
+                        var bookDb = g.Arg("bookDB");
 
 						g.Invoke(bookDb, "AddBook", "The C Programming Language",
 						  "Brian W. Kernighan and Dennis M. Ritchie", 19.95m, true);
@@ -144,7 +145,7 @@ namespace TriAxis.RunSharp.Examples
 					// Execution starts here.
 					g = test.Public.Static.Method(typeof(void), "Main");
 					{
-						Operand bookDb = g.Local(Exp.New(BookDBLocal, m));
+                        var bookDb = g.Local(Exp.New(BookDBLocal, m));
 
 						// Initialize the database with some books:
 						g.Invoke(test, "AddBooks", bookDb);
@@ -155,14 +156,14 @@ namespace TriAxis.RunSharp.Examples
 						// method Test.PrintTitle:
 						g.Invoke(bookDb, "ProcessPaperbackBooks", Exp.NewDelegate(processBookDelegate, test, "PrintTitle", m));
 
-						// Get the average price of a paperback by using
-						// a PriceTotaller object:
-						Operand totaller = g.Local(Exp.New(priceTotaller, m));
+                        // Get the average price of a paperback by using
+                        // a PriceTotaller object:
+                        var totaller = g.Local(Exp.New(priceTotaller, m));
 						// Create a new delegate object associated with the nonstatic 
 						// method AddBookToTotal on the object totaller:
 						g.Invoke(bookDb, "ProcessPaperbackBooks", Exp.NewDelegate(processBookDelegate, totaller, "AddBookToTotal", m));
 						g.WriteLine("Average Paperback Book Price: ${0:#.##}",
-						   totaller.Invoke("AveragePrice", m));
+						   totaller.Invoke("AveragePrice"));
 					}
 				}
 			}
@@ -187,7 +188,7 @@ namespace TriAxis.RunSharp.Examples
 
 				g = myClass.Public.Static.Method(typeof(void), "Main");
 				{
-					Operand a = g.Local(), b = g.Local(), c = g.Local(), d = g.Local();
+					ContextualOperand a = g.Local(), b = g.Local(), c = g.Local(), d = g.Local();
 
 					// Create the delegate object a that references 
 					// the method Hello:

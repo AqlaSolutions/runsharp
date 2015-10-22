@@ -56,7 +56,7 @@ namespace TriAxis.RunSharp.Operands
 			lvalue.AssignmentHint(rvalue);
 		}
 
-		public void Emit(CodeGen g)
+		public virtual void Emit(CodeGen g)
 		{
 			_lvalue.EmitSet(g, _rvalue, _allowExplicitConversion);
 		}

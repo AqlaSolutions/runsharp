@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TryAxis.RunSharp;
 
 namespace TriAxis.RunSharp.Examples
 {
@@ -83,18 +84,18 @@ namespace TriAxis.RunSharp.Examples
 				}
 				g = Box.Public.Static.Method(typeof(void), "Main");
 				{
-					// Declare a class instance "myBox":
-				    Operand myBox = g.Local(Exp.New(Box, m, 30.0f, 20.0f));
-					// Declare an instance of the English units interface:
-					Operand eDimensions = g.Local(myBox.Cast(IEnglishDimensions));
-					// Declare an instance of the metric units interface:
-					Operand mDimensions = g.Local(myBox.Cast(IMetricDimensions));
+                    // Declare a class instance "myBox":
+                    var myBox = g.Local(Exp.New(Box, m, 30.0f, 20.0f));
+                    // Declare an instance of the English units interface:
+                    var eDimensions = g.Local(myBox.Cast(IEnglishDimensions));
+                    // Declare an instance of the metric units interface:
+                    var mDimensions = g.Local(myBox.Cast(IMetricDimensions));
 					// Print dimensions in English units:
-					g.WriteLine("Length(in): {0}", eDimensions.Invoke("Length", m));
-					g.WriteLine("Width (in): {0}", eDimensions.Invoke("Width", m));
+					g.WriteLine("Length(in): {0}", eDimensions.Invoke("Length"));
+					g.WriteLine("Width (in): {0}", eDimensions.Invoke("Width"));
 					// Print dimensions in metric units:
-					g.WriteLine("Length(cm): {0}", mDimensions.Invoke("Length", m));
-					g.WriteLine("Width (cm): {0}", mDimensions.Invoke("Width", m));
+					g.WriteLine("Length(cm): {0}", mDimensions.Invoke("Length"));
+					g.WriteLine("Width (cm): {0}", mDimensions.Invoke("Width"));
 				}
 			}
 		}

@@ -35,7 +35,7 @@ namespace TriAxis.RunSharp.Examples
 			CodeGen g = ag.Class("Test").Public.Static.Method(typeof(void), "Main");
 
 			g.WriteLine("Break test:");
-			Operand i = g.Local();
+            var i = g.Local();
 			g.For(i.Assign(1), i <= 100, i.Increment());
 			{
 				g.If(i == 5);

@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TryAxis.RunSharp;
 
 namespace TriAxis.RunSharp.Examples
 {
@@ -52,10 +53,11 @@ namespace TriAxis.RunSharp.Examples
 				// that can be added (two Complex objects), and the 
 				// return type (Complex):
 				g = Complex.Operator(Operator.Add, Complex, Complex, "c1", Complex, "c2");
-			    
+
 			    {
-					Operand c1 = g.Arg("c1"), c2 = g.Arg("c2");
-					g.Return(Exp.New(Complex, m, c1.Field("real", m) + c2.Field("real", m), c1.Field("imaginary", m) + c2.Field("imaginary", m)));
+			        var c1 = g.Arg("c1");
+                    var c2 = g.Arg("c2");
+					g.Return(Exp.New(Complex, m, c1.Field("real") + c2.Field("real"), c1.Field("imaginary") + c2.Field("imaginary")));
 				}
 
 				// Override the ToString method to display an complex number in the suitable format:
@@ -66,12 +68,12 @@ namespace TriAxis.RunSharp.Examples
 
 				g = Complex.Public.Static.Method(typeof(void), "Main");
 				{
-					Operand num1 = g.Local(Exp.New(Complex, m, 2, 3));
-					Operand num2 = g.Local(Exp.New(Complex, m, 3, 4));
+                    var num1 = g.Local(Exp.New(Complex, m, 2, 3));
+                    var num2 = g.Local(Exp.New(Complex, m, 3, 4));
 
-					// Add two Complex objects (num1 and num2) through the
-					// overloaded plus operator:
-					Operand sum = g.Local(num1 + num2);
+                    // Add two Complex objects (num1 and num2) through the
+                    // overloaded plus operator:
+                    var sum = g.Local(num1 + num2);
 
 					// Print the numbers and the sum using the overriden ToString method:
 					g.WriteLine("First complex number:  {0}", num1);
@@ -105,7 +107,7 @@ namespace TriAxis.RunSharp.Examples
 				// DBBool.dbTrue and false to DBBool.dbFalse:
 				g = DBBool.ImplicitConversionFrom(typeof(bool), "x");
 				{
-					Operand x = g.Arg("x");
+                    var x = g.Arg("x");
 					g.Return(x.Conditional(dbTrue, dbFalse));
 				}
 
@@ -114,42 +116,44 @@ namespace TriAxis.RunSharp.Examples
 				// true or false:
 				g = DBBool.ExplicitConversionTo(typeof(bool), "x");
 				{
-					Operand x = g.Arg("x");
-					g.If(x.Field("value", m) == 0);
+                    var x = g.Arg("x");
+					g.If(x.Field("value") == 0);
 					{
 						g.Throw(Exp.New(typeof(InvalidOperationException), m));
 					}
 					g.End();
 
-					g.Return(x.Field("value", m) > 0);
+					g.Return(x.Field("value") > 0);
 				}
 
 				// Equality operator. Returns dbNull if either operand is dbNull, 
 				// otherwise returns dbTrue or dbFalse:
 				g = DBBool.Operator(Operator.Equality, DBBool, DBBool, "x", DBBool, "y");
-				{
-					Operand x = g.Arg("x"), y = g.Arg("y");
-					g.If(x.Field("value", m) == 0 || y.Field("value", m) == 0);
+			    {
+			        var x = g.Arg("x");
+                    var y = g.Arg("y");
+					g.If(x.Field("value") == 0 || y.Field("value") == 0);
 					{
 						g.Return(dbNull);
 					}
 					g.End();
 
-					g.Return((x.Field("value", m) == y.Field("value", m)).Conditional(dbTrue, dbFalse));
+					g.Return((x.Field("value") == y.Field("value")).Conditional(dbTrue, dbFalse));
 				}
 
 				// Inequality operator. Returns dbNull if either operand is
 				// dbNull, otherwise returns dbTrue or dbFalse:
 				g = DBBool.Operator(Operator.Inequality, DBBool, DBBool, "x", DBBool, "y");
-				{
-					Operand x = g.Arg("x"), y = g.Arg("y");
-					g.If(x.Field("value", m) == 0 || y.Field("value", m) == 0);
+			    {
+			        var x = g.Arg("x");
+                    var y = g.Arg("y");
+					g.If(x.Field("value") == 0 || y.Field("value") == 0);
 					{
 						g.Return(dbNull);
 					}
 					g.End();
 
-					g.Return((x.Field("value", m) != y.Field("value", m)).Conditional(dbTrue, dbFalse));
+					g.Return((x.Field("value") != y.Field("value")).Conditional(dbTrue, dbFalse));
 				}
 
 				// Logical negation operator. Returns dbTrue if the operand is 
@@ -157,49 +161,51 @@ namespace TriAxis.RunSharp.Examples
 				// operand is dbTrue:
 				g = DBBool.Operator(Operator.LogicalNot, DBBool, DBBool, "x");
 				{
-					Operand x = g.Arg("x");
-					g.Return(Exp.New(DBBool, m, -x.Field("value", m)));
+                    var x = g.Arg("x");
+					g.Return(Exp.New(DBBool, m, -x.Field("value")));
 				}
 
 				// Logical AND operator. Returns dbFalse if either operand is 
 				// dbFalse, dbNull if either operand is dbNull, otherwise dbTrue:
 				g = DBBool.Operator(Operator.And, DBBool, DBBool, "x", DBBool, "y");
-				{
-					Operand x = g.Arg("x"), y = g.Arg("y");
-					g.Return(Exp.New(DBBool, m, (x.Field("value", m) < y.Field("value", m)).Conditional(x.Field("value", m), y.Field("value", m))));
+			    {
+			        var x = g.Arg("x");
+                    var y = g.Arg("y");
+					g.Return(Exp.New(DBBool, m, (x.Field("value") < y.Field("value")).Conditional(x.Field("value"), y.Field("value"))));
 				}
 
 				// Logical OR operator. Returns dbTrue if either operand is 
 				// dbTrue, dbNull if either operand is dbNull, otherwise dbFalse:
 				g = DBBool.Operator(Operator.Or, DBBool, DBBool, "x", DBBool, "y");
-				{
-					Operand x = g.Arg("x"), y = g.Arg("y");
-					g.Return(Exp.New(DBBool, m, (x.Field("value", m) > y.Field("value", m)).Conditional(x.Field("value", m), y.Field("value", m))));
+			    {
+			        var x = g.Arg("x");
+                    var y = g.Arg("y");
+					g.Return(Exp.New(DBBool, m, (x.Field("value") > y.Field("value")).Conditional(x.Field("value"), y.Field("value"))));
 				}
 
 				// Definitely true operator. Returns true if the operand is 
 				// dbTrue, false otherwise:
 				g = DBBool.Operator(Operator.True, typeof(bool), DBBool, "x");
 				{
-					Operand x = g.Arg("x");
-					g.Return(x.Field("value", m) > 0);
+                    var x = g.Arg("x");
+					g.Return(x.Field("value") > 0);
 				}
 
 				// Definitely false operator. Returns true if the operand is 
 				// dbFalse, false otherwise:
 				g = DBBool.Operator(Operator.False, typeof(bool), DBBool, "x");
 				{
-					Operand x = g.Arg("x");
-					g.Return(x.Field("value", m) < 0);
+                    var x = g.Arg("x");
+					g.Return(x.Field("value") < 0);
 				}
 
 				// Overload the conversion from DBBool to string:
 				g = DBBool.ImplicitConversionTo(typeof(string), "x");
 				{
-					Operand x = g.Arg("x");
+                    var x = g.Arg("x");
 
-					g.Return((x.Field("value", m) > 0).Conditional("dbTrue",
-						(x.Field("value", m) < 0).Conditional("dbFalse",
+					g.Return((x.Field("value") > 0).Conditional("dbTrue",
+						(x.Field("value") < 0).Conditional("dbFalse",
 						                                      "dbNull")));
 				}
 
@@ -245,7 +251,8 @@ namespace TriAxis.RunSharp.Examples
 			{
 				CodeGen g = Test.Public.Static.Method(typeof(void), "Main");
 				{
-					Operand a = g.Local(DBBool), b = g.Local(DBBool);
+                    var a = g.Local(DBBool);
+                    var b = g.Local(DBBool);
 					g.Assign(a, Static.Field(DBBool, "dbTrue", m));
 					g.Assign(b, Static.Field(DBBool, "dbNull", m));
 
