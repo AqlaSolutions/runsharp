@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TryAxis.RunSharp;
 #if FEAT_IKVM
 using IKVM.Reflection;
 using IKVM.Reflection.Emit;
@@ -46,29 +47,29 @@ namespace TriAxis.RunSharp
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords", Justification = "There is no better name for this.")]
 	public static class Static
 	{
-		public static Operand Field(Type type, string name, ITypeMapper typeMapper)
+		public static ContextualOperand Field(Type type, string name, ITypeMapper typeMapper)
 		{
-			return new Field((FieldInfo)typeMapper.TypeInfo.FindField(type, name, true).Member, null);
+			return new ContextualOperand(new Field((FieldInfo)typeMapper.TypeInfo.FindField(type, name, true).Member, null), typeMapper);
 		}
 
-		public static Operand Property(Type type, string name, ITypeMapper typeMapper)
+		public static ContextualOperand Property(Type type, string name, ITypeMapper typeMapper)
 		{
-			return Property(type, name, typeMapper, Operand.EmptyArray);
+			return new ContextualOperand(Property(type, name, typeMapper, Operand.EmptyArray), typeMapper);
 		}
 
-		public static Operand Property(Type type, string name, ITypeMapper typeMapper, params Operand[] indexes)
+		public static ContextualOperand Property(Type type, string name, ITypeMapper typeMapper, params Operand[] indexes)
 		{
-			return new Property(typeMapper.TypeInfo.FindProperty(type, name, indexes, true), null, indexes);
+			return new ContextualOperand(new Property(typeMapper.TypeInfo.FindProperty(type, name, indexes, true), null, indexes), typeMapper);
 		}
 
-		public static Operand Invoke(Type type, string name, ITypeMapper typeMapper)
+		public static ContextualOperand Invoke(Type type, string name, ITypeMapper typeMapper)
 		{
-			return Invoke(type, name, typeMapper, Operand.EmptyArray);
+			return new ContextualOperand(Invoke(type, name, typeMapper, Operand.EmptyArray), typeMapper);
 		}
 
-		public static Operand Invoke(Type type, string name, ITypeMapper typeMapper, params Operand[] args)
+		public static ContextualOperand Invoke(Type type, string name, ITypeMapper typeMapper, params Operand[] args)
 		{
-			return new Invocation(typeMapper.TypeInfo.FindMethod(type, name, args, true), null, args);
+			return new ContextualOperand(new Invocation(typeMapper.TypeInfo.FindMethod(type, name, args, true), null, args), typeMapper);
 		}
 	}
 }

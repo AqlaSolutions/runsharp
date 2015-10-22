@@ -175,7 +175,7 @@ namespace TriAxis.RunSharp.Examples
 					{
 						ContextualOperand count = g.Local(0), start = g.Local(0), length = g.Local(0);
 
-						g.While(g.This().Invoke("GetWord", new[] { document_TextArray, start + length, 0, start.Ref(), length.Ref() }));
+						g.While(g.This().Invoke("GetWord", document_TextArray, start + length, 0, start.Ref(), length.Ref()));
 						{
 							g.Increment(count);
 						}

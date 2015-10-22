@@ -60,7 +60,7 @@ namespace TriAxis.RunSharp.Examples
                     g.WriteLine(g.This().Invoke("GetType").Property("BaseType").Property("Name"));
 
                     var inst = Static.Field(typeof(CmdLineTestClass), "Default", m);
-                    g.WriteLine(inst.Invoke("GetValue", m));
+                    g.WriteLine(inst.Invoke("GetValue"));
                     //inst.Field("value").Assign(2);
                     /*g.Assign(inst.Field("value"), 2);
                     g.WriteLine(inst.Invoke("GetValue"));*/

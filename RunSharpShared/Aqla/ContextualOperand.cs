@@ -30,7 +30,6 @@ namespace TryAxis.RunSharp
         internal ContextualOperand(Operand operand, ITypeMapper typeMapper)
         {
             if (operand == null) throw new ArgumentNullException(nameof(operand));
-            if (typeMapper == null) throw new ArgumentNullException(nameof(typeMapper));
             _operand = operand;
             TypeMapper = typeMapper;
         }
@@ -346,5 +345,303 @@ namespace TryAxis.RunSharp
         [Obsolete("Don't pass typeMapper", true)]
         public new Operand this[ITypeMapper typeMapper, params Operand[] indexes] => this[indexes];
         public ContextualOperand this[params Operand[] indexes] => base[TypeMapper, indexes];
+        
+        public static ContextualOperand operator ==(ContextualOperand left, Operand right)
+        {
+            ThrowIfOperandNull(left);
+            return new ContextualOperand((Operand)left == right, left.TypeMapper);
+        }
+
+        public static ContextualOperand operator ==(Operand right, ContextualOperand left)
+        {
+            ThrowIfOperandNull(left);
+            return new ContextualOperand((Operand)left == right, left.TypeMapper);
+        }
+
+        public static ContextualOperand operator ==(ContextualOperand left, ContextualOperand right)
+        {
+            ThrowIfOperandNull(left, right);
+            return new ContextualOperand((Operand)left == (Operand)right, left?.TypeMapper ?? right.TypeMapper);
+        }
+
+        public static ContextualOperand operator !=(ContextualOperand  left, Operand right)
+        {
+            ThrowIfOperandNull(left);
+            return new ContextualOperand((Operand)left != right, left.TypeMapper);
+        }
+
+        public static ContextualOperand operator !=(Operand right, ContextualOperand  left)
+        {
+            ThrowIfOperandNull(left);
+            return new ContextualOperand((Operand)left != right, left.TypeMapper);
+        }
+
+        public static ContextualOperand operator !=(ContextualOperand left, ContextualOperand right)
+        {
+            ThrowIfOperandNull(left, right);
+            return new ContextualOperand((Operand)left != (Operand)right, left?.TypeMapper ?? right.TypeMapper);
+        }
+
+        public static ContextualOperand operator <(ContextualOperand  left, Operand right)
+        {
+            ThrowIfOperandNull(left);
+            return new ContextualOperand((Operand)left < right, left.TypeMapper);
+        }
+        
+        public static ContextualOperand operator <(Operand right, ContextualOperand  left)
+        {
+            ThrowIfOperandNull(left);
+            return new ContextualOperand((Operand)left < right, left.TypeMapper);
+        }
+
+        public static ContextualOperand operator <(ContextualOperand left, ContextualOperand right)
+        {
+            ThrowIfOperandNull(left, right);
+            return new ContextualOperand((Operand)left < (Operand)right, left?.TypeMapper ?? right.TypeMapper);
+        }
+
+        public static ContextualOperand operator >(ContextualOperand  left, Operand right)
+        {
+            ThrowIfOperandNull(left);
+            return new ContextualOperand((Operand)left > right, left.TypeMapper);
+        }
+        
+        public static ContextualOperand operator >(Operand right, ContextualOperand  left)
+        {
+            ThrowIfOperandNull(left);
+            return new ContextualOperand((Operand)left > right, left.TypeMapper);
+        }
+
+        public static ContextualOperand operator >(ContextualOperand left, ContextualOperand right)
+        {
+            ThrowIfOperandNull(left, right);
+            return new ContextualOperand((Operand)left > (Operand)right, left?.TypeMapper ?? right.TypeMapper);
+        }
+
+        public static ContextualOperand operator >=(ContextualOperand  left, Operand right)
+        {
+            ThrowIfOperandNull(left);
+            return new ContextualOperand((Operand)left >= right, left.TypeMapper);
+        }
+        
+        public static ContextualOperand operator >=(Operand right, ContextualOperand  left)
+        {
+            ThrowIfOperandNull(left);
+            return new ContextualOperand((Operand)left >= right, left.TypeMapper);
+        }
+
+        public static ContextualOperand operator >=(ContextualOperand left, ContextualOperand right)
+        {
+            ThrowIfOperandNull(left, right);
+            return new ContextualOperand((Operand)left >= (Operand)right, left?.TypeMapper ?? right.TypeMapper);
+        }
+
+        public static ContextualOperand operator <=(ContextualOperand  left, Operand right)
+        {
+            ThrowIfOperandNull(left);
+            return new ContextualOperand((Operand)left <= right, left.TypeMapper);
+        }
+        
+        public static ContextualOperand operator <=(Operand right, ContextualOperand  left)
+        {
+            ThrowIfOperandNull(left);
+            return new ContextualOperand((Operand)left <= right, left.TypeMapper);
+        }
+
+        public static ContextualOperand operator <=(ContextualOperand left, ContextualOperand right)
+        {
+            ThrowIfOperandNull(left, right);
+            return new ContextualOperand((Operand)left <= (Operand)right, left?.TypeMapper ?? right.TypeMapper);
+        }
+
+        public static ContextualOperand operator +(ContextualOperand  left, Operand right)
+        {
+            ThrowIfOperandNull(left);
+            return new ContextualOperand((Operand)left + right, left.TypeMapper);
+        }
+        
+        public static ContextualOperand operator +(Operand right, ContextualOperand  left)
+        {
+            ThrowIfOperandNull(left);
+            return new ContextualOperand((Operand)left + right, left.TypeMapper);
+        }
+
+        public static ContextualOperand operator +(ContextualOperand left, ContextualOperand right)
+        {
+            ThrowIfOperandNull(left, right);
+            return new ContextualOperand((Operand)left + (Operand)right, left?.TypeMapper ?? right.TypeMapper);
+        }
+
+        public static ContextualOperand operator -(ContextualOperand  left, Operand right)
+        {
+            ThrowIfOperandNull(left);
+            return new ContextualOperand((Operand)left - right, left.TypeMapper);
+        }
+
+        public static ContextualOperand operator -(Operand right, ContextualOperand  left)
+        {
+            ThrowIfOperandNull(left);
+            return new ContextualOperand((Operand)left - right, left.TypeMapper);
+        }
+
+        public static ContextualOperand operator -(ContextualOperand left, ContextualOperand right)
+        {
+            ThrowIfOperandNull(left, right);
+            return new ContextualOperand((Operand)left - (Operand)right, left?.TypeMapper ?? right.TypeMapper);
+        }
+
+        public static ContextualOperand operator *(ContextualOperand  left, Operand right)
+        {
+            ThrowIfOperandNull(left);
+            return new ContextualOperand((Operand)left * right, left.TypeMapper);
+        }
+        
+        public static ContextualOperand operator *(Operand right, ContextualOperand  left)
+        {
+            ThrowIfOperandNull(left);
+            return new ContextualOperand((Operand)left * right, left.TypeMapper);
+        }
+
+        public static ContextualOperand operator *(ContextualOperand left, ContextualOperand right)
+        {
+            ThrowIfOperandNull(left, right);
+            return new ContextualOperand((Operand)left * (Operand)right, left?.TypeMapper ?? right.TypeMapper);
+        }
+
+        public static ContextualOperand operator /(ContextualOperand  left, Operand right)
+        {
+            ThrowIfOperandNull(left);
+            return new ContextualOperand((Operand)left / right, left.TypeMapper);
+        }
+        
+        public static ContextualOperand operator /(Operand right, ContextualOperand  left)
+        {
+            ThrowIfOperandNull(left);
+            return new ContextualOperand((Operand)left / right, left.TypeMapper);
+        }
+
+        public static ContextualOperand operator /(ContextualOperand left, ContextualOperand right)
+        {
+            ThrowIfOperandNull(left, right);
+            return new ContextualOperand((Operand)left / (Operand)right, left?.TypeMapper ?? right.TypeMapper);
+        }
+
+        public static ContextualOperand operator %(ContextualOperand  left, Operand right)
+        {
+            ThrowIfOperandNull(left);
+            return new ContextualOperand((Operand)left % right, left.TypeMapper);
+        }
+        
+        public static ContextualOperand operator %(Operand right, ContextualOperand  left)
+        {
+            ThrowIfOperandNull(left);
+            return new ContextualOperand((Operand)left % right, left.TypeMapper);
+        }
+
+        public static ContextualOperand operator %(ContextualOperand left, ContextualOperand right)
+        {
+            ThrowIfOperandNull(left, right);
+            return new ContextualOperand((Operand)left % (Operand)right, left?.TypeMapper ?? right.TypeMapper);
+        }
+
+        public static ContextualOperand operator &(ContextualOperand  left, Operand right)
+        {
+            ThrowIfOperandNull(left);
+            return new ContextualOperand((Operand)left & right, left.TypeMapper);
+        }
+        
+        public static ContextualOperand operator &(Operand right, ContextualOperand  left)
+        {
+            ThrowIfOperandNull(left);
+            return new ContextualOperand((Operand)left & right, left.TypeMapper);
+        }
+
+        public static ContextualOperand operator &(ContextualOperand left, ContextualOperand right)
+        {
+            ThrowIfOperandNull(left, right);
+            return new ContextualOperand((Operand)left & (Operand)right, left?.TypeMapper ?? right.TypeMapper);
+        }
+
+        public static ContextualOperand operator |(ContextualOperand  left, Operand right)
+        {
+            ThrowIfOperandNull(left);
+            return new ContextualOperand((Operand)left | right, left.TypeMapper);
+        }
+
+        public static ContextualOperand operator |(Operand right, ContextualOperand  left)
+        {
+            ThrowIfOperandNull(left);
+            return new ContextualOperand((Operand)left | right, left.TypeMapper);
+        }
+
+        public static ContextualOperand operator |(ContextualOperand left, ContextualOperand right)
+        {
+            ThrowIfOperandNull(left, right);
+            return new ContextualOperand((Operand)left | (Operand)right, left?.TypeMapper ?? right.TypeMapper);
+        }
+
+        public static ContextualOperand operator ^(ContextualOperand  left, Operand right)
+        {
+            if (left == null) throw new ArgumentNullException(nameof(left));
+            return new ContextualOperand((Operand)left ^ right, left.TypeMapper);
+        }
+
+        public static ContextualOperand operator ^(Operand right, ContextualOperand  left)
+        {
+            if (left == null) throw new ArgumentNullException(nameof(left));
+            return new ContextualOperand((Operand)left ^ right, left.TypeMapper);
+        }
+
+        public static ContextualOperand operator ^(ContextualOperand left, ContextualOperand right)
+        {
+            ThrowIfOperandNull(left, right);
+            return new ContextualOperand((Operand)left ^ (Operand)right, left?.TypeMapper ?? right.TypeMapper);
+        }
+
+        public static ContextualOperand operator <<(ContextualOperand  left, int right)
+        {
+            if (left == null) throw new ArgumentNullException(nameof(left));
+            return new ContextualOperand((Operand)left << right, left.TypeMapper);
+        }
+
+        public static ContextualOperand operator >>(ContextualOperand  left, int right)
+        {
+            if (left == null) throw new ArgumentNullException(nameof(left));
+            return new ContextualOperand((Operand)left >> right, left.TypeMapper);
+        }
+
+        public static ContextualOperand operator +(ContextualOperand op)
+        {
+            if (op == null) throw new ArgumentNullException(nameof(op));
+            return new ContextualOperand(+(Operand)op, op.TypeMapper);
+        }
+
+        public static ContextualOperand operator -(ContextualOperand op)
+        {
+            if (op == null) throw new ArgumentNullException(nameof(op));
+            return new ContextualOperand(-(Operand)op, op.TypeMapper);
+        }
+
+        public static ContextualOperand operator !(ContextualOperand op)
+        {
+            if (op == null) throw new ArgumentNullException(nameof(op));
+            return new ContextualOperand(!(Operand)op, op.TypeMapper);
+        }
+
+        public static ContextualOperand operator ~(ContextualOperand op)
+        {
+            if (op == null) throw new ArgumentNullException(nameof(op));
+            return new ContextualOperand(~(Operand)op, op.TypeMapper);
+        }
+
+        static void ThrowIfOperandNull(ContextualOperand left)
+        {
+            if ((object)left == null) throw new ArgumentNullException("operand", "You should cast null to Operand base type because null can't be ContextualOperand");
+        }
+
+        static void ThrowIfOperandNull(ContextualOperand left, ContextualOperand right)
+        {
+            if ((object)left == null && (object)right == null) throw new ArgumentNullException("operand", "You should cast null to Operand base type because null can't be ContextualOperand");
+        }
     }
 }
