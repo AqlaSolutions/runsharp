@@ -27,7 +27,7 @@ using System.Collections.Generic;
 using System.Text;
 using TryAxis.RunSharp;
 
-namespace TriAxis.RunSharp.Examples
+namespace TriAxis.RunSharp.Tests
 {
     public class CmdLineTestClass
     {

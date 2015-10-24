@@ -16,10 +16,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunSharp.Tests.Standard", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunSharp.Tests.IKVM", "RunSharp.Tests.IKVM\RunSharp.Tests.IKVM.csproj", "{D6F7CE55-853F-4E64-92C9-60C380BFB02F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{387B3677-5A8B-4FB5-9FE3-2FD884DCF39D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{6348A303-6A2B-463E-A43F-C0C9617CCC37}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		RunSharp.TestsShared\RunSharp.Tests.projitems*{6b5d07f1-94f2-4add-8931-7188b3a142bd}*SharedItemsImports = 4
-		RunSharp.TestsShared\RunSharp.Tests.projitems*{2267d578-07c3-46b8-9ec8-e2c33ac920e7}*SharedItemsImports = 4
 		RunSharp.TestsShared\RunSharp.Tests.projitems*{9225df43-7709-4522-afca-f01df2bf6e83}*SharedItemsImports = 13
 		RunSharp.TestsShared\RunSharp.Tests.projitems*{d6f7ce55-853f-4e64-92c9-60c380bfb02f}*SharedItemsImports = 4
 		RunSharpShared\RunSharpShared.projitems*{c835bb75-7955-4315-b52c-fa59e25219f4}*SharedItemsImports = 4
@@ -65,5 +68,13 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1BE6AC53-2C95-466E-B1D2-61E31493F169} = {6348A303-6A2B-463E-A43F-C0C9617CCC37}
+		{C835BB75-7955-4315-B52C-FA59E25219F4} = {6348A303-6A2B-463E-A43F-C0C9617CCC37}
+		{08F134AE-48E8-4A35-9DC7-2F31EAF4A66F} = {6348A303-6A2B-463E-A43F-C0C9617CCC37}
+		{9225DF43-7709-4522-AFCA-F01DF2BF6E83} = {387B3677-5A8B-4FB5-9FE3-2FD884DCF39D}
+		{6B5D07F1-94F2-4ADD-8931-7188B3A142BD} = {387B3677-5A8B-4FB5-9FE3-2FD884DCF39D}
+		{D6F7CE55-853F-4E64-92C9-60C380BFB02F} = {387B3677-5A8B-4FB5-9FE3-2FD884DCF39D}
 	EndGlobalSection
 EndGlobal

@@ -26,7 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace TriAxis.RunSharp.Examples
+namespace TriAxis.RunSharp.Tests
 {
 	static class _03_Arrays
 	{

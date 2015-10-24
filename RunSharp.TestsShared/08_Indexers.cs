@@ -28,7 +28,7 @@ using System.Text;
 using System.IO;
 using TryAxis.RunSharp;
 
-namespace TriAxis.RunSharp.Examples
+namespace TriAxis.RunSharp.Tests
 {
 	static class _08_Indexers
 	{

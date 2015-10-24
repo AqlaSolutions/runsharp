@@ -27,7 +27,7 @@ using System.Collections;
 using System.Text;
 using TryAxis.RunSharp;
 
-namespace TriAxis.RunSharp.Examples
+namespace TriAxis.RunSharp.Tests
 {
 	static class _06_CollectionClasses
 	{

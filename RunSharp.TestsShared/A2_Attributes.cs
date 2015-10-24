@@ -27,7 +27,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.ComponentModel;
 
-namespace TriAxis.RunSharp.Examples
+namespace TriAxis.RunSharp.Tests
 {
 	static class A2_Attributes
 	{

@@ -31,7 +31,7 @@ using System.Collections.Generic;
 using System.Text;
 using TryAxis.RunSharp;
 
-namespace TriAxis.RunSharp.Examples.Bugs
+namespace TriAxis.RunSharp.Tests.Bugs
 {
     static class X1864084_ValueTypeVirtual
     {

@@ -6,7 +6,7 @@
     <SharedGUID>9225df43-7709-4522-afca-f01df2bf6e83</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>RunSharp.Tests</Import_RootNamespace>
+    <Import_RootNamespace>TriAxis.RunSharp.Tests</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)01_HelloWorld.cs" />
@@ -30,6 +30,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bugs\X14_StaticConstructor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugs\X17_IsNull.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugs\X1864084_ValueTypeVirtual.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConsoleTester.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ExecutableTestHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TestArgumentsAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TestingFacade.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TestSetup.cs" />
   </ItemGroup>
 </Project>

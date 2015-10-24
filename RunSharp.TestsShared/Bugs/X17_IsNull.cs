@@ -29,7 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace TriAxis.RunSharp.Examples.Bugs
+namespace TriAxis.RunSharp.Tests.Bugs
 {
 	static class X17_IsNull
 	{
