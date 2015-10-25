@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="BuildKit"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- See http://msbuildtasks.tigris.org -->
+  <Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets"/>
+
+  <PropertyGroup>
+    <NugetDirectory>Nuget\lib</NugetDirectory>
+    <ZipDirectory>Package</ZipDirectory>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectToBuild Include="RunSharp\runsharp.csproj"/>
+    <ProjectToBuild Include="RunSharpIKVM\runsharp_IKVM.csproj"/>
+    <Net30Files Include="RunSharp\bin\Release\RunSharp.*"/>
+    <IKVMFiles Include="RunSharpIKVM\bin\Release\RunSharpIKVM.*"/>
+    <IKVMFiles Include="RunSharpIKVM\bin\Release\IKVM.Reflection.*"/>
+  </ItemGroup>
+  <Target Name="BuildKit">
+    
+    <RemoveDir Directories="$(NugetDirectory)"/>
+    <RemoveDir Directories="$(ZipDirectory)"/>
+
+    <Copy SourceFiles="LICENSE" DestinationFolder="$(ZipDirectory)"/>
+    <Copy SourceFiles="lib\IKVM-LICENSE" DestinationFolder="$(ZipDirectory)"/>
+    
+    <MSBuild Projects="@(ProjectToBuild)" Targets="Rebuild" Properties="Configuration=Release" BuildInParallel="true"/>
+    
+    <Copy SourceFiles="@(Net30Files)" DestinationFolder="$(NugetDirectory)\net30"/>
+    <Copy SourceFiles="@(Net30Files)" DestinationFolder="$(ZipDirectory)"/>
+    <Copy SourceFiles="@(IKVMFiles)" DestinationFolder="$(NugetDirectory)\net30"/>
+    <Copy SourceFiles="@(IKVMFiles)" DestinationFolder="$(ZipDirectory)"/>
+    <Exec Command="packages\NuGet.CommandLine.2.0.40000\tools\NuGet.exe pack $(NugetDirectory)\..\runsharp.nuspec"/>
+    
+    <ItemGroup>
+      <ZipFiles Include="$(ZipDirectory)\**\*"/>
+    </ItemGroup>
+
+    <Zip WorkingDirectory="$(ZipDirectory)"
+         Files="@(ZipFiles)"
+         ZipFileName="$(ZipDirectory)\runsharp.zip" />
+  </Target>
+</Project>

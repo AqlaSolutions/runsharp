@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <metadata>
+    <id>aqla.runsharp</id>
+    <title>Aqla.RunSharp</title>
+    <version>0.2.0.1</version>
+    <authors>Vladyslav Taranov</authors>
+    <copyright>Vladyslav Taranov 2015, fork source from Stefan Simek 2009</copyright>
+    <owners>Vladyslav Taranov</owners>
+    <summary>Runtime IL generator based on Reflection.Emit and IKVM which allows you to emit IL in a way similar to writing normal C# code.</summary>
+    <description>RunSharp is a layer above the standard .NET Reflection.Emit API, allowing to generate/compile dynamic code at runtime very quickly and efficiently (unlike using CodeDOM and invoking the C# compiler).
+
+The IKVM version has also an ability to read and emit .NET 1.1, .NET 2.0 and .NET 4.0 assemblies (while running on, for example, .NET 2.0).
+This  package is a fork of TriAxis.RunSharp (the original is now abandoned).</description>
+    <projectUrl>https://github.com/AqlaSolutions/runsharp</projectUrl>
+    <licenseUrl>https://github.com/AqlaSolutions/runsharp/blob/master/LICENSE</licenseUrl>
+    <tags>runsharp reflection reflection.emit compilation IKVM aqla aqlasolutions IL</tags>
+    <language>en-US</language>
+    <releaseNotes>
+* 0.2.0.0 - initial fork release:
+- added IKVM support
+- examples converted to tests
+- added peverify checks
+- fixed multiple bugs
+    </releaseNotes>
+  </metadata>
+</package>
