@@ -26,9 +26,9 @@
     
     <MSBuild Projects="@(ProjectToBuild)" Targets="Rebuild" Properties="Configuration=Release" BuildInParallel="true"/>
     
-    <Copy SourceFiles="@(Net30Files)" DestinationFolder="$(NugetDirectory)\net30"/>
+    <Copy SourceFiles="@(Net30Files)" DestinationFolder="$(NugetDirectory)\net20"/>
     <Copy SourceFiles="@(Net30Files)" DestinationFolder="$(ZipDirectory)"/>
-    <Copy SourceFiles="@(IKVMFiles)" DestinationFolder="$(NugetDirectory)\net30"/>
+    <Copy SourceFiles="@(IKVMFiles)" DestinationFolder="$(NugetDirectory)\net20"/>
     <Copy SourceFiles="@(IKVMFiles)" DestinationFolder="$(ZipDirectory)"/>
     <Exec Command="packages\NuGet.CommandLine.2.0.40000\tools\NuGet.exe pack $(NugetDirectory)\..\runsharp.nuspec"/>
     
