@@ -25,14 +25,30 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using NUnit.Framework;
 using TryAxis.RunSharp;
 
 namespace TriAxis.RunSharp.Tests
 {
-	class _04_Properties
-	{
-		// example based on the MSDN Properties Sample (person.cs)
-		public static void GenPerson(AssemblyGen ag)
+    [TestFixture]
+	public class _04_Properties
+    {
+        [Test]
+        public void TestGenPerson()
+        {
+            TestingFacade.GetTestsForGenerator(GenPerson, @">>> GEN TriAxis.RunSharp.Tests.04_Properties.GenPerson
+=== RUN TriAxis.RunSharp.Tests.04_Properties.GenPerson
+Simple Properties
+Person details - Name = N/A, Age = 0
+Person details - Name = Joe, Age = 99
+Person details - Name = Joe, Age = 100
+<<< END TriAxis.RunSharp.Tests.04_Properties.GenPerson
+
+").RunAll();
+        }
+
+        // example based on the MSDN Properties Sample (person.cs)
+        public static void GenPerson(AssemblyGen ag)
 		{
             var st = ag.StaticFactory;
             var exp = ag.ExpressionFactory;
@@ -78,8 +94,22 @@ namespace TriAxis.RunSharp.Tests
 			}
 		}
 
-		// example based on the MSDN Properties Sample (abstractshape.cs, shapes.cs, shapetest.cs)
-		public static void GenShapeTest(AssemblyGen ag)
+        [Test]
+        public void TestGenShapeTest()
+        {
+            TestingFacade.GetTestsForGenerator(GenShapeTest, @">>> GEN TriAxis.RunSharp.Tests.04_Properties.GenShapeTest
+=== RUN TriAxis.RunSharp.Tests.04_Properties.GenShapeTest
+Shapes Collection
+Square #1 Area = 25,00
+Circle #1 Area = 28,27
+Rectangle #1 Area = 20,00
+<<< END TriAxis.RunSharp.Tests.04_Properties.GenShapeTest
+
+").RunAll();
+        }
+
+        // example based on the MSDN Properties Sample (abstractshape.cs, shapes.cs, shapetest.cs)
+        public static void GenShapeTest(AssemblyGen ag)
 		{
             var st = ag.StaticFactory;
             var exp = ag.ExpressionFactory;

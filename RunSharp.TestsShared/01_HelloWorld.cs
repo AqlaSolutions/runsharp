@@ -35,13 +35,13 @@ namespace TriAxis.RunSharp.Tests
         [Test]
         public void TestGenHello1()
         {
-            TestingFacade.RunTestMethod(GenHello1,
+            TestingFacade.GetTestsForGenerator(GenHello1,
                 @">>> GEN TriAxis.RunSharp.Tests.01_HelloWorld.GenHello1
 === RUN TriAxis.RunSharp.Tests.01_HelloWorld.GenHello1
 Hello, World!
 <<< END TriAxis.RunSharp.Tests.01_HelloWorld.GenHello1
 
-");
+").RunAll();
         }
 
         // example based on the MSDN Hello World Sample (Hello1.cs)
@@ -59,7 +59,7 @@ Hello, World!
         [Test]
         public void TestGenHello3()
         {
-            TestingFacade.RunTestMethod(GenHello3, @">>> GEN TriAxis.RunSharp.Tests.01_HelloWorld.GenHello3
+            TestingFacade.GetTestsForGenerator(GenHello3, @">>> GEN TriAxis.RunSharp.Tests.01_HelloWorld.GenHello3
 === RUN TriAxis.RunSharp.Tests.01_HelloWorld.GenHello3
 Hello, World!
 You entered the following 4 command line arguments:
@@ -69,7 +69,7 @@ arg3
 arg4
 <<< END TriAxis.RunSharp.Tests.01_HelloWorld.GenHello3
 
-");
+").RunAll();
         }
 
         // example based on the MSDN Hello World Sample (Hello3.cs)

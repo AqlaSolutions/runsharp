@@ -25,13 +25,25 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.ComponentModel;
+using NUnit.Framework;
+using DescriptionAttribute = System.ComponentModel.DescriptionAttribute;
 
 namespace TriAxis.RunSharp.Tests
 {
-	static class A2_Attributes
-	{
-		public static void GenTypeAttributeTest(AssemblyGen ag)
+	[TestFixture]
+    public class A2_Attributes
+    {
+        [Test]
+        public void TestGenTypeAttributeTest()
+        {
+            TestingFacade.GetTestsForGenerator(GenTypeAttributeTest, @">>> GEN TriAxis.RunSharp.Tests.A2_Attributes.GenTypeAttributeTest
+=== RUN TriAxis.RunSharp.Tests.A2_Attributes.GenTypeAttributeTest
+<<< END TriAxis.RunSharp.Tests.A2_Attributes.GenTypeAttributeTest
+
+").RunAll();
+        }
+
+        public static void GenTypeAttributeTest(AssemblyGen ag)
 		{
 			TypeGen MyAttribute = ag.Public.Class("MyAttribute", typeof(Attribute))
 				.BeginAttribute(typeof(AttributeUsageAttribute), AttributeTargets.Class).Set("AllowMultiple", true).End()

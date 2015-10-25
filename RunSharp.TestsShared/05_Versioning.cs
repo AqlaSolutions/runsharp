@@ -25,14 +25,29 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using NUnit.Framework;
 using TryAxis.RunSharp;
 
 namespace TriAxis.RunSharp.Tests
 {
-	class _05_Versioning
-	{
-		// example based on the MSDN Versioning Sample (versioning.cs)
-		public static void GenVersioning(AssemblyGen ag)
+    [TestFixture]
+	public class _05_Versioning
+    {
+        [Test]
+        public void TestGenVersioning()
+        {
+            TestingFacade.GetTestsForGenerator(GenVersioning, @">>> GEN TriAxis.RunSharp.Tests.05_Versioning.GenVersioning
+=== RUN TriAxis.RunSharp.Tests.05_Versioning.GenVersioning
+MyDerived-Meth1
+MyBase-Meth2
+MyBase-Meth3
+<<< END TriAxis.RunSharp.Tests.05_Versioning.GenVersioning
+
+").RunAll();
+        }
+
+        // example based on the MSDN Versioning Sample (versioning.cs)
+        public static void GenVersioning(AssemblyGen ag)
 		{
             var st = ag.StaticFactory;
             var exp = ag.ExpressionFactory;

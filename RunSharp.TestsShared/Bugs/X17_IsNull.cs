@@ -28,12 +28,26 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using NUnit.Framework;
 
 namespace TriAxis.RunSharp.Tests.Bugs
 {
-	static class X17_IsNull
-	{
-		public static void GenIsNull(AssemblyGen ag)
+	[TestFixture]
+    public class X17_IsNull
+    {
+        [Test]
+        public void TestGenIsNull()
+        {
+            TestingFacade.GetTestsForGenerator(GenIsNull, @">>> GEN TriAxis.RunSharp.Tests.Bugs.X17_IsNull.GenIsNull
+=== RUN TriAxis.RunSharp.Tests.Bugs.X17_IsNull.GenIsNull
+a is not null
+b is null
+<<< END TriAxis.RunSharp.Tests.Bugs.X17_IsNull.GenIsNull
+
+").RunAll();
+        }
+
+        public static void GenIsNull(AssemblyGen ag)
 		{
 			TypeGen Test = ag.Class("Test");
 			{

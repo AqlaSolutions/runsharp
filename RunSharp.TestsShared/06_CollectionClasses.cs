@@ -25,14 +25,32 @@
 using System;
 using System.Collections;
 using System.Text;
+using NUnit.Framework;
 using TryAxis.RunSharp;
 
 namespace TriAxis.RunSharp.Tests
 {
-	static class _06_CollectionClasses
-	{
-		// example based on the MSDN Collection Classes Sample (tokens2.cs)
-		public static void GenTokens2(AssemblyGen ag)
+	[TestFixture]
+    public class _06_CollectionClasses
+    {
+        [Test]
+        public void TestGenTokens2()
+        {
+            TestingFacade.GetTestsForGenerator(GenTokens2, @">>> GEN TriAxis.RunSharp.Tests.06_CollectionClasses.GenTokens2
+=== RUN TriAxis.RunSharp.Tests.06_CollectionClasses.GenTokens2
+This
+is
+a
+well
+done
+program.
+<<< END TriAxis.RunSharp.Tests.06_CollectionClasses.GenTokens2
+
+").RunAll();
+        }
+
+        // example based on the MSDN Collection Classes Sample (tokens2.cs)
+        public static void GenTokens2(AssemblyGen ag)
 		{
             var st = ag.StaticFactory;
             var exp = ag.ExpressionFactory;

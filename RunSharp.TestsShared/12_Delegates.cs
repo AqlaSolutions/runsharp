@@ -25,14 +25,31 @@
 using System;
 using System.Collections;
 using System.Text;
+using NUnit.Framework;
 using TryAxis.RunSharp;
 
 namespace TriAxis.RunSharp.Tests
 {
-	class _12_Delegates
-	{
-		// example based on the MSDN Delegates Sample (bookstore.cs)
-		public static void GenBookstore(AssemblyGen ag)
+    [TestFixture]
+	public class _12_Delegates
+    {
+        [Test]
+        public void TestGenBookstore()
+        {
+            TestingFacade.GetTestsForGenerator(GenBookstore, @">>> GEN TriAxis.RunSharp.Tests.12_Delegates.GenBookstore
+=== RUN TriAxis.RunSharp.Tests.12_Delegates.GenBookstore
+Paperback Book Titles:
+   The C Programming Language
+   The Unicode Standard 2.0
+   Dogbert's Clues for the Clueless
+Average Paperback Book Price: $23,97
+<<< END TriAxis.RunSharp.Tests.12_Delegates.GenBookstore
+
+").RunAll();
+        }
+        
+        // example based on the MSDN Delegates Sample (bookstore.cs)
+        public static void GenBookstore(AssemblyGen ag)
         {
             var st = ag.StaticFactory;
             var exp = ag.ExpressionFactory;
@@ -172,8 +189,27 @@ namespace TriAxis.RunSharp.Tests
 			}
 		}
 
-		// example based on the MSDN Delegates Sample (compose.cs)
-		public static void GenCompose(AssemblyGen ag)
+        [Test]
+        public void TestGenCompose()
+        {
+            TestingFacade.GetTestsForGenerator(GenCompose, @">>> GEN TriAxis.RunSharp.Tests.12_Delegates.GenCompose
+=== RUN TriAxis.RunSharp.Tests.12_Delegates.GenCompose
+Invoking delegate a:
+  Hello, A!
+Invoking delegate b:
+  Goodbye, B!
+Invoking delegate c:
+  Hello, C!
+  Goodbye, C!
+Invoking delegate d:
+  Goodbye, D!
+<<< END TriAxis.RunSharp.Tests.12_Delegates.GenCompose
+
+").RunAll();
+        }
+
+        // example based on the MSDN Delegates Sample (compose.cs)
+        public static void GenCompose(AssemblyGen ag)
         {
             var st = ag.StaticFactory;
             var exp = ag.ExpressionFactory;

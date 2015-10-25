@@ -29,12 +29,25 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using NUnit.Framework;
 using TryAxis.RunSharp;
 
 namespace TriAxis.RunSharp.Tests.Bugs
 {
-    static class X1864084_ValueTypeVirtual
+    [TestFixture]
+    public class X1864084_ValueTypeVirtual
     {
+        [Test]
+        public void TestGenOriginalTest()
+        {
+            TestingFacade.GetTestsForGenerator(GenOriginalTest, @">>> GEN TriAxis.RunSharp.Tests.Bugs.X1864084_ValueTypeVirtual.GenOriginalTest
+=== RUN TriAxis.RunSharp.Tests.Bugs.X1864084_ValueTypeVirtual.GenOriginalTest
+Hash code of 3 is 3
+<<< END TriAxis.RunSharp.Tests.Bugs.X1864084_ValueTypeVirtual.GenOriginalTest
+
+").RunAll();
+        }
+
         public static void GenOriginalTest(AssemblyGen ag)
         {
             ITypeMapper m = ag.TypeMapper;

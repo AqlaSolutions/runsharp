@@ -44,7 +44,7 @@ using Type = System.Type;
 
 namespace TriAxis.RunSharp.Tests
 {
-    public class ExecutableTestHelper
+    public static class ExecutableTestHelper
     {
         public delegate void Generator(AssemblyGen ag);
 
@@ -109,7 +109,7 @@ namespace TriAxis.RunSharp.Tests
             if (!exe)
             {
                 Type entryType = ((TypeBuilder)asm.GetAssembly().EntryPoint.DeclaringType).CreateType();
-                MethodInfo entryMethod = entryType.GetMethod(asm.GetAssembly().EntryPoint.Name, BindingFlags.Public | BindingFlags.Static);
+                MethodInfo entryMethod = entryType.GetMethod(asm.GetAssembly().EntryPoint.Name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
                 object[] entryArgs = null;
                 if (entryMethod.GetParameters().Length == 1)
                 {

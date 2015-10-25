@@ -28,12 +28,26 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using NUnit.Framework;
 
 namespace TriAxis.RunSharp.Tests.Bugs
 {
-	static class X14_StaticConstructor
-	{
-		public static void GenStaticCtor(AssemblyGen ag)
+	[TestFixture]
+    public class X14_StaticConstructor
+    {
+        [Test]
+        public void TestGenStaticCtor()
+        {
+            TestingFacade.GetTestsForGenerator(GenStaticCtor, @">>> GEN TriAxis.RunSharp.Tests.Bugs.X14_StaticConstructor.GenStaticCtor
+=== RUN TriAxis.RunSharp.Tests.Bugs.X14_StaticConstructor.GenStaticCtor
+Hello from .cctor!
+.cctor works now...
+<<< END TriAxis.RunSharp.Tests.Bugs.X14_StaticConstructor.GenStaticCtor
+
+").RunAll();
+        }
+
+        public static void GenStaticCtor(AssemblyGen ag)
 		{
 			TypeGen Test = ag.Class("Test");
 			{

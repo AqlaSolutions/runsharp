@@ -25,14 +25,27 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using NUnit.Framework;
 using TryAxis.RunSharp;
 
 namespace TriAxis.RunSharp.Tests
 {
-	static class _09_IndexedProperties
-	{
-		// example based on the MSDN Indexed Properties Sample (indexedproperty.cs)
-		public static void GenIndexedProperty(AssemblyGen ag)
+	[TestFixture]
+    public class _09_IndexedProperties
+    {
+        [Test]
+        public void TestGenIndexedProperty()
+        {
+            TestingFacade.GetTestsForGenerator(GenIndexedProperty, @">>> GEN TriAxis.RunSharp.Tests.09_IndexedProperties.GenIndexedProperty
+=== RUN TriAxis.RunSharp.Tests.09_IndexedProperties.GenIndexedProperty
+PeneloPe PiPer Picked a Peck of Pickled PePPers. How many Pickled PePPers did PeneloPe PiPer Pick?
+<<< END TriAxis.RunSharp.Tests.09_IndexedProperties.GenIndexedProperty
+
+").RunAll();
+        }
+
+        // example based on the MSDN Indexed Properties Sample (indexedproperty.cs)
+        public static void GenIndexedProperty(AssemblyGen ag)
 		{
             var st = ag.StaticFactory;
             var exp = ag.ExpressionFactory;

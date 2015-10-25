@@ -25,14 +25,29 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using NUnit.Framework;
 using TryAxis.RunSharp;
 
 namespace TriAxis.RunSharp.Tests
 {
-	static class _11_OperatorOverloading
-	{
-		// example based on the MSDN Operator Overloading Sample (complex.cs)
-		public static void GenComplex(AssemblyGen ag)
+	[TestFixture]
+    public class _11_OperatorOverloading
+    {
+        [Test]
+        public void TestGenComplex()
+        {
+            TestingFacade.GetTestsForGenerator(GenComplex, @">>> GEN TriAxis.RunSharp.Tests.11_OperatorOverloading.GenComplex
+=== RUN TriAxis.RunSharp.Tests.11_OperatorOverloading.GenComplex
+First complex number:  2 + 3i
+Second complex number: 3 + 4i
+The sum of the two numbers: 5 + 7i
+<<< END TriAxis.RunSharp.Tests.11_OperatorOverloading.GenComplex
+
+").RunAll();
+        }
+        
+        // example based on the MSDN Operator Overloading Sample (complex.cs)
+        public static void GenComplex(AssemblyGen ag)
         {
             var st = ag.StaticFactory;
             var exp = ag.ExpressionFactory;
@@ -86,8 +101,23 @@ namespace TriAxis.RunSharp.Tests
 			}
 		}
 
-		// example based on the MSDN Operator Overloading Sample (dbbool.cs)
-		public static void GenDbBool(AssemblyGen ag)
+        [Test]
+        public void TestGenDbBool()
+        {
+            TestingFacade.GetTestsForGenerator(GenDbBool, @">>> GEN TriAxis.RunSharp.Tests.11_OperatorOverloading.GenDbBool
+=== RUN TriAxis.RunSharp.Tests.11_OperatorOverloading.GenDbBool
+!DBBool.True = DBBool.False
+!DBBool.Null = DBBool.Null
+DBBool.True & DBBool.Null = DBBool.Null
+DBBool.True | DBBool.Null = DBBool.True
+b is not definitely true
+<<< END TriAxis.RunSharp.Tests.11_OperatorOverloading.GenDbBool
+
+").RunAll();
+        }
+
+        // example based on the MSDN Operator Overloading Sample (dbbool.cs)
+        public static void GenDbBool(AssemblyGen ag)
         {
             var st = ag.StaticFactory;
             var exp = ag.ExpressionFactory;

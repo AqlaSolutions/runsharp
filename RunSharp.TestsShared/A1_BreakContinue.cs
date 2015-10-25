@@ -25,12 +25,36 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using NUnit.Framework;
 
 namespace TriAxis.RunSharp.Tests
 {
-	static class A1_BreakContinue
-	{
-		public static void GenBreakContinue(AssemblyGen ag)
+	[TestFixture]
+    public class A1_BreakContinue
+    {
+        [Test]
+        public void TestGenBreakContinue()
+        {
+            TestingFacade.GetTestsForGenerator(GenBreakContinue, @">>> GEN TriAxis.RunSharp.Tests.A1_BreakContinue.GenBreakContinue
+=== RUN TriAxis.RunSharp.Tests.A1_BreakContinue.GenBreakContinue
+Break test:
+1
+2
+3
+4
+Continue test:
+1
+2
+3
+8
+9
+10
+<<< END TriAxis.RunSharp.Tests.A1_BreakContinue.GenBreakContinue
+
+").RunAll();
+        }
+
+        public static void GenBreakContinue(AssemblyGen ag)
 		{
 			CodeGen g = ag.Class("Test").Public.Static.Method(typeof(void), "Main");
 

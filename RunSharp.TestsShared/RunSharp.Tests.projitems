@@ -31,6 +31,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bugs\X17_IsNull.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugs\X1864084_ValueTypeVirtual.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConsoleTester.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EnumerableActionExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExecutableTestHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TestArgumentsAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TestingFacade.cs" />

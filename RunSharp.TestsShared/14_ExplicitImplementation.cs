@@ -25,14 +25,30 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using NUnit.Framework;
 using TryAxis.RunSharp;
 
 namespace TriAxis.RunSharp.Tests
 {
-	static class _14_ExplicitImplementation
-	{
-		// example based on the MSDN Explicit Interface Implementation Sample (explicit.cs)
-		public static void GenExplicit2(AssemblyGen ag)
+	[TestFixture]
+    public class _14_ExplicitImplementation
+    {
+        [Test]
+        public void TestGenExplicit2()
+        {
+            TestingFacade.GetTestsForGenerator(GenExplicit2, @">>> GEN TriAxis.RunSharp.Tests.14_ExplicitImplementation.GenExplicit2
+=== RUN TriAxis.RunSharp.Tests.14_ExplicitImplementation.GenExplicit2
+Length(in): 30
+Width (in): 20
+Length(cm): 76,2
+Width (cm): 50,8
+<<< END TriAxis.RunSharp.Tests.14_ExplicitImplementation.GenExplicit2
+
+").RunAll();
+        }
+
+        // example based on the MSDN Explicit Interface Implementation Sample (explicit.cs)
+        public static void GenExplicit2(AssemblyGen ag)
         {
             var st = ag.StaticFactory;
             var exp = ag.ExpressionFactory;

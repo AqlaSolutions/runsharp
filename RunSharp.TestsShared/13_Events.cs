@@ -25,14 +25,28 @@
 using System;
 using System.Collections;
 using System.Text;
+using NUnit.Framework;
 using TryAxis.RunSharp;
 
 namespace TriAxis.RunSharp.Tests
 {
-	class _13_Events
-	{
-		// example based on the MSDN Events Sample (events1.cs)
-		public static void GenEvents1(AssemblyGen ag)
+    [TestFixture]
+	public class _13_Events
+    {
+        [Test]
+        public void TestGenEvents1()
+        {
+            TestingFacade.GetTestsForGenerator(GenEvents1, @">>> GEN TriAxis.RunSharp.Tests.13_Events.GenEvents1
+=== RUN TriAxis.RunSharp.Tests.13_Events.GenEvents1
+This is called when the event fires.
+This is called when the event fires.
+<<< END TriAxis.RunSharp.Tests.13_Events.GenEvents1
+
+").RunAll();
+        }
+
+        // example based on the MSDN Events Sample (events1.cs)
+        public static void GenEvents1(AssemblyGen ag)
         {
             var st = ag.StaticFactory;
             var exp = ag.ExpressionFactory;

@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace TriAxis.RunSharp.Tests
 {
-    public class ConsoleTester
+    public static class ConsoleTester
     {
         static readonly StringBuilder _capturedContent = new StringBuilder();
 

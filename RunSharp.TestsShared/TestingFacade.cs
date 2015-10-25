@@ -1,15 +1,27 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+
 namespace TriAxis.RunSharp.Tests
 {
-    public static class TestingFacade
+    public class TestingFacade
     {
-        public static void RunTestMethod(ExecutableTestHelper.Generator method, string expectedOutput)
+        public static IEnumerable<Action> GetTestsForGenerator(ExecutableTestHelper.Generator method, string expectedOutput)
         {
-            ConsoleTester.ClearAndStartCapturing();
-            ExecutableTestHelper.RunTest(method, true);
-            ConsoleTester.AssertAndClear(expectedOutput);
+            yield return () =>
+                {
+                    ConsoleTester.ClearAndStartCapturing();
+                    ExecutableTestHelper.RunTest(method, true);
+                    ConsoleTester.AssertAndClear(expectedOutput);
+                };
 #if !FEAT_IKVM
-            ExecutableTestHelper.RunTest(method, false);
-            ConsoleTester.AssertAndClear(expectedOutput);
+            yield return () =>
+                {
+                    ConsoleTester.ClearAndStartCapturing();
+                    ExecutableTestHelper.RunTest(method, false);
+                    ConsoleTester.AssertAndClear(expectedOutput);
+                };
+
 #endif
         }
     }

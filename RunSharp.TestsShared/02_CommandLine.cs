@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using NUnit.Framework;
 using TryAxis.RunSharp;
 
 namespace TriAxis.RunSharp.Tests
@@ -38,8 +39,33 @@ namespace TriAxis.RunSharp.Tests
         }
         public static CmdLineTestClass Default = new CmdLineTestClass();
     }
-    static class _02_CommandLine
+
+    [TestFixture]
+    public class _02_CommandLine
     {
+        [Test]
+        public void TestGenCmdLine2()
+        {
+            TestingFacade.GetTestsForGenerator(GenCmdLine2, @">>> GEN TriAxis.RunSharp.Tests.02_CommandLine.GenCmdLine2
+=== RUN TriAxis.RunSharp.Tests.02_CommandLine.GenCmdLine2
+0
+Number of command line 3 parameters = 4
+arg1
+arg2
+arg3
+arg4
+Object
+5
+Number of command line parameters = 4
+arg1
+arg2
+arg3
+arg4
+<<< END TriAxis.RunSharp.Tests.02_CommandLine.GenCmdLine2
+
+").RunAll();
+        }
+
         // example based on the MSDN Command Line Parameters Sample (CmdLine2.cs)
         [TestArguments("arg1", "arg2", "arg3", "arg4")]
         public static void GenCmdLine2(AssemblyGen ag)

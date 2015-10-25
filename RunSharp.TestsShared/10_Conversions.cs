@@ -25,14 +25,29 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using NUnit.Framework;
 using TryAxis.RunSharp;
 
 namespace TriAxis.RunSharp.Tests
 {
-	static class _10_Conversions
-	{
-		// example based on the MSDN User-Defined Conversions Sample (conversion.cs)
-		public static void GenConversion(AssemblyGen ag)
+	[TestFixture]
+    public class _10_Conversions
+    {
+        [Test]
+        public void TestGenConversion()
+        {
+            TestingFacade.GetTestsForGenerator(GenConversion, @">>> GEN TriAxis.RunSharp.Tests.10_Conversions.GenConversion
+=== RUN TriAxis.RunSharp.Tests.10_Conversions.GenConversion
+10
+Conversion not yet implemented
+10
+<<< END TriAxis.RunSharp.Tests.10_Conversions.GenConversion
+
+").RunAll();
+        }
+        
+        // example based on the MSDN User-Defined Conversions Sample (conversion.cs)
+        public static void GenConversion(AssemblyGen ag)
 		{
             var st = ag.StaticFactory;
             var exp = ag.ExpressionFactory;
@@ -98,8 +113,20 @@ namespace TriAxis.RunSharp.Tests
 			}
 		}
 
-		// example based on the MSDN User-Defined Conversions Sample (structconversion.cs)
-		public static void GenStructConversion(AssemblyGen ag)
+        [Test]
+        public void TestGenStructConversion()
+        {
+            TestingFacade.GetTestsForGenerator(GenStructConversion, @">>> GEN TriAxis.RunSharp.Tests.10_Conversions.GenStructConversion
+=== RUN TriAxis.RunSharp.Tests.10_Conversions.GenStructConversion
+10
+Conversion not yet implemented
+<<< END TriAxis.RunSharp.Tests.10_Conversions.GenStructConversion
+
+").RunAll();
+        }
+
+        // example based on the MSDN User-Defined Conversions Sample (structconversion.cs)
+        public static void GenStructConversion(AssemblyGen ag)
         {
             var st = ag.StaticFactory;
             var exp = ag.ExpressionFactory;

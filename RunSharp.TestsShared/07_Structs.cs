@@ -25,14 +25,27 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using NUnit.Framework;
 using TryAxis.RunSharp;
 
 namespace TriAxis.RunSharp.Tests
 {
-	static class _07_Structs
-	{
-		// example based on the MSDN Structs Sample (struct1.cs)
-		public static void GenStruct1(AssemblyGen ag)
+	[TestFixture]
+    public class _07_Structs
+    {
+        [Test]
+        public void TestGenStruct1()
+        {
+            TestingFacade.GetTestsForGenerator(GenStruct1, @">>> GEN TriAxis.RunSharp.Tests.07_Structs.GenStruct1
+=== RUN TriAxis.RunSharp.Tests.07_Structs.GenStruct1
+The stored value is: 5
+<<< END TriAxis.RunSharp.Tests.07_Structs.GenStruct1
+
+").RunAll();
+        }
+
+        // example based on the MSDN Structs Sample (struct1.cs)
+        public static void GenStruct1(AssemblyGen ag)
 		{
             var st = ag.StaticFactory;
             var exp = ag.ExpressionFactory;

@@ -361,10 +361,10 @@ namespace TryAxis.RunSharp
             return new ContextualOperand((Operand)left == right, left.TypeMapper);
         }
 
-        public static ContextualOperand operator ==(Operand right, ContextualOperand left)
+        public static ContextualOperand operator ==(Operand left, ContextualOperand right)
         {
-            ThrowIfOperandNull(left);
-            return new ContextualOperand((Operand)left == right, left.TypeMapper);
+            ThrowIfOperandNull(right);
+            return new ContextualOperand(left == (Operand)right, right.TypeMapper);
         }
 
         public static ContextualOperand operator ==(ContextualOperand left, ContextualOperand right)
@@ -379,10 +379,10 @@ namespace TryAxis.RunSharp
             return new ContextualOperand((Operand)left != right, left.TypeMapper);
         }
 
-        public static ContextualOperand operator !=(Operand right, ContextualOperand  left)
+        public static ContextualOperand operator !=(Operand  left, ContextualOperand right)
         {
-            ThrowIfOperandNull(left);
-            return new ContextualOperand((Operand)left != right, left.TypeMapper);
+            ThrowIfOperandNull(right);
+            return new ContextualOperand(left != (Operand)right, right.TypeMapper);
         }
 
         public static ContextualOperand operator !=(ContextualOperand left, ContextualOperand right)
@@ -397,10 +397,10 @@ namespace TryAxis.RunSharp
             return new ContextualOperand((Operand)left < right, left.TypeMapper);
         }
         
-        public static ContextualOperand operator <(Operand right, ContextualOperand  left)
+        public static ContextualOperand operator <(Operand  left, ContextualOperand right)
         {
-            ThrowIfOperandNull(left);
-            return new ContextualOperand((Operand)left < right, left.TypeMapper);
+            ThrowIfOperandNull(right);
+            return new ContextualOperand(left < (Operand)right, right.TypeMapper);
         }
 
         public static ContextualOperand operator <(ContextualOperand left, ContextualOperand right)
@@ -415,10 +415,10 @@ namespace TryAxis.RunSharp
             return new ContextualOperand((Operand)left > right, left.TypeMapper);
         }
         
-        public static ContextualOperand operator >(Operand right, ContextualOperand  left)
+        public static ContextualOperand operator >(Operand  left, ContextualOperand right)
         {
-            ThrowIfOperandNull(left);
-            return new ContextualOperand((Operand)left > right, left.TypeMapper);
+            ThrowIfOperandNull(right);
+            return new ContextualOperand(left > (Operand)right, right.TypeMapper);
         }
 
         public static ContextualOperand operator >(ContextualOperand left, ContextualOperand right)
@@ -433,10 +433,10 @@ namespace TryAxis.RunSharp
             return new ContextualOperand((Operand)left >= right, left.TypeMapper);
         }
         
-        public static ContextualOperand operator >=(Operand right, ContextualOperand  left)
+        public static ContextualOperand operator >=(Operand  left, ContextualOperand right)
         {
-            ThrowIfOperandNull(left);
-            return new ContextualOperand((Operand)left >= right, left.TypeMapper);
+            ThrowIfOperandNull(right);
+            return new ContextualOperand(left >= (Operand)right, right.TypeMapper);
         }
 
         public static ContextualOperand operator >=(ContextualOperand left, ContextualOperand right)
@@ -451,10 +451,10 @@ namespace TryAxis.RunSharp
             return new ContextualOperand((Operand)left <= right, left.TypeMapper);
         }
         
-        public static ContextualOperand operator <=(Operand right, ContextualOperand  left)
+        public static ContextualOperand operator <=(Operand  left, ContextualOperand right)
         {
-            ThrowIfOperandNull(left);
-            return new ContextualOperand((Operand)left <= right, left.TypeMapper);
+            ThrowIfOperandNull(right);
+            return new ContextualOperand(left <= (Operand)right, right.TypeMapper);
         }
 
         public static ContextualOperand operator <=(ContextualOperand left, ContextualOperand right)
@@ -469,10 +469,10 @@ namespace TryAxis.RunSharp
             return new ContextualOperand((Operand)left + right, left.TypeMapper);
         }
         
-        public static ContextualOperand operator +(Operand right, ContextualOperand  left)
+        public static ContextualOperand operator +(Operand  left, ContextualOperand right)
         {
-            ThrowIfOperandNull(left);
-            return new ContextualOperand((Operand)left + right, left.TypeMapper);
+            ThrowIfOperandNull(right);
+            return new ContextualOperand(left + (Operand)right, right.TypeMapper);
         }
 
         public static ContextualOperand operator +(ContextualOperand left, ContextualOperand right)
@@ -490,7 +490,7 @@ namespace TryAxis.RunSharp
         public static ContextualOperand operator -(Operand right, ContextualOperand  left)
         {
             ThrowIfOperandNull(left);
-            return new ContextualOperand((Operand)left - right, left.TypeMapper);
+            return new ContextualOperand(right - (Operand)left, left.TypeMapper);
         }
 
         public static ContextualOperand operator -(ContextualOperand left, ContextualOperand right)
@@ -508,7 +508,7 @@ namespace TryAxis.RunSharp
         public static ContextualOperand operator *(Operand right, ContextualOperand  left)
         {
             ThrowIfOperandNull(left);
-            return new ContextualOperand((Operand)left * right, left.TypeMapper);
+            return new ContextualOperand(right * (Operand)left, left.TypeMapper);
         }
 
         public static ContextualOperand operator *(ContextualOperand left, ContextualOperand right)
@@ -526,7 +526,7 @@ namespace TryAxis.RunSharp
         public static ContextualOperand operator /(Operand right, ContextualOperand  left)
         {
             ThrowIfOperandNull(left);
-            return new ContextualOperand((Operand)left / right, left.TypeMapper);
+            return new ContextualOperand(right / (Operand)left, left.TypeMapper);
         }
 
         public static ContextualOperand operator /(ContextualOperand left, ContextualOperand right)
@@ -544,7 +544,7 @@ namespace TryAxis.RunSharp
         public static ContextualOperand operator %(Operand right, ContextualOperand  left)
         {
             ThrowIfOperandNull(left);
-            return new ContextualOperand((Operand)left % right, left.TypeMapper);
+            return new ContextualOperand(right % (Operand)left, left.TypeMapper);
         }
 
         public static ContextualOperand operator %(ContextualOperand left, ContextualOperand right)
@@ -562,7 +562,7 @@ namespace TryAxis.RunSharp
         public static ContextualOperand operator &(Operand right, ContextualOperand  left)
         {
             ThrowIfOperandNull(left);
-            return new ContextualOperand((Operand)left & right, left.TypeMapper);
+            return new ContextualOperand(right & (Operand)left, left.TypeMapper);
         }
 
         public static ContextualOperand operator &(ContextualOperand left, ContextualOperand right)
@@ -580,7 +580,7 @@ namespace TryAxis.RunSharp
         public static ContextualOperand operator |(Operand right, ContextualOperand  left)
         {
             ThrowIfOperandNull(left);
-            return new ContextualOperand((Operand)left | right, left.TypeMapper);
+            return new ContextualOperand(right | (Operand)left, left.TypeMapper);
         }
 
         public static ContextualOperand operator |(ContextualOperand left, ContextualOperand right)
@@ -598,7 +598,7 @@ namespace TryAxis.RunSharp
         public static ContextualOperand operator ^(Operand right, ContextualOperand  left)
         {
             if (left == null) throw new ArgumentNullException(nameof(left));
-            return new ContextualOperand((Operand)left ^ right, left.TypeMapper);
+            return new ContextualOperand(right ^ (Operand)left, left.TypeMapper);
         }
 
         public static ContextualOperand operator ^(ContextualOperand left, ContextualOperand right)
