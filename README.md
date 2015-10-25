@@ -37,3 +37,5 @@ can be dynamically generated using RunSharp as follows:
 	ag.Save();
 
 The above code should generate roughly the same assembly as if the first example was compiled using csc. 
+
+For more examples please see tests.
