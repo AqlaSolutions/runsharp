@@ -1,6 +1,7 @@
 # Aqla-RunSharp
-It is a fork of RunSharp from Google Code.
+It is a fork of RunSharp from Google Code: https://code.google.com/p/runsharp/
 
-Added IKVM support, fixed some bugs.
-
-
+- added IKVM support
+- examples converted to tests
+- added peverify checks
+- fixed multiple bugs
