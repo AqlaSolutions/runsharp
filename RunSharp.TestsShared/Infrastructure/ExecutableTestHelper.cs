@@ -87,7 +87,7 @@ namespace TriAxis.RunSharp
             string exeFilePath = string.Empty;
             if (exe)
             {
-                exeDir = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "out");
+                exeDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                 exeFilePath = Path.Combine(exeDir, name + ".exe");
                 Directory.CreateDirectory(exeDir);
             }
@@ -98,7 +98,10 @@ namespace TriAxis.RunSharp
                       : new AssemblyGen(name, new CompilerOptions() { OutputPath = exeFilePath });
             test(asm);
             if (exe)
+            {
                 asm.Save();
+                PEVerify.AssertValid(exeFilePath);
+            }
             Console.WriteLine("=== RUN {0}", testName);
 #if !FEAT_IKVM
             if (!exe)

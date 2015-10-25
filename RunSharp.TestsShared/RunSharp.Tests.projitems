@@ -9,11 +9,12 @@
     <Import_RootNamespace>TriAxis.RunSharp</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)ConsoleTester.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)EnumerableActionExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ExecutableTestHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)TestArgumentsAttribute.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)TestingFacade.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\ConsoleTester.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\EnumerableActionExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\ExecutableTestHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\PEVerify.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\TestArgumentsAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\TestingFacade.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\01_HelloWorld.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\02_CommandLine.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\03_Arrays.cs" />
