@@ -111,7 +111,17 @@ namespace TriAxis.RunSharp
 			if (Context.IsStatic)
 				throw new InvalidOperationException(Properties.Messages.ErrCodeStaticThis);
 
-			return new ContextualOperand(new _Arg(0, Context.OwnerType), TypeMapper);
+		    Type ownerType = Context.OwnerType;
+            
+		    if (Context.OwnerType.IsValueType)
+		    {
+		        var m = Context.Member as MethodInfo;
+		        if (m != null && m.IsVirtual)
+		            ownerType = ownerType.MakeByRefType();
+		    }
+
+		    Operand arg = new _Arg(0, ownerType);
+            return new ContextualOperand(arg, TypeMapper);
 		}
 
 		public ContextualOperand Base()
