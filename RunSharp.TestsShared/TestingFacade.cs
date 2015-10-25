@@ -2,10 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace TriAxis.RunSharp.Tests
+namespace TriAxis.RunSharp
 {
     public class TestingFacade
     {
+        private static readonly ExecutableTestHelper ExecutableTestHelper = new ExecutableTestHelper();
+
         public static IEnumerable<Action> GetTestsForGenerator(ExecutableTestHelper.Generator method, string expectedOutput)
         {
             yield return () =>

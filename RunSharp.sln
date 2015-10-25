@@ -2,8 +2,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Examples", "Examples\Examples.csproj", "{2267D578-07C3-46B8-9EC8-E2C33AC920E7}"
-EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "RunSharpShared", "RunSharpShared\RunSharpShared.shproj", "{1BE6AC53-2C95-466E-B1D2-61E31493F169}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunSharp_IKVM", "RunSharpIKVM\RunSharp_IKVM.csproj", "{C835BB75-7955-4315-B52C-FA59E25219F4}"
@@ -35,12 +33,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2267D578-07C3-46B8-9EC8-E2C33AC920E7}.CodeAnalysis|Any CPU.ActiveCfg = Release|Any CPU
-		{2267D578-07C3-46B8-9EC8-E2C33AC920E7}.CodeAnalysis|Any CPU.Build.0 = Release|Any CPU
-		{2267D578-07C3-46B8-9EC8-E2C33AC920E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2267D578-07C3-46B8-9EC8-E2C33AC920E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2267D578-07C3-46B8-9EC8-E2C33AC920E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2267D578-07C3-46B8-9EC8-E2C33AC920E7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C835BB75-7955-4315-B52C-FA59E25219F4}.CodeAnalysis|Any CPU.ActiveCfg = CodeAnalysis|Any CPU
 		{C835BB75-7955-4315-B52C-FA59E25219F4}.CodeAnalysis|Any CPU.Build.0 = CodeAnalysis|Any CPU
 		{C835BB75-7955-4315-B52C-FA59E25219F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

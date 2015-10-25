@@ -1,6 +1,6 @@
 using System;
 
-namespace TriAxis.RunSharp.Tests
+namespace TriAxis.RunSharp
 {
     [AttributeUsage(AttributeTargets.Method)]
     class TestArgumentsAttribute : Attribute

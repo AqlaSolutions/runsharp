@@ -6,35 +6,35 @@
     <SharedGUID>9225df43-7709-4522-afca-f01df2bf6e83</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>TriAxis.RunSharp.Tests</Import_RootNamespace>
+    <Import_RootNamespace>TriAxis.RunSharp</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)01_HelloWorld.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)02_CommandLine.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)03_Arrays.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)04_Properties.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)05_Versioning.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)06_CollectionClasses.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)07_Structs.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)08_Indexers.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)09_IndexedProperties.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)10_Conversions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)11_OperatorOverloading.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)12_Delegates.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)13_Events.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)14_ExplicitImplementation.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)A1_BreakContinue.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)A2_Attributes.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Bugs\X14_StaticConstructor.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Bugs\X17_IsNull.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Bugs\X1864084_ValueTypeVirtual.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConsoleTester.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EnumerableActionExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExecutableTestHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TestArgumentsAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TestingFacade.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)TestSetup.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\01_HelloWorld.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\02_CommandLine.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\03_Arrays.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\04_Properties.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\05_Versioning.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\06_CollectionClasses.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\07_Structs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\08_Indexers.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\09_IndexedProperties.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\10_Conversions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\11_OperatorOverloading.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\12_Delegates.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\13_Events.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\14_ExplicitImplementation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\A1_BreakContinue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\A2_Attributes.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\Bugs\X14_StaticConstructor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\Bugs\X17_IsNull.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\Bugs\X1864084_ValueTypeVirtual.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\TestSetup.cs" />
   </ItemGroup>
 </Project>

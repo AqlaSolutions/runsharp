@@ -252,7 +252,12 @@ namespace TriAxis.RunSharp
         }
 
 #else
-        public AssemblyGen(Universe universe, string assemblyName, CompilerOptions options, ITypeMapper typeMapper)
+        public AssemblyGen(string assemblyName, CompilerOptions options)
+            : this(new Universe(), assemblyName, options)
+        {
+        }
+
+        public AssemblyGen(Universe universe, string assemblyName, CompilerOptions options, ITypeMapper typeMapper = null)
 	    {
 	        Initialize(universe, assemblyName, AssemblyBuilderAccess.Save, options, typeMapper);
 	    }
@@ -271,14 +276,14 @@ namespace TriAxis.RunSharp
 #endif
         string _fileName;
 
-        void Initialize(Universe universe, string assemblyName, AssemblyBuilderAccess access, CompilerOptions options, ITypeMapper typeMapper)
+        void Initialize(Universe universe, string assemblyName, AssemblyBuilderAccess access, CompilerOptions options, ITypeMapper typeMapper = null)
         {
             if (universe == null) throw new ArgumentNullException(nameof(universe));
             if (options == null) throw new ArgumentNullException(nameof(options));
             _compilerOptions = options;
             if (typeMapper == null)
 #if FEAT_IKVM
-                throw new ArgumentNullException(nameof(typeMapper));
+                typeMapper = new TypeMapper(universe);
 #else
                 typeMapper = new TypeMapper();
 #endif

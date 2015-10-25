@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using NUnit.Framework;
 
-namespace TriAxis.RunSharp.Tests
+namespace TriAxis.RunSharp
 {
     public static class ConsoleTester
     {

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace TriAxis.RunSharp.Tests
+namespace TriAxis.RunSharp
 {
     public static class EnumerableActionExtensions
     {

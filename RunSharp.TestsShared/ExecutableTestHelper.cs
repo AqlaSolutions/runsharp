@@ -42,24 +42,24 @@ using MethodInfo = System.Reflection.MethodInfo;
 using ParameterInfo = System.Reflection.ParameterInfo;
 using Type = System.Type;
 
-namespace TriAxis.RunSharp.Tests
+namespace TriAxis.RunSharp
 {
-    public static class ExecutableTestHelper
+    public class ExecutableTestHelper
     {
         public delegate void Generator(AssemblyGen ag);
 
-        static string GetTestName(Generator g)
+        string GetTestName(Generator g)
         {
             Type declType = g.Method.DeclaringType;
             return declType.Namespace + "." + declType.Name.TrimStart('_') + "." + g.Method.Name;
         }
 
-        static string[] GetTestArguments(Generator g)
+        string[] GetTestArguments(Generator g)
         {
             return (Attribute.GetCustomAttribute(g.Method, typeof(TestArgumentsAttribute)) as TestArgumentsAttribute)?.Arguments;
         }
         
-        public static void RunTest(MethodInfo testMethod, bool exe)
+        public void RunTest(MethodInfo testMethod, bool exe)
         {
             if (testMethod == null) throw new ArgumentNullException(nameof(testMethod));
             Generator gen;
@@ -76,7 +76,7 @@ namespace TriAxis.RunSharp.Tests
             RunTest(gen, exe);
         }
 
-        public static void RunTest(Generator test, bool exe)
+        public void RunTest(Generator test, bool exe)
         {
             if (test == null) throw new ArgumentNullException(nameof(test));
             string testName = GetTestName(test);
@@ -93,14 +93,9 @@ namespace TriAxis.RunSharp.Tests
             }
 
             AssemblyGen asm;
-#if FEAT_IKVM
-                var universe = new Universe();
-                asm = new AssemblyGen(universe, name, new CompilerOptions() { OutputPath = exeFilePath }, new TypeMapper(universe));
-#else
             asm = !exe
                       ? new AssemblyGen(name, new CompilerOptions())
                       : new AssemblyGen(name, new CompilerOptions() { OutputPath = exeFilePath });
-#endif
             test(asm);
             if (exe)
                 asm.Save();
