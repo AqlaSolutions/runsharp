@@ -28,12 +28,12 @@ A simple hello world example in C#
 
 can be dynamically generated using RunSharp as follows:
 
-	AssemblyGen ag = new AssemblyGen("hello.exe");
+	AssemblyGen ag = new AssemblyGen("Hello", new CompilerOptions() { OutputPath = "Hello.exe" });
 	TypeGen Test = ag.Public.Class("Test");
 	{
 	   CodeGen g = Test.Public.Static.Method(typeof(void), "Main", typeof(string[]));
 	   {
-	      Operand args = g.Param(0, "args");
+	      ContextualOperand args = g.Param(0, "args");
 	      g.Invoke(typeof(Console), "WriteLine", "Hello " + args[0] + "!");
 	   }
 	}
