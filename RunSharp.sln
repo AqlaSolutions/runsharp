@@ -22,12 +22,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunSharp_WP8", "RunSharpWP8
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunSharp.Tests.WP8", "RunSharp.Tests.WP8\RunSharp.Tests.WP8.csproj", "{D6F74455-A53E-4E64-92C9-60C3803FB02F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunSharp_Silverlight", "RunSharpSilverlight\RunSharp_Silverlight.csproj", "{35031FC5-65E0-4F14-8DBC-A3140E940C14}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunSharp.Tests.Silverlight", "RunSharp.Tests.Silverlight\RunSharp.Tests.Silverlight.csproj", "{D6F7CA55-853F-4E68-92C9-60C0804FB02D}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		RunSharp.TestsShared\RunSharp.Tests.projitems*{6b5d07f1-94f2-4add-8931-7188b3a142bd}*SharedItemsImports = 4
 		RunSharpShared\RunSharpShared.projitems*{9fc6ca0f-d5d7-4c23-83a2-e910e5ba4f6f}*SharedItemsImports = 4
+		RunSharpShared\RunSharpShared.projitems*{35031fc5-65e0-4f14-8dbc-a3140e940c14}*SharedItemsImports = 4
 		RunSharp.TestsShared\RunSharp.Tests.projitems*{9225df43-7709-4522-afca-f01df2bf6e83}*SharedItemsImports = 13
 		RunSharp.TestsShared\RunSharp.Tests.projitems*{d6f7ce55-853f-4e64-92c9-60c380bfb02f}*SharedItemsImports = 4
+		RunSharp.TestsShared\RunSharp.Tests.projitems*{d6f7ca55-853f-4e68-92c9-60c0804fb02d}*SharedItemsImports = 4
 		RunSharpShared\RunSharpShared.projitems*{c835bb75-7955-4315-b52c-fa59e25219f4}*SharedItemsImports = 4
 		RunSharpShared\RunSharpShared.projitems*{1be6ac53-2c95-466e-b1d2-61e31493f169}*SharedItemsImports = 13
 		RunSharpShared\RunSharpShared.projitems*{08f134ae-48e8-4a35-9dc7-2f31eaf4a66f}*SharedItemsImports = 4
@@ -113,6 +119,30 @@ Global
 		{D6F74455-A53E-4E64-92C9-60C3803FB02F}.Release|ARM.Build.0 = Release|Any CPU
 		{D6F74455-A53E-4E64-92C9-60C3803FB02F}.Release|x86.ActiveCfg = Release|Any CPU
 		{D6F74455-A53E-4E64-92C9-60C3803FB02F}.Release|x86.Build.0 = Release|Any CPU
+		{35031FC5-65E0-4F14-8DBC-A3140E940C14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35031FC5-65E0-4F14-8DBC-A3140E940C14}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35031FC5-65E0-4F14-8DBC-A3140E940C14}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{35031FC5-65E0-4F14-8DBC-A3140E940C14}.Debug|ARM.Build.0 = Debug|Any CPU
+		{35031FC5-65E0-4F14-8DBC-A3140E940C14}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{35031FC5-65E0-4F14-8DBC-A3140E940C14}.Debug|x86.Build.0 = Debug|Any CPU
+		{35031FC5-65E0-4F14-8DBC-A3140E940C14}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35031FC5-65E0-4F14-8DBC-A3140E940C14}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35031FC5-65E0-4F14-8DBC-A3140E940C14}.Release|ARM.ActiveCfg = Release|Any CPU
+		{35031FC5-65E0-4F14-8DBC-A3140E940C14}.Release|ARM.Build.0 = Release|Any CPU
+		{35031FC5-65E0-4F14-8DBC-A3140E940C14}.Release|x86.ActiveCfg = Release|Any CPU
+		{35031FC5-65E0-4F14-8DBC-A3140E940C14}.Release|x86.Build.0 = Release|Any CPU
+		{D6F7CA55-853F-4E68-92C9-60C0804FB02D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6F7CA55-853F-4E68-92C9-60C0804FB02D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6F7CA55-853F-4E68-92C9-60C0804FB02D}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{D6F7CA55-853F-4E68-92C9-60C0804FB02D}.Debug|ARM.Build.0 = Debug|Any CPU
+		{D6F7CA55-853F-4E68-92C9-60C0804FB02D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D6F7CA55-853F-4E68-92C9-60C0804FB02D}.Debug|x86.Build.0 = Debug|Any CPU
+		{D6F7CA55-853F-4E68-92C9-60C0804FB02D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6F7CA55-853F-4E68-92C9-60C0804FB02D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6F7CA55-853F-4E68-92C9-60C0804FB02D}.Release|ARM.ActiveCfg = Release|Any CPU
+		{D6F7CA55-853F-4E68-92C9-60C0804FB02D}.Release|ARM.Build.0 = Release|Any CPU
+		{D6F7CA55-853F-4E68-92C9-60C0804FB02D}.Release|x86.ActiveCfg = Release|Any CPU
+		{D6F7CA55-853F-4E68-92C9-60C0804FB02D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -126,5 +156,7 @@ Global
 		{D6F7CE55-853F-4E64-92C9-60C380BFB02F} = {387B3677-5A8B-4FB5-9FE3-2FD884DCF39D}
 		{9FC6CA0F-D5D7-4C23-83A2-E910E5BA4F6F} = {6348A303-6A2B-463E-A43F-C0C9617CCC37}
 		{D6F74455-A53E-4E64-92C9-60C3803FB02F} = {387B3677-5A8B-4FB5-9FE3-2FD884DCF39D}
+		{35031FC5-65E0-4F14-8DBC-A3140E940C14} = {6348A303-6A2B-463E-A43F-C0C9617CCC37}
+		{D6F7CA55-853F-4E68-92C9-60C0804FB02D} = {387B3677-5A8B-4FB5-9FE3-2FD884DCF39D}
 	EndGlobalSection
 EndGlobal

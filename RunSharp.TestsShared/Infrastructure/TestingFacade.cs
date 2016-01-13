@@ -36,12 +36,14 @@ namespace TriAxis.RunSharp
 
         public static IEnumerable<Action> GetTestsForGenerator(ExecutableTestHelper.Generator method, string expectedOutput)
         {
+#if !SILVERLIGHT
             yield return () =>
                 {
                     ConsoleTester.ClearAndStartCapturing();
                     ExecutableTestHelper.RunTest(method, true);
                     ConsoleTester.AssertAndClear(expectedOutput);
                 };
+#endif
 #if !FEAT_IKVM
             yield return () =>
                 {

@@ -1012,12 +1012,17 @@ namespace TriAxis.RunSharp
 
 		internal void Register(MethodGen method)
 		{
-			if (_owner.AssemblyBuilder.EntryPoint == null && method.Name == "Main" && method.IsStatic && (
-				method.ParameterCount == 0 ||
-				(method.ParameterCount == 1 && method.ParameterTypes[0] == TypeMapper.MapType(typeof(string[])))))
-				_owner.AssemblyBuilder.SetEntryPoint(method.GetMethodBuilder());
-
-			// match explicit interface implementations
+#if !SILVERLIGHT
+            if (_owner.AssemblyBuilder.EntryPoint == null && method.Name == "Main" && method.IsStatic &&
+		        (
+		            method.ParameterCount == 0 ||
+		            (method.ParameterCount == 1 &&
+		             method.ParameterTypes[0] == TypeMapper.MapType(typeof(string[])))))
+		    {
+		        _owner.AssemblyBuilder.SetEntryPoint(method.GetMethodBuilder());
+		    }
+#endif
+		    // match explicit interface implementations
 			if (method.ImplementedInterface != null)
 			{
 				foreach (IMemberInfo mi in _typeMapper.TypeInfo.Filter(_typeMapper.TypeInfo.GetMethods(method.ImplementedInterface), method.Name, false, false, true))
@@ -1034,9 +1039,9 @@ namespace TriAxis.RunSharp
 	
 			_methods.Add(method);
 		}
-		#endregion
+#endregion
 
-		#region ITypeInfoProvider implementation
+#region ITypeInfoProvider implementation
 		IEnumerable<IMemberInfo> ITypeInfoProvider.GetConstructors()
 		{
 			EnsureDefaultConstructor();
@@ -1070,7 +1075,7 @@ namespace TriAxis.RunSharp
 
 		string ITypeInfoProvider.DefaultMember => _indexerName;
 
-	    #endregion
+#endregion
 	}
 }
 

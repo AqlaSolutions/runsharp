@@ -130,6 +130,9 @@ namespace TriAxis.RunSharp
 
         protected override void CreateMember()
         {
+#if SILVERLIGHT
+            _dm = new DynamicMethod(_attrs.name, ReturnType, ParameterTypes);
+#else
             if (_attrs.ownerType != null)
                 try
                 {
@@ -148,6 +151,7 @@ namespace TriAxis.RunSharp
                 {
                     _dm = new DynamicMethod(_attrs.name, ReturnType, ParameterTypes, _attrs.OwnerModule, false);
                 }
+#endif
         }
 
         protected override void RegisterMember()
@@ -174,7 +178,7 @@ namespace TriAxis.RunSharp
             return _dm;
         }
 
-        #region RoutineGen concrete implementation
+#region RoutineGen concrete implementation
 
         protected override bool HasCode => true;
 
@@ -206,13 +210,13 @@ namespace TriAxis.RunSharp
             throw new InvalidOperationException(Properties.Messages.ErrDynamicMethodNoCustomAttrs);
         }
 
-        #endregion
+#endregion
 
-        #region ICodeGenContext Members
+#region ICodeGenContext Members
 
         bool ICodeGenContext.SupportsScopes => false;
 
-        #endregion
+#endregion
     }
 }
 #endif

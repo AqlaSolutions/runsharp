@@ -38,7 +38,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("RunSharp")]
-[assembly: AssemblyCopyright("Copyright © 2007 Stefan Simek, Copyright © 2015 Vladyslav Taranov")]
+[assembly: AssemblyCopyright("Copyright © 2007 Stefan Simek, Copyright © 2016 Vladyslav Taranov")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -57,11 +57,11 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("0.2.0.3")]
-[assembly: AssemblyFileVersion("0.2.0.3")]
+[assembly: AssemblyVersion("0.2.0.4")]
+[assembly: AssemblyFileVersion("0.2.0.4")]
 
 //[assembly: CLSCompliant(true)]
-#if !PHONE8
+#if !PHONE8 && !SILVERLIGHT
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, Execution = true)]
 [assembly: ReflectionPermission(SecurityAction.RequestMinimum, ReflectionEmit = true)]
 #endif

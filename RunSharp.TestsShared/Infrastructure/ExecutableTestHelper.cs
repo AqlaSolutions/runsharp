@@ -32,6 +32,7 @@ using System.Security.Permissions;
 using System.Security.Policy;
 using System.Text;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading;
@@ -108,8 +109,13 @@ namespace TriAxis.RunSharp
 #if !FEAT_IKVM
             if (!exe)
             {
+#if SILVERLIGHT
+                Type entryType = asm.GetAssembly().DefinedTypes.First(t => t.GetMethod("Main", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic) != null);
+#else
                 Type entryType = ((TypeBuilder)asm.GetAssembly().EntryPoint.DeclaringType).CreateType();
-                MethodInfo entryMethod = entryType.GetMethod(asm.GetAssembly().EntryPoint.Name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
+#endif
+
+                MethodInfo entryMethod = entryType.GetMethod(asm.GetAssembly().EntryPoint?.Name ?? "Main", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
                 object[] entryArgs = null;
                 if (entryMethod.GetParameters().Length == 1)
                 {
@@ -125,7 +131,7 @@ namespace TriAxis.RunSharp
             AppDomain.CurrentDomain.ExecuteAssembly(exeFilePath, null, GetTestArguments(test));
 #endif
 
-            Console.WriteLine("<<< END {0}", testName);
+                Console.WriteLine("<<< END {0}", testName);
             Console.WriteLine();
         }
     }

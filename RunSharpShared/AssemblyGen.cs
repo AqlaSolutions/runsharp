@@ -245,7 +245,12 @@ namespace TriAxis.RunSharp
 
         public AssemblyGen(string name, CompilerOptions options, ITypeMapper typeMapper = null)
         {
-            Initialize(AppDomain.CurrentDomain, name, !Helpers.IsNullOrEmpty(options.OutputPath) ?AssemblyBuilderAccess.RunAndSave : AssemblyBuilderAccess.Run, options, typeMapper);
+            Initialize(AppDomain.CurrentDomain, name,
+#if !SILVERLIGHT
+                !Helpers.IsNullOrEmpty(options.OutputPath) ? AssemblyBuilderAccess.RunAndSave : 
+#endif
+                AssemblyBuilderAccess.Run, 
+                options, typeMapper);
 
         }
 
@@ -293,7 +298,11 @@ namespace TriAxis.RunSharp
             ExpressionFactory = new ExpressionFactory(typeMapper);
             StaticFactory = new StaticFactory(typeMapper);
 
+#if SILVERLIGHT
+            bool save = false;
+#else
             bool save = (access & AssemblyBuilderAccess.Save) != 0;
+#endif
             string path = options.OutputPath;
             if (path == null && save) throw new ArgumentNullException("options.OutputPath");
 
@@ -315,9 +324,11 @@ namespace TriAxis.RunSharp
             AssemblyName an = new AssemblyName();
             an.Name = assemblyName;
 
-            AssemblyBuilder = path != null
-                                  ? Universe.DefineDynamicAssembly(an, access, Path.GetDirectoryName(path))
-                                  : Universe.DefineDynamicAssembly(an, access);
+            AssemblyBuilder =
+#if !SILVERLIGHT
+                path != null ? Universe.DefineDynamicAssembly(an, access, Path.GetDirectoryName(path)) :
+#endif
+                    Universe.DefineDynamicAssembly(an, access);
 #if FEAT_IKVM
             if (!Helpers.IsNullOrEmpty(options.KeyFile))
             {
@@ -337,7 +348,16 @@ namespace TriAxis.RunSharp
             }
             ModuleBuilder = AssemblyBuilder.DefineDynamicModule(moduleName, path, options.SymbolInfo);
 #else
-            ModuleBuilder = save ? AssemblyBuilder.DefineDynamicModule(moduleName, Path.GetFileName(path)) : AssemblyBuilder.DefineDynamicModule(moduleName);
+            if (save)
+            {
+#if !SILVERLIGHT
+                ModuleBuilder = AssemblyBuilder.DefineDynamicModule(moduleName, Path.GetFileName(path));
+#else
+                throw new NotSupportedException("Can't save on this platform");
+#endif
+            }
+            else
+                ModuleBuilder = AssemblyBuilder.DefineDynamicModule(moduleName);
 #endif
         }
 
@@ -345,12 +365,13 @@ namespace TriAxis.RunSharp
         public void Save()
 		{
 			Complete();
-
-			if ((_access & AssemblyBuilderAccess.Save) != 0)
+#if !SILVERLIGHT
+            if ((_access & AssemblyBuilderAccess.Save) != 0)
 #if FEAT_IKVM
                 AssemblyBuilder.Save(_fileName);
 #else
                 AssemblyBuilder.Save(Path.GetFileName(_fileName));
+#endif
 #endif
         }
 
@@ -446,8 +467,18 @@ namespace TriAxis.RunSharp
 
 			AttributeGen.ApplyList(ref _assemblyAttributes, AssemblyBuilder.SetCustomAttribute);
 			AttributeGen.ApplyList(ref _moduleAttributes, ModuleBuilder.SetCustomAttribute);
-            WriteAssemblyAttributes(_compilerOptions, AssemblyBuilder.GetName().Name, AssemblyBuilder);
+            WriteAssemblyAttributes(_compilerOptions, GetAssemblyName(), AssemblyBuilder);
 		}
+
+        string GetAssemblyName()
+        {
+#if !SILVERLIGHT
+            return AssemblyBuilder.GetName().Name;
+#else
+            return AssemblyBuilder.GetName(false).Name;
+#endif
+        }
+
 #endregion
 	}
 }
