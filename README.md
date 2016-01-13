@@ -42,3 +42,9 @@ can be dynamically generated using RunSharp as follows:
 The above code should generate roughly the same assembly as if the first example was compiled using csc. 
 
 For more examples please see tests.
+
+# Platforms
+
+* .NET 2.0 and higher (also IKVM version available)
+* Windows Phone 8
+* Silverlight 4
