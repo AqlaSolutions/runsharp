@@ -52,7 +52,7 @@ public static class PEVerify
             string output = proc.StandardOutput.ReadToEnd();
             if (ok)
             {
-                Assert.AreEqual(0, proc.ExitCode, path, output);
+                Assert.AreEqual(0, proc.ExitCode, path + "\r\n" + output);
                 return proc.ExitCode == 0;
             }
             else
