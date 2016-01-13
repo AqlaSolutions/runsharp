@@ -24,6 +24,9 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+
+#if !PHONE8
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -87,7 +90,7 @@ namespace TriAxis.RunSharp
 
 	    internal Type ImplementedInterface { get; set; }
 
-	    #region RoutineGen concrete implementation
+#region RoutineGen concrete implementation
 
 		protected internal override bool IsStatic => (_attributes & MethodAttributes.Static) != 0;
 
@@ -116,7 +119,7 @@ namespace TriAxis.RunSharp
 			_mb.SetCustomAttribute(cab);
 		}
 
-		#endregion
+#endregion
 		
 		public override string ToString()
 		{
@@ -124,3 +127,5 @@ namespace TriAxis.RunSharp
 		}
 	}
 }
+
+#endif

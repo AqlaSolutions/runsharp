@@ -66,12 +66,13 @@ namespace TriAxis.RunSharp.Operands
 				Type[] argTypes = new Type[_indexes.Length];
 				for (int i = 0; i < argTypes.Length; i++)
 					argTypes[i] = g.TypeMapper.MapType(typeof(int));
-
-				ModuleBuilder mb = _t.Module as ModuleBuilder;
+#if !PHONE8
+                ModuleBuilder mb = _t.Module as ModuleBuilder;
 
 				if (mb != null)
 					g.IL.Emit(OpCodes.Newobj, mb.GetArrayMethod(GetReturnType(g.TypeMapper), ".ctor", CallingConventions.HasThis, null, argTypes));
 				else
+#endif
 					g.IL.Emit(OpCodes.Newobj, GetReturnType(g.TypeMapper).GetConstructor(argTypes));
 			}
 		}

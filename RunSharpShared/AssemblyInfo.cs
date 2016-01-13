@@ -57,12 +57,12 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("0.2.0.0")]
-[assembly: AssemblyFileVersion("0.2.0.0")]
+[assembly: AssemblyVersion("0.2.0.3")]
+[assembly: AssemblyFileVersion("0.2.0.3")]
 
 //[assembly: CLSCompliant(true)]
-
+#if !PHONE8
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, Execution = true)]
 [assembly: ReflectionPermission(SecurityAction.RequestMinimum, ReflectionEmit = true)]
-
+#endif
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA2210:AssembliesShouldHaveValidStrongNames", Justification = "Not yet.")]

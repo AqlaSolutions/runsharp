@@ -63,14 +63,15 @@ namespace TriAxis.RunSharp
 
 			return new AttributeType(t);
 		}
-
-		public static implicit operator AttributeType(TypeGen tg)
+#if !PHONE8
+        public static implicit operator AttributeType(TypeGen tg)
 		{
             if (!Helpers.IsAttribute(tg.TypeBuilder))
                 throw new ArgumentException("Attribute types must derive from the 'Attribute' class", "t");
 
 			return new AttributeType(tg.TypeBuilder);
 		}
+#endif
 	}
 
 	public class AttributeGen

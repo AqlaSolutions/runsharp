@@ -23,6 +23,7 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
+#if !PHONE8
 
 using System;
 using System.Collections;
@@ -96,7 +97,7 @@ namespace TriAxis.RunSharp
 				return _ns + "." + name;
 		}
 
-		#region Modifiers
+#region Modifiers
 		TypeAttributes _attrs;
 
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -109,9 +110,9 @@ namespace TriAxis.RunSharp
 		public AssemblyGen Abstract { get { _attrs |= TypeAttributes.Abstract; return this; } }
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		public AssemblyGen NoBeforeFieldInit { get { _attrs |= TypeAttributes.BeforeFieldInit; return this; } }
-		#endregion
+#endregion
 
-		#region Custom Attributes
+#region Custom Attributes
 
 		public AssemblyGen Attribute(AttributeType type)
 		{
@@ -157,9 +158,9 @@ namespace TriAxis.RunSharp
 			return AttributeGen<AssemblyGen>.CreateAndAdd(this, ref _moduleAttributes, AttributeTargets.Module, type, args, TypeMapper);
 		}
 
-		#endregion
+#endregion
 
-		#region Types
+#region Types
 		public TypeGen Class(string name)
 		{
 			return Class(name, TypeMapper.MapType(typeof(object)));
@@ -232,9 +233,9 @@ namespace TriAxis.RunSharp
 		{
 			return new DelegateGen(this, Qualify(name), returnType, (_attrs | TypeAttributes.Sealed) & ~(TypeAttributes.Abstract | TypeAttributes.BeforeFieldInit));
 		}
-        #endregion
+#endregion
 
-        #region Construction
+#region Construction
 
         AssemblyBuilderAccess _access;
         public ITypeMapper TypeMapper { get; private set; }
@@ -450,3 +451,4 @@ namespace TriAxis.RunSharp
 #endregion
 	}
 }
+#endif

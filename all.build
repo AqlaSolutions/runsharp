@@ -12,24 +12,36 @@
   <ItemGroup>
     <ProjectToBuild Include="RunSharp\runsharp.csproj"/>
     <ProjectToBuild Include="RunSharpIKVM\runsharp_IKVM.csproj"/>
-    <Net30Files Include="RunSharp\bin\Release\RunSharp.*"/>
+    <Net20Files Include="RunSharp\bin\Release\RunSharp.*"/>
+    <Net20Files Include="LICENSE"/>
     <IKVMFiles Include="RunSharpIKVM\bin\Release\RunSharpIKVM.*"/>
     <IKVMFiles Include="RunSharpIKVM\bin\Release\IKVM.Reflection.*"/>
+    <IKVMFiles Include="LICENSE"/>
+    <IKVMFiles Include="lib\IKVM-LICENSE"/>
+    <WP8Files Include="RunSharpWP8\bin\Release\RunSharp.*"/>
+    <WP8Files Include="LICENSE"/>
   </ItemGroup>
   <Target Name="BuildKit">
     
     <RemoveDir Directories="$(NugetDirectory)"/>
     <RemoveDir Directories="$(ZipDirectory)"/>
 
-    <Copy SourceFiles="LICENSE" DestinationFolder="$(ZipDirectory)"/>
-    <Copy SourceFiles="lib\IKVM-LICENSE" DestinationFolder="$(ZipDirectory)"/>
-    
     <MSBuild Projects="@(ProjectToBuild)" Targets="Rebuild" Properties="Configuration=Release" BuildInParallel="true"/>
     
-    <Copy SourceFiles="@(Net30Files)" DestinationFolder="$(NugetDirectory)\net20"/>
-    <Copy SourceFiles="@(Net30Files)" DestinationFolder="$(ZipDirectory)"/>
+    <Copy SourceFiles="@(Net20Files)" DestinationFolder="$(NugetDirectory)\net20"/>
+    <Copy SourceFiles="@(Net20Files)" DestinationFolder="$(ZipDirectory)\net20"/>
     <Copy SourceFiles="@(IKVMFiles)" DestinationFolder="$(NugetDirectory)\net20"/>
-    <Copy SourceFiles="@(IKVMFiles)" DestinationFolder="$(ZipDirectory)"/>
+    <Copy SourceFiles="@(IKVMFiles)" DestinationFolder="$(ZipDirectory)\net20"/>
+
+    <Copy SourceFiles="@(Net20Files)" DestinationFolder="$(NugetDirectory)\net30"/>
+    <Copy SourceFiles="@(IKVMFiles)" DestinationFolder="$(NugetDirectory)\net30"/>
+
+    <Copy SourceFiles="@(Net20Files)" DestinationFolder="$(NugetDirectory)\net35"/>
+    <Copy SourceFiles="@(IKVMFiles)" DestinationFolder="$(NugetDirectory)\net35"/>
+
+    <Copy SourceFiles="@(WP8Files)" DestinationFolder="$(NugetDirectory)\windowsphone8"/>
+    <Copy SourceFiles="@(WP8Files)" DestinationFolder="$(ZipDirectory)\windowsphone8"/>
+
     <Exec Command="packages\NuGet.CommandLine.2.0.40000\tools\NuGet.exe pack $(NugetDirectory)\..\runsharp.nuspec"/>
     
     <ItemGroup>

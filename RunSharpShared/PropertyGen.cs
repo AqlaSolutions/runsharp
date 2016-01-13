@@ -24,6 +24,9 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+
+#if !PHONE8
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -106,7 +109,7 @@ namespace TriAxis.RunSharp
 			return _setter;
 		}
 
-		#region Custom Attributes
+#region Custom Attributes
 
 		public PropertyGen Attribute(AttributeType type)
 		{
@@ -138,9 +141,9 @@ namespace TriAxis.RunSharp
 			return AttributeGen<PropertyGen>.CreateAndAdd(this, ref _customAttributes, AttributeTargets.Property, type, args, TypeMapper);
 		}
 
-        #endregion
+#endregion
 
-        #region Index parameter definition
+#region Index parameter definition
 
 #if FEAT_IKVM
 
@@ -172,7 +175,7 @@ namespace TriAxis.RunSharp
 			BeginIndex(type, name);
 			return this;
 		}
-		#endregion
+#endregion
 
 		public bool IsAbstract => (_attrs & MethodAttributes.Abstract) != 0;
 	    public bool IsOverride => Utils.IsOverride(_attrs);
@@ -213,7 +216,7 @@ namespace TriAxis.RunSharp
 
 	    public override Type GetReturnType(ITypeMapper typeMapper) => _type;
 
-	    #region IMethodInfo Members
+#region IMethodInfo Members
 
 		MemberInfo IMemberInfo.Member => _pb;
 
@@ -223,15 +226,17 @@ namespace TriAxis.RunSharp
 
 	    bool IMemberInfo.IsParameterArray => _indexParameters.Count > 0 && _indexParameters[_indexParameters.Count - 1].IsParameterArray;
 
-	    #endregion
+#endregion
 
-		#region IDelayedCompletion Members
+#region IDelayedCompletion Members
 
 		void IDelayedCompletion.Complete()
 		{
 			AttributeGen.ApplyList(ref _customAttributes, _pb.SetCustomAttribute);
 		}
 
-		#endregion
+#endregion
 	}
 }
+
+#endif

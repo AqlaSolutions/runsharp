@@ -3,7 +3,7 @@
   <metadata>
     <id>aqla.runsharp</id>
     <title>Aqla.RunSharp</title>
-    <version>0.2.0.2</version>
+    <version>0.2.0.3</version>
     <authors>Vladyslav Taranov</authors>
     <copyright>Vladyslav Taranov 2015, fork source from Stefan Simek 2009</copyright>
     <owners>Vladyslav Taranov</owners>
@@ -20,6 +20,7 @@ This package is a fork of TriAxis.RunSharp (the original is now abandoned).</des
     <tags>runsharp reflection reflection.emit compilation IKVM aqla aqlasolutions IL</tags>
     <language>en-US</language>
     <releaseNotes>
+* 0.2.0.3 - added support for Windows Phone 8
 * 0.2.0.0 - initial fork release:
 - added IKVM support
 - examples converted to tests

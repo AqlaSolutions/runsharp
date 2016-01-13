@@ -80,7 +80,7 @@ namespace TriAxis.RunSharp.Operands
 
             if (candidates == null)
                 throw new InvalidOperationException(string.Format(null, Properties.Messages.ErrInvalidOperation, _op.MethodName,
-                    string.Join(", ", Array.ConvertAll<Operand, string>(_operands, op=>op.GetReturnType(typeMapper).FullName))));
+                    string.Join(", ", ConvertAll<Operand, string>(_operands, op=>op.GetReturnType(typeMapper).FullName))));
 
             _af = OverloadResolver.FindBest(candidates, typeMapper);
 
@@ -88,7 +88,17 @@ namespace TriAxis.RunSharp.Operands
                 throw new AmbiguousMatchException(Properties.Messages.ErrAmbiguousBinding);
         }
 
-		internal override void EmitGet(CodeGen g)
+        static TOut[] ConvertAll<TIn, TOut>(TIn[] array, Converter<TIn, TOut> converter)
+        {
+            TOut[] newArray = new TOut[array.Length];
+            for (int i = 0; i < array.Length; i++)
+            {
+                newArray[i] = converter(array[i]);
+            }
+            return newArray;
+        }
+
+        internal override void EmitGet(CodeGen g)
 		{
 		    PrepareAf(g.TypeMapper);
             _af.EmitArgs(g, _operands);

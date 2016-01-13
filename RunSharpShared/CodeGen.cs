@@ -55,7 +55,10 @@ namespace TriAxis.RunSharp
         ExpressionFactory ExpressionFactory { get; }
     }
 
-    interface ICodeGenContext : IMemberInfo, ISignatureGen, IDelayedDefinition, IDelayedCompletion, ICodeGenBasicContext
+    interface ICodeGenContext : IMemberInfo, ISignatureGen, ICodeGenBasicContext
+#if !PHONE8
+        , IDelayedDefinition, IDelayedCompletion
+#endif
     {
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Typical implementation invokes XxxBuilder.GetILGenerator() which is a method as well.")]
 		ILGenerator GetILGenerator();
@@ -66,8 +69,11 @@ namespace TriAxis.RunSharp
 
 	public partial class CodeGen
 	{
-	    readonly ConstructorGen _cg;
-		bool _chainCalled;
+#if !PHONE8
+        readonly ConstructorGen _cg;
+#endif
+
+        bool _chainCalled;
 		bool _reachable = true;
 		bool _hasRetVar, _hasRetLabel;
 		LocalBuilder _retVar;
@@ -82,13 +88,16 @@ namespace TriAxis.RunSharp
 	    internal CodeGen(ICodeGenContext context)
 		{
 			Context = context;
-			_cg = context as ConstructorGen;
+#if !PHONE8
+
+            _cg = context as ConstructorGen;
 
 			if (_cg != null && _cg.IsStatic)
 				// #14 - cg is relevant for instance constructors - it wreaks havoc in a static constructor
 				_cg = null;
-
-			IL = context.GetILGenerator();
+            
+#endif
+            IL = context.GetILGenerator();
 		}
 
 		/*public static CodeGen CreateDynamicMethod(string name, Type returnType, params Type[] parameterTypes, Type owner, bool skipVisibility)
@@ -107,7 +116,7 @@ namespace TriAxis.RunSharp
 			return new CodeGen(builder.GetILGenerator(), builder.DeclaringType, builder.ReturnType, builder.IsStatic, parameterTypes);
 		}*/
 
-		#region Arguments
+#region Arguments
 		public ContextualOperand This()
 		{
 			if (Context.IsStatic)
@@ -147,9 +156,9 @@ namespace TriAxis.RunSharp
 			ParameterGen param = Context.GetParameterByName(name);
 			return new ContextualOperand(new _Arg(ThisOffset + param.Position - 1, param.Type), TypeMapper);
 		}
-		#endregion
+#endregion
 
-		#region Locals
+#region Locals
 		public ContextualOperand Local()
 		{
 			return new ContextualOperand(new _Local(this), TypeMapper);
@@ -191,7 +200,7 @@ namespace TriAxis.RunSharp
 			Assign(var, init);
 			return new ContextualOperand(var, TypeMapper);
 		}
-		#endregion
+#endregion
 
 		bool HasReturnValue
 		{

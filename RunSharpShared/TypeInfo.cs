@@ -121,7 +121,7 @@ namespace TriAxis.RunSharp
                     if (_constructors == null)
                     {
                         ConstructorInfo[] ctors = _t.GetConstructors(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Instance);
-                        _constructors = Array.ConvertAll<ConstructorInfo, IMemberInfo>(ctors, delegate(ConstructorInfo ci) { return new StdMethodInfo(ci, _); });
+                        _constructors = ConvertAll<ConstructorInfo, IMemberInfo>(ctors, delegate(ConstructorInfo ci) { return new StdMethodInfo(ci, _); });
                     }
                     return _constructors;
                 }
@@ -134,7 +134,7 @@ namespace TriAxis.RunSharp
                     if (_fields == null)
                     {
                         FieldInfo[] fis = _t.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Static);
-                        _fields = Array.ConvertAll<FieldInfo, IMemberInfo>(fis, delegate(FieldInfo fi) { return new StdFieldInfo(fi); });
+                        _fields = ConvertAll<FieldInfo, IMemberInfo>(fis, delegate(FieldInfo fi) { return new StdFieldInfo(fi); });
                     }
                     return _fields;
                 }
@@ -147,7 +147,7 @@ namespace TriAxis.RunSharp
                     if (_properties == null)
                     {
                         PropertyInfo[] pis = _t.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Static);
-                        _properties = Array.ConvertAll<PropertyInfo, IMemberInfo>(pis, delegate(PropertyInfo pi) { return new StdPropertyInfo(pi, _); });
+                        _properties = ConvertAll<PropertyInfo, IMemberInfo>(pis, delegate(PropertyInfo pi) { return new StdPropertyInfo(pi, _); });
                     }
                     return _properties;
                 }
@@ -160,7 +160,7 @@ namespace TriAxis.RunSharp
                     if (_events == null)
                     {
                         EventInfo[] eis = _t.GetEvents(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Static);
-                        _events = Array.ConvertAll<EventInfo, IMemberInfo>(eis, delegate(EventInfo ei) { return new StdEventInfo(ei); });
+                        _events = ConvertAll<EventInfo, IMemberInfo>(eis, delegate(EventInfo ei) { return new StdEventInfo(ei); });
                     }
                     return _events;
                 }
@@ -173,10 +173,21 @@ namespace TriAxis.RunSharp
                     if (_methods == null)
                     {
                         MethodInfo[] mis = _t.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Static);
-                        _methods = Array.ConvertAll<MethodInfo, IMemberInfo>(mis, delegate(MethodInfo mi) { return new StdMethodInfo(mi, _); });
+                        _methods = ConvertAll<MethodInfo, IMemberInfo>(mis, delegate(MethodInfo mi) { return new StdMethodInfo(mi, _); });
                     }
                     return _methods;
                 }
+            }
+
+
+            static TOut[] ConvertAll<TIn, TOut>(TIn[] array, Converter<TIn, TOut> converter)
+            {
+                TOut[] newArray = new TOut[array.Length];
+                for (int i = 0; i < array.Length; i++)
+                {
+                    newArray[i] = converter(array[i]);
+                }
+                return newArray;
             }
 
             public string DefaultMember
@@ -212,9 +223,10 @@ namespace TriAxis.RunSharp
 
         CacheEntry GetCacheEntry(Type t)
         {
+#if !PHONE8
             if (t is TypeBuilder)
                 t = t.UnderlyingSystemType;
-
+#endif
             lock (_cache)
             {
                 CacheEntry ce;

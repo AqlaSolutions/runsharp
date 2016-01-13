@@ -191,9 +191,11 @@ namespace TriAxis.RunSharp
 
 			target.Decrement().Emit(this);
 		}
-		#endregion
+        #endregion
 
-		#region Constructor chaining
+#if !PHONE8
+
+        #region Constructor chaining
 		public void InvokeThis(params Operand[] args)
 		{
 			if (_cg == null)
@@ -232,15 +234,18 @@ namespace TriAxis.RunSharp
 			IL.Emit(OpCodes.Ldarg_0);
 			IL.Emit(OpCodes.Call, _cg.Type.CommonConstructor().GetMethodBuilder());
 		}
-		#endregion
+        #endregion
+#endif
 
-		void BeforeStatement()
+
+        void BeforeStatement()
 		{
 			if (!_reachable)
 				throw new InvalidOperationException(Properties.Messages.ErrCodeNotReachable);
-
-			if (_cg != null && !_chainCalled && !_cg.Type.TypeBuilder.IsValueType)
+#if !PHONE8
+            if (_cg != null && !_chainCalled && !_cg.Type.TypeBuilder.IsValueType)
 				InvokeBase();
+#endif
 		}
 
 		void DoInvoke(Operand invocation)
@@ -252,7 +257,7 @@ namespace TriAxis.RunSharp
 				IL.Emit(OpCodes.Pop);
 		}
 
-        #region Invocation
+#region Invocation
 
 #if FEAT_IKVM
 
@@ -314,9 +319,9 @@ namespace TriAxis.RunSharp
 		{
 			Invoke(TypeMapper.MapType(typeof(Console)), "WriteLine", args);
 		}
-		#endregion
+#endregion
 
-		#region Event subscription
+#region Event subscription
 		public void SubscribeEvent(Operand target, string eventName, Operand handler)
 		{
 			if ((object)target == null)
@@ -346,7 +351,7 @@ namespace TriAxis.RunSharp
 			handler.EmitGet(this);
 			EmitCallHelper(mi, target);
 		}
-		#endregion
+#endregion
 
 		public void InitObj(Operand target)
 		{
@@ -359,7 +364,7 @@ namespace TriAxis.RunSharp
 			IL.Emit(OpCodes.Initobj, target.GetReturnType(TypeMapper));
 		}
 
-		#region Flow Control
+#region Flow Control
 		interface IBreakable
 		{
 			Label GetBreakTarget();
@@ -626,7 +631,7 @@ namespace TriAxis.RunSharp
 		{
 			GetSwitchBlock().Case(null);
 		}
-		#endregion
+#endregion
 
 		Block GetBlock()
 		{
@@ -993,7 +998,7 @@ namespace TriAxis.RunSharp
 			LocalBuilder _exp;
 			bool _defaultExists;
 			bool _endReachable;
-		    readonly SortedList<IComparable, Label> _cases = new SortedList<IComparable, Label>();
+		    readonly MonoSortedList<IComparable, Label> _cases = new MonoSortedList<IComparable, Label>();
 
 		    readonly ITypeMapper _typeMapper;
 

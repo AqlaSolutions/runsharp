@@ -47,6 +47,8 @@ namespace TriAxis.RunSharp
 	    readonly ICodeGenBasicContext _context;
 	    CodeGen _code;
 		List<AttributeGen> _customAttributes;
+#if !PHONE8
+        public TypeGen Owner { get; }
 
 		protected RoutineGen(TypeGen owner, Type returnType, ICodeGenBasicContext context)
 			: base(returnType, owner.TypeMapper)
@@ -57,8 +59,10 @@ namespace TriAxis.RunSharp
 			if (owner != null)
 				owner.RegisterForCompletion(this);
 		}
+        
+#endif
 
-		protected RoutineGen(Type ownerType, Type returnType, ICodeGenBasicContext context)
+        protected RoutineGen(Type ownerType, Type returnType, ICodeGenBasicContext context)
 			: base(returnType, context.TypeMapper)
 		{
 		    _context = context;
@@ -66,8 +70,7 @@ namespace TriAxis.RunSharp
 		}
 
 	    public Type OwnerType { get; }
-	    public TypeGen Owner { get; }
-
+	    
 	    public CodeGen GetCode()
 		{
 			if (_code == null)
@@ -141,6 +144,8 @@ namespace TriAxis.RunSharp
 
 		#region IRequiresCompletion Members
 
+#if !PHONE8
+
 		void IDelayedDefinition.EndDefinition()
 		{
 			LockSignature();
@@ -157,6 +162,8 @@ namespace TriAxis.RunSharp
 
 			AttributeGen.ApplyList(ref _customAttributes, SetCustomAttribute);
 		}
+#endif
+
 
 		#endregion
 

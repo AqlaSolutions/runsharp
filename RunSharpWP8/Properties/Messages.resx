@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ErrAmbiguousBinding" xml:space="preserve">
+    <value>Ambiguous binding</value>
+  </data>
+  <data name="ErrAmbiguousConversion" xml:space="preserve">
+    <value>Conversion from '{0}' to '{1}' is ambiguous</value>
+  </data>
+  <data name="ErrAmbiguousIndexerName" xml:space="preserve">
+    <value>Indexers for the type cannot have different names</value>
+  </data>
+  <data name="ErrAmbiguousSwitchExpression" xml:space="preserve">
+    <value>The switch type cannot be determined unambiguously</value>
+  </data>
+  <data name="ErrArgCountMismatch" xml:space="preserve">
+    <value>Argument count mismatch</value>
+  </data>
+  <data name="ErrArgIndexOutOfRange" xml:space="preserve">
+    <value>Index must be greater than 0 and less than the number of arguments</value>
+  </data>
+  <data name="ErrArgMustImplementIConvertible" xml:space="preserve">
+    <value>Argument must implement IConvertible</value>
+  </data>
+  <data name="ErrArrayOnly" xml:space="preserve">
+    <value>This method can be used only on an array operand</value>
+  </data>
+  <data name="ErrAsmMissingSaveFile" xml:space="preserve">
+    <value>File name must be set when assembly is configured for saving</value>
+  </data>
+  <data name="ErrByRefTypeMismatch" xml:space="preserve">
+    <value>Argument passed by reference must have exactly the same type as the formal argument</value>
+  </data>
+  <data name="ErrCodeNotReachable" xml:space="preserve">
+    <value>Cannot emit unreachable code</value>
+  </data>
+  <data name="ErrCodeStaticThis" xml:space="preserve">
+    <value>Cannot use This() in a static method</value>
+  </data>
+  <data name="ErrConstructorAlreadyChained" xml:space="preserve">
+    <value>Specific chained constructor can be invoked only as the first statement in a constructor</value>
+  </data>
+  <data name="ErrConstructorOnlyCall" xml:space="preserve">
+    <value>This method can be called only for instance constructor code</value>
+  </data>
+  <data name="ErrCustomEventFieldAccess" xml:space="preserve">
+    <value>Event with custom accessors cannot be accessed as a field</value>
+  </data>
+  <data name="ErrDuplicateCase" xml:space="preserve">
+    <value>The case with same value has already been defined</value>
+  </data>
+  <data name="ErrDynamicMethodInstance" xml:space="preserve">
+    <value>This method cannot be used on an instance method DynamicMethodGen</value>
+  </data>
+  <data name="ErrDynamicMethodNotCompleted" xml:space="preserve">
+    <value>The DynamicMethod hasn't been completed yet</value>
+  </data>
+  <data name="ErrDynamicMethodNotInstance" xml:space="preserve">
+    <value>This method can be used only on an instance method DynamicMethodGen</value>
+  </data>
+  <data name="ErrElseWithoutIf" xml:space="preserve">
+    <value>Else() called without a matching If()</value>
+  </data>
+  <data name="ErrIndexCountMismatch" xml:space="preserve">
+    <value>Index count mismatch</value>
+  </data>
+  <data name="ErrInterfaceNoConversion" xml:space="preserve">
+    <value>Interface cannot define conversion operators</value>
+  </data>
+  <data name="ErrInterfaceNoCtor" xml:space="preserve">
+    <value>Interface cannot define a constructor</value>
+  </data>
+  <data name="ErrInterfaceNoExplicitImpl" xml:space="preserve">
+    <value>Interface cannot contain explicit interface implementations</value>
+  </data>
+  <data name="ErrInterfaceNoField" xml:space="preserve">
+    <value>Interface cannot have fields</value>
+  </data>
+  <data name="ErrInterfaceNoNested" xml:space="preserve">
+    <value>Interface cannot contain nested types</value>
+  </data>
+  <data name="ErrInterfaceNotImplemented" xml:space="preserve">
+    <value>Method '{1}' of interface '{0}' is not implemented</value>
+  </data>
+  <data name="ErrInvalidBreak" xml:space="preserve">
+    <value>Break() called outside of a loop or switch</value>
+  </data>
+  <data name="ErrInvalidConditionalVariants" xml:space="preserve">
+    <value>ifTrue and ifFalse must be of the same type</value>
+  </data>
+  <data name="ErrInvalidContinue" xml:space="preserve">
+    <value>Continue() called outside of a loop</value>
+  </data>
+  <data name="ErrInvalidConversion" xml:space="preserve">
+    <value>Cannot convert type from '{0}' to '{1}'</value>
+  </data>
+  <data name="ErrInvalidDelegateType" xml:space="preserve">
+    <value>Invalid delegate type</value>
+  </data>
+  <data name="ErrInvalidEventAccessors" xml:space="preserve">
+    <value>Either none or both 'Add' and 'Remove' event accessors must be defined</value>
+  </data>
+  <data name="ErrInvalidExceptionStatement" xml:space="preserve">
+    <value>Statement can be used only in an exception block</value>
+  </data>
+  <data name="ErrInvalidFieldContext" xml:space="preserve">
+    <value>The field is accessed from an invalid context</value>
+  </data>
+  <data name="ErrInvalidFinallyBranch" xml:space="preserve">
+    <value>Cannot transfer control out of a finally handler</value>
+  </data>
+  <data name="ErrInvalidMethodBase" xml:space="preserve">
+    <value>The provided method must be either a MethodInfo or a ConstructorInfo</value>
+  </data>
+  <data name="ErrInvalidOperand" xml:space="preserve">
+    <value>Invalid operand</value>
+  </data>
+  <data name="ErrInvalidOperation" xml:space="preserve">
+    <value>Cannot apply operator '{0}' to operands of type '{1}'</value>
+  </data>
+  <data name="ErrInvalidPropertyContext" xml:space="preserve">
+    <value>The property is accessed from an invalid context</value>
+  </data>
+  <data name="ErrInvalidSwitchStatement" xml:space="preserve">
+    <value>Statement can be used only in a switch block</value>
+  </data>
+  <data name="ErrInvalidVariableContext" xml:space="preserve">
+    <value>The variable is accessed from an invalid context</value>
+  </data>
+  <data name="ErrInvalidVariableScope" xml:space="preserve">
+    <value>The variable is accessed from an invalid scope</value>
+  </data>
+  <data name="ErrMethodMustReturnValue" xml:space="preserve">
+    <value>Method must provide a return value: {0}</value>
+  </data>
+  <data name="ErrMissingConstructor" xml:space="preserve">
+    <value>Cannot find constructor</value>
+  </data>
+  <data name="ErrMissingDefaultProperty" xml:space="preserve">
+    <value>The target type doesn't have a default property</value>
+  </data>
+  <data name="ErrMissingEvent" xml:space="preserve">
+    <value>Cannot find event</value>
+  </data>
+  <data name="ErrMissingField" xml:space="preserve">
+    <value>Cannot find field</value>
+  </data>
+  <data name="ErrMissingMethod" xml:space="preserve">
+    <value>Cannot find method</value>
+  </data>
+  <data name="ErrMissingProperty" xml:space="preserve">
+    <value>Cannot find property</value>
+  </data>
+  <data name="ErrMissingPropertyIndex" xml:space="preserve">
+    <value>Cannot access indexed property without indexes</value>
+  </data>
+  <data name="ErrMultiAttribute" xml:space="preserve">
+    <value>Attribute '{0}' has already been set</value>
+  </data>
+  <data name="ErrMultiVisibility" xml:space="preserve">
+    <value>Member visibility can be set only once</value>
+  </data>
+  <data name="ErrMultiVTable" xml:space="preserve">
+    <value>Member virtual type can be set only once</value>
+  </data>
+  <data name="ErrNoOpenBlocks" xml:space="preserve">
+    <value>There is no block that can be closed by this method</value>
+  </data>
+  <data name="ErrOpenBlocksRemaining" xml:space="preserve">
+    <value>Cannot complete code as there are some remaining opened blocks</value>
+  </data>
+  <data name="ErrOperandNotReadable" xml:space="preserve">
+    <value>Operand of type '{0}' cannot be read</value>
+  </data>
+  <data name="ErrOperandNotReferencible" xml:space="preserve">
+    <value>Address of operand of type '{0}' cannot be retrieved</value>
+  </data>
+  <data name="ErrOperandNotWritable" xml:space="preserve">
+    <value>Operand of type '{0}' cannot be written</value>
+  </data>
+  <data name="ErrStructNoBaseCtor" xml:space="preserve">
+    <value>Value type constructor cannot invoke a base constructor</value>
+  </data>
+  <data name="ErrStructNoDefaultCtor" xml:space="preserve">
+    <value>Value types cannot have default constructors</value>
+  </data>
+  <data name="ErrTypeAlreadyCompleted" xml:space="preserve">
+    <value>Type is already completed</value>
+  </data>
+  <data name="ErrTypeMustBeDelegate" xml:space="preserve">
+    <value>The provided type must be a delegate type</value>
+  </data>
+  <data name="ErrTypeNotCompleted" xml:space="preserve">
+    <value>The type hasn't been completed yet</value>
+  </data>
+  <data name="ErrUninitializedVarAccess" xml:space="preserve">
+    <value>Variable used without having been initialized</value>
+  </data>
+  <data name="ErrUntypedVarAccess" xml:space="preserve">
+    <value>Variable accessed before it's type was defined</value>
+  </data>
+  <data name="ErrVoidMethodReturningValue" xml:space="preserve">
+    <value>Cannot return value from a void method</value>
+  </data>
+  <data name="ErrMultiParamModifier" xml:space="preserve">
+    <value>Only one parameter modifier is allowed out of [Ref, Out, Params]</value>
+  </data>
+  <data name="ErrNoCodeAllowed" xml:space="preserve">
+    <value>Cannot emit code for an abstract or runtime-provided method</value>
+  </data>
+  <data name="ErrParamArrayMustBeLast" xml:space="preserve">
+    <value>The parameter array must be the last parameter defined</value>
+  </data>
+  <data name="ErrParamArrayNotArray" xml:space="preserve">
+    <value>The parameter array must be defined using an array type</value>
+  </data>
+  <data name="ErrParamUnknown" xml:space="preserve">
+    <value>Unknown parameter: {0}</value>
+  </data>
+  <data name="ErrAttributeMultiField" xml:space="preserve">
+    <value>Value for attribute field '{0}' has already been defined</value>
+  </data>
+  <data name="ErrAttributeMultiProperty" xml:space="preserve">
+    <value>Value for attribute property '{0}' has already been defined</value>
+  </data>
+  <data name="ErrAttributeReadOnlyProperty" xml:space="preserve">
+    <value>Cannot set value for read-only attribute property '{0}'</value>
+  </data>
+  <data name="ErrDynamicMethodNoCustomAttrs" xml:space="preserve">
+    <value>Dynamic methods cannot have custom attributes</value>
+  </data>
+</root>
