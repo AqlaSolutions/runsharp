@@ -1,7 +1,7 @@
 #if !FEAT_IKVM
 /*
 Copyright(c) 2009, Stefan Simek
-Copyright(c) 2015, Vladyslav Taranov
+Copyright(c) 2016, Vladyslav Taranov
 
 MIT License
 

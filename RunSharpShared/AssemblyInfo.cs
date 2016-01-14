@@ -1,6 +1,6 @@
 /*
 Copyright(c) 2009, Stefan Simek
-Copyright(c) 2015, Vladyslav Taranov
+Copyright(c) 2016, Vladyslav Taranov
 
 MIT License
 
@@ -57,8 +57,8 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("0.2.0.4")]
-[assembly: AssemblyFileVersion("0.2.0.4")]
+[assembly: AssemblyVersion("0.2.0.5")]
+[assembly: AssemblyFileVersion("0.2.0.5")]
 
 //[assembly: CLSCompliant(true)]
 #if !PHONE8 && !SILVERLIGHT

@@ -3,9 +3,9 @@
   <metadata>
     <id>aqla.runsharp</id>
     <title>Aqla.RunSharp</title>
-    <version>0.2.0.4</version>
+    <version>0.2.0.5</version>
     <authors>Vladyslav Taranov</authors>
-    <copyright>Vladyslav Taranov 2015, fork source from Stefan Simek 2009</copyright>
+    <copyright>Vladyslav Taranov 2016, fork source from Stefan Simek 2009</copyright>
     <owners>Vladyslav Taranov</owners>
     <summary>Runtime IL generator based on Reflection.Emit and IKVM which allows you to emit IL in a way similar to writing normal C# code.</summary>
     <description>RunSharp is a runtime IL generator based on Reflection.Emit and IKVM which allows you to emit IL in a way similar to writing normal C# code.
@@ -20,6 +20,7 @@ This package is a fork of TriAxis.RunSharp (the original is now abandoned).</des
     <tags>runsharp reflection reflection.emit compilation IKVM aqla aqlasolutions IL</tags>
     <language>en-US</language>
     <releaseNotes>
+* 0.2.0.5 - operand leaking detection
 * 0.2.0.4 - added support for Silverlight 4
 * 0.2.0.3 - added support for Windows Phone 8
 * 0.2.0.0 - initial fork release:

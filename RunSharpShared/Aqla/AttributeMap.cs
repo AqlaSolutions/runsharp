@@ -13,7 +13,7 @@ protobuf-net is Copyright 2008 Marc Gravell
    limitations under the License.
    
 
-AqlaSerializer is Copyright 2015 Vladyslav Taranov
+AqlaSerializer is Copyright 2016 Vladyslav Taranov
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ AqlaSerializer is Copyright 2015 Vladyslav Taranov
    limitations under the License.
 */
 
-// Modified by Vladyslav Taranov for AqlaSerializer, 2015
+// Modified by Vladyslav Taranov for AqlaSerializer, 2016
 
 using System;
 using System.Collections.Generic;
