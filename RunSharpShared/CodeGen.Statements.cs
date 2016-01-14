@@ -248,13 +248,23 @@ namespace TriAxis.RunSharp
 #endif
 		}
 
-		void DoInvoke(Operand invocation)
-		{
-			BeforeStatement();
+        /// <summary>
+        /// Allows evaluation of <see cref="StaticFactory.Invoke"/>, <see cref="ExpressionFactory.New"/> and others. The result of the evaluation is discarded.
+        /// </summary>
+        /// <remarks>E.g. if you already have `exp.New(typeof(MyClass))` part you may wrap it with Eval: g.Eval(myExp).</remarks>
+        public void Eval(Operand operand)
+        {
+            BeforeStatement();
 
-			invocation.EmitGet(this);
-			if (!Helpers.AreTypesEqual(invocation.GetReturnType(TypeMapper), typeof(void), TypeMapper))
-				IL.Emit(OpCodes.Pop);
+            operand.EmitGet(this);
+            if (!Helpers.AreTypesEqual(operand.GetReturnType(TypeMapper), typeof(void), TypeMapper))
+                IL.Emit(OpCodes.Pop);
+        }
+
+
+        void DoInvoke(Operand invocation)
+		{
+            Eval(invocation);
 		}
 
 #region Invocation
