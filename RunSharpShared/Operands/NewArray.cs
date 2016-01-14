@@ -47,15 +47,22 @@ namespace TriAxis.RunSharp.Operands
 	{
 	    readonly Type _t;
 	    readonly Operand[] _indexes;
+        protected override void ResetLeakedStateRecursively()
+        {
+            base.ResetLeakedStateRecursively();
+            _indexes.SetLeakedState(false);
+        }
 
-		public NewArray(Type t, Operand[] indexes)
+
+        public NewArray(Type t, Operand[] indexes)
 		{
 			_t = t;
 			_indexes = indexes;
 		}
 
-		internal override void EmitGet(CodeGen g)
-		{
+		internal override void EmitGet(CodeGen g) 
+{
+		    this.SetLeakedState(false); 
 			for (int i = 0; i < _indexes.Length; i++)
 				g.EmitGetHelper(_indexes[i], g.TypeMapper.MapType(typeof(int)), false);
 

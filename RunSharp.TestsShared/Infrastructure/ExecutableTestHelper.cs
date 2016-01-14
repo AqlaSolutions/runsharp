@@ -54,14 +54,15 @@ namespace TriAxis.RunSharp
         string GetTestName(Generator g)
         {
             Type declType = g.Method.DeclaringType;
-            return declType.Namespace + "." + declType.Name.TrimStart('_') + "." + g.Method.Name;
+            var r = declType.Namespace + "." + declType.Name.TrimStart('_') + "." + g.Method.Name;
+            return r.IndexOfAny(Path.GetInvalidPathChars()) == -1 ? r : declType.Namespace + "." + Guid.NewGuid();
         }
 
         string[] GetTestArguments(Generator g)
         {
             return (Attribute.GetCustomAttribute(g.Method, typeof(TestArgumentsAttribute)) as TestArgumentsAttribute)?.Arguments;
         }
-        
+
         public void RunTest(MethodInfo testMethod, bool exe)
         {
             if (testMethod == null) throw new ArgumentNullException(nameof(testMethod));
@@ -79,10 +80,10 @@ namespace TriAxis.RunSharp
             RunTest(gen, exe);
         }
 
-        public void RunTest(Generator test, bool exe)
+        public void RunTest(Generator test, bool exe, string testName = null)
         {
             if (test == null) throw new ArgumentNullException(nameof(test));
-            string testName = GetTestName(test);
+            testName = testName ?? GetTestName(test);
             Console.WriteLine(">>> GEN {0}", testName);
             string name = testName;
 
@@ -131,8 +132,17 @@ namespace TriAxis.RunSharp
             AppDomain.CurrentDomain.ExecuteAssembly(exeFilePath, null, GetTestArguments(test));
 #endif
 
-                Console.WriteLine("<<< END {0}", testName);
+            Console.WriteLine("<<< END {0}", testName);
             Console.WriteLine();
+
+            if (exe)
+            {
+                try
+                {
+                    File.Delete(exeFilePath);
+                }
+                catch { }
+            }
         }
     }
 }

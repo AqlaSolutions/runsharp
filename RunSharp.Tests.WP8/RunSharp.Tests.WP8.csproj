@@ -53,6 +53,9 @@
     <Compile Include="..\RunSharp.TestsShared\Infrastructure\ConsoleTester.cs">
       <Link>ConsoleTester.cs</Link>
     </Compile>
+    <Compile Include="..\RunSharp.TestsShared\Tests\TestBase.cs">
+      <Link>TestBase.cs</Link>
+    </Compile>
     <Compile Include="..\RunSharp.TestsShared\Tests\TestResources.cs">
       <Link>TestResources.cs</Link>
     </Compile>

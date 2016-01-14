@@ -36,6 +36,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Tests\Bugs\X14_StaticConstructor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\Bugs\X17_IsNull.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\Bugs\X1864084_ValueTypeVirtual.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\LeakDetectionTest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\TestBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\TestResources.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\TestSetup.cs" />
   </ItemGroup>

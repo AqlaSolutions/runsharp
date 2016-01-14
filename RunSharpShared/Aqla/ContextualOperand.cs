@@ -49,6 +49,25 @@ namespace TryAxis.RunSharp
 {
     public class ContextualOperand : Operand
     {
+        internal System.Type GetInternalOperandType()
+        {
+            return (_operand as ContextualOperand)?.GetInternalOperandType() ?? _operand.GetType();
+        }
+
+        protected override bool DetectsLeaking => false;
+
+        protected override void ResetLeakedStateRecursively()
+        {
+            base.ResetLeakedStateRecursively();
+            _operand.SetLeakedState(false);
+        }
+
+        protected override void SetLeakedStateRecursively()
+        {
+            _operand.LeakedState = true;
+            base.SetLeakedStateRecursively();
+        }
+
         readonly Operand _operand;
         public ITypeMapper TypeMapper { get; }
 
@@ -61,44 +80,56 @@ namespace TryAxis.RunSharp
 
         public override Type GetReturnType(ITypeMapper typeMapper)
         {
+            this.SetLeakedState(false);
             return _operand.GetReturnType(typeMapper);
         }
 
-        internal override void EmitGet(CodeGen g)
-        {
+        internal override void EmitGet(CodeGen g) 
+{
+		    this.SetLeakedState(false); 
             _operand.EmitGet(g);
         }
 
         internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
-        {
+{
+		    this.SetLeakedState(false); 
+            this.SetLeakedState(false);
             _operand.EmitSet(g, value, allowExplicitConversion);
         }
 
         internal override void EmitAddressOf(CodeGen g)
-        {
+{
+		    this.SetLeakedState(false); 
             _operand.EmitAddressOf(g);
         }
 
         internal override void EmitBranch(CodeGen g, BranchSet branchSet, Label label)
-        {
+{
+		    this.SetLeakedState(false);
             _operand.EmitBranch(g, branchSet, label);
         }
 
         internal override BindingFlags GetBindingFlags()
         {
+            this.SetLeakedState(false);
             return _operand.GetBindingFlags();
         }
 
-        internal override bool TrivialAccess => _operand.TrivialAccess;
+        internal override bool TrivialAccess
+        { get { this.SetLeakedState(false); return _operand.TrivialAccess; } }
 
-        internal override bool IsStaticTarget => _operand.IsStaticTarget;
+        internal override bool IsStaticTarget
+        { get { this.SetLeakedState(false); return _operand.IsStaticTarget; } }
 
-        internal override bool SuppressVirtual => _operand.SuppressVirtual;
+        internal override bool SuppressVirtual
+        { get { this.SetLeakedState(false); return _operand.SuppressVirtual; } }
 
-        internal override object ConstantValue => _operand.ConstantValue;
+        internal override object ConstantValue
+        { get { this.SetLeakedState(false); return _operand.ConstantValue; } }
 
         internal override void AssignmentHint(Operand op)
         {
+            this.SetLeakedState(false);
             _operand.AssignmentHint(op);
         }
 
@@ -109,7 +140,7 @@ namespace TryAxis.RunSharp
 
         public new ContextualAssignment Assign(Operand value, bool allowExplicitConversion)
         {
-            return new ContextualAssignment(new Assignment(this, value, allowExplicitConversion), TypeMapper);
+            return new ContextualAssignment(new Assignment(this, value, allowExplicitConversion), TypeMapper).SetLeakedState(true);
         }
 
         public new ContextualOperand Eq(Operand value)
@@ -144,146 +175,146 @@ namespace TryAxis.RunSharp
 
         public new ContextualOperand Add(Operand value)
         {
-            return new ContextualOperand(base.Add(value), TypeMapper);
+            return new ContextualOperand(base.Add(value), TypeMapper).SetLeakedState(true);
         }
 
         public new ContextualOperand Subtract(Operand value)
         {
-            return new ContextualOperand(base.Subtract(value), TypeMapper);
+            return new ContextualOperand(base.Subtract(value), TypeMapper).SetLeakedState(true);
         }
 
         public new ContextualOperand Multiply(Operand value)
         {
-            return new ContextualOperand(base.Multiply(value), TypeMapper);
+            return new ContextualOperand(base.Multiply(value), TypeMapper).SetLeakedState(true);
         }
 
         public new ContextualOperand Divide(Operand value)
         {
-            return new ContextualOperand(base.Divide(value), TypeMapper);
+            return new ContextualOperand(base.Divide(value), TypeMapper).SetLeakedState(true);
         }
 
         public new ContextualOperand Modulus(Operand value)
         {
-            return new ContextualOperand(base.Modulus(value), TypeMapper);
+            return new ContextualOperand(base.Modulus(value), TypeMapper).SetLeakedState(true);
         }
 
         public new ContextualOperand BitwiseAnd(Operand value)
         {
-            return new ContextualOperand(base.BitwiseAnd(value), TypeMapper);
+            return new ContextualOperand(base.BitwiseAnd(value), TypeMapper).SetLeakedState(true);
         }
 
         public new ContextualOperand BitwiseOr(Operand value)
         {
-            return new ContextualOperand(base.BitwiseOr(value), TypeMapper);
+            return new ContextualOperand(base.BitwiseOr(value), TypeMapper).SetLeakedState(true);
         }
 
         public new ContextualOperand Xor(Operand value)
         {
-            return new ContextualOperand(base.Xor(value), TypeMapper);
+            return new ContextualOperand(base.Xor(value), TypeMapper).SetLeakedState(true);
         }
 
         public new ContextualOperand LeftShift(Operand value)
         {
-            return new ContextualOperand(base.LeftShift(value), TypeMapper);
+            return new ContextualOperand(base.LeftShift(value), TypeMapper).SetLeakedState(true);
         }
 
         public new ContextualOperand RightShift(Operand value)
         {
-            return new ContextualOperand(base.RightShift(value), TypeMapper);
+            return new ContextualOperand(base.RightShift(value), TypeMapper).SetLeakedState(true);
         }
 
         public new ContextualOperand Plus()
         {
-            return new ContextualOperand(base.Plus(), TypeMapper);
+            return new ContextualOperand(base.Plus(), TypeMapper).SetLeakedState(true);
         }
 
         public new ContextualOperand Negate()
         {
-            return new ContextualOperand(base.Negate(), TypeMapper);
+            return new ContextualOperand(base.Negate(), TypeMapper).SetLeakedState(true);
         }
 
         public new ContextualOperand LogicalNot()
         {
-            return new ContextualOperand(base.LogicalNot(), TypeMapper);
+            return new ContextualOperand(base.LogicalNot(), TypeMapper).SetLeakedState(true);
         }
 
         public new ContextualOperand OnesComplement()
         {
-            return new ContextualOperand(base.OnesComplement(), TypeMapper);
+            return new ContextualOperand(base.OnesComplement(), TypeMapper).SetLeakedState(true);
         }
 
         public new ContextualOperand Pow2()
         {
-            return new ContextualOperand(base.Pow2(), TypeMapper);
+            return new ContextualOperand(base.Pow2(), TypeMapper).SetLeakedState(true);
         }
 
         public new ContextualOperand LogicalAnd(Operand other)
         {
-            return new ContextualOperand(base.LogicalAnd(other), TypeMapper);
+            return new ContextualOperand(base.LogicalAnd(other), TypeMapper).SetLeakedState(true);
         }
 
         public new ContextualOperand LogicalOr(Operand other)
         {
-            return new ContextualOperand(base.LogicalOr(other), TypeMapper);
+            return new ContextualOperand(base.LogicalOr(other), TypeMapper).SetLeakedState(true);
         }
 
         public new ContextualOperand PostIncrement()
         {
-            return new ContextualOperand(base.PostIncrement(), TypeMapper);
+            return new ContextualOperand(base.PostIncrement(), TypeMapper).SetLeakedState(true);
         }
 
         public new ContextualOperand PostDecrement()
         {
-            return new ContextualOperand(base.PostDecrement(), TypeMapper);
+            return new ContextualOperand(base.PostDecrement(), TypeMapper).SetLeakedState(true);
         }
 
         public new ContextualOperand PreIncrement()
         {
-            return new ContextualOperand(base.PreIncrement(), TypeMapper);
+            return new ContextualOperand(base.PreIncrement(), TypeMapper).SetLeakedState(true);
         }
 
         public new ContextualOperand PreDecrement()
         {
-            return new ContextualOperand(base.PreDecrement(), TypeMapper);
+            return new ContextualOperand(base.PreDecrement(), TypeMapper).SetLeakedState(true);
         }
 
         public new ContextualOperand IsTrue()
         {
-            return new ContextualOperand(base.IsTrue(), TypeMapper);
+            return new ContextualOperand(base.IsTrue(), TypeMapper).SetLeakedState(true);
         }
 
         public new ContextualOperand IsFalse()
         {
-            return new ContextualOperand(base.IsFalse(), TypeMapper);
+            return new ContextualOperand(base.IsFalse(), TypeMapper).SetLeakedState(true);
         }
 
         public new ContextualOperand Conditional(Operand ifTrue, Operand ifFalse)
         {
-            return new ContextualOperand(base.Conditional(ifTrue, ifFalse), TypeMapper);
+            return new ContextualOperand(base.Conditional(ifTrue, ifFalse), TypeMapper).SetLeakedState(true);
         }
 
 #if FEAT_IKVM
 
         public Operand Cast(System.Type type)
         {
-            return Cast(TypeMapper.MapType(type));
+            return Cast(TypeMapper.MapType(type)).SetLeakedState(true);
         }
         
 #endif
 
         public new ContextualOperand Cast(Type type)
         {
-            return new ContextualOperand(base.Cast(type), TypeMapper);
+            return new ContextualOperand(base.Cast(type), TypeMapper).SetLeakedState(true);
         }
 
         public new ContextualOperand ArrayLength()
         {
-            return new ContextualOperand(base.ArrayLength(), TypeMapper);
+            return new ContextualOperand(base.ArrayLength(), TypeMapper).SetLeakedState(true);
         }
 
         public new ContextualOperand LongArrayLength()
         {
-            return new ContextualOperand(base.LongArrayLength(), TypeMapper);
+            return new ContextualOperand(base.LongArrayLength(), TypeMapper).SetLeakedState(true);
         }
 
         public new ContextualOperand Ref()
@@ -379,7 +410,8 @@ namespace TryAxis.RunSharp
         [Obsolete("Don't pass typeMapper", true)]
         public new Operand this[ITypeMapper typeMapper, params Operand[] indexes] => this[indexes];
         public ContextualOperand this[params Operand[] indexes] => base[TypeMapper, indexes];
-        
+
+
         public static ContextualOperand operator ==(ContextualOperand left, Operand right)
         {
             ThrowIfOperandNull(left);
@@ -398,13 +430,13 @@ namespace TryAxis.RunSharp
             return new ContextualOperand((Operand)left == (Operand)right, left?.TypeMapper ?? right.TypeMapper);
         }
 
-        public static ContextualOperand operator !=(ContextualOperand  left, Operand right)
+        public static ContextualOperand operator !=(ContextualOperand left, Operand right)
         {
             ThrowIfOperandNull(left);
             return new ContextualOperand((Operand)left != right, left.TypeMapper);
         }
 
-        public static ContextualOperand operator !=(Operand  left, ContextualOperand right)
+        public static ContextualOperand operator !=(Operand left, ContextualOperand right)
         {
             ThrowIfOperandNull(right);
             return new ContextualOperand(left != (Operand)right, right.TypeMapper);
@@ -416,13 +448,13 @@ namespace TryAxis.RunSharp
             return new ContextualOperand((Operand)left != (Operand)right, left?.TypeMapper ?? right.TypeMapper);
         }
 
-        public static ContextualOperand operator <(ContextualOperand  left, Operand right)
+        public static ContextualOperand operator <(ContextualOperand left, Operand right)
         {
             ThrowIfOperandNull(left);
             return new ContextualOperand((Operand)left < right, left.TypeMapper);
         }
-        
-        public static ContextualOperand operator <(Operand  left, ContextualOperand right)
+
+        public static ContextualOperand operator <(Operand left, ContextualOperand right)
         {
             ThrowIfOperandNull(right);
             return new ContextualOperand(left < (Operand)right, right.TypeMapper);
@@ -434,13 +466,13 @@ namespace TryAxis.RunSharp
             return new ContextualOperand((Operand)left < (Operand)right, left?.TypeMapper ?? right.TypeMapper);
         }
 
-        public static ContextualOperand operator >(ContextualOperand  left, Operand right)
+        public static ContextualOperand operator >(ContextualOperand left, Operand right)
         {
             ThrowIfOperandNull(left);
             return new ContextualOperand((Operand)left > right, left.TypeMapper);
         }
-        
-        public static ContextualOperand operator >(Operand  left, ContextualOperand right)
+
+        public static ContextualOperand operator >(Operand left, ContextualOperand right)
         {
             ThrowIfOperandNull(right);
             return new ContextualOperand(left > (Operand)right, right.TypeMapper);
@@ -452,13 +484,13 @@ namespace TryAxis.RunSharp
             return new ContextualOperand((Operand)left > (Operand)right, left?.TypeMapper ?? right.TypeMapper);
         }
 
-        public static ContextualOperand operator >=(ContextualOperand  left, Operand right)
+        public static ContextualOperand operator >=(ContextualOperand left, Operand right)
         {
             ThrowIfOperandNull(left);
             return new ContextualOperand((Operand)left >= right, left.TypeMapper);
         }
-        
-        public static ContextualOperand operator >=(Operand  left, ContextualOperand right)
+
+        public static ContextualOperand operator >=(Operand left, ContextualOperand right)
         {
             ThrowIfOperandNull(right);
             return new ContextualOperand(left >= (Operand)right, right.TypeMapper);
@@ -470,13 +502,13 @@ namespace TryAxis.RunSharp
             return new ContextualOperand((Operand)left >= (Operand)right, left?.TypeMapper ?? right.TypeMapper);
         }
 
-        public static ContextualOperand operator <=(ContextualOperand  left, Operand right)
+        public static ContextualOperand operator <=(ContextualOperand left, Operand right)
         {
             ThrowIfOperandNull(left);
             return new ContextualOperand((Operand)left <= right, left.TypeMapper);
         }
-        
-        public static ContextualOperand operator <=(Operand  left, ContextualOperand right)
+
+        public static ContextualOperand operator <=(Operand left, ContextualOperand right)
         {
             ThrowIfOperandNull(right);
             return new ContextualOperand(left <= (Operand)right, right.TypeMapper);
@@ -488,184 +520,184 @@ namespace TryAxis.RunSharp
             return new ContextualOperand((Operand)left <= (Operand)right, left?.TypeMapper ?? right.TypeMapper);
         }
 
-        public static ContextualOperand operator +(ContextualOperand  left, Operand right)
+        public static ContextualOperand operator +(ContextualOperand left, Operand right)
         {
             ThrowIfOperandNull(left);
-            return new ContextualOperand((Operand)left + right, left.TypeMapper);
+            return new ContextualOperand((Operand)left + right, left.TypeMapper).SetLeakedState(true);
         }
-        
-        public static ContextualOperand operator +(Operand  left, ContextualOperand right)
+
+        public static ContextualOperand operator +(Operand left, ContextualOperand right)
         {
             ThrowIfOperandNull(right);
-            return new ContextualOperand(left + (Operand)right, right.TypeMapper);
+            return new ContextualOperand(left + (Operand)right, right.TypeMapper).SetLeakedState(true);
         }
 
         public static ContextualOperand operator +(ContextualOperand left, ContextualOperand right)
         {
             ThrowIfOperandNull(left, right);
-            return new ContextualOperand((Operand)left + (Operand)right, left?.TypeMapper ?? right.TypeMapper);
+            return new ContextualOperand((Operand)left + (Operand)right, left?.TypeMapper ?? right.TypeMapper).SetLeakedState(true);
         }
 
-        public static ContextualOperand operator -(ContextualOperand  left, Operand right)
+        public static ContextualOperand operator -(ContextualOperand left, Operand right)
         {
             ThrowIfOperandNull(left);
-            return new ContextualOperand((Operand)left - right, left.TypeMapper);
+            return new ContextualOperand((Operand)left - right, left.TypeMapper).SetLeakedState(true);
         }
 
-        public static ContextualOperand operator -(Operand right, ContextualOperand  left)
+        public static ContextualOperand operator -(Operand right, ContextualOperand left)
         {
             ThrowIfOperandNull(left);
-            return new ContextualOperand(right - (Operand)left, left.TypeMapper);
+            return new ContextualOperand(right - (Operand)left, left.TypeMapper).SetLeakedState(true);
         }
 
         public static ContextualOperand operator -(ContextualOperand left, ContextualOperand right)
         {
             ThrowIfOperandNull(left, right);
-            return new ContextualOperand((Operand)left - (Operand)right, left?.TypeMapper ?? right.TypeMapper);
+            return new ContextualOperand((Operand)left - (Operand)right, left?.TypeMapper ?? right.TypeMapper).SetLeakedState(true);
         }
 
-        public static ContextualOperand operator *(ContextualOperand  left, Operand right)
+        public static ContextualOperand operator *(ContextualOperand left, Operand right)
         {
             ThrowIfOperandNull(left);
-            return new ContextualOperand((Operand)left * right, left.TypeMapper);
+            return new ContextualOperand((Operand)left * right, left.TypeMapper).SetLeakedState(true);
         }
-        
-        public static ContextualOperand operator *(Operand right, ContextualOperand  left)
+
+        public static ContextualOperand operator *(Operand right, ContextualOperand left)
         {
             ThrowIfOperandNull(left);
-            return new ContextualOperand(right * (Operand)left, left.TypeMapper);
+            return new ContextualOperand(right * (Operand)left, left.TypeMapper).SetLeakedState(true);
         }
 
         public static ContextualOperand operator *(ContextualOperand left, ContextualOperand right)
         {
             ThrowIfOperandNull(left, right);
-            return new ContextualOperand((Operand)left * (Operand)right, left?.TypeMapper ?? right.TypeMapper);
+            return new ContextualOperand((Operand)left * (Operand)right, left?.TypeMapper ?? right.TypeMapper).SetLeakedState(true);
         }
 
-        public static ContextualOperand operator /(ContextualOperand  left, Operand right)
+        public static ContextualOperand operator /(ContextualOperand left, Operand right)
         {
             ThrowIfOperandNull(left);
-            return new ContextualOperand((Operand)left / right, left.TypeMapper);
+            return new ContextualOperand((Operand)left / right, left.TypeMapper).SetLeakedState(true);
         }
-        
-        public static ContextualOperand operator /(Operand right, ContextualOperand  left)
+
+        public static ContextualOperand operator /(Operand right, ContextualOperand left)
         {
             ThrowIfOperandNull(left);
-            return new ContextualOperand(right / (Operand)left, left.TypeMapper);
+            return new ContextualOperand(right / (Operand)left, left.TypeMapper).SetLeakedState(true);
         }
 
         public static ContextualOperand operator /(ContextualOperand left, ContextualOperand right)
         {
             ThrowIfOperandNull(left, right);
-            return new ContextualOperand((Operand)left / (Operand)right, left?.TypeMapper ?? right.TypeMapper);
+            return new ContextualOperand((Operand)left / (Operand)right, left?.TypeMapper ?? right.TypeMapper).SetLeakedState(true);
         }
 
-        public static ContextualOperand operator %(ContextualOperand  left, Operand right)
+        public static ContextualOperand operator %(ContextualOperand left, Operand right)
         {
             ThrowIfOperandNull(left);
-            return new ContextualOperand((Operand)left % right, left.TypeMapper);
+            return new ContextualOperand((Operand)left % right, left.TypeMapper).SetLeakedState(true);
         }
-        
-        public static ContextualOperand operator %(Operand right, ContextualOperand  left)
+
+        public static ContextualOperand operator %(Operand right, ContextualOperand left)
         {
             ThrowIfOperandNull(left);
-            return new ContextualOperand(right % (Operand)left, left.TypeMapper);
+            return new ContextualOperand(right % (Operand)left, left.TypeMapper).SetLeakedState(true);
         }
 
         public static ContextualOperand operator %(ContextualOperand left, ContextualOperand right)
         {
             ThrowIfOperandNull(left, right);
-            return new ContextualOperand((Operand)left % (Operand)right, left?.TypeMapper ?? right.TypeMapper);
+            return new ContextualOperand((Operand)left % (Operand)right, left?.TypeMapper ?? right.TypeMapper).SetLeakedState(true);
         }
 
-        public static ContextualOperand operator &(ContextualOperand  left, Operand right)
+        public static ContextualOperand operator &(ContextualOperand left, Operand right)
         {
             ThrowIfOperandNull(left);
-            return new ContextualOperand((Operand)left & right, left.TypeMapper);
+            return new ContextualOperand((Operand)left & right, left.TypeMapper).SetLeakedState(true);
         }
-        
-        public static ContextualOperand operator &(Operand right, ContextualOperand  left)
+
+        public static ContextualOperand operator &(Operand right, ContextualOperand left)
         {
             ThrowIfOperandNull(left);
-            return new ContextualOperand(right & (Operand)left, left.TypeMapper);
+            return new ContextualOperand(right & (Operand)left, left.TypeMapper).SetLeakedState(true);
         }
 
         public static ContextualOperand operator &(ContextualOperand left, ContextualOperand right)
         {
             ThrowIfOperandNull(left, right);
-            return new ContextualOperand((Operand)left & (Operand)right, left?.TypeMapper ?? right.TypeMapper);
+            return new ContextualOperand((Operand)left & (Operand)right, left?.TypeMapper ?? right.TypeMapper).SetLeakedState(true);
         }
 
-        public static ContextualOperand operator |(ContextualOperand  left, Operand right)
+        public static ContextualOperand operator |(ContextualOperand left, Operand right)
         {
             ThrowIfOperandNull(left);
-            return new ContextualOperand((Operand)left | right, left.TypeMapper);
+            return new ContextualOperand((Operand)left | right, left.TypeMapper).SetLeakedState(true);
         }
 
-        public static ContextualOperand operator |(Operand right, ContextualOperand  left)
+        public static ContextualOperand operator |(Operand right, ContextualOperand left)
         {
             ThrowIfOperandNull(left);
-            return new ContextualOperand(right | (Operand)left, left.TypeMapper);
+            return new ContextualOperand(right | (Operand)left, left.TypeMapper).SetLeakedState(true);
         }
 
         public static ContextualOperand operator |(ContextualOperand left, ContextualOperand right)
         {
             ThrowIfOperandNull(left, right);
-            return new ContextualOperand((Operand)left | (Operand)right, left?.TypeMapper ?? right.TypeMapper);
+            return new ContextualOperand((Operand)left | (Operand)right, left?.TypeMapper ?? right.TypeMapper).SetLeakedState(true);
         }
 
-        public static ContextualOperand operator ^(ContextualOperand  left, Operand right)
+        public static ContextualOperand operator ^(ContextualOperand left, Operand right)
         {
             if (left == null) throw new ArgumentNullException(nameof(left));
-            return new ContextualOperand((Operand)left ^ right, left.TypeMapper);
+            return new ContextualOperand((Operand)left ^ right, left.TypeMapper).SetLeakedState(true);
         }
 
-        public static ContextualOperand operator ^(Operand right, ContextualOperand  left)
+        public static ContextualOperand operator ^(Operand right, ContextualOperand left)
         {
             if (left == null) throw new ArgumentNullException(nameof(left));
-            return new ContextualOperand(right ^ (Operand)left, left.TypeMapper);
+            return new ContextualOperand(right ^ (Operand)left, left.TypeMapper).SetLeakedState(true);
         }
 
         public static ContextualOperand operator ^(ContextualOperand left, ContextualOperand right)
         {
             ThrowIfOperandNull(left, right);
-            return new ContextualOperand((Operand)left ^ (Operand)right, left?.TypeMapper ?? right.TypeMapper);
+            return new ContextualOperand((Operand)left ^ (Operand)right, left?.TypeMapper ?? right.TypeMapper).SetLeakedState(true);
         }
 
-        public static ContextualOperand operator <<(ContextualOperand  left, int right)
+        public static ContextualOperand operator <<(ContextualOperand left, int right)
         {
             if (left == null) throw new ArgumentNullException(nameof(left));
-            return new ContextualOperand((Operand)left << right, left.TypeMapper);
+            return new ContextualOperand((Operand)left << right, left.TypeMapper).SetLeakedState(true);
         }
 
-        public static ContextualOperand operator >>(ContextualOperand  left, int right)
+        public static ContextualOperand operator >>(ContextualOperand left, int right)
         {
             if (left == null) throw new ArgumentNullException(nameof(left));
-            return new ContextualOperand((Operand)left >> right, left.TypeMapper);
+            return new ContextualOperand((Operand)left >> right, left.TypeMapper).SetLeakedState(true);
         }
 
         public static ContextualOperand operator +(ContextualOperand op)
         {
             if (op == null) throw new ArgumentNullException(nameof(op));
-            return new ContextualOperand(+(Operand)op, op.TypeMapper);
+            return new ContextualOperand(+(Operand)op, op.TypeMapper).SetLeakedState(true);
         }
 
         public static ContextualOperand operator -(ContextualOperand op)
         {
             if (op == null) throw new ArgumentNullException(nameof(op));
-            return new ContextualOperand(-(Operand)op, op.TypeMapper);
+            return new ContextualOperand(-(Operand)op, op.TypeMapper).SetLeakedState(true);
         }
 
         public static ContextualOperand operator !(ContextualOperand op)
         {
             if (op == null) throw new ArgumentNullException(nameof(op));
-            return new ContextualOperand(!(Operand)op, op.TypeMapper);
+            return new ContextualOperand(!(Operand)op, op.TypeMapper).SetLeakedState(true);
         }
 
         public static ContextualOperand operator ~(ContextualOperand op)
         {
             if (op == null) throw new ArgumentNullException(nameof(op));
-            return new ContextualOperand(~(Operand)op, op.TypeMapper);
+            return new ContextualOperand(~(Operand)op, op.TypeMapper).SetLeakedState(true);
         }
 
         static void ThrowIfOperandNull(ContextualOperand left)

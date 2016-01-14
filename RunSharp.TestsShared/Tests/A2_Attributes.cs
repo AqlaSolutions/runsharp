@@ -33,7 +33,7 @@ using DescriptionAttribute = System.ComponentModel.DescriptionAttribute;
 namespace TriAxis.RunSharp.Tests
 {
 	[TestFixture]
-    public class A2_Attributes
+    public class A2_Attributes : TestBase
     {
         [Test]
         public void TestGenTypeAttributeTest()

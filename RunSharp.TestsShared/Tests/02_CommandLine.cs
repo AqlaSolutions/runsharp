@@ -26,6 +26,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using NUnit.Framework;
 using TryAxis.RunSharp;
@@ -43,7 +44,7 @@ namespace TriAxis.RunSharp.Tests
     }
 
     [TestFixture]
-    public class _02_CommandLine
+    public class _02_CommandLine : TestBase
     {
         [Test]
         public void TestGenCmdLine2()
@@ -75,11 +76,13 @@ arg4
             ITypeMapper m = ag.TypeMapper;
             var st = ag.StaticFactory;
             var exp = ag.ExpressionFactory;
+            ContextualOperand x;
             TypeGen commandLine3 = ag.Public.Class("CommandLine3");
             {
                 CodeGen g = commandLine3.Public.Method(typeof(void), "Main3").Parameter(typeof(string[]), "args");
                 {
                     var args = g.Arg("args");
+                    
                     g.WriteLine("Number of command line 3 parameters = {0}",
                         args.Property("Length"));
                     var s = g.ForEach(typeof(string), args);
@@ -121,8 +124,6 @@ arg4
 
                 }
             }
-
-
         }
     }
 }

@@ -45,12 +45,15 @@ namespace TriAxis.RunSharp.Operands
 {
 	class LongLiteral : Operand
 	{
-	    readonly System.Type _t;
+        protected override bool DetectsLeaking => false;
+
+        readonly System.Type _t;
 
 	    public LongLiteral(System.Type t, long value) { _t = t; Value = value; }
 
-		internal override void EmitGet(CodeGen g)
-		{
+		internal override void EmitGet(CodeGen g) 
+{
+		    this.SetLeakedState(false); 
 			g.EmitI8Helper(Value, _t == typeof(long));
 		}
 

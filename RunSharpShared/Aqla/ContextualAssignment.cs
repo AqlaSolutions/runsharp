@@ -47,6 +47,19 @@ namespace TriAxis.RunSharp.Operands
 {
     public class ContextualAssignment : ContextualOperand, IAssignmentInternal
     {
+        protected override void ResetLeakedStateRecursively()
+        {
+            base.ResetLeakedStateRecursively();
+            _assignment.SetLeakedState(false);
+        }
+
+        protected override void SetLeakedStateRecursively()
+        {
+            base.SetLeakedStateRecursively();
+            _assignment.SetLeakedState(true);
+        }
+
+
         readonly Assignment _assignment;
 
         public ContextualAssignment(Assignment assignment, ITypeMapper typeMapper)
@@ -57,6 +70,7 @@ namespace TriAxis.RunSharp.Operands
 
         public virtual void Emit(CodeGen g)
         {
+            this.SetLeakedState(false);
             _assignment.Emit(g);
         }
     }

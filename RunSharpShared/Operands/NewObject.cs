@@ -48,14 +48,22 @@ namespace TriAxis.RunSharp.Operands
 	    readonly ApplicableFunction _ctor;
 	    readonly Operand[] _args;
 
-		public NewObject(ApplicableFunction ctor, Operand[] args)
+        protected override void ResetLeakedStateRecursively()
+        {
+            base.ResetLeakedStateRecursively();
+            _args.SetLeakedState(false);
+        }
+
+
+        public NewObject(ApplicableFunction ctor, Operand[] args)
 		{
 			_ctor = ctor;
 			_args = args;
 		}
 
-		internal override void EmitGet(CodeGen g)
-		{
+		internal override void EmitGet(CodeGen g) 
+{
+		    this.SetLeakedState(false); 
 			_ctor.EmitArgs(g, _args);
 			g.IL.Emit(OpCodes.Newobj, (ConstructorInfo)_ctor.Method.Member);
 		}

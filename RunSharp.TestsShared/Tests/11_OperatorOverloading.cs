@@ -33,7 +33,7 @@ using TryAxis.RunSharp;
 namespace TriAxis.RunSharp.Tests
 {
 	[TestFixture]
-    public class _11_OperatorOverloading
+    public class _11_OperatorOverloading : TestBase
     {
         [Test]
         public void TestGenComplex()

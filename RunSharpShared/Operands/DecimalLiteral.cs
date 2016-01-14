@@ -45,12 +45,15 @@ namespace TriAxis.RunSharp.Operands
 {
 	class DecimalLiteral : Operand
 	{
-	    readonly decimal _value;
+        protected override bool DetectsLeaking => false;
+
+        readonly decimal _value;
 
 		public DecimalLiteral(decimal value) { _value = value; }
 
-		internal override void EmitGet(CodeGen g)
-		{
+		internal override void EmitGet(CodeGen g) 
+{
+		    this.SetLeakedState(false); 
 			int[] bits = decimal.GetBits(_value);
 			byte exponent = unchecked((byte)((bits[3] >> 16) & 0x1f));
 			bool sign = bits[3] < 0;

@@ -45,12 +45,15 @@ namespace TriAxis.RunSharp.Operands
 {
 	class StringLiteral : Operand
 	{
-	    readonly string _str;
+        protected override bool DetectsLeaking => false;
+
+        readonly string _str;
 
 		public StringLiteral(string str) { _str = str; }
 
-		internal override void EmitGet(CodeGen g)
-		{
+		internal override void EmitGet(CodeGen g) 
+{
+		    this.SetLeakedState(false); 
 			g.IL.Emit(OpCodes.Ldstr, _str);
 		}
 

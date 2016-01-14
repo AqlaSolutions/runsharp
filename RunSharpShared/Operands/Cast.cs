@@ -48,14 +48,21 @@ namespace TriAxis.RunSharp.Operands
 	    readonly Operand _op;
 	    readonly Type _t;
 
-		public Cast(Operand op, Type t)
+	    protected override void ResetLeakedStateRecursively()
+	    {
+            _op.SetLeakedState(false);
+            base.ResetLeakedStateRecursively();
+	    }
+
+	    public Cast(Operand op, Type t)
 		{
 			_op = op;
 			_t = t;
 		}
 
-		internal override void EmitGet(CodeGen g)
-		{
+		internal override void EmitGet(CodeGen g) 
+{
+		    this.SetLeakedState(false); 
 			g.EmitGetHelper(_op, _t, true);
 		}
 

@@ -45,12 +45,15 @@ namespace TriAxis.RunSharp.Operands
 {
 	class EnumLiteral : Operand
 	{
-	    readonly Enum _value;
+        protected override bool DetectsLeaking => false;
+
+        readonly Enum _value;
 
 		public EnumLiteral(Enum value) { _value = value; }
 
-		internal override void EmitGet(CodeGen g)
-		{
+		internal override void EmitGet(CodeGen g) 
+{
+		    this.SetLeakedState(false); 
 			Type t = Helpers.GetEnumEnderlyingType(GetReturnType(g.TypeMapper));
 			if (Helpers.AreTypesEqual(t, typeof(long), g.TypeMapper))
 				g.EmitI8Helper(Convert.ToInt64(_value, null), true);

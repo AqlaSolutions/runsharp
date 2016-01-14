@@ -45,17 +45,27 @@ namespace TriAxis.RunSharp.Operands
 {
 	class PrefixOperation : Operand, IStatement
 	{
-	    readonly Operand _target;
-	    readonly OverloadableOperation _baseOp;
+        protected override bool DetectsLeaking => false;
 
-		public PrefixOperation(Operator op, Operand operand)
+        readonly Operand _target;
+	    readonly OverloadableOperation _baseOp;
+        protected override void ResetLeakedStateRecursively()
+        {
+            base.ResetLeakedStateRecursively();
+            _target.SetLeakedState(false);
+            _baseOp.SetLeakedState(false);
+        }
+
+
+        public PrefixOperation(Operator op, Operand operand)
 		{
 			_target = operand;
 			_baseOp = new OverloadableOperation(op, operand);
 		}
 
-		internal override void EmitGet(CodeGen g)
-		{
+		internal override void EmitGet(CodeGen g) 
+{
+		    this.SetLeakedState(false); 
 			if (_target.TrivialAccess)
 			{
 				_target.EmitSet(g, _baseOp, false);

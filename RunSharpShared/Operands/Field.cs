@@ -48,14 +48,21 @@ namespace TriAxis.RunSharp.Operands
 	    readonly FieldInfo _fi;
 	    readonly Operand _target;
 
-		public Field(FieldInfo fi, Operand target)
+	    protected override void ResetLeakedStateRecursively()
+	    {
+	        base.ResetLeakedStateRecursively();
+            _target.SetLeakedState(false);
+        }
+
+	    public Field(FieldInfo fi, Operand target)
 		{
 			_fi = fi;
 			_target = target;
 		}
 
-		internal override void EmitGet(CodeGen g)
-		{
+		internal override void EmitGet(CodeGen g) 
+{
+		    this.SetLeakedState(false); 
 			if (_fi.IsStatic)
 				g.IL.Emit(OpCodes.Ldsfld, _fi);
 			else
@@ -66,7 +73,8 @@ namespace TriAxis.RunSharp.Operands
 		}
 
 		internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
-		{
+{
+		    this.SetLeakedState(false); 
 			if (!_fi.IsStatic)
 				_target.EmitRef(g);
 
@@ -75,7 +83,8 @@ namespace TriAxis.RunSharp.Operands
 		}
 
 		internal override void EmitAddressOf(CodeGen g)
-		{
+{
+		    this.SetLeakedState(false); 
 			if (_fi.IsStatic)
 				g.IL.Emit(OpCodes.Ldsflda, _fi);
 			else

@@ -50,8 +50,15 @@ namespace TriAxis.RunSharp.Operands
 	    readonly Operand _target;
 		MethodInfo _method;
 		ConstructorInfo _delegateConstructor;
-	    
-		public NewDelegate(Type delegateType, Type targetType, string methodName, ITypeMapper typeMapper)
+
+        protected override void ResetLeakedStateRecursively()
+        {
+            base.ResetLeakedStateRecursively();
+            _target.SetLeakedState(false);
+        }
+
+
+        public NewDelegate(Type delegateType, Type targetType, string methodName, ITypeMapper typeMapper)
         {
 			_delegateType = delegateType;
 		    _typeMapper = typeMapper;
@@ -130,8 +137,9 @@ namespace TriAxis.RunSharp.Operands
 				throw new MissingMethodException(Properties.Messages.ErrMissingMethod);
 		}
 
-		internal override void EmitGet(CodeGen g)
-		{
+		internal override void EmitGet(CodeGen g) 
+{
+		    this.SetLeakedState(false); 
 			g.EmitGetHelper(_target, g.TypeMapper.MapType(typeof(object)), false);
 			g.IL.Emit(OpCodes.Ldftn, _method);
 			g.IL.Emit(OpCodes.Newobj, _delegateConstructor);

@@ -45,7 +45,16 @@ namespace TriAxis.RunSharp.Operands
 {
 	class SimpleOperation : Operand
 	{
-	    readonly Operand _op;
+        protected override bool DetectsLeaking => false;
+
+        protected override void ResetLeakedStateRecursively()
+        {
+            base.ResetLeakedStateRecursively();
+            _op.SetLeakedState(false);
+        }
+
+
+        readonly Operand _op;
 	    readonly OpCode[] _opCodes;
 
 		public SimpleOperation(Operand op, params OpCode[] opCodes)
@@ -54,8 +63,9 @@ namespace TriAxis.RunSharp.Operands
 			_opCodes = opCodes;
 		}
 
-		internal override void EmitGet(CodeGen g)
-		{
+		internal override void EmitGet(CodeGen g) 
+{
+		    this.SetLeakedState(false); 
 			_op.EmitGet(g);
 
 			foreach (OpCode oc in _opCodes)

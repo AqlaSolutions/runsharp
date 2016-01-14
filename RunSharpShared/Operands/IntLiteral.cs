@@ -45,10 +45,13 @@ namespace TriAxis.RunSharp.Operands
 {
 	class IntLiteral : Operand
 	{
-	    public IntLiteral(System.Type t, int value) { _type = t; Value = value; }
+        protected override bool DetectsLeaking => false;
 
-		internal override void EmitGet(CodeGen g)
-		{
+        public IntLiteral(System.Type t, int value) { _type = t; Value = value; }
+
+		internal override void EmitGet(CodeGen g) 
+{
+		    this.SetLeakedState(false); 
 			g.EmitI4Helper(Value);
 		}
 

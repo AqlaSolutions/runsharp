@@ -55,7 +55,12 @@ namespace TriAxis.RunSharp
 
 	public abstract class Operand
 	{
-        internal static readonly Operand[] EmptyArray = { };
+	    protected Operand()
+	    {
+	        _detectsLeaks = DetectsLeaking;
+	    }
+
+	    internal static readonly Operand[] EmptyArray = { };
 
 		#region Virtual methods
 		internal virtual void EmitGet(CodeGen g)
@@ -80,24 +85,34 @@ namespace TriAxis.RunSharp
 			if (branchSet == null)
 				throw new ArgumentNullException(nameof(branchSet));
 
+		    this.SetLeakedState(false);
 			EmitGet(g);
 			g.IL.Emit(branchSet.BrTrue, label);
 		}
 
 	    public abstract Type GetReturnType(ITypeMapper typeMapper);
         
-	    internal virtual bool TrivialAccess => false;
-	    internal virtual bool IsStaticTarget => false;
-	    internal virtual bool SuppressVirtual => false;
-	    internal virtual object ConstantValue => null;
-	    internal virtual void AssignmentHint(Operand op) { }
+	    internal virtual bool TrivialAccess
+	    { get { this.SetLeakedState(false); return false; } }
+
+	    internal virtual bool IsStaticTarget
+	    { get { this.SetLeakedState(false); return false; } }
+
+	    internal virtual bool SuppressVirtual
+	    { get { this.SetLeakedState(false); return false; } }
+
+	    internal virtual object ConstantValue
+	    { get { this.SetLeakedState(false); return null; } }
+
+	    internal virtual void AssignmentHint(Operand op) { this.SetLeakedState(false); }
 		#endregion
 
 		// emits the refrence to the operand (address-of for value types)
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "0#g", Justification = "The 'g' is used throughout the library for 'CodeGen'")]
 		public void EmitRef(CodeGen g)
 		{
-			if (GetReturnType(g.TypeMapper).IsValueType)
+            this.SetLeakedState(false);
+            if (GetReturnType(g.TypeMapper).IsValueType)
 				EmitAddressOf(g);
 			else
 				EmitGet(g);
@@ -107,100 +122,100 @@ namespace TriAxis.RunSharp
 		[DebuggerHidden]
 		public static implicit operator Operand(Type type)
 		{
-			return new TypeLiteral(type);
+			return new TypeLiteral(type).SetLeakedState(true);
 		}
 
 		[DebuggerHidden]
 		public static implicit operator Operand(string value)
 		{
-			return new StringLiteral(value);
+			return new StringLiteral(value).SetLeakedState(true);
 		}
 
 		[DebuggerHidden]
 		public static implicit operator Operand(bool value)
 		{
-			return new IntLiteral(typeof(bool), value ? 1 : 0);
+			return new IntLiteral(typeof(bool), value ? 1 : 0).SetLeakedState(true);
 		}
 
 		[DebuggerHidden]
 		public static implicit operator Operand(byte value)
 		{
-			return new IntLiteral(typeof(byte), value);
+			return new IntLiteral(typeof(byte), value).SetLeakedState(true);
 		}
 
 		[DebuggerHidden]
 		//[CLSCompliant(false)]
 		public static implicit operator Operand(sbyte value)
 		{
-			return new IntLiteral(typeof(sbyte), value);
+			return new IntLiteral(typeof(sbyte), value).SetLeakedState(true);
 		}
 
 		[DebuggerHidden]
 		public static implicit operator Operand(short value)
 		{
-			return new IntLiteral(typeof(short), value);
+			return new IntLiteral(typeof(short), value).SetLeakedState(true);
 		}
 
 		[DebuggerHidden]
 		//[CLSCompliant(false)]
 		public static implicit operator Operand(ushort value)
 		{
-			return new IntLiteral(typeof(ushort), value);
+			return new IntLiteral(typeof(ushort), value).SetLeakedState(true);
 		}
 
 		[DebuggerHidden]
 		public static implicit operator Operand(char value)
 		{
-			return new IntLiteral(typeof(char), value);
+			return new IntLiteral(typeof(char), value).SetLeakedState(true);
 		}
 
 		[DebuggerHidden]
 		public static implicit operator Operand(int value)
 		{
-			return new IntLiteral(typeof(int), value);
+			return new IntLiteral(typeof(int), value).SetLeakedState(true);
 		}
 
 		[DebuggerHidden]
 		//[CLSCompliant(false)]
 		public static implicit operator Operand(uint value)
 		{
-			return new IntLiteral(typeof(uint), unchecked((int)value));
+			return new IntLiteral(typeof(uint), unchecked((int)value)).SetLeakedState(true);
 		}
 
 		[DebuggerHidden]
 		public static implicit operator Operand(long value)
 		{
-			return new LongLiteral(typeof(long), value);
+			return new LongLiteral(typeof(long), value).SetLeakedState(true);
 		}
 
 		[DebuggerHidden]
 		//[CLSCompliant(false)]
 		public static implicit operator Operand(ulong value)
 		{
-			return new LongLiteral(typeof(ulong), unchecked((long)value));
+			return new LongLiteral(typeof(ulong), unchecked((long)value)).SetLeakedState(true);
 		}
 
 		[DebuggerHidden]
 		public static implicit operator Operand(float value)
 		{
-			return new FloatLiteral(value);
+			return new FloatLiteral(value).SetLeakedState(true);
 		}
 
 		[DebuggerHidden]
 		public static implicit operator Operand(double value)
 		{
-			return new DoubleLiteral(value);
+			return new DoubleLiteral(value).SetLeakedState(true);
 		}
 
 		[DebuggerHidden]
 		public static implicit operator Operand(decimal value)
 		{
-			return new DecimalLiteral(value);
+			return new DecimalLiteral(value).SetLeakedState(true);
 		}
 
 		public static implicit operator Operand(Enum value)
 		{
-			return new EnumLiteral(value);
+			return new EnumLiteral(value).SetLeakedState(true);
 		}
 		#endregion
 
@@ -258,7 +273,7 @@ namespace TriAxis.RunSharp
 
 		public Assignment Assign(Operand value, bool allowExplicitConversion)
 		{
-			return new Assignment(this, value, allowExplicitConversion);
+			return new Assignment(this, value, allowExplicitConversion).SetLeakedState(true);
 		}
 
 		public IStatement AssignAdd(Operand value)
@@ -401,52 +416,52 @@ namespace TriAxis.RunSharp
 		#region Arithmetic Operations
 		public static Operand operator +(Operand left, Operand right)
 		{
-			return new OverloadableOperation(Operator.Add, left, right);
+			return new OverloadableOperation(Operator.Add, left, right).SetLeakedState(true);
 		}
 
 		public Operand Add(Operand value)
 		{
-			return new OverloadableOperation(Operator.Add, this, value);
+			return new OverloadableOperation(Operator.Add, this, value).SetLeakedState(true);
 		}
 
 		public static Operand operator -(Operand left, Operand right)
 		{
-			return new OverloadableOperation(Operator.Subtract, left, right);
+			return new OverloadableOperation(Operator.Subtract, left, right).SetLeakedState(true);
 		}
 
 		public Operand Subtract(Operand value)
 		{
-			return new OverloadableOperation(Operator.Subtract, this, value);
+			return new OverloadableOperation(Operator.Subtract, this, value).SetLeakedState(true);
 		}
 
 		public static Operand operator *(Operand left, Operand right)
 		{
-			return new OverloadableOperation(Operator.Multiply, left, right);
+			return new OverloadableOperation(Operator.Multiply, left, right).SetLeakedState(true);
 		}
 
 		public Operand Multiply(Operand value)
 		{
-			return new OverloadableOperation(Operator.Multiply, this, value);
+			return new OverloadableOperation(Operator.Multiply, this, value).SetLeakedState(true);
 		}
 
 		public static Operand operator /(Operand left, Operand right)
 		{
-			return new OverloadableOperation(Operator.Divide, left, right);
+			return new OverloadableOperation(Operator.Divide, left, right).SetLeakedState(true);
 		}
 
 		public Operand Divide(Operand value)
 		{
-			return new OverloadableOperation(Operator.Divide, this, value);
+			return new OverloadableOperation(Operator.Divide, this, value).SetLeakedState(true);
 		}
 
 		public static Operand operator %(Operand left, Operand right)
 		{
-			return new OverloadableOperation(Operator.Modulus, left, right);
+			return new OverloadableOperation(Operator.Modulus, left, right).SetLeakedState(true);
 		}
 
 		public Operand Modulus(Operand value)
 		{
-			return new OverloadableOperation(Operator.Modulus, this, value);
+			return new OverloadableOperation(Operator.Modulus, this, value).SetLeakedState(true);
 		}
 
 		public static Operand operator &(Operand left, Operand right)
@@ -457,12 +472,12 @@ namespace TriAxis.RunSharp
 				return left.LogicalAnd(right);
 			}
 
-			return new OverloadableOperation(Operator.And, left, right);
+			return new OverloadableOperation(Operator.And, left, right).SetLeakedState(true);
 		}
 
 		public Operand BitwiseAnd(Operand value)
 		{
-			return new OverloadableOperation(Operator.And, this, value);
+			return new OverloadableOperation(Operator.And, this, value).SetLeakedState(true);
 		}
 
 		public static Operand operator |(Operand left, Operand right)
@@ -470,130 +485,130 @@ namespace TriAxis.RunSharp
 			if ((object)left != null && left._logical)
 			{
 				left._logical = false;
-				return left.LogicalOr(right);
+				return left.LogicalOr(right).SetLeakedState(true);
 			}
 
-			return new OverloadableOperation(Operator.Or, left, right);
+			return new OverloadableOperation(Operator.Or, left, right).SetLeakedState(true);
 		}
 
 		public Operand BitwiseOr(Operand value)
 		{
-			return new OverloadableOperation(Operator.Or, this, value);
+			return new OverloadableOperation(Operator.Or, this, value).SetLeakedState(true);
 		}
 
 		public static Operand operator ^(Operand left, Operand right)
 		{
-			return new OverloadableOperation(Operator.Xor, left, right);
+			return new OverloadableOperation(Operator.Xor, left, right).SetLeakedState(true);
 		}
 
 		public Operand Xor(Operand value)
 		{
-			return new OverloadableOperation(Operator.Xor, this, value);
+			return new OverloadableOperation(Operator.Xor, this, value).SetLeakedState(true);
 		}
 
 		public static Operand operator <<(Operand left, int right)
 		{
-			return new OverloadableOperation(Operator.LeftShift, left, right);
+			return new OverloadableOperation(Operator.LeftShift, left, right).SetLeakedState(true);
 		}
 
 		public Operand LeftShift(Operand value)
 		{
-			return new OverloadableOperation(Operator.LeftShift, this, value);
+			return new OverloadableOperation(Operator.LeftShift, this, value).SetLeakedState(true);
 		}
 
 		public static Operand operator >>(Operand left, int right)
 		{
-			return new OverloadableOperation(Operator.RightShift, left, right);
+			return new OverloadableOperation(Operator.RightShift, left, right).SetLeakedState(true);
 		}
 
 		public Operand RightShift(Operand value)
 		{
-			return new OverloadableOperation(Operator.RightShift, this, value);
+			return new OverloadableOperation(Operator.RightShift, this, value).SetLeakedState(true);
 		}
 
 		public static Operand operator +(Operand op)
 		{
-			return new OverloadableOperation(Operator.Plus, op);
+			return new OverloadableOperation(Operator.Plus, op).SetLeakedState(true);
 		}
 
 		public Operand Plus()
 		{
-			return new OverloadableOperation(Operator.Plus, this);
+			return new OverloadableOperation(Operator.Plus, this).SetLeakedState(true);
 		}
 
 		public static Operand operator -(Operand op)
 		{
-			return new OverloadableOperation(Operator.Minus, op);
+			return new OverloadableOperation(Operator.Minus, op).SetLeakedState(true);
 		}
 
 		public Operand Negate()
 		{
-			return new OverloadableOperation(Operator.Minus, this);
+			return new OverloadableOperation(Operator.Minus, this).SetLeakedState(true);
 		}
 
 		public static Operand operator !(Operand op)
 		{
-			return new OverloadableOperation(Operator.LogicalNot, op);
+			return new OverloadableOperation(Operator.LogicalNot, op).SetLeakedState(true);
 		}
 
 		public Operand LogicalNot()
 		{
-			return new OverloadableOperation(Operator.LogicalNot, this);
+			return new OverloadableOperation(Operator.LogicalNot, this).SetLeakedState(true);
 		}
 
 		public static Operand operator ~(Operand op)
 		{
-			return new OverloadableOperation(Operator.Not, op);
+			return new OverloadableOperation(Operator.Not, op).SetLeakedState(true);
 		}
 
 		public Operand OnesComplement()
 		{
-			return new OverloadableOperation(Operator.Not, this);
+			return new OverloadableOperation(Operator.Not, this).SetLeakedState(true);
 		}
 
 		public Operand Pow2()
 		{
-			return new SimpleOperation(this, OpCodes.Dup, OpCodes.Mul);
+			return new SimpleOperation(this, OpCodes.Dup, OpCodes.Mul).SetLeakedState(true);
 		}
 
 		public Operand LogicalAnd(Operand other)
 		{
-			return Conditional(other, false);
+			return Conditional(other, false).SetLeakedState(true);
 		}
 
 		public Operand LogicalOr(Operand other)
 		{
-			return Conditional(true, other);
+			return Conditional(true, other).SetLeakedState(true);
 		}
 
 		public Operand PostIncrement()
 		{
-			return new PostfixOperation(Operator.Increment, this);
+			return new PostfixOperation(Operator.Increment, this).SetLeakedState(true);
 		}
 
 		public Operand PostDecrement()
 		{
-			return new PostfixOperation(Operator.Decrement, this);
+			return new PostfixOperation(Operator.Decrement, this).SetLeakedState(true);
 		}
 
 		public Operand PreIncrement()
 		{
-			return new PrefixOperation(Operator.Increment, this);
+			return new PrefixOperation(Operator.Increment, this).SetLeakedState(true);
 		}
 
 		public Operand PreDecrement()
 		{
-			return new PrefixOperation(Operator.Decrement, this);
+			return new PrefixOperation(Operator.Decrement, this).SetLeakedState(true);
 		}
 
 		public Operand IsTrue()
 		{
-			return new OverloadableOperation(Operator.True, this);
+			return new OverloadableOperation(Operator.True, this).SetLeakedState(true);
 		}
 
 		public Operand IsFalse()
 		{
-			return new OverloadableOperation(Operator.False, this);
+			return new OverloadableOperation(Operator.False, this).SetLeakedState(true);
 		}
 		#endregion
 
@@ -619,12 +634,12 @@ namespace TriAxis.RunSharp
 		#region Special operations
 		public Operand Conditional(Operand ifTrue, Operand ifFalse)
 		{
-			return new Conditional(this, ifTrue, ifFalse);
+			return new Conditional(this, ifTrue, ifFalse).SetLeakedState(true);
 		}
 
 	    public Operand Cast(Type type)
 		{
-			return new Cast(this, type);
+			return new Cast(this, type).SetLeakedState(true);
 		}
 		#endregion
 
@@ -725,7 +740,7 @@ namespace TriAxis.RunSharp
 
 		public ContextualOperand Invoke(string name, ITypeMapper typeMapper, params Operand[] args)
 		{
-			return new ContextualOperand(new Invocation(typeMapper.TypeInfo.FindMethod(GetReturnType(typeMapper), name, args, IsStaticTarget), this, args), typeMapper);
+			return new ContextualOperand(new Invocation(typeMapper.TypeInfo.FindMethod(GetReturnType(typeMapper), name, args, IsStaticTarget), this, args), typeMapper).SetLeakedState(true);
         }
 
 		public ContextualOperand InvokeDelegate(ITypeMapper typeMapper)
@@ -752,12 +767,12 @@ namespace TriAxis.RunSharp
 
 		public Operand ArrayLength()
 		{
-			return new ArrayLength(this, false);
+			return new ArrayLength(this, false).SetLeakedState(true);
 		}
 
 		public Operand LongArrayLength()
 		{
-			return new ArrayLength(this, true);
+			return new ArrayLength(this, true).SetLeakedState(true);
 		}
 		#endregion
 
@@ -768,19 +783,115 @@ namespace TriAxis.RunSharp
 
 		class Reference : Operand
 		{
-		    readonly Operand _op;
+            protected override bool DetectsLeaking => false;
 
-		    public Reference(Operand op)
+            readonly Operand _op;
+            protected override void ResetLeakedStateRecursively()
+            {
+                base.ResetLeakedStateRecursively();
+                _op.SetLeakedState(false);
+            }
+
+
+            public Reference(Operand op)
 		    {
 		        _op = op;
 		    }
 
 			internal override void EmitAddressOf(CodeGen g)
-			{
+{
+		    this.SetLeakedState(false); 
 				_op.EmitAddressOf(g);
 			}
 
 		    public override Type GetReturnType(ITypeMapper typeMapper) => _op.GetReturnType(typeMapper).MakeByRefType();
 		}
+
+        ~Operand()
+        {
+            // yes, we throw exception in finalizer because we need to alert
+            if (LeakedState && _detectsLeaks)
+            {
+                string message = "RunSharp: a possible leak of operand " + ((this as ContextualOperand)?.GetInternalOperandType() ?? this.GetType()).Name
+                                 + " detected, see Operand.SetNotLeaked() if it's not the case. " +
+                                 "Operand creation stack trace "
+                                 + (_leakedStateStack != null ? "\r\n" + _leakedStateStack : " may be enabled with RunSharpDebug.StoreLeakingStackTrace = LeakingDetectionMode.Minimal");
+                throw new InvalidOperationException(message);
+            }
+        }
+
+        StackTrace _leakedStateStack;
+
+        /// <summary>
+        /// This is set from internal things
+        /// </summary>
+	    bool _leakedState;
+        
+        /// <summary>
+        /// Set by ineritors, affects only final check
+        /// </summary>
+	    bool _detectsLeaks;
+
+        /// <summary>
+        /// If false at construction, exception won't be throw in leak detection case
+        /// </summary>
+        protected virtual bool DetectsLeaking => true;
+
+#if DEBUG
+        public
+#else
+        internal
+#endif
+            bool LeakedState
+	    {
+	        get { return _leakedState; }
+            set
+            {
+                if (_leakedState == value) return;
+                if (value)
+                {
+                    _leakedState = true;
+                    if (_detectsLeaks && RunSharpDebug.LeakingDetection != LeakingDetectionMode.Minimal)
+#if SILVERLIGHT
+                        _leakedStateStack = new StackTrace();
+#else
+                        _leakedStateStack = new StackTrace(3, RunSharpDebug.LeakingDetection == LeakingDetectionMode.DetectAndCaptureStackWithFiles);
+#endif
+                    SetLeakedStateRecursively();
+                }
+                else
+                {
+                    _leakedState = false;
+                    ResetLeakedStateRecursively();
+                }
+            }
+	    }
+
+        /// <summary>
+        /// Set not leaked for this and *all used operands recursively*. Returns itself.
+        /// </summary>
+        /// <remarks>Usage: <br/>
+        /// <code>
+        /// var asStream = ag.ExpressionFactory.New(typeof(MemoryStream)).Cast(typeof(Stream)).SetNotLeaked(false)();
+        /// </code>
+        /// </remarks>
+        public Operand SetNotLeaked()
+        {
+            LeakedState = false;
+            return this;
+        }
+
+        /// <summary>
+        /// Called even when leaking status ignored
+        /// </summary>
+	    protected virtual void SetLeakedStateRecursively()
+	    {
+	        
+	    }
+
+	    protected virtual void ResetLeakedStateRecursively()
+	    {
+	        
+	    }
 	}
 }

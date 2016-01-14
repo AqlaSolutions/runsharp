@@ -48,7 +48,14 @@ namespace TriAxis.RunSharp.Operands
 	    readonly Operand _array;
 	    readonly Operand[] _indexes;
 
-		public ArrayAccess(Operand array, Operand[] indexes)
+	    protected override void ResetLeakedStateRecursively()
+	    {
+	        base.ResetLeakedStateRecursively();
+	        _array.SetLeakedState(false);
+            _indexes.SetLeakedState(false);
+        }
+
+	    public ArrayAccess(Operand array, Operand[] indexes)
 		{
 			_array = array;
 			_indexes = indexes;
@@ -65,8 +72,9 @@ namespace TriAxis.RunSharp.Operands
 			    g.EmitGetHelper(op, g.TypeMapper.MapType(Helpers.AreTypesEqual(GetType(op, g.TypeMapper), typeof(int), g.TypeMapper) ? typeof(int) : typeof(long)), false);
 		}
 
-		internal override void EmitGet(CodeGen g)
-		{
+		internal override void EmitGet(CodeGen g) 
+{
+		    this.SetLeakedState(false); 
 			LoadArrayAndIndexes(g);
 
 			if (_indexes.Length == 1)
@@ -80,7 +88,8 @@ namespace TriAxis.RunSharp.Operands
 		}
 
 		internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
-		{
+{
+		    this.SetLeakedState(false); 
 			LoadArrayAndIndexes(g);
 
 			if (_indexes.Length == 1)
@@ -94,7 +103,8 @@ namespace TriAxis.RunSharp.Operands
 		}
 
 		internal override void EmitAddressOf(CodeGen g)
-		{
+{
+		    this.SetLeakedState(false); 
 			LoadArrayAndIndexes(g);
 
 			if (_indexes.Length == 1)

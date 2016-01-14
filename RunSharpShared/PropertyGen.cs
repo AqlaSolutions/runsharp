@@ -48,7 +48,9 @@ namespace TriAxis.RunSharp
 {
 	public sealed class PropertyGen : Operand, IMemberInfo, IDelayedCompletion
 	{
-	    public ITypeMapper TypeMapper => _owner.TypeMapper;
+        protected override bool DetectsLeaking => false;
+
+        public ITypeMapper TypeMapper => _owner.TypeMapper;
 	    readonly TypeGen _owner;
 	    readonly MethodAttributes _attrs;
 	    readonly Type _type;
@@ -183,8 +185,9 @@ namespace TriAxis.RunSharp
 
 	    public string Name { get; }
 
-	    internal override void EmitGet(CodeGen g)
-		{
+	    internal override void EmitGet(CodeGen g) 
+{
+		    this.SetLeakedState(false); 
 			if (_getter == null)
 				base.EmitGet(g);
 
@@ -199,7 +202,8 @@ namespace TriAxis.RunSharp
 		}
 
 		internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
-		{
+{
+		    this.SetLeakedState(false); 
 			if (_setter == null)
 				base.EmitSet(g, value, allowExplicitConversion);
 

@@ -33,7 +33,7 @@ using TryAxis.RunSharp;
 namespace TriAxis.RunSharp.Tests
 {
 	[TestFixture]
-    public class _06_CollectionClasses
+    public class _06_CollectionClasses : TestBase
     {
         [Test]
         public void TestGenTokens2()

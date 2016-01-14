@@ -32,7 +32,7 @@ using NUnit.Framework;
 namespace TriAxis.RunSharp.Tests
 {
     [TestFixture]
-    public class _01_HelloWorld
+    public class _01_HelloWorld : TestBase
     {
         [Test]
         public void TestGenHello1()

@@ -48,7 +48,9 @@ namespace TriAxis.RunSharp
 {
 	public sealed class EventGen : Operand, IMemberInfo, IDelayedCompletion
 	{
-	    readonly TypeGen _owner;
+        protected override bool DetectsLeaking => false;
+
+        readonly TypeGen _owner;
 	    readonly MethodAttributes _attrs;
 	    readonly Type _type;
 	    EventBuilder _eb;
@@ -145,8 +147,9 @@ namespace TriAxis.RunSharp
 			AttributeGen.ApplyList(ref _customAttributes, _eb.SetCustomAttribute);
 		}
 
-		internal override void EmitGet(CodeGen g)
-		{
+		internal override void EmitGet(CodeGen g) 
+{
+		    this.SetLeakedState(false); 
 			if ((object)_handler == null)
 				throw new InvalidOperationException(Properties.Messages.ErrCustomEventFieldAccess);
 
@@ -154,7 +157,8 @@ namespace TriAxis.RunSharp
 		}
 
 		internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
-		{
+{
+		    this.SetLeakedState(false); 
 			if ((object)_handler == null)
 				throw new InvalidOperationException(Properties.Messages.ErrCustomEventFieldAccess);
 

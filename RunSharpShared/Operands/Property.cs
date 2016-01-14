@@ -45,19 +45,28 @@ namespace TriAxis.RunSharp.Operands
 {
 	class Property : Operand
 	{
-	    readonly ApplicableFunction _property;
+        protected override bool DetectsLeaking => false;
+
+        readonly ApplicableFunction _property;
 	    readonly Operand _target;
 	    readonly Operand[] _indexes;
+        protected override void ResetLeakedStateRecursively()
+        {
+            base.ResetLeakedStateRecursively();
+            _target.SetLeakedState(false);
+            _indexes.SetLeakedState(false);
+        }
 
-		public Property(ApplicableFunction property, Operand target, Operand[] indexes)
+        public Property(ApplicableFunction property, Operand target, Operand[] indexes)
 		{
 			_property = property;
 			_target = target;
 			_indexes = indexes;
 		}
 
-		internal override void EmitGet(CodeGen g)
-		{
+		internal override void EmitGet(CodeGen g) 
+{
+		    this.SetLeakedState(false); 
 			PropertyInfo pi = (PropertyInfo)_property.Method.Member;
 			MethodInfo mi = pi.GetGetMethod(true);
 
@@ -75,7 +84,8 @@ namespace TriAxis.RunSharp.Operands
 		}
 
 		internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
-		{
+{
+		    this.SetLeakedState(false); 
 			PropertyInfo pi = (PropertyInfo)_property.Method.Member;
 			MethodInfo mi = pi.GetSetMethod(true);
 

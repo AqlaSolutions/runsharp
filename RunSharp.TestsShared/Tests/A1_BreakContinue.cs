@@ -32,7 +32,7 @@ using NUnit.Framework;
 namespace TriAxis.RunSharp.Tests
 {
 	[TestFixture]
-    public class A1_BreakContinue
+    public class A1_BreakContinue : TestBase
     {
         [Test]
         public void TestGenBreakContinue()

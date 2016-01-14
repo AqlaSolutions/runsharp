@@ -256,7 +256,9 @@ namespace TriAxis.RunSharp
 
 		class _Arg : Operand
 		{
-		    readonly ushort _index;
+            protected override bool DetectsLeaking => false;
+
+            readonly ushort _index;
 		    readonly Type _type;
 
 			public _Arg(int index, Type type)
@@ -265,8 +267,9 @@ namespace TriAxis.RunSharp
 				_type = type;
 			}
 
-			internal override void EmitGet(CodeGen g)
-			{
+			internal override void EmitGet(CodeGen g) 
+{
+		    this.SetLeakedState(false); 
 				g.EmitLdargHelper(_index);
 
 				if (IsReference)
@@ -274,7 +277,8 @@ namespace TriAxis.RunSharp
 			}
 
 			internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
-			{
+{
+		    this.SetLeakedState(false); 
 				if (IsReference)
 				{
 					g.EmitLdargHelper(_index);
@@ -288,7 +292,8 @@ namespace TriAxis.RunSharp
 			}
 
 			internal override void EmitAddressOf(CodeGen g)
-			{
+{
+		    this.SetLeakedState(false); 
 				if (IsReference)
 				{
 					g.EmitLdargHelper(_index);
@@ -311,7 +316,9 @@ namespace TriAxis.RunSharp
 
 		internal class _Local : Operand
 		{
-		    readonly CodeGen _owner;
+            protected override bool DetectsLeaking => false;
+
+            readonly CodeGen _owner;
 			LocalBuilder _var;
 		    readonly Block _scope;
 			Type _t, _tHint;
@@ -342,8 +349,9 @@ namespace TriAxis.RunSharp
 					throw new InvalidOperationException(Properties.Messages.ErrInvalidVariableScope);
 			}
 
-			internal override void EmitGet(CodeGen g)
-			{
+			internal override void EmitGet(CodeGen g) 
+{
+		    this.SetLeakedState(false); 
 				CheckScope(g);
 
 				if (_var == null)
@@ -353,7 +361,8 @@ namespace TriAxis.RunSharp
 			}
 
 			internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
-			{
+{
+		    this.SetLeakedState(false); 
 				CheckScope(g);
 
 				if (_t == null)
@@ -367,7 +376,8 @@ namespace TriAxis.RunSharp
 			}
 
 			internal override void EmitAddressOf(CodeGen g)
-			{
+{
+		    this.SetLeakedState(false); 
 				CheckScope(g);
 
 				if (_var == null)

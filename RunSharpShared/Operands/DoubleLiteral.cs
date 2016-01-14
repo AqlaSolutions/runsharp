@@ -44,12 +44,15 @@ namespace TriAxis.RunSharp.Operands
 {
 	class DoubleLiteral : Operand
 	{
-	    readonly double _value;
+        protected override bool DetectsLeaking => false;
+
+        readonly double _value;
 
 		public DoubleLiteral(double value) { _value = value; }
 
-		internal override void EmitGet(CodeGen g)
-		{
+		internal override void EmitGet(CodeGen g) 
+{
+		    this.SetLeakedState(false); 
 			g.IL.Emit(OpCodes.Ldc_R8, _value);
 		}
 

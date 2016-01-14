@@ -50,6 +50,14 @@ namespace TriAxis.RunSharp.Operands
         readonly Operand _ifTrue;
         readonly Operand _ifFalse;
 
+        protected override void ResetLeakedStateRecursively()
+        {
+            base.ResetLeakedStateRecursively();
+            _cond.SetLeakedState(false);
+            _ifFalse.SetLeakedState(false);
+            _ifTrue.SetLeakedState(false);
+        }
+
         public Conditional(Operand cond, Operand ifTrue, Operand ifFalse)
         {
             _cond = cond;
@@ -71,8 +79,9 @@ namespace TriAxis.RunSharp.Operands
             if (_cond.GetReturnType(typeMapper) != typeMapper.MapType(typeof(bool))) _cond = _cond.IsTrue();
         }
 
-        internal override void EmitGet(CodeGen g)
-        {
+        internal override void EmitGet(CodeGen g) 
+{
+		    this.SetLeakedState(false); 
             Initialize(g.TypeMapper);
             Label lbTrue = g.IL.DefineLabel();
             Label lbFalse = g.IL.DefineLabel();

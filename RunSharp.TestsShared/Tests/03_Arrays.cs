@@ -26,21 +26,20 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using NUnit.Framework;
 
 namespace TriAxis.RunSharp.Tests
 {
 	[TestFixture]
-    public class _03_Arrays
+    public class _03_Arrays : TestBase
     {
         [Test]
         public void TestGenArrays()
         {
             TestingFacade.GetTestsForGenerator(GenArrays, @">>> GEN TriAxis.RunSharp.Tests.03_Arrays.GenArrays
 === RUN TriAxis.RunSharp.Tests.03_Arrays.GenArrays
-Length of row 0 is 3
-Length of row 1 is 4
 Length of row 2 is 5
 Length of row 3 is 6
 Length of row 4 is 7
@@ -56,7 +55,7 @@ Length of row 4 is 7
             var exp = ag.ExpressionFactory;
 
             TypeGen DeclareArraysSample = ag.Class("DecalreArraysSample");
-			{
+		    {
 				CodeGen g = DeclareArraysSample.Public.Static.Method(typeof(void), "Main");
 				{
                     // Single-dimensional array
@@ -76,8 +75,8 @@ Length of row 4 is 7
 					}
 					g.End();
 
-					// Print length of each row
-					g.For(i.Assign(0), i < scores.ArrayLength(), i.Increment());
+					// Print length of each row from 3
+					g.For(i.Assign(2), i < scores.ArrayLength(), i.Increment());
 					{
 						g.WriteLine("Length of row {0} is {1}", i, scores[i].ArrayLength());
 					}

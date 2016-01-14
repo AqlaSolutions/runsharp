@@ -45,12 +45,15 @@ namespace TriAxis.RunSharp.Operands
 {
 	class TypeLiteral : Operand
 	{
-		readonly Type _t;
+        protected override bool DetectsLeaking => false;
+
+        readonly Type _t;
 
 		public TypeLiteral(Type t) { _t = t; }
 
-		internal override void EmitGet(CodeGen g)
-		{
+		internal override void EmitGet(CodeGen g) 
+{
+		    this.SetLeakedState(false); 
 			g.IL.Emit(OpCodes.Ldtoken, _t);
 			g.IL.Emit(OpCodes.Call, g.TypeMapper.MapType(typeof(Type)).GetMethod("GetTypeFromHandle"));
 		}

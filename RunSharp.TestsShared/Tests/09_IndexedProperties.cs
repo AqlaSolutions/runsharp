@@ -33,7 +33,7 @@ using TryAxis.RunSharp;
 namespace TriAxis.RunSharp.Tests
 {
 	[TestFixture]
-    public class _09_IndexedProperties
+    public class _09_IndexedProperties : TestBase
     {
         [Test]
         public void TestGenIndexedProperty()

@@ -45,8 +45,16 @@ namespace TriAxis.RunSharp.Operands
 {
 	class ArrayLength : Operand
 	{
+	    protected override bool DetectsLeaking => false;
+
 	    readonly Operand _array;
 	    readonly bool _asLong;
+
+	    protected override void ResetLeakedStateRecursively()
+	    {
+	        base.ResetLeakedStateRecursively();
+            _array.SetLeakedState(false);
+        }
 
 	    public ArrayLength(Operand array, bool asLong)
 		{
@@ -54,8 +62,9 @@ namespace TriAxis.RunSharp.Operands
 			_asLong = asLong;
 		}
 
-		internal override void EmitGet(CodeGen g)
-        {
+		internal override void EmitGet(CodeGen g) 
+{
+		    this.SetLeakedState(false); 
             if (!_array.GetReturnType(g.TypeMapper).IsArray)
                 throw new InvalidOperationException(Properties.Messages.ErrArrayOnly);
 

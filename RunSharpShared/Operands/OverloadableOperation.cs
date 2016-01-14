@@ -49,7 +49,13 @@ namespace TriAxis.RunSharp.Operands
 	    readonly Operand[] _operands;
 	    ApplicableFunction _af;
 
-		public OverloadableOperation(Operator op, params Operand[] operands)
+        protected override void ResetLeakedStateRecursively()
+        {
+            base.ResetLeakedStateRecursively();
+            _operands.SetLeakedState(false);
+        }
+
+        public OverloadableOperation(Operator op, params Operand[] operands)
 		{
 			_op = op;
 			_operands = operands;
@@ -98,8 +104,9 @@ namespace TriAxis.RunSharp.Operands
             return newArray;
         }
 
-        internal override void EmitGet(CodeGen g)
-		{
+        internal override void EmitGet(CodeGen g) 
+{
+		    this.SetLeakedState(false); 
 		    PrepareAf(g.TypeMapper);
             _af.EmitArgs(g, _operands);
 
@@ -111,7 +118,8 @@ namespace TriAxis.RunSharp.Operands
 		}
 
 		internal override void EmitBranch(CodeGen g, BranchSet branchSet, Label label)
-		{
+{
+		    this.SetLeakedState(false); 
             PrepareAf(g.TypeMapper);
             IStandardOperation stdOp = _af.Method as IStandardOperation;
 			if (_op.BranchOp == 0 || stdOp == null)

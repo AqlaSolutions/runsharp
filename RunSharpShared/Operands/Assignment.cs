@@ -45,11 +45,20 @@ namespace TriAxis.RunSharp.Operands
 {
 	public class Assignment : Operand, IAssignmentInternal
     {
-	    readonly Operand _lvalue;
+        protected override bool DetectsLeaking => false;
+
+        readonly Operand _lvalue;
 	    readonly Operand _rvalue;
 	    readonly bool _allowExplicitConversion;
 
-		internal Assignment(Operand lvalue, Operand rvalue, bool allowExplicitConversion)
+	    protected override void ResetLeakedStateRecursively()
+	    {
+            base.ResetLeakedStateRecursively();
+            _lvalue.SetLeakedState(false);
+            _rvalue.SetLeakedState(false);
+        }
+
+	    internal Assignment(Operand lvalue, Operand rvalue, bool allowExplicitConversion)
 		{
 			_lvalue = lvalue;
 			_rvalue = rvalue;
@@ -60,11 +69,13 @@ namespace TriAxis.RunSharp.Operands
 
 		public virtual void Emit(CodeGen g)
 		{
+		    this.SetLeakedState(false);
 			_lvalue.EmitSet(g, _rvalue, _allowExplicitConversion);
 		}
 
-		internal override void EmitGet(CodeGen g)
-		{
+		internal override void EmitGet(CodeGen g) 
+{
+		    this.SetLeakedState(false); 
 			if (_lvalue.TrivialAccess)
 			{
 				_lvalue.EmitSet(g, _rvalue, _allowExplicitConversion);
@@ -80,5 +91,5 @@ namespace TriAxis.RunSharp.Operands
 		}
 
 	    public override Type GetReturnType(ITypeMapper typeMapper) => _lvalue.GetReturnType(typeMapper);
-	}
+    }
 }

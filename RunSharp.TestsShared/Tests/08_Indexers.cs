@@ -34,7 +34,7 @@ using TryAxis.RunSharp;
 namespace TriAxis.RunSharp.Tests
 {
     [TestFixture]
-    public class _08_Indexers
+    public class _08_Indexers : TestBase
     {
         [Test]
         public void TestGenIndexer()

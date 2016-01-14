@@ -48,16 +48,24 @@ namespace TriAxis.RunSharp.Operands
 	    readonly ApplicableFunction _method;
 	    readonly Operand _target;
 	    readonly Operand[] _args;
+        protected override void ResetLeakedStateRecursively()
+        {
+            base.ResetLeakedStateRecursively();
+            _target.SetLeakedState(false);
+            _args.SetLeakedState(false);
+        }
 
-		public Invocation(ApplicableFunction method, Operand target, Operand[] args)
+
+        public Invocation(ApplicableFunction method, Operand target, Operand[] args)
 		{
 			_method = method;
 			_target = target;
 			_args = args;
 		}
 
-		internal override void EmitGet(CodeGen g)
-		{
+		internal override void EmitGet(CodeGen g) 
+{
+		    this.SetLeakedState(false); 
 			MethodBase mb = (MethodBase)_method.Method.Member;
 
 			if (!mb.IsStatic)

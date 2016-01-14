@@ -61,12 +61,11 @@ namespace TriAxis.RunSharp
 	    {
 	        return Field(_typeMapper.MapType(type), name);
 	    }
-        
 #endif
 
 	    public ContextualOperand Field(Type type, string name)
 		{
-			return new ContextualOperand(new Field((FieldInfo)_typeMapper.TypeInfo.FindField(type, name, true).Member, null), _typeMapper);
+			return new ContextualOperand(new Field((FieldInfo)_typeMapper.TypeInfo.FindField(type, name, true).Member, null), _typeMapper).SetLeakedState(true);
 		}
 
 #if FEAT_IKVM
@@ -93,7 +92,7 @@ namespace TriAxis.RunSharp
 
 	    public ContextualOperand Property(Type type, string name, params Operand[] indexes)
 		{
-			return new ContextualOperand(new Property(_typeMapper.TypeInfo.FindProperty(type, name, indexes, true), null, indexes), _typeMapper);
+			return new ContextualOperand(new Property(_typeMapper.TypeInfo.FindProperty(type, name, indexes, true), null, indexes), _typeMapper).SetLeakedState(true);
 		}
 
 #if FEAT_IKVM
@@ -118,7 +117,7 @@ namespace TriAxis.RunSharp
 
         public ContextualOperand Invoke(Type type, string name, params Operand[] args)
 		{
-			return new ContextualOperand(new Invocation(_typeMapper.TypeInfo.FindMethod(type, name, args, true), null, args), _typeMapper);
+			return new ContextualOperand(new Invocation(_typeMapper.TypeInfo.FindMethod(type, name, args, true), null, args), _typeMapper).SetLeakedState(true);
 		}
 	}
 }

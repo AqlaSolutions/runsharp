@@ -16,6 +16,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Aqla\Helpers.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Aqla\ITypeMapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Aqla\MemberGenBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Aqla\RunSharpDebug.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Aqla\TypeMapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ArrayUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AssemblyGen.cs" />
@@ -33,11 +34,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)DynamicMethodGen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EventGen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExpressionFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ExtensionAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FieldGen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ITypeInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MethodGen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MonoSortedList.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Operand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)OperandExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Operands\ArrayAccess.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Operands\ArrayLength.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Operands\Assignment.cs" />

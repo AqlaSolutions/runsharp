@@ -32,15 +32,19 @@ namespace TriAxis.RunSharp
 
     public class TestingFacade
     {
-        private static readonly ExecutableTestHelper ExecutableTestHelper = new ExecutableTestHelper();
 
-        public static IEnumerable<Action> GetTestsForGenerator(ExecutableTestHelper.Generator method, string expectedOutput)
+#if SILVERLIGHT && FEAT_IKVM
+#error Wrong conditonal compilation symbols
+#endif
+        static readonly ExecutableTestHelper ExecutableTestHelper = new ExecutableTestHelper();
+
+        public static IEnumerable<Action> GetTestsForGenerator(ExecutableTestHelper.Generator method, string expectedOutput, string name = null)
         {
 #if !SILVERLIGHT
             yield return () =>
                 {
                     ConsoleTester.ClearAndStartCapturing();
-                    ExecutableTestHelper.RunTest(method, true);
+                    ExecutableTestHelper.RunTest(method, true, name);
                     ConsoleTester.AssertAndClear(expectedOutput);
                 };
 #endif
@@ -48,10 +52,21 @@ namespace TriAxis.RunSharp
             yield return () =>
                 {
                     ConsoleTester.ClearAndStartCapturing();
-                    ExecutableTestHelper.RunTest(method, false);
+                    ExecutableTestHelper.RunTest(method, false, name);
                     ConsoleTester.AssertAndClear(expectedOutput);
                 };
 
+#endif
+        }
+        
+        public static void RunTest(ExecutableTestHelper.Generator method, string name = null)
+        {
+#if !SILVERLIGHT
+            ExecutableTestHelper.RunTest(method, true, name);
+            return;
+#endif
+#if !FEAT_IKVM
+            ExecutableTestHelper.RunTest(method, false, name);
 #endif
         }
     }

@@ -3,7 +3,7 @@
 namespace TriAxis.RunSharp.Tests
 {
     [TestFixture]
-    public class TestResources
+    public class TestResources : TestBase
     {
         [Test]
         public void Execute()
