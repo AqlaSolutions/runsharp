@@ -70,7 +70,7 @@ namespace TriAxis.RunSharp
 
         public ContextualOperand New(Type type)
         {
-            return new ContextualOperand(New(type, Operand.EmptyArray), _typeMapper);
+            return New(type, Operand.EmptyArray);
         }
 
 #if FEAT_IKVM
