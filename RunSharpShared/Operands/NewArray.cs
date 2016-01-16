@@ -60,8 +60,8 @@ namespace TriAxis.RunSharp.Operands
 			_indexes = indexes;
 		}
 
-		internal override void EmitGet(CodeGen g) 
-{
+		protected internal override void EmitGet(CodeGen g)  
+        {
 		    this.SetLeakedState(false); 
 			for (int i = 0; i < _indexes.Length; i++)
 				g.EmitGetHelper(_indexes[i], g.TypeMapper.MapType(typeof(int)), false);

@@ -71,7 +71,7 @@ namespace TryAxis.RunSharp
         readonly Operand _operand;
         public ITypeMapper TypeMapper { get; }
 
-        internal ContextualOperand(Operand operand, ITypeMapper typeMapper)
+        public ContextualOperand(Operand operand, ITypeMapper typeMapper)
         {
             if (operand == null) throw new ArgumentNullException(nameof(operand));
             _operand = operand;
@@ -84,50 +84,50 @@ namespace TryAxis.RunSharp
             return _operand.GetReturnType(typeMapper);
         }
 
-        internal override void EmitGet(CodeGen g) 
-{
+        protected internal override void EmitGet(CodeGen g)  
+        {
 		    this.SetLeakedState(false); 
             _operand.EmitGet(g);
         }
 
-        internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
-{
-		    this.SetLeakedState(false); 
+        protected internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
+		{
+		    this.SetLeakedState(false);  
             this.SetLeakedState(false);
             _operand.EmitSet(g, value, allowExplicitConversion);
         }
 
-        internal override void EmitAddressOf(CodeGen g)
-{
-		    this.SetLeakedState(false); 
+        protected internal override void EmitAddressOf(CodeGen g)
+		{
+		    this.SetLeakedState(false);  
             _operand.EmitAddressOf(g);
         }
 
-        internal override void EmitBranch(CodeGen g, BranchSet branchSet, Label label)
-{
-		    this.SetLeakedState(false);
+        protected internal override void EmitBranch(CodeGen g, BranchSet branchSet, Label label)
+		{
+		    this.SetLeakedState(false); 
             _operand.EmitBranch(g, branchSet, label);
         }
 
-        internal override BindingFlags GetBindingFlags()
+        protected internal override BindingFlags GetBindingFlags()
         {
             this.SetLeakedState(false);
             return _operand.GetBindingFlags();
         }
 
-        internal override bool TrivialAccess
+        protected internal override bool TrivialAccess
         { get { this.SetLeakedState(false); return _operand.TrivialAccess; } }
 
-        internal override bool IsStaticTarget
+        protected internal override bool IsStaticTarget
         { get { this.SetLeakedState(false); return _operand.IsStaticTarget; } }
 
-        internal override bool SuppressVirtual
+        protected internal override bool SuppressVirtual
         { get { this.SetLeakedState(false); return _operand.SuppressVirtual; } }
 
-        internal override object ConstantValue
+        protected internal override object ConstantValue
         { get { this.SetLeakedState(false); return _operand.ConstantValue; } }
 
-        internal override void AssignmentHint(Operand op)
+        protected internal override void AssignmentHint(Operand op)
         {
             this.SetLeakedState(false);
             _operand.AssignmentHint(op);

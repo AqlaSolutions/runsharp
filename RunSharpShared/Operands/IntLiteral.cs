@@ -49,8 +49,8 @@ namespace TriAxis.RunSharp.Operands
 
         public IntLiteral(System.Type t, int value) { _type = t; Value = value; }
 
-		internal override void EmitGet(CodeGen g) 
-{
+		protected internal override void EmitGet(CodeGen g)  
+        {
 		    this.SetLeakedState(false); 
 			g.EmitI4Helper(Value);
 		}
@@ -64,6 +64,6 @@ namespace TriAxis.RunSharp.Operands
 
 	    public int Value { get; }
 
-	    internal override object ConstantValue => Value;
+	    protected internal override object ConstantValue => Value;
 	}
 }

@@ -63,8 +63,8 @@ namespace TriAxis.RunSharp.Operands
 			_baseOp = new OverloadableOperation(op, operand);
 		}
 
-		internal override void EmitGet(CodeGen g) 
-{
+		protected internal override void EmitGet(CodeGen g)  
+        {
 		    this.SetLeakedState(false); 
 			Operand before = g.Local(_target);
 			_baseOp.SetOperand(before);

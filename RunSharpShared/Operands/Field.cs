@@ -60,8 +60,8 @@ namespace TriAxis.RunSharp.Operands
 			_target = target;
 		}
 
-		internal override void EmitGet(CodeGen g) 
-{
+		protected internal override void EmitGet(CodeGen g)  
+        {
 		    this.SetLeakedState(false); 
 			if (_fi.IsStatic)
 				g.IL.Emit(OpCodes.Ldsfld, _fi);
@@ -72,9 +72,9 @@ namespace TriAxis.RunSharp.Operands
 			}
 		}
 
-		internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
-{
-		    this.SetLeakedState(false); 
+		protected internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
+		{
+		    this.SetLeakedState(false);  
 			if (!_fi.IsStatic)
 				_target.EmitRef(g);
 
@@ -82,9 +82,9 @@ namespace TriAxis.RunSharp.Operands
 			g.IL.Emit(_fi.IsStatic ? OpCodes.Stsfld : OpCodes.Stfld, _fi);
 		}
 
-		internal override void EmitAddressOf(CodeGen g)
-{
-		    this.SetLeakedState(false); 
+		protected internal override void EmitAddressOf(CodeGen g)
+		{
+		    this.SetLeakedState(false);  
 			if (_fi.IsStatic)
 				g.IL.Emit(OpCodes.Ldsflda, _fi);
 			else
@@ -96,6 +96,6 @@ namespace TriAxis.RunSharp.Operands
 
 	    public override Type GetReturnType(ITypeMapper typeMapper) => _fi.FieldType;
 
-	    internal override bool TrivialAccess => true;
+	    protected internal override bool TrivialAccess => true;
 	}
 }

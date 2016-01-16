@@ -51,8 +51,8 @@ namespace TriAxis.RunSharp.Operands
 
 		public TypeLiteral(Type t) { _t = t; }
 
-		internal override void EmitGet(CodeGen g) 
-{
+		protected internal override void EmitGet(CodeGen g)  
+        {
 		    this.SetLeakedState(false); 
 			g.IL.Emit(OpCodes.Ldtoken, _t);
 			g.IL.Emit(OpCodes.Call, g.TypeMapper.MapType(typeof(Type)).GetMethod("GetTypeFromHandle"));
@@ -60,6 +60,6 @@ namespace TriAxis.RunSharp.Operands
 
 	    public override Type GetReturnType(ITypeMapper typeMapper) => typeMapper.MapType(typeof(Type));
 
-	    internal override object ConstantValue => _t;
+	    protected internal override object ConstantValue => _t;
 	}
 }

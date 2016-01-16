@@ -245,6 +245,16 @@ namespace TriAxis.RunSharp
 #endif
 		}
 
+	    bool _leaveNextReturnOnStack;
+
+        /// <summary>
+        /// Applicable to Eval and Invoke. void is considered return value too.
+        /// </summary>
+	    public void LeaveNextReturnOnStack()
+	    {
+	        _leaveNextReturnOnStack = true;
+	    }
+
         /// <summary>
         /// Allows evaluation of <see cref="StaticFactory.Invoke"/>, <see cref="ExpressionFactory.New"/> and others. The result of the evaluation is discarded.
         /// </summary>
@@ -254,8 +264,9 @@ namespace TriAxis.RunSharp
             BeforeStatement();
 
             operand.EmitGet(this);
-            if (!Helpers.AreTypesEqual(operand.GetReturnType(TypeMapper), typeof(void), TypeMapper))
+            if (!_leaveNextReturnOnStack && !Helpers.AreTypesEqual(operand.GetReturnType(TypeMapper), typeof(void), TypeMapper))
                 IL.Emit(OpCodes.Pop);
+            _leaveNextReturnOnStack = false;
         }
 
 
@@ -445,8 +456,10 @@ namespace TriAxis.RunSharp
 		}
 
 		public void Return()
-		{
-		    if (Context.ReturnType != null && !Helpers.AreTypesEqual(Context.ReturnType, typeof(void), TypeMapper))
+        {
+            if (!_isOwner)
+                throw new InvalidOperationException("Can't emit return inside try-catch when CodeGen is not an owner");
+            if (Context.ReturnType != null && !Helpers.AreTypesEqual(Context.ReturnType, typeof(void), TypeMapper))
 				throw new InvalidOperationException(Properties.Messages.ErrMethodMustReturnValue);
 
 			BeforeStatement();
@@ -472,8 +485,10 @@ namespace TriAxis.RunSharp
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "'Operand' required as type to use provided implicit conversions")]
 		public void Return(Operand value)
-		{
-			if (Context.ReturnType == null || Helpers.AreTypesEqual(Context.ReturnType, typeof(void), TypeMapper))
+        {
+            if (!_isOwner)
+                throw new InvalidOperationException("Can't emit return inside try-catch when CodeGen is not an owner");
+            if (Context.ReturnType == null || Helpers.AreTypesEqual(Context.ReturnType, typeof(void), TypeMapper))
 				throw new InvalidOperationException(Properties.Messages.ErrVoidMethodReturningValue);
 
 			BeforeStatement();

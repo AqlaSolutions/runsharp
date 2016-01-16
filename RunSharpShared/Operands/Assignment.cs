@@ -73,8 +73,8 @@ namespace TriAxis.RunSharp.Operands
 			_lvalue.EmitSet(g, _rvalue, _allowExplicitConversion);
 		}
 
-		internal override void EmitGet(CodeGen g) 
-{
+		protected internal override void EmitGet(CodeGen g)  
+        {
 		    this.SetLeakedState(false); 
 			if (_lvalue.TrivialAccess)
 			{

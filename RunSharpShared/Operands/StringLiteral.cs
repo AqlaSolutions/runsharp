@@ -51,14 +51,14 @@ namespace TriAxis.RunSharp.Operands
 
 		public StringLiteral(string str) { _str = str; }
 
-		internal override void EmitGet(CodeGen g) 
-{
+		protected internal override void EmitGet(CodeGen g)  
+        {
 		    this.SetLeakedState(false); 
 			g.IL.Emit(OpCodes.Ldstr, _str);
 		}
 
 	    public override Type GetReturnType(ITypeMapper typeMapper) => typeMapper.MapType(typeof(string));
 
-	    internal override object ConstantValue => _str;
+	    protected internal override object ConstantValue => _str;
 	}
 }

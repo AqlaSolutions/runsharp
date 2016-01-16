@@ -42,8 +42,16 @@ using System.Reflection.Emit;
 
 namespace TriAxis.RunSharp
 {
-    public class ParameterGen : MemberGenBase<ParameterGen>
-	{
+    public interface IParameterBasicInfo
+    {
+        int Position { get; }
+        Type Type { get; }
+        string Name { get; }
+        bool IsParameterArray { get; }
+    }
+
+    public class ParameterGen : MemberGenBase<ParameterGen>, IParameterBasicInfo
+    {
 		ParameterGenCollection _owner;
 	    internal List<AttributeGen> CustomAttributes;
 		internal ParameterGen(ParameterGenCollection owner, int position, Type parameterType, ParameterAttributes attributes, string name, bool va)
@@ -61,7 +69,7 @@ namespace TriAxis.RunSharp
 	    public Type Type { get; }
 	    public string Name { get; }
 	    public ParameterAttributes ParameterAttributes { get; } = ParameterAttributes.None;
-	    internal bool IsParameterArray { get; }
+        public bool IsParameterArray { get; }
 
 	    #region Custom Attributes
         

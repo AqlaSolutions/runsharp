@@ -79,8 +79,8 @@ namespace TriAxis.RunSharp.Operands
             if (_cond.GetReturnType(typeMapper) != typeMapper.MapType(typeof(bool))) _cond = _cond.IsTrue();
         }
 
-        internal override void EmitGet(CodeGen g) 
-{
+        protected internal override void EmitGet(CodeGen g)  
+        {
 		    this.SetLeakedState(false); 
             Initialize(g.TypeMapper);
             Label lbTrue = g.IL.DefineLabel();

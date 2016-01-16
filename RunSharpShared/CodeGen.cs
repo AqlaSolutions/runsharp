@@ -64,8 +64,9 @@ namespace TriAxis.RunSharp
 		bool SupportsScopes { get; }
     }
 
-	public partial class CodeGen
+	public partial class CodeGen : ICodeGenContext
 	{
+	    readonly bool _isOwner;
 #if !PHONE8
         readonly ConstructorGen _cg;
 #endif
@@ -79,12 +80,13 @@ namespace TriAxis.RunSharp
 	    readonly Dictionary<string, Label> _labels = new Dictionary<string, Label>();
 	    readonly Dictionary<string, Operand> _namedLocals = new Dictionary<string, Operand>();
 
-		internal ILGenerator IL { get; }
-	    internal ICodeGenContext Context { get; }
+		protected internal ILGenerator IL { get; }
+        protected internal ICodeGenContext Context { get; }
 
-	    internal CodeGen(ICodeGenContext context)
+	    public CodeGen(ICodeGenContext context, bool isOwner = true)
 		{
-			Context = context;
+	        _isOwner = isOwner;
+	        Context = context;
 #if !PHONE8
 
             _cg = context as ConstructorGen;
@@ -134,8 +136,18 @@ namespace TriAxis.RunSharp
 
 		public ContextualOperand Arg(string name)
 		{
-			ParameterGen param = Context.GetParameterByName(name);
+			var param = Context.GetParameterByName(name);
 			return new ContextualOperand(new _Arg(ThisOffset + param.Position - 1, param.Type), TypeMapper);
+		}
+        
+        /// <summary>
+        /// ThisOffset is applied inside
+        /// </summary>
+        /// <param name="parameterIndex"></param>
+        /// <returns></returns>
+		public ContextualOperand Arg(int parameterIndex)
+		{
+			return new ContextualOperand(new _Arg(ThisOffset + parameterIndex, Context.ParameterTypes[parameterIndex]), TypeMapper);
 		}
 #endregion
 
@@ -193,8 +205,10 @@ namespace TriAxis.RunSharp
 		}
 
 		void EnsureReturnVariable()
-		{
-			if (_hasRetVar)
+        {
+            if (!_isOwner)
+                throw new InvalidOperationException("CodeGen is not an owner of the context");
+            if (_hasRetVar)
 				return;
 
 			_retLabel = IL.DefineLabel();
@@ -203,7 +217,7 @@ namespace TriAxis.RunSharp
 			_hasRetVar = true;
 		}
 
-		public bool IsCompleted => _blocks.Count == 0 && !_reachable && _hasRetVar == _hasRetLabel;
+		public bool IsCompleted => _blocks.Count == 0 && (!_isOwner || !_reachable) && _hasRetVar == _hasRetLabel;
 
 	    internal void Complete()
 		{
@@ -214,7 +228,7 @@ namespace TriAxis.RunSharp
 			{
 				if (HasReturnValue)
 					throw new InvalidOperationException(string.Format(null, Properties.Messages.ErrMethodMustReturnValue, Context));
-				else
+				else if (_isOwner)
 					Return();
 			}
 
@@ -232,7 +246,7 @@ namespace TriAxis.RunSharp
 		{
 			public _Base(Type type) : base(0, type) { }
 
-			internal override bool SuppressVirtual => true;
+			protected internal override bool SuppressVirtual => true;
 		}
 
 		class _Arg : Operand
@@ -248,18 +262,18 @@ namespace TriAxis.RunSharp
 				_type = type;
 			}
 
-			internal override void EmitGet(CodeGen g) 
-{
-		    this.SetLeakedState(false); 
+		    protected internal override void EmitGet(CodeGen g)
+		    {
+		        this.SetLeakedState(false); 
 				g.EmitLdargHelper(_index);
 
 				if (IsReference)
 					g.EmitLdindHelper(GetReturnType(g.TypeMapper));
 			}
 
-			internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
-{
-		    this.SetLeakedState(false); 
+		    protected internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
+		    {
+		        this.SetLeakedState(false); 
 				if (IsReference)
 				{
 					g.EmitLdargHelper(_index);
@@ -272,9 +286,9 @@ namespace TriAxis.RunSharp
 				}
 			}
 
-			internal override void EmitAddressOf(CodeGen g)
-{
-		    this.SetLeakedState(false); 
+		    protected internal override void EmitAddressOf(CodeGen g)
+		    {
+		        this.SetLeakedState(false);  
 				if (IsReference)
 				{
 					g.EmitLdargHelper(_index);
@@ -292,7 +306,7 @@ namespace TriAxis.RunSharp
 
 		    public override Type GetReturnType(ITypeMapper typeMapper) => IsReference ? _type.GetElementType() : _type;
 
-		    internal override bool TrivialAccess => true;
+		    protected internal override bool TrivialAccess => true;
 		}
 
 		internal class _Local : Operand
@@ -330,20 +344,37 @@ namespace TriAxis.RunSharp
 					throw new InvalidOperationException(Properties.Messages.ErrInvalidVariableScope);
 			}
 
-			internal override void EmitGet(CodeGen g) 
-{
-		    this.SetLeakedState(false); 
+		    protected internal override void EmitGet(CodeGen g) 
+		    {
+		        this.SetLeakedState(false); 
 				CheckScope(g);
 
 				if (_var == null)
 					throw new InvalidOperationException(Properties.Messages.ErrUninitializedVarAccess);
 
-				g.IL.Emit(OpCodes.Ldloc, _var);
-			}
+                switch (_var.LocalIndex)
+                {
+                    case 0:
+                        g.IL.Emit(OpCodes.Ldloc_0);
+                        break;
+                    case 1:
+                        g.IL.Emit(OpCodes.Ldloc_1);
+                        break;
+                    case 2:
+                        g.IL.Emit(OpCodes.Ldloc_2);
+                        break;
+                    case 3:
+                        g.IL.Emit(OpCodes.Ldloc_3);
+                        break;
+                    default:
+                        g.IL.Emit(OpCodes.Ldloc, _var);
+                        break;
+                }
+            }
 
-			internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
-{
-		    this.SetLeakedState(false); 
+			protected internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
+			{
+		        this.SetLeakedState(false); 
 				CheckScope(g);
 
 				if (_t == null)
@@ -353,12 +384,30 @@ namespace TriAxis.RunSharp
 					_var = g.IL.DeclareLocal(_t);
 
 				g.EmitGetHelper(value, _t, allowExplicitConversion);
-				g.IL.Emit(OpCodes.Stloc, _var);
+
+			    switch (_var.LocalIndex)
+			    {
+			        case 0:
+			            g.IL.Emit(OpCodes.Stloc_0);
+			            break;
+			        case 1:
+			            g.IL.Emit(OpCodes.Stloc_1);
+			            break;
+			        case 2:
+			            g.IL.Emit(OpCodes.Stloc_2);
+			            break;
+			        case 3:
+			            g.IL.Emit(OpCodes.Stloc_3);
+			            break;
+			        default:
+			            g.IL.Emit(OpCodes.Stloc, _var);
+                        break;
+                }
 			}
 
-			internal override void EmitAddressOf(CodeGen g)
-{
-		    this.SetLeakedState(false); 
+			protected internal override void EmitAddressOf(CodeGen g)
+			{
+		        this.SetLeakedState(false); 
 				CheckScope(g);
 
 				if (_var == null)
@@ -387,9 +436,9 @@ namespace TriAxis.RunSharp
 				}
 			}
 
-			internal override bool TrivialAccess => true;
+			protected internal override bool TrivialAccess => true;
 
-		    internal override void AssignmentHint(Operand op)
+		    protected internal override void AssignmentHint(Operand op)
 			{
 				if (_tHint == null)
 					_tHint = GetType(op, _owner.TypeMapper);
@@ -407,7 +456,7 @@ namespace TriAxis.RunSharp
 		        return _type;
 		    }
 
-		    internal override bool IsStaticTarget => true;
+		    protected internal override bool IsStaticTarget => true;
 		}
 
 		public Operand this[string localName] // Named locals support. 
@@ -445,5 +494,57 @@ namespace TriAxis.RunSharp
 				_labels.Add(labelName, label = IL.DefineLabel());
 			IL.Emit(OpCodes.Br, label);
 		}
+
+	    #region Context explicit delegation
+
+	    MemberInfo IMemberInfo.Member { get { return Context.Member; } }
+
+	    string IMemberInfo.Name { get { return Context.Name; } }
+
+	    Type IMemberInfo.ReturnType { get { return Context.ReturnType; } }
+
+	    Type[] IMemberInfo.ParameterTypes { get { return Context.ParameterTypes; } }
+
+	    bool IMemberInfo.IsParameterArray { get { return Context.IsParameterArray; } }
+
+	    bool IMemberInfo.IsStatic { get { return Context.IsStatic; } }
+
+	    bool IMemberInfo.IsOverride { get { return Context.IsOverride; } }
+
+	    ParameterBuilder ISignatureGen.DefineParameter(int position, ParameterAttributes attributes, string parameterName)
+	    {
+	        return Context.DefineParameter(position, attributes, parameterName);
+	    }
+
+	    IParameterBasicInfo ISignatureGen.GetParameterByName(string parameterName)
+	    {
+	        return Context.GetParameterByName(parameterName);
+	    }
+
+	    StaticFactory ICodeGenBasicContext.StaticFactory { get { return Context.StaticFactory; } }
+
+	    ExpressionFactory ICodeGenBasicContext.ExpressionFactory { get { return Context.ExpressionFactory; } }
+
+	    void IDelayedDefinition.EndDefinition()
+	    {
+	        Context.EndDefinition();
+	    }
+
+	    void IDelayedCompletion.Complete()
+	    {
+	        Context.Complete();
+	    }
+
+	    ILGenerator ICodeGenContext.GetILGenerator()
+	    {
+	        return Context.GetILGenerator();
+	    }
+
+	    Type ICodeGenContext.OwnerType { get { return Context.OwnerType; } }
+
+	    bool ICodeGenContext.SupportsScopes { get { return Context.SupportsScopes; } }
+
+	    #endregion
+
 	}
 }

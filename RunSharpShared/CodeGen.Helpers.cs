@@ -47,7 +47,7 @@ namespace TriAxis.RunSharp
 
     partial class CodeGen
     {
-        internal void EmitLdargHelper(ushort index)
+        protected internal void EmitLdargHelper(ushort index)
         {
             OpCode opCode;
 
@@ -68,7 +68,7 @@ namespace TriAxis.RunSharp
             IL.Emit(opCode);
         }
 
-        internal void EmitStargHelper(ushort index)
+        protected internal void EmitStargHelper(ushort index)
         {
             if (index <= byte.MaxValue)
                 IL.Emit(OpCodes.Starg_S, (byte)index);
@@ -76,7 +76,7 @@ namespace TriAxis.RunSharp
                 IL.Emit(OpCodes.Starg, index);
         }
 
-        internal void EmitLdelemHelper(Type elementType)
+        protected internal void EmitLdelemHelper(Type elementType)
         {
             OpCode op;
 
@@ -139,7 +139,7 @@ namespace TriAxis.RunSharp
             IL.Emit(op);
         }
 
-        internal static OpCode GetStelemOpCode(Type elementType)
+        protected internal static OpCode GetStelemOpCode(Type elementType)
         {
             if (elementType.IsPrimitive)
             {
@@ -179,7 +179,7 @@ namespace TriAxis.RunSharp
                 return OpCodes.Stelem_Ref;
         }
 
-        internal void EmitStelemHelper(Type elementType, Operand element, bool allowExplicitConversion)
+        protected internal void EmitStelemHelper(Type elementType, Operand element, bool allowExplicitConversion)
         {
             OpCode op = GetStelemOpCode(elementType);
 
@@ -192,7 +192,7 @@ namespace TriAxis.RunSharp
                 IL.Emit(op);
         }
 
-        internal void EmitLdindHelper(Type type)
+        protected internal void EmitLdindHelper(Type type)
         {
             OpCode op;
 
@@ -254,7 +254,7 @@ namespace TriAxis.RunSharp
             IL.Emit(op);
         }
 
-        internal static OpCode GetStindOpCode(Type type)
+        protected internal static OpCode GetStindOpCode(Type type)
         {
             if (type.IsPrimitive)
             {
@@ -294,7 +294,7 @@ namespace TriAxis.RunSharp
                 return OpCodes.Stind_Ref;
         }
 
-        internal void EmitStindHelper(Type type, Operand value, bool allowExplicitConversion)
+        protected internal void EmitStindHelper(Type type, Operand value, bool allowExplicitConversion)
         {
             OpCode op = GetStindOpCode(type);
 
@@ -305,7 +305,7 @@ namespace TriAxis.RunSharp
                 IL.Emit(op);
         }
 
-        internal void EmitI4Helper(int value)
+        protected internal void EmitI4Helper(int value)
         {
             OpCode code;
 
@@ -332,7 +332,7 @@ namespace TriAxis.RunSharp
             IL.Emit(code);
         }
 
-        internal void EmitI8Helper(long value, bool signed)
+        protected internal void EmitI8Helper(long value, bool signed)
         {
             if (value >= int.MinValue && value <= uint.MaxValue)
             {
@@ -346,7 +346,7 @@ namespace TriAxis.RunSharp
                 IL.Emit(OpCodes.Ldc_I8, value);
         }
 
-        internal void EmitConvHelper(TypeCode to)
+        protected internal void EmitConvHelper(TypeCode to)
         {
             OpCode op;
 
@@ -380,7 +380,7 @@ namespace TriAxis.RunSharp
             IL.Emit(op);
         }
 
-        internal void EmitGetHelper(Operand op, Type desiredType, bool allowExplicitConversion)
+        protected internal void EmitGetHelper(Operand op, Type desiredType, bool allowExplicitConversion)
         {
             if (desiredType.IsByRef)
             {
@@ -403,7 +403,7 @@ namespace TriAxis.RunSharp
             Convert(op, desiredType, allowExplicitConversion);
         }
 
-        internal void EmitCallHelper(MethodBase mth, Operand target)
+        protected internal void EmitCallHelper(MethodBase mth, Operand target)
         {
             MethodInfo mi = mth as MethodInfo;
             if (mi != null)
@@ -429,7 +429,7 @@ namespace TriAxis.RunSharp
             throw new ArgumentException(Properties.Messages.ErrInvalidMethodBase, nameof(mth));
         }
 
-        internal void Convert(Operand op, Type to, bool allowExplicit)
+        protected internal void Convert(Operand op, Type to, bool allowExplicit)
         {
             Conversion conv = allowExplicit ? Conversion.GetExplicit(op, to, false, TypeMapper) : Conversion.GetImplicit(op, to, false, TypeMapper);
             conv.Emit(this, (object)op == null ? null : op.GetReturnType(TypeMapper), to);

@@ -63,8 +63,8 @@ namespace TriAxis.RunSharp.Operands
 			_opCodes = opCodes;
 		}
 
-		internal override void EmitGet(CodeGen g) 
-{
+		protected internal override void EmitGet(CodeGen g)  
+        {
 		    this.SetLeakedState(false); 
 			_op.EmitGet(g);
 

@@ -104,8 +104,8 @@ namespace TriAxis.RunSharp.Operands
             return newArray;
         }
 
-        internal override void EmitGet(CodeGen g) 
-{
+        protected internal override void EmitGet(CodeGen g)  
+        {
 		    this.SetLeakedState(false); 
 		    PrepareAf(g.TypeMapper);
             _af.EmitArgs(g, _operands);
@@ -117,9 +117,9 @@ namespace TriAxis.RunSharp.Operands
 				g.IL.Emit(OpCodes.Call, (MethodInfo)_af.Method.Member);
 		}
 
-		internal override void EmitBranch(CodeGen g, BranchSet branchSet, Label label)
-{
-		    this.SetLeakedState(false); 
+		protected internal override void EmitBranch(CodeGen g, BranchSet branchSet, Label label)
+		{
+		    this.SetLeakedState(false);  
             PrepareAf(g.TypeMapper);
             IStandardOperation stdOp = _af.Method as IStandardOperation;
 			if (_op.BranchOp == 0 || stdOp == null)

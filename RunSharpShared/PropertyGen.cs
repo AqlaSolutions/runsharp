@@ -185,8 +185,8 @@ namespace TriAxis.RunSharp
 
 	    public string Name { get; }
 
-	    internal override void EmitGet(CodeGen g) 
-{
+	    protected internal override void EmitGet(CodeGen g)  
+        {
 		    this.SetLeakedState(false); 
 			if (_getter == null)
 				base.EmitGet(g);
@@ -201,9 +201,9 @@ namespace TriAxis.RunSharp
 			g.EmitCallHelper(_getter.GetMethodBuilder(), null);
 		}
 
-		internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
-{
-		    this.SetLeakedState(false); 
+		protected internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
+		{
+		    this.SetLeakedState(false);  
 			if (_setter == null)
 				base.EmitSet(g, value, allowExplicitConversion);
 

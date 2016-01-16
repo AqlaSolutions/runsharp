@@ -43,12 +43,12 @@ using System.Reflection.Emit;
 
 namespace TriAxis.RunSharp
 {
-	enum BranchInstruction
+	public enum BranchInstruction
 	{
 		None, True, False, Eq, Ne, Lt, Gt, Le, Ge
 	}
 
-	sealed class BranchSet
+	public sealed class BranchSet
 	{
 		public static readonly BranchSet Normal = new BranchSet(
 			OpCodes.Brtrue, OpCodes.Brfalse, OpCodes.Beq, OpCodes.Bne_Un,

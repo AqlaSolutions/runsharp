@@ -147,8 +147,8 @@ namespace TriAxis.RunSharp
 			AttributeGen.ApplyList(ref _customAttributes, _eb.SetCustomAttribute);
 		}
 
-		internal override void EmitGet(CodeGen g) 
-{
+		protected internal override void EmitGet(CodeGen g)  
+        {
 		    this.SetLeakedState(false); 
 			if ((object)_handler == null)
 				throw new InvalidOperationException(Properties.Messages.ErrCustomEventFieldAccess);
@@ -156,9 +156,9 @@ namespace TriAxis.RunSharp
 			_handler.EmitGet(g);
 		}
 
-		internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
-{
-		    this.SetLeakedState(false); 
+		protected internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
+		{
+		    this.SetLeakedState(false);  
 			if ((object)_handler == null)
 				throw new InvalidOperationException(Properties.Messages.ErrCustomEventFieldAccess);
 

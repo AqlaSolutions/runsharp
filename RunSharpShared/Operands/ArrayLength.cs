@@ -62,8 +62,8 @@ namespace TriAxis.RunSharp.Operands
 			_asLong = asLong;
 		}
 
-		internal override void EmitGet(CodeGen g) 
-{
+		protected internal override void EmitGet(CodeGen g)  
+        {
 		    this.SetLeakedState(false); 
             if (!_array.GetReturnType(g.TypeMapper).IsArray)
                 throw new InvalidOperationException(Properties.Messages.ErrArrayOnly);

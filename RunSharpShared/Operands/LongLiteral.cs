@@ -51,8 +51,8 @@ namespace TriAxis.RunSharp.Operands
 
 	    public LongLiteral(System.Type t, long value) { _t = t; Value = value; }
 
-		internal override void EmitGet(CodeGen g) 
-{
+		protected internal override void EmitGet(CodeGen g)  
+        {
 		    this.SetLeakedState(false); 
 			g.EmitI8Helper(Value, _t == typeof(long));
 		}
@@ -61,7 +61,7 @@ namespace TriAxis.RunSharp.Operands
 
 	    public long Value { get; }
 
-	    internal override object ConstantValue => Value;
+	    protected internal override object ConstantValue => Value;
 	}
 
 }

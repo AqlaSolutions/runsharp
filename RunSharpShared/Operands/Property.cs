@@ -64,8 +64,8 @@ namespace TriAxis.RunSharp.Operands
 			_indexes = indexes;
 		}
 
-		internal override void EmitGet(CodeGen g) 
-{
+		protected internal override void EmitGet(CodeGen g)  
+        {
 		    this.SetLeakedState(false); 
 			PropertyInfo pi = (PropertyInfo)_property.Method.Member;
 			MethodInfo mi = pi.GetGetMethod(true);
@@ -83,9 +83,9 @@ namespace TriAxis.RunSharp.Operands
 			g.EmitCallHelper(mi, _target);
 		}
 
-		internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
-{
-		    this.SetLeakedState(false); 
+		protected internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
+		{
+		    this.SetLeakedState(false);  
 			PropertyInfo pi = (PropertyInfo)_property.Method.Member;
 			MethodInfo mi = pi.GetSetMethod(true);
 

@@ -47,7 +47,7 @@ namespace TriAxis.RunSharp
     {
         ParameterBuilder DefineParameter(int position, ParameterAttributes attributes, string parameterName);
 
-        ParameterGen GetParameterByName(string parameterName);
+        IParameterBasicInfo GetParameterByName(string parameterName);
     }
 
     public abstract class SignatureGen<T> : MemberGenBase<T>, ISignatureGen where T : SignatureGen<T>
@@ -186,7 +186,7 @@ namespace TriAxis.RunSharp
             return DefineParameter(position, attributes, parameterName);
         }
 
-        ParameterGen ISignatureGen.GetParameterByName(string name)
+        IParameterBasicInfo ISignatureGen.GetParameterByName(string name)
         {
             foreach (ParameterGen pg in _parameters)
             {

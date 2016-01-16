@@ -50,7 +50,7 @@ namespace TriAxis.RunSharp
 	{
 	    readonly ITypeMapper _typeMapper;
 
-	    internal StaticFactory(ITypeMapper typeMapper)
+	    public StaticFactory(ITypeMapper typeMapper)
 	    {
 	        if (typeMapper == null) throw new ArgumentNullException(nameof(typeMapper));
 	        _typeMapper = typeMapper;

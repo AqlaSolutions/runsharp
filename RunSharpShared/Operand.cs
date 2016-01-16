@@ -60,25 +60,25 @@ namespace TriAxis.RunSharp
 	        _detectsLeaks = DetectsLeaking;
 	    }
 
-	    internal static readonly Operand[] EmptyArray = { };
+        protected internal static readonly Operand[] EmptyArray = { };
 
 		#region Virtual methods
-		internal virtual void EmitGet(CodeGen g)
+		protected internal virtual void EmitGet(CodeGen g)
 		{
 			throw new InvalidOperationException(string.Format(null, Properties.Messages.ErrOperandNotReadable, GetType()));
 		}
 
-		internal virtual void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
+        protected internal virtual void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
 		{
 			throw new InvalidOperationException(string.Format(null, Properties.Messages.ErrOperandNotWritable, GetType()));
 		}
 
-		internal virtual void EmitAddressOf(CodeGen g)
+        protected internal virtual void EmitAddressOf(CodeGen g)
 		{
 			throw new InvalidOperationException(string.Format(null, Properties.Messages.ErrOperandNotReferencible, GetType()));
 		}
 
-		internal virtual void EmitBranch(CodeGen g, BranchSet branchSet, Label label)
+        protected internal virtual void EmitBranch(CodeGen g, BranchSet branchSet, Label label)
 		{
 			if (g == null)
 				throw new ArgumentNullException(nameof(g));
@@ -91,25 +91,25 @@ namespace TriAxis.RunSharp
 		}
 
 	    public abstract Type GetReturnType(ITypeMapper typeMapper);
-        
-	    internal virtual bool TrivialAccess
+
+        protected internal virtual bool TrivialAccess
 	    { get { this.SetLeakedState(false); return false; } }
 
-	    internal virtual bool IsStaticTarget
+        protected internal virtual bool IsStaticTarget
 	    { get { this.SetLeakedState(false); return false; } }
 
-	    internal virtual bool SuppressVirtual
+        protected internal virtual bool SuppressVirtual
 	    { get { this.SetLeakedState(false); return false; } }
 
-	    internal virtual object ConstantValue
+        protected internal virtual object ConstantValue
 	    { get { this.SetLeakedState(false); return null; } }
 
-	    internal virtual void AssignmentHint(Operand op) { this.SetLeakedState(false); }
+        protected internal virtual void AssignmentHint(Operand op) { this.SetLeakedState(false); }
 		#endregion
 
 		// emits the refrence to the operand (address-of for value types)
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "0#g", Justification = "The 'g' is used throughout the library for 'CodeGen'")]
-		public void EmitRef(CodeGen g)
+		protected internal void EmitRef(CodeGen g)
 		{
             this.SetLeakedState(false);
             if (GetReturnType(g.TypeMapper).IsValueType)
@@ -641,15 +641,15 @@ namespace TriAxis.RunSharp
 		{
 			return new Cast(this, type).SetLeakedState(true);
 		}
-		#endregion
+        #endregion
 
-		#region Member access
-		internal virtual BindingFlags GetBindingFlags()
+        #region Member access
+        protected internal virtual BindingFlags GetBindingFlags()
 		{
 			return BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
 		}
-        
-		internal static Type GetType(Operand op, ITypeMapper typeMapper)
+
+        protected internal static Type GetType(Operand op, ITypeMapper typeMapper)
 		{
 			if ((object)op == null)
 				return null;
@@ -657,7 +657,7 @@ namespace TriAxis.RunSharp
 			return op.GetReturnType(typeMapper);
 		}
 
-		internal static Type[] GetTypes(Operand[] ops, ITypeMapper typeMapper)
+        protected internal static Type[] GetTypes(Operand[] ops, ITypeMapper typeMapper)
 		{
 			if (ops == null)
 				return null;
@@ -749,9 +749,9 @@ namespace TriAxis.RunSharp
 		        _op = op;
 		    }
 
-			internal override void EmitAddressOf(CodeGen g)
-{
-		    this.SetLeakedState(false); 
+			protected internal override void EmitAddressOf(CodeGen g)
+		{
+		    this.SetLeakedState(false);  
 				_op.EmitAddressOf(g);
 			}
 
@@ -787,13 +787,8 @@ namespace TriAxis.RunSharp
         /// If false at construction, exception won't be throw in leak detection case
         /// </summary>
         protected virtual bool DetectsLeaking => true;
-
-#if DEBUG
-        public
-#else
-        internal
-#endif
-            bool LeakedState
+        
+        protected internal bool LeakedState
 	    {
 	        get { return _leakedState; }
             set
@@ -843,6 +838,11 @@ namespace TriAxis.RunSharp
 	    protected virtual void ResetLeakedStateRecursively()
 	    {
 	        
+	    }
+
+	    protected ILGenerator GetILGenerator(CodeGen g)
+	    {
+	        return g.IL;
 	    }
 	}
 }

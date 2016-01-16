@@ -50,14 +50,14 @@ namespace TriAxis.RunSharp.Operands
 
 		public DoubleLiteral(double value) { _value = value; }
 
-		internal override void EmitGet(CodeGen g) 
-{
+		protected internal override void EmitGet(CodeGen g)  
+        {
 		    this.SetLeakedState(false); 
 			g.IL.Emit(OpCodes.Ldc_R8, _value);
 		}
 
 	    public override Type GetReturnType(ITypeMapper typeMapper) => typeMapper.MapType(typeof(double));
 
-	    internal override object ConstantValue => _value;
+	    protected internal override object ConstantValue => _value;
 	}
 }

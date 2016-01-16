@@ -137,8 +137,8 @@ namespace TriAxis.RunSharp.Operands
 				throw new MissingMethodException(Properties.Messages.ErrMissingMethod);
 		}
 
-		internal override void EmitGet(CodeGen g) 
-{
+		protected internal override void EmitGet(CodeGen g)  
+        {
 		    this.SetLeakedState(false); 
 			g.EmitGetHelper(_target, g.TypeMapper.MapType(typeof(object)), false);
 			g.IL.Emit(OpCodes.Ldftn, _method);

@@ -134,8 +134,8 @@ namespace TriAxis.RunSharp
 
 		#endregion
 
-		internal override void EmitGet(CodeGen g) 
-{
+		protected internal override void EmitGet(CodeGen g)  
+        {
 		    this.SetLeakedState(false); 
 			if (!IsStatic)
 			{
@@ -149,9 +149,9 @@ namespace TriAxis.RunSharp
 				g.IL.Emit(OpCodes.Ldsfld, _fb);
 		}
 
-		internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
-{
-		    this.SetLeakedState(false); 
+		protected internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
+		{
+		    this.SetLeakedState(false);  
 			if (!IsStatic)
 			{
 				if (g.Context.IsStatic || g.Context.OwnerType != _owner.TypeBuilder)
@@ -164,9 +164,9 @@ namespace TriAxis.RunSharp
 			g.IL.Emit(IsStatic ? OpCodes.Stsfld : OpCodes.Stfld, _fb);
 		}
 
-		internal override void EmitAddressOf(CodeGen g)
-{
-		    this.SetLeakedState(false); 
+		protected internal override void EmitAddressOf(CodeGen g)
+		{
+		    this.SetLeakedState(false);  
 			if (!IsStatic)
 			{
 				if (g.Context.IsStatic || g.Context.OwnerType != _owner.TypeBuilder)
@@ -179,7 +179,7 @@ namespace TriAxis.RunSharp
 				g.IL.Emit(OpCodes.Ldsflda, _fb);
 		}
 
-		internal override bool TrivialAccess => true;
+		protected internal override bool TrivialAccess => true;
 
 	    #region IMemberInfo Members
 

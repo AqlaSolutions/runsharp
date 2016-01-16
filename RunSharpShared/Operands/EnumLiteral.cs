@@ -51,8 +51,8 @@ namespace TriAxis.RunSharp.Operands
 
 		public EnumLiteral(Enum value) { _value = value; }
 
-		internal override void EmitGet(CodeGen g) 
-{
+		protected internal override void EmitGet(CodeGen g)  
+        {
 		    this.SetLeakedState(false); 
 			Type t = Helpers.GetEnumEnderlyingType(GetReturnType(g.TypeMapper));
 			if (Helpers.AreTypesEqual(t, typeof(long), g.TypeMapper))
@@ -67,6 +67,6 @@ namespace TriAxis.RunSharp.Operands
 
 	    public override Type GetReturnType(ITypeMapper typeMapper) => typeMapper.MapType(_value.GetType());
 
-	    internal override object ConstantValue => _value;
+	    protected internal override object ConstantValue => _value;
 	}
 }

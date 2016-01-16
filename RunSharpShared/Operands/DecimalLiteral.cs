@@ -51,8 +51,8 @@ namespace TriAxis.RunSharp.Operands
 
 		public DecimalLiteral(decimal value) { _value = value; }
 
-		internal override void EmitGet(CodeGen g) 
-{
+		protected internal override void EmitGet(CodeGen g)  
+        {
 		    this.SetLeakedState(false); 
 			int[] bits = decimal.GetBits(_value);
 			byte exponent = unchecked((byte)((bits[3] >> 16) & 0x1f));
@@ -87,6 +87,6 @@ namespace TriAxis.RunSharp.Operands
 
 	    public override Type GetReturnType(ITypeMapper typeMapper) => typeMapper.MapType(typeof(decimal));
 
-	    internal override object ConstantValue => _value;
+	    protected internal override object ConstantValue => _value;
 	}
 }
