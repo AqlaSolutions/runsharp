@@ -55,10 +55,7 @@ namespace TriAxis.RunSharp
         ExpressionFactory ExpressionFactory { get; }
     }
 
-    interface ICodeGenContext : IMemberInfo, ISignatureGen, ICodeGenBasicContext
-#if !PHONE8
-        , IDelayedDefinition, IDelayedCompletion
-#endif
+    public interface ICodeGenContext : IMemberInfo, ISignatureGen, ICodeGenBasicContext, IDelayedDefinition, IDelayedCompletion
     {
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Typical implementation invokes XxxBuilder.GetILGenerator() which is a method as well.")]
 		ILGenerator GetILGenerator();

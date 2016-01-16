@@ -143,9 +143,7 @@ namespace TriAxis.RunSharp
 		#endregion
 
 		#region IRequiresCompletion Members
-
-#if !PHONE8
-
+        
 		void IDelayedDefinition.EndDefinition()
 		{
 			LockSignature();
@@ -162,8 +160,6 @@ namespace TriAxis.RunSharp
 
 			AttributeGen.ApplyList(ref _customAttributes, SetCustomAttribute);
 		}
-#endif
-
 
 		#endregion
 

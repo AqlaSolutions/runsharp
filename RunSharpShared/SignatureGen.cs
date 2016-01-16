@@ -43,7 +43,7 @@ using System.Reflection.Emit;
 
 namespace TriAxis.RunSharp
 {
-    interface ISignatureGen
+    public interface ISignatureGen
     {
         ParameterBuilder DefineParameter(int position, ParameterAttributes attributes, string parameterName);
 

@@ -23,7 +23,6 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-#if !PHONE8
 
 using System;
 using System.Collections.Generic;
@@ -45,15 +44,17 @@ using System.Reflection.Emit;
 
 namespace TriAxis.RunSharp
 {
-	interface IDelayedDefinition
+	public interface IDelayedDefinition
 	{
 		void EndDefinition();
 	}
 
-	interface IDelayedCompletion
+	public interface IDelayedCompletion
 	{
 		void Complete();
 	}
+
+#if !PHONE8
 
     public class TypeGen : MemberGenBase<TypeGen>, ITypeInfoProvider, ICodeGenBasicContext
 	{
@@ -189,7 +190,7 @@ namespace TriAxis.RunSharp
 			_completionQueue.Add(completion);
 		}
 
-		#region Modifiers
+    #region Modifiers
 		MethodAttributes _mthVis, _mthFlags, _mthVirt;
 		FieldAttributes _fldVis, _fldFlags;
 		TypeAttributes _typeVis, _typeFlags, _typeVirt;
@@ -273,9 +274,9 @@ namespace TriAxis.RunSharp
 			_typeVis = _typeVirt = _typeFlags = 0;
 			_implFlags = 0;
 		}
-        #endregion
+    #endregion
 
-        #region Custom Attributes
+    #region Custom Attributes
         
 
         public override TypeGen Attribute(AttributeType type)
@@ -311,9 +312,9 @@ namespace TriAxis.RunSharp
 			return AttributeGen<TypeGen>.CreateAndAdd(this, ref _customAttributes, target, type, args, TypeMapper);
 		}
 
-		#endregion
+    #endregion
 
-		#region Members
+    #region Members
 		public MethodGen CommonConstructor()
 		{
 			if (TypeBuilder.IsValueType)
@@ -800,9 +801,9 @@ namespace TriAxis.RunSharp
             ResetAttrs();
             return dg;
         }   
-		#endregion
+    #endregion
 
-		#region Interface implementations
+    #region Interface implementations
 		void DefineMethodOverride(MethodGen methodBody, MethodInfo methodDeclaration)
 		{
 			foreach (InterfaceImplEntry iie in _implementations)
@@ -887,7 +888,7 @@ namespace TriAxis.RunSharp
             return eg;
         }
 
-		#endregion
+    #endregion
 
 		public Type GetCompletedType()
 		{
@@ -998,7 +999,7 @@ namespace TriAxis.RunSharp
 			}
 		}
 
-		#region Member registration
+    #region Member registration
 		internal void Register(ConstructorGen constructor)
 		{
 			if (constructor.IsStatic)
@@ -1039,9 +1040,9 @@ namespace TriAxis.RunSharp
 	
 			_methods.Add(method);
 		}
-#endregion
+    #endregion
 
-#region ITypeInfoProvider implementation
+    #region ITypeInfoProvider implementation
 		IEnumerable<IMemberInfo> ITypeInfoProvider.GetConstructors()
 		{
 			EnsureDefaultConstructor();
@@ -1075,8 +1076,7 @@ namespace TriAxis.RunSharp
 
 		string ITypeInfoProvider.DefaultMember => _indexerName;
 
-#endregion
-	}
-}
-
+    #endregion
+    }
 #endif
+}
