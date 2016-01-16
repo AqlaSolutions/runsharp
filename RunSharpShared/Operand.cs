@@ -669,55 +669,6 @@ namespace TriAxis.RunSharp
 			return types;
 		}
 
-		/*FieldInfo FindField(string name, BindingFlags flags)
-		{
-			FieldInfo fi = Type.GetField(name, flags);
-
-			if (fi == null)
-				throw new MissingFieldException(Properties.Messages.ErrMissingField);
-
-			return fi;
-		}
-
-		PropertyInfo FindProperty(string name, BindingFlags flags, Operand[] indexes)
-		{
-			Type[] types = Operand.GetTypes(indexes);
-			ArrayUtils.ReduceIncompleteTypesToBase(types);
-
-			if (name == null)
-			{
-				foreach (DefaultMemberAttribute dma in Attribute.GetCustomAttributes(Type, typeof(DefaultMemberAttribute)))
-				{
-					name = dma.MemberName;
-					break;
-				}
-			}
-
-			if (name == null)
-				throw new InvalidOperationException(Properties.Messages.ErrMissingDefaultProperty);
-
-			PropertyInfo pi = Type.UnderlyingSystemType.GetProperty(name, flags, null, null, types, null);
-
-			if (pi == null)
-				throw new MissingMemberException(Properties.Messages.ErrMissingProperty);
-
-			return pi;
-		}
-
-		MethodInfo FindMethod(string name, BindingFlags flags, Operand[] args)
-		{
-			Type[] types = Operand.GetTypes(args);
-			ArrayUtils.ReduceIncompleteTypesToBase(types);
-
-			MethodInfo mi = Type.GetMethod(name, flags, null, types, null);
-
-			if (mi == null)
-				throw new MissingMethodException(Properties.Messages.ErrMissingMethod);
-
-			return mi;
-		}
-		*/
-
 		public ContextualOperand Field(string name, ITypeMapper typeMapper)
 		{
 			return new ContextualOperand(new Field((FieldInfo)typeMapper.TypeInfo.FindField(GetReturnType(typeMapper), name, IsStaticTarget).Member, this), typeMapper);

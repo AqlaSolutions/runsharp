@@ -96,23 +96,7 @@ namespace TriAxis.RunSharp
 #endif
             IL = context.GetILGenerator();
 		}
-
-		/*public static CodeGen CreateDynamicMethod(string name, Type returnType, params Type[] parameterTypes, Type owner, bool skipVisibility)
-		{
-			DynamicMethod dm = new DynamicMethod(name, returnType, parameterTypes, owner, skipVisibility);
-			return new CodeGen(method.GetILGenerator(), defaultType, method.ReturnType, method.IsStatic, parameterTypes);
-		}
-
-		public static CodeGen FromMethodBuilder(MethodBuilder builder, params Type[] parameterTypes)
-		{
-			return new CodeGen(builder.GetILGenerator(), builder.DeclaringType, builder.ReturnType, builder.IsStatic, parameterTypes);
-		}
-
-		public static CodeGen FromConstructorBuilder(ConstructorBuilder builder, params Type[] parameterTypes)
-		{
-			return new CodeGen(builder.GetILGenerator(), builder.DeclaringType, builder.ReturnType, builder.IsStatic, parameterTypes);
-		}*/
-
+        
 #region Arguments
 		public ContextualOperand This()
 		{

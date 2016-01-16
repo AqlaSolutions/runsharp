@@ -94,10 +94,6 @@ arg4
 
                     var inst = st.Field(typeof(CmdLineTestClass), "Default");
                     g.WriteLine(inst.Invoke("GetValue"));
-                    //inst.Field("value").Assign(2);
-                    /*g.Assign(inst.Field("value"), 2);
-                    g.WriteLine(inst.Invoke("GetValue"));*/
-
                 }
 
 

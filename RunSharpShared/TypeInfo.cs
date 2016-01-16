@@ -673,19 +673,4 @@ namespace TriAxis.RunSharp
             }
         }
     }
-
-    /*		public Operand Invoke(string name, params Operand[] args)
-            {
-                Operand target = Target;
-
-                for (Type src = this; src != null; src = src.Base)
-                {
-                    ApplicableFunction match = OverloadResolver.Resolve(Type.FilterMethods(src.GetMethods(), name, false, (object)target == null, false), args);
-
-                    if (match != null)
-                        return new Invocation(match, Target, args);
-                }
-
-                throw new MissingMethodException(Properties.Messages.ErrMissingMethod);
-            }*/
 }
