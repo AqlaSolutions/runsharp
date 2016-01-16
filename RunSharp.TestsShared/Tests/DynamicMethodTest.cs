@@ -1,11 +1,12 @@
-﻿using System;
+﻿#if !FEAT_IKVM
+using System;
 using System.Reflection.Emit;
 using NUnit.Framework;
 
 namespace TriAxis.RunSharp.Tests
 {
     [TestFixture]
-    public class DynamicMethodTest
+    public class DynamicMethodTest : TestBase
     {
         [Test]
         public void Execute()
@@ -53,3 +54,4 @@ Hello Delegate!
         }
     }
 }
+#endif

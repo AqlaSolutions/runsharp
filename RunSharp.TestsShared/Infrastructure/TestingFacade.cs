@@ -58,7 +58,21 @@ namespace TriAxis.RunSharp
 
 #endif
         }
-        
+
+        public static void RunMethodTest(MethodGenerator method, string name = null)
+        {
+            ExecutableTestHelper.Generator gen = ag =>
+            {
+                TypeGen t = ag.Class("Test");
+                {
+                    method(t.Public.Static.Method(typeof(void), "Main"));
+                }
+            };
+            RunTest(gen, name);
+        }
+
+        public delegate void MethodGenerator(MethodGen mg);
+
         public static void RunTest(ExecutableTestHelper.Generator method, string name = null)
         {
 #if !SILVERLIGHT
