@@ -938,6 +938,15 @@ namespace TriAxis.RunSharp
 			if (_type != null)
 				return;
 
+		    if (TypeBuilder.IsValueType)
+		    {
+		        if (_fields.Count == 0 && _properties.Count == 0)
+		        {
+                    // otherwise  "Value class has neither fields nor size parameter."
+                    Private.ReadOnly.Field(_typeMapper.MapType(typeof(int)), "_____");
+		        }
+		    }
+
 			foreach (TypeGen nested in _nestedTypes)
 				nested.Complete();
 
