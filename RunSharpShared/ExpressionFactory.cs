@@ -68,6 +68,11 @@ namespace TriAxis.RunSharp
 #endif
 
 
+        public ContextualOperand New<T>()
+        {
+            return New(_typeMapper.MapType(typeof(T)));
+        }
+
         public ContextualOperand New(Type type)
         {
             return New(type, Operand.EmptyArray);

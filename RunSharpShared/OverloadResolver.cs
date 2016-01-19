@@ -201,9 +201,17 @@ namespace TriAxis.RunSharp
 	static class OverloadResolver
 	{
 		public static ApplicableFunction Resolve(IEnumerable<IMemberInfo> candidates, ITypeMapper typeMapper, params Operand[] args)
-		{
-			List<ApplicableFunction> applicable = FindApplicable(candidates, typeMapper, args);
+        {
+            return CompleteResolve(FindApplicable(candidates, typeMapper, args), typeMapper);
+        }
 
+		public static ApplicableFunction ResolveStrict(IEnumerable<IMemberInfo> candidates, ITypeMapper typeMapper, Type[] args)
+		{
+			return CompleteResolve(FindApplicableStrict(candidates, typeMapper, args), typeMapper);
+		}
+
+		static ApplicableFunction CompleteResolve(List<ApplicableFunction> applicable, ITypeMapper typeMapper)
+		{
 			if (applicable == null)
 				return null;
 
@@ -252,34 +260,107 @@ namespace TriAxis.RunSharp
 			return valid;
 		}
 
-		public static bool FindApplicable(ref List<ApplicableFunction> valid, ref bool expandedCandidates, IEnumerable<IMemberInfo> candidates, ITypeMapper typeMapper, params Operand[] args)
+        public static List<ApplicableFunction> FindApplicableStrict(IEnumerable<IMemberInfo> candidates, ITypeMapper typeMapper, Type[] args)
 		{
-			if (candidates == null)
-				return false;
+			List<ApplicableFunction> valid = null;
+			bool expandedCandidates = false;
 
-			bool found = false;
+			if (!FindApplicableStrict(ref valid, ref expandedCandidates, candidates, typeMapper, args))
+				return null;
 
-			foreach (IMemberInfo candidate in candidates)
-			{
-				ApplicableFunction vc = ValidateCandidate(candidate, args, typeMapper);
+			if (expandedCandidates)
+				RemoveExpanded(valid);
 
-				if (vc != null)
-				{
-					found = true;
-
-					if (vc.IsExpanded)
-						expandedCandidates = true;
-
-					if (valid == null)
-						valid = new List<ApplicableFunction>();
-					valid.Add(vc);
-				}
-			}
-
-			return found;
+			return valid;
 		}
 
-		public static ApplicableFunction ValidateCandidate(IMemberInfo candidate, Operand[] args, ITypeMapper typeMapper)
+		public static bool FindApplicable(ref List<ApplicableFunction> valid, ref bool expandedCandidates, IEnumerable<IMemberInfo> candidates, ITypeMapper typeMapper, params Operand[] args)
+		{
+            return FindApplicableInternal(ref valid, ref expandedCandidates, candidates, c => ValidateCandidate(c, args, typeMapper));
+        }
+
+		public static bool FindApplicableStrict(ref List<ApplicableFunction> valid, ref bool expandedCandidates, IEnumerable<IMemberInfo> candidates, ITypeMapper typeMapper, Type[] args)
+		{
+		    return FindApplicableInternal(ref valid, ref expandedCandidates, candidates, c => ValidateCandidateStrict(c, args, typeMapper));
+		}
+
+	    static bool FindApplicableInternal(ref List<ApplicableFunction> valid, ref bool expandedCandidates, IEnumerable<IMemberInfo> candidates, RunSharpFunc<IMemberInfo, ApplicableFunction> validate)
+	    {
+	        if (candidates == null)
+	            return false;
+
+	        bool found = false;
+
+	        foreach (IMemberInfo candidate in candidates)
+	        {
+	            ApplicableFunction vc = validate(candidate);
+
+	            if (vc != null)
+	            {
+	                found = true;
+
+	                if (vc.IsExpanded)
+	                    expandedCandidates = true;
+
+	                if (valid == null)
+	                    valid = new List<ApplicableFunction>();
+	                valid.Add(vc);
+	            }
+	        }
+
+	        return found;
+	    }
+
+	    public static ApplicableFunction ValidateCandidate(IMemberInfo candidate, Operand[] args, ITypeMapper typeMapper)
+	    {
+	        Type[] cTypes = candidate.ParameterTypes;
+
+	        if (cTypes.Length == args.Length)
+	        {
+	            Conversion[] conversions = new Conversion[args.Length];
+
+	            for (int i = 0; i < cTypes.Length; i++)
+	            {
+	                conversions[i] = Conversion.GetImplicit(args[i], cTypes[i], false, typeMapper);
+	                if (!conversions[i].IsValid)
+	                {
+	                    if (cTypes[i].IsByRef)
+	                    {
+	                        conversions[i] = Conversion.GetImplicit(args[i], cTypes[i].GetElementType(), false, typeMapper);
+	                    }
+	                    if (!conversions[i].IsValid)
+	                        return null;
+	                }
+	            }
+
+	            return new ApplicableFunction(candidate, cTypes, cTypes, Operand.GetTypes(args, typeMapper), conversions);
+	        }
+
+	        if (candidate.IsParameterArray && args.Length >= cTypes.Length - 1)
+	        {
+	            Type[] expandedTypes = new Type[args.Length];
+	            Array.Copy(cTypes, expandedTypes, cTypes.Length - 1);
+	            Type varType = cTypes[cTypes.Length - 1].GetElementType();
+
+	            for (int i = cTypes.Length - 1; i < expandedTypes.Length; i++)
+	                expandedTypes[i] = varType;
+
+	            Conversion[] conversions = new Conversion[args.Length];
+
+	            for (int i = 0; i < expandedTypes.Length; i++)
+	            {
+	                conversions[i] = Conversion.GetImplicit(args[i], expandedTypes[i], false, typeMapper);
+	                if (!conversions[i].IsValid)
+	                    return null;
+	            }
+
+	            return new ApplicableFunction(candidate, cTypes, expandedTypes, Operand.GetTypes(args, typeMapper), conversions);
+	        }
+
+	        return null;
+	    }
+
+	    public static ApplicableFunction ValidateCandidateStrict(IMemberInfo candidate, Type[] args, ITypeMapper typeMapper)
 		{
 			Type[] cTypes = candidate.ParameterTypes;
 
@@ -287,35 +368,15 @@ namespace TriAxis.RunSharp
 			{
 				Conversion[] conversions = new Conversion[args.Length];
 
-				for (int i = 0; i < cTypes.Length; i++)
-				{
-					conversions[i] = Conversion.GetImplicit(args[i], cTypes[i], false, typeMapper);
-					if (!conversions[i].IsValid)
-						return null;
-				}
+			    for (int i = 0; i < cTypes.Length; i++)
+			    {
+			        if (args[i] == cTypes[i])
+			            conversions[i] = Conversion.GetDirect(args[i], cTypes[i], typeMapper);
+			        if (!conversions[i].IsValid)
+			            return null;
+			    }
 
-				return new ApplicableFunction(candidate, cTypes, cTypes, Operand.GetTypes(args, typeMapper), conversions);
-			}
-
-			if (candidate.IsParameterArray && args.Length >= cTypes.Length - 1)
-			{
-				Type[] expandedTypes = new Type[args.Length];
-				Array.Copy(cTypes, expandedTypes, cTypes.Length - 1);
-				Type varType = cTypes[cTypes.Length - 1].GetElementType();
-
-				for (int i = cTypes.Length - 1; i < expandedTypes.Length; i++)
-					expandedTypes[i] = varType;
-
-				Conversion[] conversions = new Conversion[args.Length];
-
-				for (int i = 0; i < expandedTypes.Length; i++)
-				{
-					conversions[i] = Conversion.GetImplicit(args[i], expandedTypes[i], false, typeMapper);
-					if (!conversions[i].IsValid)
-						return null;
-				}
-
-				return new ApplicableFunction(candidate, cTypes, expandedTypes, Operand.GetTypes(args, typeMapper), conversions);
+				return new ApplicableFunction(candidate, cTypes, cTypes, args, conversions);
 			}
 
 			return null;

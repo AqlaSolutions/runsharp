@@ -63,6 +63,11 @@ namespace TriAxis.RunSharp
 	    }
 #endif
 
+	    public ContextualOperand Field<T>(string name)
+	    {
+	        return Field(_typeMapper.MapType(typeof(T)), name);
+	    }
+
 	    public ContextualOperand Field(Type type, string name)
 		{
 			return new ContextualOperand(new Field((FieldInfo)_typeMapper.TypeInfo.FindField(type, name, true).Member, null), _typeMapper).SetLeakedState(true);
@@ -74,9 +79,7 @@ namespace TriAxis.RunSharp
 	        return Property(_typeMapper.MapType(type), name);
 	    }
 #endif
-
-
-	    public ContextualOperand Property(Type type, string name)
+        public ContextualOperand Property(Type type, string name)
 		{
 			return Property(type, name, Operand.EmptyArray);
 		}
@@ -94,7 +97,12 @@ namespace TriAxis.RunSharp
 		{
 			return new ContextualOperand(new Property(_typeMapper.TypeInfo.FindProperty(type, name, indexes, true), null, indexes), _typeMapper).SetLeakedState(true);
 		}
-
+        
+	    public ContextualOperand Property<T>(string name, params Operand[] indexes)
+	    {
+	        return Property(typeof(T), name, indexes);
+	    }
+        
 #if FEAT_IKVM
         public ContextualOperand Invoke(System.Type type, string name)
 	    {
@@ -115,9 +123,19 @@ namespace TriAxis.RunSharp
 	    }
 #endif
 
-        public ContextualOperand Invoke(Type type, string name, params Operand[] args)
+	    public ContextualOperand Invoke<T>(string name, params Operand[] args)
+	    {
+	        return Invoke(_typeMapper.MapType(typeof(T)), name, args);
+	    }
+
+	    public ContextualOperand Invoke(Type type, string name, params Operand[] args)
 		{
 			return new ContextualOperand(new Invocation(_typeMapper.TypeInfo.FindMethod(type, name, args, true), null, args), _typeMapper).SetLeakedState(true);
+		}
+
+        public ContextualOperand Invoke(MethodInfo method, params Operand[] args)
+		{
+            return new ContextualOperand(new Invocation(_typeMapper.TypeInfo.FindMethod(method), null, args), _typeMapper).SetLeakedState(true);
 		}
 	}
 }

@@ -61,5 +61,6 @@ namespace TriAxis.RunSharp
         IMemberInfo FindEvent(Type t, string name, bool @static);
         IEnumerable<Type> SearchInterfaces(Type t);
         ApplicableFunction FindMethod(Type t, string name, Operand[] args, bool @static);
+        ApplicableFunction FindMethod(MethodInfo method);
     }
 }

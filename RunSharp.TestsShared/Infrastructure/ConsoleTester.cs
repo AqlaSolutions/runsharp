@@ -40,7 +40,8 @@ namespace TriAxis.RunSharp
         public static void AssertAndClear(string data)
         {
             string c = CapturedContent;
-            Assert.That(c, Is.EqualTo(data));
+            if (data != null)
+                Assert.That(c, Is.EqualTo(data));
             Clear();
         }
 

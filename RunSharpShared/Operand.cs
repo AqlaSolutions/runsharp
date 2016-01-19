@@ -60,7 +60,12 @@ namespace TriAxis.RunSharp
 	        _detectsLeaks = DetectsLeaking;
 	    }
 
-        protected internal static readonly Operand[] EmptyArray = { };
+	    protected void EmitGetHelper(CodeGen g, Operand op, Type desiredType, bool allowExplicitConversion)
+	    {
+            g.EmitGetHelper(op, desiredType,allowExplicitConversion);
+	    }
+        
+	    protected internal static readonly Operand[] EmptyArray = { };
 
 		#region Virtual methods
 		protected internal virtual void EmitGet(CodeGen g)
@@ -668,17 +673,17 @@ namespace TriAxis.RunSharp
 
 			return types;
 		}
-
-		public ContextualOperand Field(string name, ITypeMapper typeMapper)
+        
+        public ContextualOperand Field(string name, ITypeMapper typeMapper)
 		{
 			return new ContextualOperand(new Field((FieldInfo)typeMapper.TypeInfo.FindField(GetReturnType(typeMapper), name, IsStaticTarget).Member, this), typeMapper);
         }
 
-		public ContextualOperand Property(string name, ITypeMapper typeMapper)
+        public ContextualOperand Property(string name, ITypeMapper typeMapper)
 		{
 			return Property(name, typeMapper, EmptyArray);
 		}
-
+        
 		public ContextualOperand Property(string name, ITypeMapper typeMapper, params Operand[] indexes)
 		{
 			return new ContextualOperand(new Property(typeMapper.TypeInfo.FindProperty(GetReturnType(typeMapper), name, indexes, IsStaticTarget), this, indexes), typeMapper);
@@ -692,6 +697,11 @@ namespace TriAxis.RunSharp
 		public ContextualOperand Invoke(string name, ITypeMapper typeMapper, params Operand[] args)
 		{
 			return new ContextualOperand(new Invocation(typeMapper.TypeInfo.FindMethod(GetReturnType(typeMapper), name, args, IsStaticTarget), this, args), typeMapper).SetLeakedState(true);
+        }
+
+		public ContextualOperand Invoke(MethodInfo method, ITypeMapper typeMapper, params Operand[] args)
+		{
+			return new ContextualOperand(new Invocation(typeMapper.TypeInfo.FindMethod(method), this, args), typeMapper).SetLeakedState(true);
         }
 
 		public ContextualOperand InvokeDelegate(ITypeMapper typeMapper)
@@ -750,8 +760,8 @@ namespace TriAxis.RunSharp
 		    }
 
 			protected internal override void EmitAddressOf(CodeGen g)
-		{
-		    this.SetLeakedState(false);  
+		    {
+		        this.SetLeakedState(false);  
 				_op.EmitAddressOf(g);
 			}
 

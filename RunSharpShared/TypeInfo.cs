@@ -443,19 +443,65 @@ namespace TriAxis.RunSharp
             }
         }
 
+        public ApplicableFunction FindMethod(MethodInfo method)
+        {
+            var t = method.ReflectedType;
+            foreach (Type type in SearchableTypes(t))
+            {
+                IEnumerable<IMemberInfo> methods = GetMethods(type);
+                IEnumerable<IMemberInfo> filter = Filter(methods, method.Name, false, method.IsStatic, !type.IsValueType);
+                ApplicableFunction af = OverloadResolver.ResolveStrict(filter, TypeMapper, ArrayUtils.GetTypes(method.GetParameters()));
+
+                if (af != null)
+                    return af;
+            }
+
+
+            throw new MissingMethodException(Properties.Messages.ErrMissingMethod + ": " + method.ToString());
+        }
+
         public ApplicableFunction FindMethod(Type t, string name, Operand[] args, bool @static)
         {
             foreach (Type type in SearchableTypes(t))
             {
                 IEnumerable<IMemberInfo> methods = GetMethods(type);
-                IEnumerable<IMemberInfo> filter = Filter(methods, name, false, @static, false);
+                IEnumerable<IMemberInfo> filter = Filter(methods, name, false, @static, !type.IsValueType);
                 ApplicableFunction af = OverloadResolver.Resolve(filter, TypeMapper, args);
 
                 if (af != null)
                     return af;
             }
 
-            throw new MissingMethodException(Properties.Messages.ErrMissingMethod);
+            var sb = new StringBuilder();
+            
+            sb.Append(" " + t.Name + "." + name);
+
+            sb.Append("(");
+            for (int i = 0; i < args.Length; i++)
+            {
+                var arg = args[i];
+                if (i != 0)
+                    sb.Append(", ");
+                sb.Append(arg.GetReturnType(TypeMapper).ToString());
+            }
+
+            sb.AppendLine(")");
+
+            sb.AppendLine("Candidates: ");
+
+            foreach (Type type in SearchableTypes(t))
+            {
+                IEnumerable<IMemberInfo> methods = GetMethods(type);
+                IEnumerable<IMemberInfo> filter = Filter(methods, name, false, @static, false);
+
+                foreach (var m in filter)
+                {
+                    sb.AppendLine(m.Member.ToString());
+                }
+            }
+
+
+            throw new MissingMethodException(Properties.Messages.ErrMissingMethod + ": "+ sb.ToString());
         }
 
         class StdMethodInfo : IMemberInfo

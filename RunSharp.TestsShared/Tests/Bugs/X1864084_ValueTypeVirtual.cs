@@ -37,19 +37,8 @@ using TryAxis.RunSharp;
 namespace TriAxis.RunSharp.Tests.Bugs
 {
     [TestFixture]
-    public class X1864084_ValueTypeVirtual
+    public class X1864084_ValueTypeVirtual : TestBase
     {
-        [Test]
-        public void TestGenOriginalTest()
-        {
-            TestingFacade.GetTestsForGenerator(GenOriginalTest, @">>> GEN TriAxis.RunSharp.Tests.Bugs.X1864084_ValueTypeVirtual.GenOriginalTest
-=== RUN TriAxis.RunSharp.Tests.Bugs.X1864084_ValueTypeVirtual.GenOriginalTest
-Hash code of 3 is 3
-<<< END TriAxis.RunSharp.Tests.Bugs.X1864084_ValueTypeVirtual.GenOriginalTest
-
-").RunAll();
-        }
-
         public static void GenOriginalTest(AssemblyGen ag)
         {
             ITypeMapper m = ag.TypeMapper;
@@ -63,27 +52,126 @@ Hash code of 3 is 3
             }
         }
 
-        public static void GenExtendedTest(AssemblyGen ag)
+        public static void StructImpl(AssemblyGen ag, bool impl)
         {
             ITypeMapper m = ag.TypeMapper;
             TypeGen Test = ag.Struct("Test");
-			{
-				CodeGen g = Test.Public.Static.Method(typeof(void), "Main");
-				{
+            {
+                CodeGen g = Test.Public.Static.Method(typeof(void), "Main");
+                {
                     // test calling virtual member directly on a literal
                     // g.Local(Operand.FromObject(3).Invoke("GetHashCode"));
 
                     // test special case where the value type target doesn't implement the virtual function
                     var value = g.Local(Test);
-					g.InitObj(value);
-				    g.WriteLine("Hash code of {0} is {1}", value, value.Invoke("GetHashCode"));
-				}
+                    g.InitObj(value);
+                    g.WriteLine("Hash code of {0} is {1}", value, value.Invoke("GetHashCode"));
+                }
 
-				g = Test.Public.Override.Method(typeof(int), "GetHashCode");
-				{
-					g.Return(-1);
-				}
-			}
+                if (impl)
+                {
+                    g = Test.Public.Override.Method(typeof(int), "GetHashCode");
+                    {
+                        g.Return(-1);
+                    }
+                }
+            }
+        }
+
+        public static void ClassImpl(AssemblyGen ag, bool impl)
+        {
+            ITypeMapper m = ag.TypeMapper;
+            TypeGen Test = ag.Class("Test");
+            {
+                CodeGen g = Test.Public.Static.Method(typeof(void), "Main");
+                {
+                    // test calling virtual member directly on a literal
+                    // g.Local(Operand.FromObject(3).Invoke("GetHashCode"));
+
+                    // test special case where the value type target doesn't implement the virtual function
+                    var value = g.Local(Test);
+                    g.Assign(value, ag.ExpressionFactory.New(Test));
+                    g.WriteLine("Hash code of {0} is {1}", value, value.Invoke("GetHashCode"));
+                }
+
+                if (impl)
+                {
+                    g = Test.Public.Override.Method(typeof(int), "GetHashCode");
+                    {
+                        g.Return(-1);
+                    }
+                }
+            }
+        }
+
+        [Test]
+        public void TestGenOriginalTest()
+        {
+            TestingFacade.GetTestsForGenerator(
+                GenOriginalTest,
+                @">>> GEN TriAxis.RunSharp.Tests.Bugs.X1864084_ValueTypeVirtual.GenOriginalTest
+=== RUN TriAxis.RunSharp.Tests.Bugs.X1864084_ValueTypeVirtual.GenOriginalTest
+Hash code of 3 is 3
+<<< END TriAxis.RunSharp.Tests.Bugs.X1864084_ValueTypeVirtual.GenOriginalTest
+
+").RunAll();
+        }
+
+        [Test]
+        public void TestGenClassImpl()
+        {
+            TestingFacade.GetTestsForGenerator(
+                GenClassImpl,
+                @">>> GEN TriAxis.RunSharp.Tests.Bugs.X1864084_ValueTypeVirtual.GenClassImpl
+=== RUN TriAxis.RunSharp.Tests.Bugs.X1864084_ValueTypeVirtual.GenClassImpl
+Hash code of Test is -1
+<<< END TriAxis.RunSharp.Tests.Bugs.X1864084_ValueTypeVirtual.GenClassImpl
+
+").RunAll();
+        }
+
+        void GenClassImpl(AssemblyGen ag)
+        {
+            ClassImpl(ag, true);
+        }
+
+        [Test]
+        public void TestGenStructImpl()
+        {
+            TestingFacade.GetTestsForGenerator(GenStructImpl,
+                @">>> GEN TriAxis.RunSharp.Tests.Bugs.X1864084_ValueTypeVirtual.GenStructImpl
+=== RUN TriAxis.RunSharp.Tests.Bugs.X1864084_ValueTypeVirtual.GenStructImpl
+Hash code of Test is -1
+<<< END TriAxis.RunSharp.Tests.Bugs.X1864084_ValueTypeVirtual.GenStructImpl
+
+").RunAll();
+        }
+
+        void GenStructImpl(AssemblyGen ag)
+        {
+            StructImpl(ag, true);
+        }
+
+        [Test]
+        public void TestGenClassNotImpl()
+        {
+            TestingFacade.GetTestsForGenerator(GenClassNotImpl, null).RunAll();
+        }
+
+        void GenClassNotImpl(AssemblyGen ag)
+        {
+            ClassImpl(ag, false);
+        }
+
+        [Test]
+        public void TestGenStructNotImpl()
+        {
+            TestingFacade.GetTestsForGenerator(GetStructNotImpl, null).RunAll();
+        }
+
+        void GetStructNotImpl(AssemblyGen ag)
+        {
+            StructImpl(ag, false);
         }
     }
 }

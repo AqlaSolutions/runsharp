@@ -31,6 +31,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ConstructorGen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Conversion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DelegateGen.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Delegates.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DynamicMethodGen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EventGen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExpressionFactory.cs" />

@@ -299,13 +299,28 @@ namespace TriAxis.RunSharp
 	    }
         
 #endif
+        public void Invoke(MethodInfo method, params Operand[] args)
+        {
+            if (!method.IsStatic) throw new ArgumentException("Non-static method specified but no target passed", nameof(method));
+            DoInvoke(_staticFactory.Invoke(method, args));
+	    }
+
+        public void Invoke(Operand target, MethodInfo method, params Operand[] args)
+        {
+            DoInvoke(target.Invoke(method, TypeMapper, args));
+	    }
+
+	    public void Invoke<T>(string method, params Operand[] args)
+	    {
+	        DoInvoke(_staticFactory.Invoke(typeof(T), method, args));
+	    }
 
 	    public void Invoke(Type target, string method, params Operand[] args)
 		{
 			DoInvoke(_staticFactory.Invoke(target, method, args));
 		}
 
-		public void Invoke(Operand target, string method)
+	    public void Invoke(Operand target, string method)
 		{
 			Invoke(target, method, Operand.EmptyArray);
 		}

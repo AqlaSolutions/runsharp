@@ -46,6 +46,7 @@ public static class PEVerify
         startInfo.RedirectStandardOutput = true;
         startInfo.UseShellExecute = false;
         startInfo.StandardOutputEncoding = Encoding.GetEncoding(866);
+        startInfo.CreateNoWindow = true;
         using (Process proc = Process.Start(startInfo))
         {
             bool ok = proc.WaitForExit(10000);

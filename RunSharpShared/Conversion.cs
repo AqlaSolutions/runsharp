@@ -411,7 +411,14 @@ namespace TriAxis.RunSharp
 			return GetImplicit(new FakeTypedOperand(@from), to, onlyStandard, typeMapper);
 		}
 
-		// the sections mentioned in comments of this method are from C# specification v1.2
+		public static Conversion GetDirect(Type @from, Type to, ITypeMapper typeMapper)
+	    {
+	        if (to.Equals(from))
+	            return new Direct(typeMapper);
+            return new Invalid(typeMapper);
+	    }
+
+        // the sections mentioned in comments of this method are from C# specification v1.2
 		public static Conversion GetImplicit(Operand op, Type to, bool onlyStandard, ITypeMapper typeMapper)
 		{
 			Type from = Operand.GetType(op, typeMapper);
