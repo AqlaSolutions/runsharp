@@ -33,7 +33,7 @@ using NUnit.Framework;
 namespace TriAxis.RunSharp.Tests.Bugs
 {
 	[TestFixture]
-    public class X17_IsNull
+    public class X17_IsNull : TestBase
     {
         [Test]
         public void TestGenIsNull()

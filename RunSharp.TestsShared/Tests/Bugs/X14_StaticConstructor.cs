@@ -33,7 +33,7 @@ using NUnit.Framework;
 namespace TriAxis.RunSharp.Tests.Bugs
 {
 	[TestFixture]
-    public class X14_StaticConstructor
+    public class X14_StaticConstructor : TestBase
     {
         [Test]
         public void TestGenStaticCtor()
