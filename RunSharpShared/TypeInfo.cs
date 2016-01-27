@@ -482,7 +482,7 @@ namespace TriAxis.RunSharp
                 var arg = args[i];
                 if (i != 0)
                     sb.Append(", ");
-                sb.Append(arg.GetReturnType(TypeMapper).ToString());
+                sb.Append(arg?.GetReturnType(TypeMapper).ToString() ?? "<null>");
             }
 
             sb.AppendLine(")");
