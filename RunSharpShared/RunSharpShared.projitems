@@ -57,6 +57,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Operands\InitializedArray.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Operands\IntLiteral.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Operands\Invocation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Operands\IsInst.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Operands\LongLiteral.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Operands\NewArray.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Operands\NewDelegate.cs" />

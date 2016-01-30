@@ -646,6 +646,23 @@ namespace TriAxis.RunSharp
 		{
 			return new Cast(this, type).SetLeakedState(true);
 		}
+
+	    public Operand As(Type type)
+	    {
+	        if (type.IsValueType && Helpers.GetNullableUnderlyingType(type) == null) return null;
+	        return new IsInst(this, type).SetLeakedState(true);
+	    }
+
+	    public Operand Is(Type type)
+	    {
+	        return As(type) != null;
+	    }
+
+        public ContextualOperand InvokeGetType(ITypeMapper typeMapper)
+        {
+            return Invoke("GetType", typeMapper);
+        }
+
         #endregion
 
         #region Member access
@@ -688,7 +705,7 @@ namespace TriAxis.RunSharp
 		{
 			return new ContextualOperand(new Property(typeMapper.TypeInfo.FindProperty(GetReturnType(typeMapper), name, indexes, IsStaticTarget), this, indexes), typeMapper);
         }
-
+        
 		public ContextualOperand Invoke(string name, ITypeMapper typeMapper)
 		{
 			return Invoke(name, typeMapper, EmptyArray);

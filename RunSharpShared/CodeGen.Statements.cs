@@ -352,6 +352,16 @@ namespace TriAxis.RunSharp
 		{
 			Invoke(TypeMapper.MapType(typeof(Console)), "WriteLine", args);
 		}
+
+        public void DebugAssert(Operand condition)
+		{
+			Invoke(TypeMapper.MapType(typeof(System.Diagnostics.Debug)), "Assert", condition);
+		}
+
+        public void DebugAssert(Operand condition, Operand message)
+		{
+			Invoke(TypeMapper.MapType(typeof(System.Diagnostics.Debug)), "Assert", condition, message);
+		}
 #endregion
 
 #region Event subscription

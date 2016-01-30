@@ -51,10 +51,17 @@ namespace TriAxis.RunSharp
     {
         public delegate void Generator(AssemblyGen ag);
 
-        string GetTestName(Generator g)
+        internal string GetTestName(Generator g)
         {
-            Type declType = g.Method.DeclaringType;
-            var r = declType.Namespace + "." + declType.Name.TrimStart('_') + "." + g.Method.Name;
+            MethodInfo methodInfo = g.Method;
+            return GetTestName(methodInfo);
+        }
+
+        internal static string GetTestName(MethodInfo methodInfo)
+        {
+
+            Type declType = methodInfo.DeclaringType;
+            var r = declType.Namespace + "." + declType.Name.TrimStart('_') + "." + methodInfo.Name;
             return r.IndexOfAny(Path.GetInvalidPathChars()) == -1 ? r : declType.Namespace + "." + Guid.NewGuid();
         }
 

@@ -307,6 +307,39 @@ namespace TriAxis.RunSharp
             return new ContextualOperand(base.Cast(type), TypeMapper).SetLeakedState(true);
         }
 
+#if FEAT_IKVM
+        public new ContextualOperand As(System.Type type)
+        {
+            return As(TypeMapper.MapType(type));
+        }
+#endif
+        public new ContextualOperand As(Type type)
+        {
+            return new ContextualOperand(base.As(type), TypeMapper).SetLeakedState(true);
+        }
+#if FEAT_IKVM
+        public new ContextualOperand Is(System.Type type)
+        {
+            return Is(TypeMapper.MapType(type));
+        }
+#endif
+        public new ContextualOperand Is(Type type)
+        {
+            return new ContextualOperand(base.Is(type), TypeMapper).SetLeakedState(true);
+        }
+
+        public ContextualOperand InvokeGetType()
+        {
+            return base.InvokeGetType(TypeMapper);
+        }
+        
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        [Obsolete("Don't pass typeMapper", true)]
+        public new Operand InvokeGetType(ITypeMapper typeMapper)
+        {
+            return InvokeGetType();
+        }
+
         public new ContextualOperand ArrayLength()
         {
             return new ContextualOperand(base.ArrayLength(), TypeMapper).SetLeakedState(true);

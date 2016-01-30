@@ -84,6 +84,26 @@ namespace TriAxis.RunSharp
 #endif
         }
 
+#if FEAT_IKVM
+        internal static IKVM.Reflection.Type GetNullableUnderlyingType(IKVM.Reflection.Type type)
+        {
+            if (type.IsValueType && type.IsGenericType && type.GetGenericTypeDefinition().FullName == "System.Nullable`1")
+            {
+                return type.GetGenericArguments()[0];
+            }
+            return null;
+        }
+#endif
+
+        internal static System.Type GetNullableUnderlyingType(System.Type type)
+        {
+#if NO_GENERICS
+            return null; // never a Nullable<T>, so always returns null
+#else
+            return Nullable.GetUnderlyingType(type);
+#endif
+        }
+
         public static bool IsAssignableFrom(Type t, Type @from, ITypeMapper typeMapper)
         {
             return IsAssignableFrom(t, @from);

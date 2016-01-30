@@ -507,10 +507,10 @@ namespace TriAxis.RunSharp
 			Label label;
 			if (!_labels.TryGetValue(labelName, out label))
 				_labels.Add(labelName, label = IL.DefineLabel());
-			GoTo(label);
+			Goto(label);
 		}
 
-	    public void GoTo(Label label)
+	    public void Goto(Label label)
 	    {
 	        IL.Emit(OpCodes.Br, label);
 	    }

@@ -68,7 +68,7 @@ namespace TriAxis.RunSharp
                     method(t.Public.Static.Method(typeof(void), "Main"));
                 }
             };
-            RunTest(gen, name);
+            RunTest(gen, ExecutableTestHelper.GetTestName(method.Method));
         }
 
         public delegate void MethodGenerator(MethodGen mg);
