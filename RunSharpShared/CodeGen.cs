@@ -83,7 +83,10 @@ namespace TriAxis.RunSharp
 		protected internal ILGenerator IL { get; }
         protected internal ICodeGenContext Context { get; }
 
-	    public CodeGen(ICodeGenContext context, bool isOwner = true)
+        public StaticFactory StaticFactory => Context.StaticFactory;
+        public ExpressionFactory ExpressionFactory => Context.ExpressionFactory;
+
+        public CodeGen(ICodeGenContext context, bool isOwner = true)
 		{
 	        _isOwner = isOwner;
 	        Context = context;
