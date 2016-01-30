@@ -1,5 +1,5 @@
 ﻿using TriAxis.RunSharp.Operands;
-using TryAxis.RunSharp;
+using TriAxis.RunSharp;
 
 namespace TriAxis.RunSharp
 {

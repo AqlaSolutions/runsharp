@@ -29,7 +29,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
-using TryAxis.RunSharp;
+using TriAxis.RunSharp;
 #if FEAT_IKVM
 using IKVM.Reflection;
 using IKVM.Reflection.Emit;
@@ -479,21 +479,38 @@ namespace TriAxis.RunSharp
 			}
 		}
 
-		public void Label(string labelName)
+        
+		public Label Label(string labelName)
 		{
 			Label label;
 			if (!_labels.TryGetValue(labelName, out label))
 				_labels.Add(labelName, label = IL.DefineLabel());
 			IL.MarkLabel(label);
+		    return label;
 		}
+
+	    public Label DefineLabel()
+	    {
+	        return IL.DefineLabel();
+	    }
+
+	    public void MarkLabel(Label label)
+	    {
+	        IL.MarkLabel(label);
+	    }
 
 		public void Goto(string labelName)
 		{
 			Label label;
 			if (!_labels.TryGetValue(labelName, out label))
 				_labels.Add(labelName, label = IL.DefineLabel());
-			IL.Emit(OpCodes.Br, label);
+			GoTo(label);
 		}
+
+	    public void GoTo(Label label)
+	    {
+	        IL.Emit(OpCodes.Br, label);
+	    }
 
 	    #region Context explicit delegation
 

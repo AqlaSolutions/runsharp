@@ -45,7 +45,7 @@ using System.Reflection.Emit;
 
 #endif
 
-namespace TryAxis.RunSharp
+namespace TriAxis.RunSharp
 {
     public class ContextualOperand : Operand
     {

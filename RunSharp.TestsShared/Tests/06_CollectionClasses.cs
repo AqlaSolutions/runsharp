@@ -28,7 +28,7 @@ using System;
 using System.Collections;
 using System.Text;
 using NUnit.Framework;
-using TryAxis.RunSharp;
+using TriAxis.RunSharp;
 
 namespace TriAxis.RunSharp.Tests
 {
