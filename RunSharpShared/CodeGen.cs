@@ -386,6 +386,12 @@ namespace TriAxis.RunSharp
 				if (_var == null)
 					_var = g.IL.DeclareLocal(_t);
 
+			    if (ReferenceEquals(value, null) && Helpers.GetNullableUnderlyingType(_t) != null)
+			    {
+			        g.InitObj(this);
+			        return;
+			    }
+
 				g.EmitGetHelper(value, _t, allowExplicitConversion);
 
 			    switch (_var.LocalIndex)
