@@ -119,7 +119,39 @@ namespace TriAxis.RunSharp.Operands
 
 		protected internal override void EmitBranch(CodeGen g, BranchSet branchSet, Label label)
 		{
-		    this.SetLeakedState(false);  
+		    this.SetLeakedState(false);
+            
+            bool argsEmitted = false;
+
+            if (_operands.Length == 2
+                && (ReferenceEquals(_operands[0], null) || ReferenceEquals(_operands[1], null))
+                && ((_operands[0]?.GetReturnType(g.TypeMapper).IsValueType ?? false) || (_operands[1]?.GetReturnType(g.TypeMapper).IsValueType ?? false)))
+            {
+                var op = branchSet.Get(_op.BranchOp, true);
+                if (op == OpCodes.Bne_Un || op == OpCodes.Bne_Un_S)
+                {
+                    //g.EmitI4Helper(0);
+                    //g.EmitI4Helper(0);
+                    //argsEmitted = true;
+                    //g.IL.Emit(OpCodes.Nop);
+                    //g.IL.Emit(OpCodes.Nop);
+                    g.IL.Emit(OpCodes.Br, label);
+                    return;
+                }
+                else if (op == OpCodes.Beq || op == OpCodes.Beq_S)
+                {
+                    //g.EmitI4Helper(1);
+                    //g.EmitI4Helper(1);
+                    //argsEmitted = true;
+
+                    //g.IL.Emit(OpCodes.Nop);
+                    //g.IL.Emit(OpCodes.Nop);
+                    //g.IL.Emit(OpCodes.Nop);
+                    return;
+                }
+            }
+
+
             PrepareAf(g.TypeMapper);
             IStandardOperation stdOp = _af.Method as IStandardOperation;
 			if (_op.BranchOp == 0 || stdOp == null)
@@ -128,7 +160,8 @@ namespace TriAxis.RunSharp.Operands
 				return;
 			}
 
-			_af.EmitArgs(g, _operands);
+		    if (!argsEmitted)
+		        _af.EmitArgs(g, _operands);
 			g.IL.Emit(branchSet.Get(_op.BranchOp, stdOp.IsUnsigned), label);
 		}
 

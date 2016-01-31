@@ -362,6 +362,15 @@ namespace TriAxis.RunSharp
 		{
 			Invoke(TypeMapper.MapType(typeof(System.Diagnostics.Debug)), "Assert", condition, message);
 		}
+
+	    public void ThrowAssert(Operand condition, Operand message)
+	    {
+            If(!condition);
+	        {
+	            Throw(ExpressionFactory.New(typeof(Exception), "Assertation failed: " + message));
+	        }
+	        End();
+	    }
 #endregion
 
 #region Event subscription

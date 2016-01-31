@@ -386,13 +386,24 @@ namespace TriAxis.RunSharp
 				if (_var == null)
 					_var = g.IL.DeclareLocal(_t);
 
-			    if (ReferenceEquals(value, null) && Helpers.GetNullableUnderlyingType(_t) != null)
+			    Type nullableUnderlyingType = Helpers.GetNullableUnderlyingType(_t);
+			    if (ReferenceEquals(value, null))
 			    {
-			        g.InitObj(this);
-			        return;
+			        if (nullableUnderlyingType != null)
+			        {
+			            g.InitObj(this);
+			            return;
+			        }
 			    }
-
-				g.EmitGetHelper(value, _t, allowExplicitConversion);
+                else if (nullableUnderlyingType == value.GetReturnType(g.TypeMapper))
+                {
+                    EmitAddressOf(g);
+                    g.EmitGetHelper(value, nullableUnderlyingType, false);
+                    ConstructorInfo ctor = _t.GetConstructor(new [] { nullableUnderlyingType});
+                    g.IL.Emit(OpCodes.Call, ctor);
+                    return;
+                }
+                    g.EmitGetHelper(value, _t, allowExplicitConversion);
 
 			    switch (_var.LocalIndex)
 			    {

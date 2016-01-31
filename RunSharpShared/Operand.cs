@@ -578,7 +578,7 @@ namespace TriAxis.RunSharp
 
 		public Operand LogicalAnd(Operand other)
 		{
-			return Conditional(other, false).SetLeakedState(true);
+            return Conditional(other, false).SetLeakedState(true);
 		}
 
 		public Operand LogicalOr(Operand other)

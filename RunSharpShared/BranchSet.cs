@@ -55,12 +55,14 @@ namespace TriAxis.RunSharp
 			OpCodes.Blt, OpCodes.Blt_Un, OpCodes.Bgt, OpCodes.Bgt_Un,
 			OpCodes.Ble, OpCodes.Ble_Un, OpCodes.Bge, OpCodes.Bge_Un);
 
-		public static readonly BranchSet Inverse = new BranchSet(
-			OpCodes.Brfalse, OpCodes.Brtrue, OpCodes.Bne_Un, OpCodes.Beq,
-			OpCodes.Bge, OpCodes.Bge_Un, OpCodes.Ble, OpCodes.Ble_Un,
-			OpCodes.Bgt, OpCodes.Bgt_Un, OpCodes.Blt, OpCodes.Blt_Un);
+		public static readonly BranchSet Inverse = Normal.GetInverted();
 
-		public readonly OpCode BrTrue, BrFalse, BrEq, BrNe, BrLt, BrLtUn, BrGt, BrGtUn, BrLe, BrLeUn, BrGe, BrGeUn;
+        public BranchSet GetInverted() => new BranchSet(
+            BrFalse, BrTrue, BrNe, BrEq, 
+            BrGe, BrGeUn, BrLe, BrLeUn,
+            BrGt, BrGtUn, BrLt, BrLtUn);
+
+        public readonly OpCode BrTrue, BrFalse, BrEq, BrNe, BrLt, BrLtUn, BrGt, BrGtUn, BrLe, BrLeUn, BrGe, BrGeUn;
 
 		public OpCode Get(BranchInstruction ins, bool unsigned)
 		{

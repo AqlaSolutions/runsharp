@@ -423,9 +423,9 @@ namespace TriAxis.RunSharp
 		{
 			Type from = Operand.GetType(op, typeMapper);
 
-			if (to.Equals(from))
+			if (to.Equals(from) || Helpers.GetNullableUnderlyingType(to) == from)
 				return new Direct(typeMapper);
-
+            
 			// required for arrays created from TypeBuilder-s
 			if (from != null && to.IsArray && from.IsArray)
 			{

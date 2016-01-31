@@ -94,6 +94,43 @@ namespace TriAxis.RunSharp.Operands
             g.IL.MarkLabel(lbFalse);
         }
 
+        protected internal override void EmitBranch(CodeGen g, BranchSet branchSet, Label label)
+        {
+            bool handled = false;
+            var lit = _ifTrue as IntLiteral;
+            if (!ReferenceEquals(lit, null) && lit.Value == 1)
+            {
+                // or
+                var skipCheck = g.DefineLabel();
+                //_cond.EmitBranch(g, branchSet.GetInverted(), skipCheck);
+                //_ifFalse.EmitBranch(g, branchSet.GetInverted(), label);
+                
+                _cond.LogicalNot().EmitBranch(g, branchSet, skipCheck);
+                _ifFalse.EmitBranch(g, branchSet, label);
+                g.MarkLabel(skipCheck);
+
+                // If(l12 == l13 || l15 <= l14 
+                // || ((l15 < l14) && l12 == 2));
+
+
+                // If(l12 != l13 && l15 > l14 
+                handled = true;
+            }
+            else if (ReferenceEquals(lit, null))
+            {
+                lit = _ifFalse as IntLiteral;
+                if (!ReferenceEquals(lit, null) && lit.Value == 0)
+                {
+                    // and
+                    _cond.EmitBranch(g, branchSet, label);
+                    _ifTrue.EmitBranch(g, branchSet, label);
+                    handled = true;
+                }
+            }
+
+            if (!handled) base.EmitBranch(g, branchSet, label);
+        }
+
         public override Type GetReturnType(ITypeMapper typeMapper) => GetType(_ifTrue, typeMapper);
     }
 }
