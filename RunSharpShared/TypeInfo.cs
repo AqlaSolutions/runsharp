@@ -373,7 +373,14 @@ namespace TriAxis.RunSharp
 
             foreach (Type type in SearchableTypes(t))
             {
-                ApplicableFunction af = OverloadResolver.Resolve(Filter(GetProperties(type), name, false, @static, false), TypeMapper, indexes);
+                ApplicableFunction af = OverloadResolver.Resolve(Filter(GetProperties(type), name, false, @static, !t.IsValueType), TypeMapper, indexes);
+
+                if (af != null)
+                    return af;
+            }
+            foreach (Type type in SearchableTypes(t))
+            {
+                ApplicableFunction af = OverloadResolver.Resolve(Filter(GetProperties(type), name, false, @static, true), TypeMapper, indexes);
 
                 if (af != null)
                     return af;
@@ -466,6 +473,15 @@ namespace TriAxis.RunSharp
             {
                 IEnumerable<IMemberInfo> methods = GetMethods(type);
                 IEnumerable<IMemberInfo> filter = Filter(methods, name, false, @static, !type.IsValueType);
+                ApplicableFunction af = OverloadResolver.Resolve(filter, TypeMapper, args);
+
+                if (af != null)
+                    return af;
+            }
+            foreach (Type type in SearchableTypes(t))
+            {
+                IEnumerable<IMemberInfo> methods = GetMethods(type);
+                IEnumerable<IMemberInfo> filter = Filter(methods, name, false, @static, true);
                 ApplicableFunction af = OverloadResolver.Resolve(filter, TypeMapper, args);
 
                 if (af != null)

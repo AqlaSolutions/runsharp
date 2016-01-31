@@ -84,36 +84,30 @@ namespace TriAxis.RunSharp.Operands
 		    this.SetLeakedState(false); 
             Initialize(g.TypeMapper);
             Label lbTrue = g.IL.DefineLabel();
-            Label lbFalse = g.IL.DefineLabel();
+            Label lbEnd = g.IL.DefineLabel();
 
-            _cond.EmitBranch(g, BranchSet.Normal, lbTrue);
+            var lbFalse = new OptionalLabel(g.IL);
+
+            _cond.EmitBranch(g, lbTrue, lbFalse);
+            if (lbFalse.IsLabelExist)
+                g.IL.MarkLabel(lbFalse.Value);
             _ifFalse.EmitGet(g);
-            g.IL.Emit(OpCodes.Br, lbFalse);
+            g.IL.Emit(OpCodes.Br, lbEnd);
             g.IL.MarkLabel(lbTrue);
             _ifTrue.EmitGet(g);
-            g.IL.MarkLabel(lbFalse);
+            g.IL.MarkLabel(lbEnd);
         }
 
-        protected internal override void EmitBranch(CodeGen g, BranchSet branchSet, Label label)
+        protected internal override void EmitBranch(CodeGen g, OptionalLabel labelTrue, OptionalLabel labelFalse)
         {
+            this.SetNotLeaked();
+            
+            // try handle And/Or
             bool handled = false;
             var lit = _ifTrue as IntLiteral;
             if (!ReferenceEquals(lit, null) && lit.Value == 1)
             {
-                // or
-                var skipCheck = g.DefineLabel();
-                //_cond.EmitBranch(g, branchSet.GetInverted(), skipCheck);
-                //_ifFalse.EmitBranch(g, branchSet.GetInverted(), label);
-                
-                _cond.LogicalNot().EmitBranch(g, branchSet, skipCheck);
-                _ifFalse.EmitBranch(g, branchSet, label);
-                g.MarkLabel(skipCheck);
-
-                // If(l12 == l13 || l15 <= l14 
-                // || ((l15 < l14) && l12 == 2));
-
-
-                // If(l12 != l13 && l15 > l14 
+                EmitOr(g, labelTrue, false, labelFalse, _cond, _ifFalse);
                 handled = true;
             }
             else if (ReferenceEquals(lit, null))
@@ -121,14 +115,32 @@ namespace TriAxis.RunSharp.Operands
                 lit = _ifFalse as IntLiteral;
                 if (!ReferenceEquals(lit, null) && lit.Value == 0)
                 {
-                    // and
-                    _cond.EmitBranch(g, branchSet, label);
-                    _ifTrue.EmitBranch(g, branchSet, label);
+                    EmitAnd(g, labelTrue, false, labelFalse, _cond, _ifTrue);
                     handled = true;
                 }
             }
 
-            if (!handled) base.EmitBranch(g, branchSet, label);
+            if (!handled) base.EmitBranch(g, labelTrue, labelFalse);
+        }
+
+        void EmitOr(CodeGen g, OptionalLabel labelTrue, bool inverted, OptionalLabel labelFalse, Operand first, Operand second)
+        {
+            var falseOptional = new OptionalLabel(g.IL);
+            labelTrue.EnsureExists();
+            first.EmitBranch(g, labelTrue, falseOptional);
+            if (falseOptional.IsLabelExist) // it can jump out of internal And on first false but we still may hope on second
+                g.IL.MarkLabel(falseOptional.Value);
+            second.EmitBranch(g, labelTrue, labelFalse);
+        }
+
+        void EmitAnd(CodeGen g, OptionalLabel labelTrue, bool inverted, OptionalLabel labelFalse, Operand first, Operand second)
+        {
+            var trueOptional = new OptionalLabel(g.IL);
+            labelFalse.EnsureExists();
+            first.EmitBranch(g, trueOptional, labelFalse);
+            if (trueOptional.IsLabelExist) // it can jump out of internal Or on first true but we still need to check second
+                g.IL.MarkLabel(trueOptional.Value);
+            second.EmitBranch(g, labelTrue, labelFalse);
         }
 
         public override Type GetReturnType(ITypeMapper typeMapper) => GetType(_ifTrue, typeMapper);

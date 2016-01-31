@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Aqla\AttributeMap.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Aqla\OptionalLabel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Aqla\CompilerOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Aqla\ContextualAssignment.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Aqla\ContextualOperand.cs" />

@@ -780,13 +780,17 @@ namespace TriAxis.RunSharp
 			}
 
 			Label _lbSkip;
+			OptionalLabel _lbBegin;
 
 			protected override void BeginImpl()
 			{
 				G.BeforeStatement();
 
 				_lbSkip = G.IL.DefineLabel();
-				_condition.EmitBranch(G, BranchSet.Inverse, _lbSkip);
+			    _lbBegin = new OptionalLabel(G.IL);
+			    _condition.EmitBranch(G, _lbBegin, _lbSkip);
+			    if (_lbBegin.IsLabelExist)
+			        G.IL.MarkLabel(_lbBegin.Value);
 			}
 
 			protected override void EndImpl()
@@ -869,11 +873,14 @@ namespace TriAxis.RunSharp
 				}
 
 				G.IL.MarkLabel(_lbTest);
-				_test.EmitBranch(G, BranchSet.Normal, _lbLoop);
-
-				if (_endUsed)
-					G.IL.MarkLabel(_lbEnd);
-
+			    var lbFalse = new OptionalLabel(G.IL);
+			    if (_endUsed)
+			        lbFalse = _lbEnd;
+			    Label? lbLoopCopy = _lbLoop;
+				_test.EmitBranch(G, lbLoopCopy, lbFalse);
+			    if (lbFalse.IsLabelExist)
+			        G.IL.MarkLabel(lbFalse.Value);
+                
 				G._reachable = true;
 			}
 

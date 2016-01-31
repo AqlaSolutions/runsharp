@@ -83,17 +83,31 @@ namespace TriAxis.RunSharp
 			throw new InvalidOperationException(string.Format(null, Properties.Messages.ErrOperandNotReferencible, GetType()));
 		}
 
-        protected internal virtual void EmitBranch(CodeGen g, BranchSet branchSet, Label label)
-		{
-			if (g == null)
-				throw new ArgumentNullException(nameof(g));
-			if (branchSet == null)
-				throw new ArgumentNullException(nameof(branchSet));
+	    protected internal virtual void EmitBranch(CodeGen g, OptionalLabel labelTrue, OptionalLabel labelFalse)
+	    {
+	        if (g == null)
+	            throw new ArgumentNullException(nameof(g));
 
-		    this.SetLeakedState(false);
-			EmitGet(g);
-			g.IL.Emit(branchSet.BrTrue, label);
-		}
+	        this.SetLeakedState(false);
+	        EmitGet(g);
+	        if (labelTrue != null && labelTrue.IsLabelExist)
+	        {
+	            g.IL.Emit(BranchSet.Normal.BrTrue, labelTrue.Value);
+                if (labelFalse != null && labelFalse.IsLabelExist)
+                {
+                    g.IL.Emit(OpCodes.Br, labelFalse.Value);
+                }
+            }
+	        else if (labelFalse != null && labelFalse.IsLabelExist)
+	        {
+	            g.IL.Emit(BranchSet.Normal.BrFalse, labelFalse.Value);
+	        }
+	        else
+	        {
+                throw new InvalidOperationException("No labels passed");
+            }
+	            
+	    }
 
 	    public abstract Type GetReturnType(ITypeMapper typeMapper);
 
@@ -817,7 +831,8 @@ namespace TriAxis.RunSharp
         
         protected internal bool LeakedState
 	    {
-	        get { return _leakedState; }
+            [DebuggerStepThrough] get { return _leakedState; }
+            [DebuggerStepThrough]
             set
             {
                 if (_leakedState == value) return;
@@ -857,12 +872,14 @@ namespace TriAxis.RunSharp
         /// <summary>
         /// Called even when leaking status ignored
         /// </summary>
-	    protected virtual void SetLeakedStateRecursively()
+        [DebuggerStepThrough]
+        protected virtual void SetLeakedStateRecursively()
 	    {
 	        
 	    }
 
-	    protected virtual void ResetLeakedStateRecursively()
+        [DebuggerStepThrough]
+        protected virtual void ResetLeakedStateRecursively()
 	    {
 	        
 	    }

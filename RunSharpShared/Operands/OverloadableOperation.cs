@@ -106,8 +106,45 @@ namespace TriAxis.RunSharp.Operands
 
         protected internal override void EmitGet(CodeGen g)  
         {
-		    this.SetLeakedState(false); 
-		    PrepareAf(g.TypeMapper);
+		    this.SetLeakedState(false);
+
+            // value type handling
+            if (_operands.Length == 2)
+            {
+                var valueOperand = _operands[0] ?? _operands[1];
+                Type returnType = valueOperand?.GetReturnType(g.TypeMapper);
+                if ((ReferenceEquals(_operands[0], null) || ReferenceEquals(_operands[1], null)) && (returnType?.IsValueType ?? false))
+                {
+                    bool isNullable = Helpers.GetNullableUnderlyingType(returnType) != null;
+                    if (_op.BranchOp == BranchInstruction.Ne)
+                    {
+                        if (isNullable)
+                        {
+                            valueOperand.Property("HasValue", g.TypeMapper).EmitGet(g);
+                        }
+                        else
+                        {
+                            g.EmitI4Helper(1);
+                        }
+                        return;
+                    }
+                    else if (_op.BranchOp == BranchInstruction.Eq)
+                    {
+                        if (isNullable)
+                        {
+                            valueOperand.Property("HasValue", g.TypeMapper).LogicalNot().EmitGet(g);
+                        }
+                        else
+                        {
+                            g.EmitI4Helper(0);
+                        }
+                        return;
+                    }
+                }
+            }
+
+
+            PrepareAf(g.TypeMapper);
             _af.EmitArgs(g, _operands);
 
 			IStandardOperation sop = _af.Method as IStandardOperation;
@@ -117,52 +154,78 @@ namespace TriAxis.RunSharp.Operands
 				g.IL.Emit(OpCodes.Call, (MethodInfo)_af.Method.Member);
 		}
 
-		protected internal override void EmitBranch(CodeGen g, BranchSet branchSet, Label label)
+		protected internal override void EmitBranch(CodeGen g, OptionalLabel labelTrue, OptionalLabel labelFalse)
 		{
 		    this.SetLeakedState(false);
             
             bool argsEmitted = false;
 
-            if (_operands.Length == 2
-                && (ReferenceEquals(_operands[0], null) || ReferenceEquals(_operands[1], null))
-                && ((_operands[0]?.GetReturnType(g.TypeMapper).IsValueType ?? false) || (_operands[1]?.GetReturnType(g.TypeMapper).IsValueType ?? false)))
-            {
-                var op = branchSet.Get(_op.BranchOp, true);
-                if (op == OpCodes.Bne_Un || op == OpCodes.Bne_Un_S)
-                {
-                    //g.EmitI4Helper(0);
-                    //g.EmitI4Helper(0);
-                    //argsEmitted = true;
-                    //g.IL.Emit(OpCodes.Nop);
-                    //g.IL.Emit(OpCodes.Nop);
-                    g.IL.Emit(OpCodes.Br, label);
-                    return;
-                }
-                else if (op == OpCodes.Beq || op == OpCodes.Beq_S)
-                {
-                    //g.EmitI4Helper(1);
-                    //g.EmitI4Helper(1);
-                    //argsEmitted = true;
+		    var branchSet = BranchSet.Normal;
 
-                    //g.IL.Emit(OpCodes.Nop);
-                    //g.IL.Emit(OpCodes.Nop);
-                    //g.IL.Emit(OpCodes.Nop);
-                    return;
+            // value type handling
+		    if (_operands.Length == 2)
+		    {
+		        var valueOperand = _operands[0] ?? _operands[1];
+                Type returnType = valueOperand?.GetReturnType(g.TypeMapper);
+                if ((ReferenceEquals(_operands[0], null) || ReferenceEquals(_operands[1], null)) && (returnType?.IsValueType ?? false))
+                {
+                    bool isNullable = Helpers.GetNullableUnderlyingType(returnType) != null;
+                    
+                    var op = branchSet.Get(_op.BranchOp, true);
+                    if (op == OpCodes.Bne_Un || op == OpCodes.Bne_Un_S)
+                    {
+                        if (isNullable)
+                        {
+                            valueOperand.Property("HasValue", g.TypeMapper).EmitBranch(g, labelTrue, labelFalse);
+                        }
+                        else
+                        {
+                            // ValueType != null, should return true
+                            if (labelTrue != null && labelTrue.IsLabelExist) // otherwise default path
+                                g.IL.Emit(OpCodes.Br, labelTrue.Value);
+                        }
+                        return;
+                    }
+                    else if (op == OpCodes.Beq || op == OpCodes.Beq_S)
+                    {
+                        if (isNullable)
+                        {
+                            valueOperand.Property("HasValue", g.TypeMapper).EmitBranch(g, labelFalse, labelTrue);
+                        }
+                        else
+                        {
+                            // ValueType == null, should return false
+                            if (labelFalse != null && labelFalse.IsLabelExist) // otherwise default path
+                                g.IL.Emit(OpCodes.Br, labelFalse.Value); 
+                        }
+                        return;
+                    }
                 }
             }
-
 
             PrepareAf(g.TypeMapper);
             IStandardOperation stdOp = _af.Method as IStandardOperation;
 			if (_op.BranchOp == 0 || stdOp == null)
 			{
-				base.EmitBranch(g, branchSet, label);
+				base.EmitBranch(g, labelTrue, labelFalse);
 				return;
 			}
 
 		    if (!argsEmitted)
 		        _af.EmitArgs(g, _operands);
-			g.IL.Emit(branchSet.Get(_op.BranchOp, stdOp.IsUnsigned), label);
+
+		    bool inverted = false;
+		    if (labelTrue == null || !labelTrue.IsLabelExist)
+		    {
+		        if (labelFalse == null) throw new InvalidOperationException("No labels passed");
+                if (!labelFalse.IsLabelExist) throw new InvalidOperationException("No existing labels were passed");
+                labelTrue = labelFalse;
+		        branchSet = branchSet.GetInverted();
+		        inverted = true;
+		    }
+		    g.IL.Emit(branchSet.Get(_op.BranchOp, stdOp.IsUnsigned), labelTrue.Value);
+		    if (!inverted && labelFalse != null && labelFalse.IsLabelExist)
+		        g.IL.Emit(OpCodes.Br, labelFalse.Value);
 		}
 
 	    public override Type GetReturnType(ITypeMapper typeMapper)
