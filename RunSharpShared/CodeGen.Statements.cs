@@ -363,6 +363,11 @@ namespace TriAxis.RunSharp
 			Invoke(TypeMapper.MapType(typeof(System.Diagnostics.Debug)), "Assert", condition, message);
 		}
 
+	    public void ThrowAssert(Operand condition)
+	    {
+	        ThrowAssert(condition, "Assertation failed");
+	    }
+
 	    public void ThrowAssert(Operand condition, Operand message)
 	    {
             If(!condition);
@@ -412,8 +417,16 @@ namespace TriAxis.RunSharp
 
 			BeforeStatement();
 
-			target.EmitAddressOf(this);
-			IL.Emit(OpCodes.Initobj, target.GetReturnType(TypeMapper));
+		    Type type = target.GetReturnType(TypeMapper);
+		    if (type.IsValueType)
+		    {
+		        target.EmitAddressOf(this);
+		        IL.Emit(OpCodes.Initobj, type);
+		    }
+            else
+		    {
+		        Assign(target, null);
+		    }
 		}
 
 #region Flow Control
@@ -1118,10 +1131,11 @@ namespace TriAxis.RunSharp
 				_lbDecision = G.IL.DefineLabel();
 				_lbDefault = _lbEnd = G.IL.DefineLabel();
 
-				_expression.EmitGet(G);
-				if (_conv != null)
-					_conv.Emit(G, _expression.GetReturnType(G.TypeMapper), _govType);
-				_exp = G.IL.DeclareLocal(_govType);
+			    if (_conv != null)
+			        G.EmitGetHelper(_expression, _govType, _conv);
+			    else
+                    _expression.EmitGet(G);
+			    _exp = G.IL.DeclareLocal(_govType);
 				G.IL.Emit(OpCodes.Stloc, _exp);
 				G.IL.Emit(OpCodes.Br, _lbDecision);
 				G._reachable = false;

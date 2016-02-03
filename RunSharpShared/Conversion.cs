@@ -52,6 +52,7 @@ namespace TriAxis.RunSharp
 		public abstract void Emit(CodeGen g, Type from, Type to);
 		public virtual bool IsAmbiguous => false;
 	    public virtual bool IsValid => true;
+	    public virtual bool RequiresAddress => false;
 
 	    const byte D = 0;	// direct conversion
 		const byte I = 1;	// implicit conversion
@@ -127,6 +128,22 @@ namespace TriAxis.RunSharp
 			}
 		}
 
+		sealed class UnwrapNullable : Conversion
+		{
+		    public UnwrapNullable(ITypeMapper typeMapper)
+		        : base(typeMapper)
+		    {
+		    }
+
+		    public override void Emit(CodeGen g, Type from, Type to)
+		    {
+		        g.IL.Emit(
+		            OpCodes.Call,
+		            g.TypeMapper.MapType(typeof(Nullable<>)).MakeGenericType(Helpers.GetNullableUnderlyingType(from))
+		                .GetProperty(nameof(Nullable<int>.Value)).GetGetMethod());
+		    }
+		}
+
 		sealed class Unboxing : Conversion
 		{
 		    public Unboxing(ITypeMapper typeMapper)
@@ -194,11 +211,13 @@ namespace TriAxis.RunSharp
 		    readonly Type _toType;
 		    bool _sxSubset, _txSubset;
 
-			public UserDefined(Conversion before, IMemberInfo method, Conversion after, ITypeMapper typeMapper)
+		    public override bool RequiresAddress => _before.RequiresAddress;
+
+		    public UserDefined(Conversion before, IMemberInfo method, Conversion after, ITypeMapper typeMapper)
 			    : base(typeMapper)
 			{
 				_before = before;
-				_method = method;
+                _method = method;
 				_fromType = method.ParameterTypes[0];
 				_toType = method.ReturnType;
 				_after = after;
@@ -287,6 +306,9 @@ namespace TriAxis.RunSharp
 
 			public static Conversion FindExplicit(List<UserDefined> collection, Type @from, Type to, ITypeMapper typeMapper)
 			{
+			    if (Helpers.GetNullableUnderlyingType(@from) == to)
+			        return new UnwrapNullable(typeMapper);
+			    
 				Type sx = null, tx = null;
 				bool sxSubset = false, txSubset = false;
 				bool any = false;

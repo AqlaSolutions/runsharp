@@ -53,7 +53,7 @@ namespace TriAxis.RunSharp
 	    readonly Type[] _methodSignature;
 	    readonly Type[] _appliedSignature;
 	    readonly Type[] _paramsSignature;
-	    readonly Conversion[] _conversions;
+        readonly Conversion[] _conversions;
 
 		internal ApplicableFunction(IMemberInfo method, Type[] methodSignature,
 			Type[] appliedSignature, Type[] paramsSignature,
@@ -114,16 +114,17 @@ namespace TriAxis.RunSharp
 		{
 			if (_appliedSignature[index].IsByRef)
 			{
-				arg.EmitAddressOf(g);
+			    if (Method.IsParameterOut(index))
+			    {
+			        Type returnType = arg.GetReturnType(g.TypeMapper);
+			        arg.EmitEnsureInitialized(g, returnType.IsByRef ? returnType.GetElementType() : returnType);
+			    }
+
+			    arg.EmitAddressOf(g);
 				return;
 			}
-
-			if ((object)arg == null)
-				g.IL.Emit(OpCodes.Ldnull);
-			else
-				arg.EmitGet(g);
-
-			_conversions[index].Emit(g, _paramsSignature[index], _appliedSignature[index]);
+            
+            g.EmitGetHelper(arg, _appliedSignature[index], _conversions[index], @from: _paramsSignature[index]);
 		}
 
 		internal static Better GetBetterCandidate(ApplicableFunction left, ApplicableFunction right, ITypeMapper typeMapper)
@@ -376,7 +377,7 @@ namespace TriAxis.RunSharp
 			            return null;
 			    }
 
-				return new ApplicableFunction(candidate, cTypes, cTypes, args, conversions);
+				return new ApplicableFunction(candidate.ParameterTypes, cTypes, cTypes, args, conversions);
 			}
 
 			return null;

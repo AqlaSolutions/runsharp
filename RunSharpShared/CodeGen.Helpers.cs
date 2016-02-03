@@ -384,10 +384,7 @@ namespace TriAxis.RunSharp
         {
             if (desiredType.IsByRef)
             {
-                if (op.GetReturnType(TypeMapper) != desiredType.GetElementType())
-                    throw new InvalidOperationException(Properties.Messages.ErrByRefTypeMismatch);
-
-                op.EmitAddressOf(this);
+                EmitGetHelper_Ref(op, desiredType);
                 return;
             }
 
@@ -399,8 +396,48 @@ namespace TriAxis.RunSharp
                 return;
             }
 
-            op.EmitGet(this);
-            Convert(op, desiredType, allowExplicitConversion);
+            EmitGetHelper_Conversion(op, desiredType, allowExplicitConversion ? Conversion.GetExplicit(op, desiredType, false, TypeMapper) : Conversion.GetImplicit(op, desiredType, false, TypeMapper));
+        }
+
+        internal void EmitGetHelper(Operand op, Type desiredType, Conversion conv, Type from = null)
+        {
+            if (conv == null)
+            {
+                EmitGetHelper(op, desiredType, false);
+                return;
+            }
+
+            EmitGetHelper_Conversion(op, desiredType.IsByRef ? desiredType.GetElementType() : desiredType, conv, from);
+            if (desiredType.IsByRef)
+                EmitGetHelper_Ref(op, desiredType);
+        }
+
+        void EmitGetHelper_Ref(Operand op, Type desiredType)
+        {
+            if (ReferenceEquals(op, null))
+                throw new ArgumentException("Ref argument can't be null, expected " + desiredType.Name);
+            if (op.GetReturnType(TypeMapper) != desiredType.GetElementType())
+                throw new InvalidOperationException(Properties.Messages.ErrByRefTypeMismatch);
+
+            op.EmitAddressOf(this);
+        }
+
+        void EmitGetHelper_Conversion(Operand op, Type desiredType, Conversion conv, Type from = null)
+        {
+            if (conv.RequiresAddress)
+            {
+                if (ReferenceEquals(op, null))
+                    throw new ArgumentException("Conversion from nullref to " + desiredType.Name + " is impossible; for nullables variable it's required to load address.");
+
+                op.EmitAddressOf(this);
+            }
+            else if (ReferenceEquals(op, null))
+                IL.Emit(OpCodes.Ldnull);
+            else
+                op.EmitGet(this);
+            if (from == null)
+                from = (object)op == null ? null : op.GetReturnType(TypeMapper);
+            conv.Emit(this, from, desiredType);
         }
 
         protected internal void EmitCallHelper(MethodBase mth, Operand target)
@@ -427,12 +464,6 @@ namespace TriAxis.RunSharp
             }
 
             throw new ArgumentException(Properties.Messages.ErrInvalidMethodBase, nameof(mth));
-        }
-
-        protected internal void Convert(Operand op, Type to, bool allowExplicit)
-        {
-            Conversion conv = allowExplicit ? Conversion.GetExplicit(op, to, false, TypeMapper) : Conversion.GetImplicit(op, to, false, TypeMapper);
-            conv.Emit(this, (object)op == null ? null : op.GetReturnType(TypeMapper), to);
         }
     }
 }
