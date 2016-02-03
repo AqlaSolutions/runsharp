@@ -114,6 +114,8 @@ namespace TriAxis.RunSharp
                 PEVerify.AssertValid(exeFilePath);
             }
             Console.WriteLine("=== RUN {0}", testName);
+
+            string[] testArguments = GetTestArguments(test);
 #if !FEAT_IKVM
             if (!exe)
             {
@@ -127,17 +129,35 @@ namespace TriAxis.RunSharp
                 object[] entryArgs = null;
                 if (entryMethod.GetParameters().Length == 1)
                 {
-                    entryArgs = new object[] { GetTestArguments(test) };
+                    entryArgs = new object[] { testArguments };
                 }
                 entryMethod.Invoke(null, entryArgs);
             }
             else
-            {
-                AppDomain.CurrentDomain.ExecuteAssembly(exeFilePath, null, GetTestArguments(test));
-            }
-#else
-            AppDomain.CurrentDomain.ExecuteAssembly(exeFilePath, null, GetTestArguments(test));
 #endif
+            {
+                try
+                {
+                    AppDomain.CurrentDomain.ExecuteAssembly(exeFilePath, null, testArguments);
+                }
+                catch (System.BadImageFormatException)
+                {
+                    throw;
+                }
+                catch (AppDomainUnloadedException)
+                {
+                    throw;
+                }
+                catch (Exception e)
+                {
+
+#if SILVERLIGHT
+                    throw;
+#else
+                    throw new TargetInvocationException(e);
+#endif
+                }
+            }
 
             Console.WriteLine("<<< END {0}", testName);
             Console.WriteLine();

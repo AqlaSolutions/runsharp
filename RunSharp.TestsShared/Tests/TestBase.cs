@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
+using System.Threading;
 using NUnit.Framework;
 
 namespace TriAxis.RunSharp.Tests
@@ -17,6 +19,13 @@ namespace TriAxis.RunSharp.Tests
         public TestBase()
         {
 
+        }
+
+        [SetUp]
+        public void SetExceptionsLanguage()
+        {
+            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+            Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
         }
 
         [SetUp]

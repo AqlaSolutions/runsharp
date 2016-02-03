@@ -135,6 +135,8 @@ namespace TriAxis.RunSharp
 		    {
 		    }
 
+		    public override bool RequiresAddress => true;
+
 		    public override void Emit(CodeGen g, Type from, Type to)
 		    {
 		        g.IL.Emit(
@@ -306,9 +308,6 @@ namespace TriAxis.RunSharp
 
 			public static Conversion FindExplicit(List<UserDefined> collection, Type @from, Type to, ITypeMapper typeMapper)
 			{
-			    if (Helpers.GetNullableUnderlyingType(@from) == to)
-			        return new UnwrapNullable(typeMapper);
-			    
 				Type sx = null, tx = null;
 				bool sxSubset = false, txSubset = false;
 				bool any = false;
@@ -606,8 +605,11 @@ namespace TriAxis.RunSharp
 
 			Type from = Operand.GetType(op, typeMapper);
 
-			// section 6.3.2 - Standard explicit conversions
-			if (onlyStandard)
+            if (Helpers.GetNullableUnderlyingType(@from) == to)
+                return new UnwrapNullable(typeMapper);
+
+            // section 6.3.2 - Standard explicit conversions
+            if (onlyStandard)
 			{
 				if (from == null || !GetImplicit(to, @from, true, typeMapper).IsValid)
 					return new Invalid(typeMapper);

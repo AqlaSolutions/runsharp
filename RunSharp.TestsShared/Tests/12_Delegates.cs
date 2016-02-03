@@ -44,7 +44,7 @@ Paperback Book Titles:
    The C Programming Language
    The Unicode Standard 2.0
    Dogbert's Clues for the Clueless
-Average Paperback Book Price: $23,97
+Average Paperback Book Price: $23.97
 <<< END TriAxis.RunSharp.Tests.12_Delegates.GenBookstore
 
 ").RunAll();

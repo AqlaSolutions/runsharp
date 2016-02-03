@@ -102,9 +102,9 @@ Person details - Name = Joe, Age = 100
             TestingFacade.GetTestsForGenerator(GenShapeTest, @">>> GEN TriAxis.RunSharp.Tests.04_Properties.GenShapeTest
 === RUN TriAxis.RunSharp.Tests.04_Properties.GenShapeTest
 Shapes Collection
-Square #1 Area = 25,00
-Circle #1 Area = 28,27
-Rectangle #1 Area = 20,00
+Square #1 Area = 25.00
+Circle #1 Area = 28.27
+Rectangle #1 Area = 20.00
 <<< END TriAxis.RunSharp.Tests.04_Properties.GenShapeTest
 
 ").RunAll();

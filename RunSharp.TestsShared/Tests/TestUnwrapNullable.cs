@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.IO;
+using System.Reflection;
 using NUnit.Framework;
 
 namespace TriAxis.RunSharp.Tests
@@ -27,8 +28,8 @@ namespace TriAxis.RunSharp.Tests
         [Test]
         public void UnwrapNullableNull()
         {
-            TestingFacade.RunMethodTest(UnwrapNullableNull);
-            //Assert.That(() => TestingFacade.RunMethodTest(UnwrapNullableNull), Throws.TypeOf<InvalidOperationException>());
+            Assert.That(() => TestingFacade.RunMethodTest(UnwrapNullableNull), 
+                Throws.TypeOf<TargetInvocationException>().With.InnerException.Message.EqualTo("Nullable object must have a value."));
         }
 
         public static void UnwrapNullableNull(MethodGen m)
@@ -43,7 +44,8 @@ namespace TriAxis.RunSharp.Tests
         [Test]
         public void UnwrapNullableImplicit()
         {
-            TestingFacade.RunMethodTest(UnwrapNullableImplicit);
+            Assert.That(() => TestingFacade.RunMethodTest(UnwrapNullableImplicit),
+                Throws.TypeOf<InvalidCastException>().With.Message.StartsWith("Cannot convert type from 'System.Nullable`1[[System.Int32"));
         }
 
         public static void UnwrapNullableImplicit(MethodGen m)

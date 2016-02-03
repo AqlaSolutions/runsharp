@@ -42,8 +42,8 @@ namespace TriAxis.RunSharp.Tests
 === RUN TriAxis.RunSharp.Tests.14_ExplicitImplementation.GenExplicit2
 Length(in): 30
 Width (in): 20
-Length(cm): 76,2
-Width (cm): 50,8
+Length(cm): 76.2
+Width (cm): 50.8
 <<< END TriAxis.RunSharp.Tests.14_ExplicitImplementation.GenExplicit2
 
 ").RunAll();
