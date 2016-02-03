@@ -114,12 +114,7 @@ namespace TriAxis.RunSharp
 		{
 			if (_appliedSignature[index].IsByRef)
 			{
-			    if (Method.IsParameterOut(index))
-			    {
-			        Type returnType = arg.GetReturnType(g.TypeMapper);
-			        arg.EmitEnsureInitialized(g, returnType.IsByRef ? returnType.GetElementType() : returnType);
-			    }
-
+			    
 			    arg.EmitAddressOf(g);
 				return;
 			}
@@ -377,7 +372,7 @@ namespace TriAxis.RunSharp
 			            return null;
 			    }
 
-				return new ApplicableFunction(candidate.ParameterTypes, cTypes, cTypes, args, conversions);
+				return new ApplicableFunction(candidate, cTypes, cTypes, args, conversions);
 			}
 
 			return null;
