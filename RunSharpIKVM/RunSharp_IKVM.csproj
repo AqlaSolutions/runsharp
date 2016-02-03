@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TriAxis.RunSharp</RootNamespace>
-    <AssemblyName>RunSharpIKVM</AssemblyName>
+    <AssemblyName>RunSharp</AssemblyName>
     <StartupObject>
     </StartupObject>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
