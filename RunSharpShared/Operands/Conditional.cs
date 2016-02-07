@@ -105,17 +105,17 @@ namespace TriAxis.RunSharp.Operands
             // try handle And/Or
             bool handled = false;
             var lit = _ifTrue as IntLiteral;
-            if (!ReferenceEquals(lit, null) && lit.Value == 1)
+            if (!ReferenceEquals(lit, null) && lit.Value == 1 && lit.GetReturnType(g.TypeMapper) == g.TypeMapper.MapType(typeof(bool)))
             {
-                EmitOr(g, labelTrue, false, labelFalse, _cond, _ifFalse);
+                EmitOr(g, labelTrue, labelFalse, _cond, _ifFalse);
                 handled = true;
             }
             else if (ReferenceEquals(lit, null))
             {
                 lit = _ifFalse as IntLiteral;
-                if (!ReferenceEquals(lit, null) && lit.Value == 0)
+                if (!ReferenceEquals(lit, null) && lit.Value == 0 && lit.GetReturnType(g.TypeMapper) == g.TypeMapper.MapType(typeof(bool)))
                 {
-                    EmitAnd(g, labelTrue, false, labelFalse, _cond, _ifTrue);
+                    EmitAnd(g, labelTrue, labelFalse, _cond, _ifTrue);
                     handled = true;
                 }
             }
@@ -123,7 +123,7 @@ namespace TriAxis.RunSharp.Operands
             if (!handled) base.EmitBranch(g, labelTrue, labelFalse);
         }
 
-        void EmitOr(CodeGen g, OptionalLabel labelTrue, bool inverted, OptionalLabel labelFalse, Operand first, Operand second)
+        void EmitOr(CodeGen g, OptionalLabel labelTrue, OptionalLabel labelFalse, Operand first, Operand second)
         {
             var falseOptional = new OptionalLabel(g.IL);
             labelTrue.EnsureExists();
@@ -133,7 +133,7 @@ namespace TriAxis.RunSharp.Operands
             second.EmitBranch(g, labelTrue, labelFalse);
         }
 
-        void EmitAnd(CodeGen g, OptionalLabel labelTrue, bool inverted, OptionalLabel labelFalse, Operand first, Operand second)
+        void EmitAnd(CodeGen g, OptionalLabel labelTrue,OptionalLabel labelFalse, Operand first, Operand second)
         {
             var trueOptional = new OptionalLabel(g.IL);
             labelFalse.EnsureExists();
