@@ -71,6 +71,7 @@ namespace TriAxis.RunSharp
         readonly Operand _operand;
         public ITypeMapper TypeMapper { get; }
 
+        [DebuggerStepThrough]
         public ContextualOperand(Operand operand, ITypeMapper typeMapper)
         {
             if (operand == null) throw new ArgumentNullException(nameof(operand));
@@ -748,6 +749,11 @@ namespace TriAxis.RunSharp
         static void ThrowIfOperandNull(ContextualOperand left, ContextualOperand right)
         {
             if ((object)left == null && (object)right == null) throw new ArgumentNullException("operand", "You should cast null to Operand base type because null can't be ContextualOperand");
+        }
+
+        public override string ToString()
+        {
+            return "C+" + _operand.ToString();
         }
     }
 }
