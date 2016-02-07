@@ -86,6 +86,11 @@ namespace TriAxis.RunSharp
             return _operand.GetReturnType(typeMapper);
         }
 
+        public Type GetReturnType()
+        {
+            return GetReturnType(TypeMapper);
+        }
+
         [DebuggerStepThrough]
         protected internal override void EmitGet(CodeGen g)  
         {

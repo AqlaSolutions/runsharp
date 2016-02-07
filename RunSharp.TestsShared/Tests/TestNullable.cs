@@ -254,5 +254,70 @@ namespace TriAxis.RunSharp.Tests
             g.ThrowAssert(b == 1, "1");
 
         }
+
+        [Test]
+        public void ExecuteUnbox()
+        {
+            TestingFacade.RunMethodTest(ExecuteUnbox);
+        }
+
+        public static void ExecuteUnbox(MethodGen m)
+        {
+            var g = m.GetCode();
+            var boxed = g.Local(typeof(object));
+            var nullable = g.Local(typeof(int?));
+            g.Assign(boxed, 1);
+            g.Assign(nullable, boxed.Cast(nullable.GetReturnType()));
+            g.ThrowAssert(nullable != null, "!=null");
+            g.ThrowAssert(nullable == 1, "1");
+        }
+
+        [Test]
+        public void ExecuteUnboxNull()
+        {
+            TestingFacade.RunMethodTest(ExecuteUnboxNull);
+        }
+
+        public static void ExecuteUnboxNull(MethodGen m)
+        {
+            var g = m.GetCode();
+            var boxed = g.Local(typeof(object));
+            var nullable = g.Local(typeof(int?));
+            g.Assign(boxed, null);
+            g.Assign(nullable, boxed.Cast(nullable.GetReturnType()));
+            g.ThrowAssert(nullable == null, "is null");
+        }
+
+        [Test]
+        public void ExecuteBox()
+        {
+            TestingFacade.RunMethodTest(ExecuteBox);
+        }
+
+        public static void ExecuteBox(MethodGen m)
+        {
+            var g = m.GetCode();
+            var boxed = g.Local(typeof(object));
+            var nullable = g.Local(typeof(int?));
+            g.Assign(nullable, 1);
+            g.Assign(boxed, nullable);
+            g.ThrowAssert(boxed.Cast(typeof(int)) == 1, "1");
+        }
+
+        [Test]
+        public void ExecuteBoxNull()
+        {
+            TestingFacade.RunMethodTest(ExecuteBoxNull);
+        }
+
+        public static void ExecuteBoxNull(MethodGen m)
+        {
+            var g = m.GetCode();
+            var boxed = g.Local(typeof(object));
+            var nullable = g.Local(typeof(int?));
+            g.Assign(nullable, null);
+            g.Assign(boxed, nullable);
+            g.ThrowAssert(boxed == null, "null");
+        }
     }
 }
