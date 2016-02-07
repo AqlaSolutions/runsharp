@@ -45,7 +45,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Tests\TestIsInst.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\TestResources.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\TestSetup.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Tests\TestUnwrapNullable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\TestNullable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\TestValueTypeNullCheck.cs" />
   </ItemGroup>
 </Project>

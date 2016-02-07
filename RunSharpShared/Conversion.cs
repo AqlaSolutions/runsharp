@@ -146,6 +146,54 @@ namespace TriAxis.RunSharp
 		    }
 		}
 
+        sealed class WrapNullable : Conversion
+		{
+            readonly Conversion _fromConv;
+
+            public WrapNullable(ITypeMapper typeMapper, Conversion fromConv)
+		        : base(typeMapper)
+            {
+                _fromConv = fromConv;
+            }
+
+            public override void Emit(CodeGen g, Type from, Type to)
+		    {
+                _fromConv?.Emit(g, from, Helpers.GetNullableUnderlyingType(to));
+		        g.IL.Emit(
+		            OpCodes.Newobj,
+		            to.GetConstructor(new[] { from }));
+		    }
+		}
+
+		sealed class ConvertNullable : Conversion
+		{
+		    readonly Conversion _internalConversation;
+            
+            public ConvertNullable(ITypeMapper typeMapper, Conversion internalConversation)
+		        : base(typeMapper)
+		    {
+		        _internalConversation = internalConversation;
+		    }
+
+		    public override void Emit(CodeGen g, Type from, Type to)
+		    {
+		        var l = g.LocalInitedFromStack(from);
+
+		        Type toUnderlying = Helpers.GetNullableUnderlyingType(to);
+		        Type fromUnderlying = Helpers.GetNullableUnderlyingType(from);
+		        var cond = new Conditional(
+		            l.Property("HasValue"),
+		            new NewObject(
+		                g.TypeMapper.TypeInfo.FindConstructor(to, new Operand[] { new FakeTypedOperand(toUnderlying), }),
+		                new Operand[] { new ConversationWrapper(_internalConversation, l.Property("Value"), fromUnderlying, toUnderlying) }),
+		            new DefaultValue(to));
+
+
+		        //GetImplicit(l.Property("Value"), toUnderlying, false, g.TypeMapper), l, from, toUnderlying
+		        cond.EmitGet(g);
+		    }
+		}
+
 		sealed class Unboxing : Conversion
 		{
 		    public Unboxing(ITypeMapper typeMapper)
@@ -444,10 +492,26 @@ namespace TriAxis.RunSharp
 		{
 			Type from = Operand.GetType(op, typeMapper);
 
-			if (to.Equals(from) || Helpers.GetNullableUnderlyingType(to) == from)
-				return new Direct(typeMapper);
+            Type toUnderlying = Helpers.GetNullableUnderlyingType(to);
+		    if (to.Equals(from) || toUnderlying == from)
+		        return new Direct(typeMapper);
+
+            Type fromUnderlying = Helpers.GetNullableUnderlyingType(@from);
+		    if (toUnderlying != null)
+		    {
+		        if (fromUnderlying != null)
+		        {
+		            Conversion c = GetImplicit(new FakeTypedOperand(fromUnderlying), toUnderlying, onlyStandard, typeMapper);
+		            if (c.IsValid) return new ConvertNullable(typeMapper, c);
+		        }
+		        else
+		        {
+                    Conversion c = GetImplicit(op, toUnderlying, onlyStandard, typeMapper);
+                    if (c.IsValid) return new WrapNullable(typeMapper, c);
+                }
+		    }
             
-			// required for arrays created from TypeBuilder-s
+		    // required for arrays created from TypeBuilder-s
 			if (from != null && to.IsArray && from.IsArray)
 			{
 				if (to.GetArrayRank() == from.GetArrayRank())
@@ -599,10 +663,20 @@ namespace TriAxis.RunSharp
 
 			Type from = Operand.GetType(op, typeMapper);
 
-            if (Helpers.GetNullableUnderlyingType(@from) == to)
+		    Type fromUnderlying = Helpers.GetNullableUnderlyingType(@from);
+		    if (fromUnderlying == to)
                 return new UnwrapNullable(typeMapper);
 
-            // section 6.3.2 - Standard explicit conversions
+
+            Type toUnderlying = Helpers.GetNullableUnderlyingType(to);
+            if (toUnderlying != null && fromUnderlying != null)
+            {
+                var c = GetExplicit(new FakeTypedOperand(fromUnderlying), toUnderlying, onlyStandard, typeMapper);
+                if (c.IsValid) return new ConvertNullable(typeMapper, c);
+            }
+
+
+		    // section 6.3.2 - Standard explicit conversions
             if (onlyStandard)
 			{
 				if (from == null || !GetImplicit(to, @from, true, typeMapper).IsValid)

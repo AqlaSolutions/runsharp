@@ -39,71 +39,36 @@ using BindingFlags = IKVM.Reflection.BindingFlags;
 #else
 using System.Reflection;
 using System.Reflection.Emit;
+
 #endif
 
 namespace TriAxis.RunSharp.Operands
 {
-	class PrefixOperation : Operand, IStatement
-	{
-        protected override bool DetectsLeaking => false;
+    class ConversationWrapper : Operand
+    {
+        readonly Operand _op;
+        readonly Conversion _conv;
+        readonly Type _to;
+        readonly Type _from;
 
-        readonly Operand _target;
-	    readonly OverloadableOperation _baseOp;
-        protected override void ResetLeakedStateRecursively()
+        public ConversationWrapper(Conversion conv, Operand op, Type @from, Type to)
         {
-            base.ResetLeakedStateRecursively();
-            _target.SetLeakedState(false);
-            _baseOp.SetLeakedState(false);
+            _conv = conv;
+            _op = op;
+            _to = to;
+            _from = @from;
         }
 
-
-        public PrefixOperation(Operator op, Operand operand)
-		{
-			_target = operand;
-			_baseOp = new OverloadableOperation(op, operand);
-		}
-
-		protected internal override void EmitGet(CodeGen g)  
-        {
-		    this.SetLeakedState(false); 
-			if (_target.TrivialAccess)
-			{
-				_target.EmitSet(g, _baseOp, false);
-				_target.EmitGet(g);
-			}
-			else
-			{
-				Operand tmp = g.Local(_target);
-				_baseOp.SetOperand(tmp);
-				tmp.EmitSet(g, _baseOp, false);
-				_target.EmitSet(g, tmp, false);
-				tmp.EmitGet(g);
-			}
-		}
-
-	    protected internal override void EmitAddressOf(CodeGen g)
+        protected internal override void EmitGet(CodeGen g)
         {
             this.SetLeakedState(false);
-	        if (_target.TrivialAccess)
-	        {
-	            _target.EmitSet(g, _baseOp, false);
-	            _target.EmitAddressOf(g);
-	        }
-	        else
-	        {
-	            Operand tmp = g.Local(_target);
-	            _baseOp.SetOperand(tmp);
-	            tmp.EmitSet(g, _baseOp, false);
-	            _target.EmitSet(g, tmp, false);
-                _target.EmitAddressOf(g);
-	        }
-	    }
+            if (_conv.RequiresAddress)
+                _op.EmitAddressOf(g);
+            else
+                _op.EmitGet(g);
+            _conv.Emit(g, _from, _to);
+        }
 
-	    public override Type GetReturnType(ITypeMapper typeMapper) => _target.GetReturnType(typeMapper);
-
-	    public void Emit(CodeGen g)
-		{
-			_target.EmitSet(g, _baseOp, false);
-		}
-	}
+        public override Type GetReturnType(ITypeMapper typeMapper) => _to;
+    }
 }

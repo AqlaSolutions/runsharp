@@ -26,6 +26,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 #if FEAT_IKVM
 using IKVM.Reflection;
@@ -39,71 +40,72 @@ using BindingFlags = IKVM.Reflection.BindingFlags;
 #else
 using System.Reflection;
 using System.Reflection.Emit;
+
 #endif
 
 namespace TriAxis.RunSharp.Operands
 {
-	class PrefixOperation : Operand, IStatement
-	{
-        protected override bool DetectsLeaking => false;
+    class LocalCache : Operand
+    {
+        Operand _local;
+        readonly Operand _internal;
 
-        readonly Operand _target;
-	    readonly OverloadableOperation _baseOp;
         protected override void ResetLeakedStateRecursively()
         {
             base.ResetLeakedStateRecursively();
-            _target.SetLeakedState(false);
-            _baseOp.SetLeakedState(false);
+            _internal.SetLeakedState(false);
         }
 
 
-        public PrefixOperation(Operator op, Operand operand)
-		{
-			_target = operand;
-			_baseOp = new OverloadableOperation(op, operand);
-		}
-
-		protected internal override void EmitGet(CodeGen g)  
+        public LocalCache(Operand @internal)
         {
-		    this.SetLeakedState(false); 
-			if (_target.TrivialAccess)
-			{
-				_target.EmitSet(g, _baseOp, false);
-				_target.EmitGet(g);
-			}
-			else
-			{
-				Operand tmp = g.Local(_target);
-				_baseOp.SetOperand(tmp);
-				tmp.EmitSet(g, _baseOp, false);
-				_target.EmitSet(g, tmp, false);
-				tmp.EmitGet(g);
-			}
-		}
+            _internal = @internal;
+        }
 
-	    protected internal override void EmitAddressOf(CodeGen g)
+        public void Clear()
+        {
+            _local = null;
+        }
+
+        protected internal override void EmitGet(CodeGen g)
         {
             this.SetLeakedState(false);
-	        if (_target.TrivialAccess)
-	        {
-	            _target.EmitSet(g, _baseOp, false);
-	            _target.EmitAddressOf(g);
-	        }
-	        else
-	        {
-	            Operand tmp = g.Local(_target);
-	            _baseOp.SetOperand(tmp);
-	            tmp.EmitSet(g, _baseOp, false);
-	            _target.EmitSet(g, tmp, false);
-                _target.EmitAddressOf(g);
-	        }
-	    }
+            if (ReferenceEquals(_local, null))
+                _local = g.Local(_internal);
 
-	    public override Type GetReturnType(ITypeMapper typeMapper) => _target.GetReturnType(typeMapper);
+            _local.EmitGet(g);
+        }
 
-	    public void Emit(CodeGen g)
-		{
-			_target.EmitSet(g, _baseOp, false);
-		}
-	}
+        protected internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
+        {
+            this.SetLeakedState(false);
+            if (ReferenceEquals(_local, null))
+                _local = g.Local(GetReturnType(g.TypeMapper));
+
+            _local.EmitSet(g, value, allowExplicitConversion);
+            _internal.EmitSet(g, value, allowExplicitConversion);
+        }
+
+        protected internal override void EmitBranch(CodeGen g, OptionalLabel labelTrue, OptionalLabel labelFalse)
+        {
+            this.SetLeakedState(false);
+            if (ReferenceEquals(_local, null))
+                _local = g.Local(_internal);
+            
+            _local.EmitBranch(g, labelTrue,labelFalse);
+        }
+
+        protected internal override void EmitAddressOf(CodeGen g)
+        {
+            this.SetLeakedState(false);
+            if (ReferenceEquals(_local, null))
+                _local = g.Local(_internal);
+
+            _local.EmitAddressOf(g);
+        }
+
+        protected internal override bool TrivialAccess => true;
+
+        public override Type GetReturnType(ITypeMapper typeMapper) => _internal.GetReturnType(typeMapper);
+    }
 }

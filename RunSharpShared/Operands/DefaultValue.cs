@@ -41,69 +41,37 @@ using System.Reflection;
 using System.Reflection.Emit;
 #endif
 
+
 namespace TriAxis.RunSharp.Operands
 {
-	class PrefixOperation : Operand, IStatement
-	{
-        protected override bool DetectsLeaking => false;
-
-        readonly Operand _target;
-	    readonly OverloadableOperation _baseOp;
-        protected override void ResetLeakedStateRecursively()
+    class DefaultValue : Operand
+    {
+        readonly Type _t;
+        
+        public DefaultValue(Type t)
         {
-            base.ResetLeakedStateRecursively();
-            _target.SetLeakedState(false);
-            _baseOp.SetLeakedState(false);
+            _t = t;
         }
 
+        protected internal override bool TrivialAccess => !_t.IsValueType;
 
-        public PrefixOperation(Operator op, Operand operand)
-		{
-			_target = operand;
-			_baseOp = new OverloadableOperation(op, operand);
-		}
-
-		protected internal override void EmitGet(CodeGen g)  
-        {
-		    this.SetLeakedState(false); 
-			if (_target.TrivialAccess)
-			{
-				_target.EmitSet(g, _baseOp, false);
-				_target.EmitGet(g);
-			}
-			else
-			{
-				Operand tmp = g.Local(_target);
-				_baseOp.SetOperand(tmp);
-				tmp.EmitSet(g, _baseOp, false);
-				_target.EmitSet(g, tmp, false);
-				tmp.EmitGet(g);
-			}
-		}
-
-	    protected internal override void EmitAddressOf(CodeGen g)
+        protected internal override void EmitGet(CodeGen g)  
         {
             this.SetLeakedState(false);
-	        if (_target.TrivialAccess)
-	        {
-	            _target.EmitSet(g, _baseOp, false);
-	            _target.EmitAddressOf(g);
-	        }
-	        else
-	        {
-	            Operand tmp = g.Local(_target);
-	            _baseOp.SetOperand(tmp);
-	            tmp.EmitSet(g, _baseOp, false);
-	            _target.EmitSet(g, tmp, false);
-                _target.EmitAddressOf(g);
-	        }
-	    }
+            if (_t.IsValueType)
+            {
+                // no ctor for empty nullable? is unbox null better for nullable?
+                // new Cast(null, nullableReturnType)
 
-	    public override Type GetReturnType(ITypeMapper typeMapper) => _target.GetReturnType(typeMapper);
+                // TODO cache for locals
+                var l = g.Local(_t);
+                g.InitObj(l);
+                g.EmitGetHelper(l, _t, false);
+            }
+            else
+                g.EmitGetHelper(null, _t, false);
+        }
 
-	    public void Emit(CodeGen g)
-		{
-			_target.EmitSet(g, _baseOp, false);
-		}
-	}
+        public override Type GetReturnType(ITypeMapper typeMapper) => _t;
+    }
 }

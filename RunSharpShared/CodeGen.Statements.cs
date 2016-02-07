@@ -372,7 +372,7 @@ namespace TriAxis.RunSharp
 	    {
             If(!condition);
 	        {
-	            Throw(ExpressionFactory.New(typeof(Exception), "Assertation failed: " + message));
+	            Throw(ExpressionFactory.New(typeof(Exception), "Assertion failed: " + message));
 	        }
 	        End();
 	    }

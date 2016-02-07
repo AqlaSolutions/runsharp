@@ -72,7 +72,13 @@ namespace TriAxis.RunSharp.Operands
 			before.EmitGet(g);
 		}
 
-	    public override Type GetReturnType(ITypeMapper typeMapper) => _target.GetReturnType(typeMapper);
+
+        protected internal override void EmitAddressOf(CodeGen g)
+        {
+            _target.EmitAddressOf(g);
+        }
+
+        public override Type GetReturnType(ITypeMapper typeMapper) => _target.GetReturnType(typeMapper);
 
 	    public void Emit(CodeGen g)
 		{

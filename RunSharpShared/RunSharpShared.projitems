@@ -48,7 +48,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Operands\Assignment.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Operands\Cast.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Operands\Conditional.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Operands\ConversationWrapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Operands\CustomIL.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Operands\DecimalLiteral.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Operands\DefaultValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Operands\DoubleLiteral.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Operands\EnumLiteral.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Operands\Field.cs" />
@@ -59,6 +62,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Operands\IntLiteral.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Operands\Invocation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Operands\IsInst.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Operands\LocalCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Operands\LongLiteral.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Operands\NewArray.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Operands\NewDelegate.cs" />

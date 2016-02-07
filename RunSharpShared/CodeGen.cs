@@ -190,7 +190,23 @@ namespace TriAxis.RunSharp
         
 #endif
 
-	    public ContextualOperand Local(Type type, Operand init)
+        internal ContextualOperand LocalInitedFromStack(Type type)
+        {
+            var l = new _Local(this, type);
+            l.EmitSetFromStack(this);
+            return new ContextualOperand(l, TypeMapper);
+        }
+
+#if FEAT_IKVM
+
+        internal ContextualOperand LocalInitedFromStack(System.Type type)
+	    {
+	        return LocalInitedFromStack(TypeMapper.MapType(type));
+	    }
+        
+#endif
+
+        public ContextualOperand Local(Type type, Operand init)
 		{
 			Operand var = Local(type);
 			Assign(var, init);
@@ -347,6 +363,35 @@ namespace TriAxis.RunSharp
 					throw new InvalidOperationException(Properties.Messages.ErrInvalidVariableScope);
 			}
 
+		    internal void EmitSetFromStack(CodeGen g)
+		    {
+                this.SetLeakedState(false);
+
+		        if (_var == null)
+		        {
+		            if (_t == null) throw new InvalidOperationException("Can't set value from stack for local when no type was specified");
+		            _var = g.IL.DeclareLocal(_t);
+		        }
+		        switch (_var.LocalIndex)
+                {
+                    case 0:
+                        g.IL.Emit(OpCodes.Stloc_0);
+                        break;
+                    case 1:
+                        g.IL.Emit(OpCodes.Stloc_1);
+                        break;
+                    case 2:
+                        g.IL.Emit(OpCodes.Stloc_2);
+                        break;
+                    case 3:
+                        g.IL.Emit(OpCodes.Stloc_3);
+                        break;
+                    default:
+                        g.IL.Emit(OpCodes.Stloc, _var);
+                        break;
+                }
+            }
+
 		    protected internal override void EmitGet(CodeGen g) 
 		    {
 		        this.SetLeakedState(false); 
@@ -405,24 +450,7 @@ namespace TriAxis.RunSharp
                 }
                     g.EmitGetHelper(value, _t, allowExplicitConversion);
 
-			    switch (_var.LocalIndex)
-			    {
-			        case 0:
-			            g.IL.Emit(OpCodes.Stloc_0);
-			            break;
-			        case 1:
-			            g.IL.Emit(OpCodes.Stloc_1);
-			            break;
-			        case 2:
-			            g.IL.Emit(OpCodes.Stloc_2);
-			            break;
-			        case 3:
-			            g.IL.Emit(OpCodes.Stloc_3);
-			            break;
-			        default:
-			            g.IL.Emit(OpCodes.Stloc, _var);
-                        break;
-                }
+			    EmitSetFromStack(g);
 			}
 
 			protected internal override void EmitAddressOf(CodeGen g)
