@@ -533,12 +533,6 @@ namespace TriAxis.RunSharp
                         break;
 				}
 			}
-			if (Helpers.AreTypesEqual(from, typeof(long), typeMapper))
-			{
-				LongLiteral longLit = op as LongLiteral;
-				if ((object)longLit != null && longLit.Value > 0)
-					return new Direct(typeMapper);
-			}
 
 			// section 6.1.7 - User-defined implicit conversions (details in section 6.4.3)
 			if (onlyStandard || Helpers.AreTypesEqual(from, typeof(object), typeMapper) || Helpers.AreTypesEqual(to, typeof(object), typeMapper) || from.IsInterface || to.IsInterface ||
