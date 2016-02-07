@@ -625,7 +625,7 @@ namespace TriAxis.RunSharp
 						// decimal is handled as user-defined conversion, but as it is a standard one, always enable UDC processing
 						onlyStandard = false;
 					else
-                        return new Direct(typeMapper);
+                        return new Primitive(typeMapper);
 				}
 			}
 
