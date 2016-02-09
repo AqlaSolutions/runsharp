@@ -581,13 +581,28 @@ namespace TriAxis.RunSharp
 
 		public void For(IStatement init, Operand test, IStatement iterator)
 		{
-			Begin(new LoopBlock(init, test, iterator, TypeMapper));
+			Begin(new LoopBlock(init, test, iterator, true, TypeMapper));
 		}
 
 		public void While(Operand test)
 		{
-			Begin(new LoopBlock(null, test, null, TypeMapper));
+			Begin(new LoopBlock(null, test, null, true, TypeMapper));
 		}
+
+		public void DoWhile()
+		{
+			Begin(new LoopBlock(null, null, null, false, TypeMapper));
+		}
+
+	    public void EndDoWhile(Operand condition)
+	    {
+	        if (_blocks.Count == 0)
+	            throw new InvalidOperationException(Properties.Messages.ErrNoOpenBlocks);
+
+	        ((LoopBlock)_blocks.Peek()).InitializeCondition(condition);
+
+	        End();
+	    }
 
 #if FEAT_IKVM
         public ContextualOperand ForEach(System.Type elementType, Operand expression)
@@ -847,17 +862,29 @@ namespace TriAxis.RunSharp
 		class LoopBlock : Block, IBreakable, IContinuable
 		{
 		    readonly IStatement _init;
-		    readonly Operand _test;
+		    Operand _test;
 		    readonly IStatement _iter;
+		    readonly bool _testFirstTime;
+		    readonly ITypeMapper _typeMapper;
 
-			public LoopBlock(IStatement init, Operand test, IStatement iter, ITypeMapper typeMapper)
+		    public void InitializeCondition(Operand test)
+		    {
+		        if (ReferenceEquals(test, null)) throw new ArgumentNullException(nameof(test));
+		        if (!ReferenceEquals(_test, null)) throw new InvalidOperationException("Loop condition has been already initialized");
+
+                if (!Helpers.AreTypesEqual(test.GetReturnType(_typeMapper), typeof(bool), _typeMapper))
+                    test = test.IsTrue();
+                _test = test;
+		    }
+
+		    public LoopBlock(IStatement init, Operand test, IStatement iter, bool testFirstTime, ITypeMapper typeMapper)
 			{
 				_init = init;
-				_test = test;
 				_iter = iter;
-
-				if (!Helpers.AreTypesEqual(test.GetReturnType(typeMapper), typeof(bool), typeMapper))
-					test = test.IsTrue();
+		        _testFirstTime = testFirstTime;
+		        _typeMapper = typeMapper;
+		        if (!ReferenceEquals(test, null))
+		            InitializeCondition(test);
 			}
 
 			Label _lbLoop, _lbTest, _lbEnd, _lbIter;
@@ -871,13 +898,15 @@ namespace TriAxis.RunSharp
 				_lbTest = G.IL.DefineLabel();
 				if (_init != null)
 					_init.Emit(G);
-				G.IL.Emit(OpCodes.Br, _lbTest);
+			    if (_testFirstTime)
+			        G.IL.Emit(OpCodes.Br, _lbTest);
 				G.IL.MarkLabel(_lbLoop);
 			}
 
 			protected override void EndImpl()
 			{
-				if (_iter != null)
+			    if (_test == null) throw new InvalidOperationException("Loop condition has not been initialized");
+                if (_iter != null)
 				{
 					if (_iterUsed)
 						G.IL.MarkLabel(_lbIter);
@@ -890,7 +919,7 @@ namespace TriAxis.RunSharp
 			    if (_endUsed)
 			        lbFalse = _lbEnd;
 			    Label? lbLoopCopy = _lbLoop;
-				_test.EmitBranch(G, lbLoopCopy, lbFalse);
+                _test.EmitBranch(G, lbLoopCopy, lbFalse);
 			    if (lbFalse.IsLabelExist)
 			        G.IL.MarkLabel(lbFalse.Value);
                 
