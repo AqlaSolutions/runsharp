@@ -387,7 +387,7 @@ namespace TriAxis.RunSharp
 
 	        Operand left = this;
 	        var args = new Operand[] { left, right };
-	        return new ContextualOperand(new Invocation(typeMapper.TypeInfo.FindMethod(typeof(object), "ReferenceEquals", args, true), null, args), typeMapper).SetLeakedState(true);
+	        return new ContextualOperand(new Invocation(typeMapper.TypeInfo.FindMethod(typeMapper.MapType(typeof(object)), "ReferenceEquals", args, true), null, args), typeMapper).SetLeakedState(true);
 	    }
 
 	    public static Operand operator !=(Operand left, Operand right)
