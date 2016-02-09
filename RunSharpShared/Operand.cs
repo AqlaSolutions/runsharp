@@ -377,7 +377,20 @@ namespace TriAxis.RunSharp
 			return new OverloadableOperation(Operator.Equality, this, value);
 		}
 
-		public static Operand operator !=(Operand left, Operand right)
+	    public ContextualOperand ReferenceEquals(Operand right, ITypeMapper typeMapper)
+	    {
+	        return ReferenceEqualsImpl(right, typeMapper);
+	    }
+
+	    protected ContextualOperand ReferenceEqualsImpl(Operand right, ITypeMapper typeMapper)
+	    {
+
+	        Operand left = this;
+	        var args = new Operand[] { left, right };
+	        return new ContextualOperand(new Invocation(typeMapper.TypeInfo.FindMethod(typeof(object), "ReferenceEquals", args, true), null, args), typeMapper).SetLeakedState(true);
+	    }
+
+	    public static Operand operator !=(Operand left, Operand right)
 		{
 			return new OverloadableOperation(Operator.Inequality, left, right);
 		}
