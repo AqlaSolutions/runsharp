@@ -155,7 +155,14 @@ namespace TriAxis.RunSharp
 #endregion
 
 #region Locals
-		public ContextualOperand Local()
+
+	    protected ContextualOperand WrapExistingLocal(LocalBuilder local)
+	    {
+	        if (local == null) throw new ArgumentNullException(nameof(local));
+	        return new ContextualOperand(new _Local(this, local), TypeMapper);
+	    }
+
+	    public ContextualOperand Local()
 		{
 			return new ContextualOperand(new _Local(this), TypeMapper);
 		}
