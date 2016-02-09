@@ -138,7 +138,7 @@ namespace TriAxis.RunSharp
             return new ContextualOperand(new Invocation(_typeMapper.TypeInfo.FindMethod(method), null, args), _typeMapper).SetLeakedState(true);
 		}
 
-	    public ContextualOperand ReferenceEquals(Operand a, Operand b)
+	    public ContextualOperand InvokeReferenceEquals(Operand a, Operand b)
 	    {
 	        return Invoke(typeof(object), "ReferenceEquals", a, b);
 	    }

@@ -156,15 +156,15 @@ namespace TriAxis.RunSharp
             return new ContextualAssignment(new Assignment(this, value, allowExplicitConversion), TypeMapper).SetLeakedState(true);
         }
 
-        public ContextualOperand ReferenceEquals(Operand right)
+        public ContextualOperand InvokeReferenceEquals(Operand right)
         {
-            return base.ReferenceEqualsImpl(right, TypeMapper);
+            return base.InvokeReferenceEquals(right, TypeMapper);
         }
 
         [Obsolete("Don't pass typeMapper", true)]
-        public new ContextualOperand ReferenceEquals(Operand right, ITypeMapper typeMapper)
+        public new ContextualOperand InvokeReferenceEquals(Operand right, ITypeMapper typeMapper)
         {
-            return base.ReferenceEqualsImpl(right, TypeMapper);
+            return base.InvokeReferenceEquals(right, TypeMapper);
         }
 
         public new ContextualOperand Eq(Operand value)
