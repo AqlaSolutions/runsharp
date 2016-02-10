@@ -142,5 +142,10 @@ namespace TriAxis.RunSharp
 	    {
 	        return Invoke(typeof(object), "ReferenceEquals", a, b);
 	    }
+
+	    public ContextualOperand InvokeEquals(Operand a, Operand b)
+	    {
+	        return Invoke(typeof(object), "Equals", a, b);
+	    }
 	}
 }

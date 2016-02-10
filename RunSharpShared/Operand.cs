@@ -384,6 +384,13 @@ namespace TriAxis.RunSharp
             return new ContextualOperand(new Invocation(typeMapper.TypeInfo.FindMethod(typeMapper.MapType(typeof(object)), "ReferenceEquals", args, true), null, args), typeMapper).SetLeakedState(true);
         }
         
+	    public ContextualOperand InvokeEquals(Operand right, ITypeMapper typeMapper)
+	    {
+            Operand left = this;
+            var args = new Operand[] { left, right };
+            return new ContextualOperand(new Invocation(typeMapper.TypeInfo.FindMethod(typeMapper.MapType(typeof(object)), "Equals", args, true), null, args), typeMapper).SetLeakedState(true);
+        }
+        
 	    public static Operand operator !=(Operand left, Operand right)
 		{
 			return new OverloadableOperation(Operator.Inequality, left, right);

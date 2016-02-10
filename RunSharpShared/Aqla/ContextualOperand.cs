@@ -167,6 +167,17 @@ namespace TriAxis.RunSharp
             return base.InvokeReferenceEquals(right, TypeMapper);
         }
 
+        public ContextualOperand InvokeEquals(Operand right)
+        {
+            return base.InvokeEquals(right, TypeMapper);
+        }
+
+        [Obsolete("Don't pass typeMapper", true)]
+        public new ContextualOperand InvokeEquals(Operand right, ITypeMapper typeMapper)
+        {
+            return base.InvokeEquals(right, TypeMapper);
+        }
+
         public new ContextualOperand Eq(Operand value)
         {
             return new ContextualOperand(base.Eq(value), TypeMapper);
