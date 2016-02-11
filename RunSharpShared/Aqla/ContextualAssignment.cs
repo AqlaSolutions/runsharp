@@ -50,13 +50,13 @@ namespace TriAxis.RunSharp.Operands
         protected override void ResetLeakedStateRecursively()
         {
             base.ResetLeakedStateRecursively();
-            _assignment.SetLeakedState(false);
+            OperandExtensions.SetLeakedState(_assignment, false);
         }
 
         protected override void SetLeakedStateRecursively()
         {
             base.SetLeakedStateRecursively();
-            _assignment.SetLeakedState(true);
+            OperandExtensions.SetLeakedState(_assignment, true);
         }
 
 
@@ -70,7 +70,7 @@ namespace TriAxis.RunSharp.Operands
 
         public virtual void Emit(CodeGen g)
         {
-            this.SetLeakedState(false);
+            OperandExtensions.SetLeakedState(this, false);
             _assignment.Emit(g);
         }
     }

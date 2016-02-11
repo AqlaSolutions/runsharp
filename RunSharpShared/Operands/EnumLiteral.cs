@@ -53,7 +53,7 @@ namespace TriAxis.RunSharp.Operands
 
 		protected internal override void EmitGet(CodeGen g)  
         {
-		    this.SetLeakedState(false); 
+		    OperandExtensions.SetLeakedState(this, false); 
 			Type t = Helpers.GetEnumEnderlyingType(GetReturnType(g.TypeMapper));
 			if (Helpers.AreTypesEqual(t, typeof(long), g.TypeMapper))
 				g.EmitI8Helper(Convert.ToInt64(_value, null), true);

@@ -290,7 +290,7 @@ namespace TriAxis.RunSharp
 
 		    protected internal override void EmitGet(CodeGen g)
 		    {
-		        this.SetLeakedState(false); 
+		        OperandExtensions.SetLeakedState(this, false); 
 				g.EmitLdargHelper(_index);
 
 				if (IsReference)
@@ -299,7 +299,7 @@ namespace TriAxis.RunSharp
 
 		    protected internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
 		    {
-		        this.SetLeakedState(false); 
+		        OperandExtensions.SetLeakedState(this, false); 
 				if (IsReference)
 				{
 					g.EmitLdargHelper(_index);
@@ -314,7 +314,7 @@ namespace TriAxis.RunSharp
 
 		    protected internal override void EmitAddressOf(CodeGen g)
 		    {
-		        this.SetLeakedState(false);  
+		        OperandExtensions.SetLeakedState(this, false);  
 				if (IsReference)
 				{
 					g.EmitLdargHelper(_index);
@@ -372,7 +372,7 @@ namespace TriAxis.RunSharp
 
 		    internal void EmitSetFromStack(CodeGen g)
 		    {
-                this.SetLeakedState(false);
+                OperandExtensions.SetLeakedState(this, false);
 
 		        if (_var == null)
 		        {
@@ -401,7 +401,7 @@ namespace TriAxis.RunSharp
 
 		    protected internal override void EmitGet(CodeGen g) 
 		    {
-		        this.SetLeakedState(false); 
+		        OperandExtensions.SetLeakedState(this, false); 
 				CheckScope(g);
 
 				if (_var == null)
@@ -429,7 +429,7 @@ namespace TriAxis.RunSharp
 
 			protected internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
 			{
-		        this.SetLeakedState(false); 
+		        OperandExtensions.SetLeakedState(this, false); 
 				CheckScope(g);
 
 				if (_t == null)
@@ -462,7 +462,7 @@ namespace TriAxis.RunSharp
 
 			protected internal override void EmitAddressOf(CodeGen g)
 			{
-		        this.SetLeakedState(false); 
+		        OperandExtensions.SetLeakedState(this, false); 
 				CheckScope(g);
 
 				if (_var == null)

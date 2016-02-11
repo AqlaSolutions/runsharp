@@ -36,7 +36,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)DynamicMethodGen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EventGen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExpressionFactory.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ExtensionAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FieldGen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ITypeInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MethodGen.cs" />

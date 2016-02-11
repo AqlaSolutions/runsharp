@@ -187,7 +187,7 @@ namespace TriAxis.RunSharp
 
 	    protected internal override void EmitGet(CodeGen g)  
         {
-		    this.SetLeakedState(false); 
+		    OperandExtensions.SetLeakedState(this, false); 
 			if (_getter == null)
 				base.EmitGet(g);
 
@@ -203,7 +203,7 @@ namespace TriAxis.RunSharp
 
 		protected internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
 		{
-		    this.SetLeakedState(false);  
+		    OperandExtensions.SetLeakedState(this, false);  
 			if (_setter == null)
 				base.EmitSet(g, value, allowExplicitConversion);
 

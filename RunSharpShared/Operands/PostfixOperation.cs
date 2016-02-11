@@ -52,8 +52,8 @@ namespace TriAxis.RunSharp.Operands
         protected override void ResetLeakedStateRecursively()
         {
             base.ResetLeakedStateRecursively();
-            _target.SetLeakedState(false);
-            _baseOp.SetLeakedState(false);
+            OperandExtensions.SetLeakedState(_target, false);
+            OperandExtensions.SetLeakedState(_baseOp, false);
         }
 
 
@@ -65,7 +65,7 @@ namespace TriAxis.RunSharp.Operands
 
 		protected internal override void EmitGet(CodeGen g)  
         {
-		    this.SetLeakedState(false); 
+		    OperandExtensions.SetLeakedState(this, false); 
 			Operand before = g.Local(_target);
 			_baseOp.SetOperand(before);
 			_target.EmitSet(g, _baseOp, false);

@@ -94,7 +94,7 @@ namespace TriAxis.RunSharp
             if (ctor == null)
                 throw new MissingMethodException(Properties.Messages.ErrMissingConstructor);
 
-            return new ContextualOperand(new NewObject(ctor, args), _typeMapper).SetLeakedState(true);
+            return OperandExtensions.SetLeakedState(new ContextualOperand(new NewObject(ctor, args), _typeMapper), true);
         }
 
 #if FEAT_IKVM
@@ -108,7 +108,7 @@ namespace TriAxis.RunSharp
 
         public ContextualOperand NewArray(Type type, params Operand[] indexes)
         {
-            return new ContextualOperand(new NewArray(type, indexes), _typeMapper).SetLeakedState(true);
+            return OperandExtensions.SetLeakedState(new ContextualOperand(new NewArray(type, indexes), _typeMapper), true);
         }
 
 #if FEAT_IKVM
@@ -122,7 +122,7 @@ namespace TriAxis.RunSharp
 
         public ContextualOperand NewInitializedArray(Type type, params Operand[] elements)
         {
-            return new ContextualOperand(new InitializedArray(type, elements), _typeMapper).SetLeakedState(true);
+            return OperandExtensions.SetLeakedState(new ContextualOperand(new InitializedArray(type, elements), _typeMapper), true);
         }
 
 #if FEAT_IKVM
@@ -136,7 +136,7 @@ namespace TriAxis.RunSharp
 
         public ContextualOperand NewDelegate(Type delegateType, Type target, string method)
         {
-            return new ContextualOperand(new NewDelegate(delegateType, target, method, _typeMapper), _typeMapper).SetLeakedState(true);
+            return OperandExtensions.SetLeakedState(new ContextualOperand(new NewDelegate(delegateType, target, method, _typeMapper), _typeMapper), true);
         }
 
 #if FEAT_IKVM
@@ -150,7 +150,7 @@ namespace TriAxis.RunSharp
 
         public ContextualOperand NewDelegate(Type delegateType, Operand target, string method)
         {
-            return new ContextualOperand(new NewDelegate(delegateType, target, method, _typeMapper), _typeMapper).SetLeakedState(true);
+            return OperandExtensions.SetLeakedState(new ContextualOperand(new NewDelegate(delegateType, target, method, _typeMapper), _typeMapper), true);
         }
 
         #endregion

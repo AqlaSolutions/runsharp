@@ -53,9 +53,9 @@ namespace TriAxis.RunSharp.Operands
         protected override void ResetLeakedStateRecursively()
         {
             base.ResetLeakedStateRecursively();
-            _cond.SetLeakedState(false);
-            _ifFalse.SetLeakedState(false);
-            _ifTrue.SetLeakedState(false);
+            OperandExtensions.SetLeakedState(_cond, false);
+            OperandExtensions.SetLeakedState(_ifFalse, false);
+            OperandExtensions.SetLeakedState(_ifTrue, false);
         }
 
         public Conditional(Operand cond, Operand ifTrue, Operand ifFalse)
@@ -81,7 +81,7 @@ namespace TriAxis.RunSharp.Operands
 
         protected internal override void EmitGet(CodeGen g)  
         {
-		    this.SetLeakedState(false); 
+		    OperandExtensions.SetLeakedState(this, false); 
             Initialize(g.TypeMapper);
             Label lbTrue = g.IL.DefineLabel();
             Label lbEnd = g.IL.DefineLabel();

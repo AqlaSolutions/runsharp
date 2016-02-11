@@ -136,7 +136,7 @@ namespace TriAxis.RunSharp
 
 		protected internal override void EmitGet(CodeGen g)  
         {
-		    this.SetLeakedState(false); 
+		    OperandExtensions.SetLeakedState(this, false); 
 			if (!IsStatic)
 			{
 				if (g.Context.IsStatic || g.Context.OwnerType != _owner.TypeBuilder)
@@ -151,7 +151,7 @@ namespace TriAxis.RunSharp
 
 		protected internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
 		{
-		    this.SetLeakedState(false);  
+		    OperandExtensions.SetLeakedState(this, false);  
 			if (!IsStatic)
 			{
 				if (g.Context.IsStatic || g.Context.OwnerType != _owner.TypeBuilder)
@@ -166,7 +166,7 @@ namespace TriAxis.RunSharp
 
 		protected internal override void EmitAddressOf(CodeGen g)
 		{
-		    this.SetLeakedState(false);  
+		    OperandExtensions.SetLeakedState(this, false);  
 			if (!IsStatic)
 			{
 				if (g.Context.IsStatic || g.Context.OwnerType != _owner.TypeBuilder)

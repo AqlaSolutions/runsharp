@@ -57,7 +57,7 @@ namespace TriAxis.RunSharp.Operands
 
         protected internal override void EmitGet(CodeGen g)  
         {
-            this.SetLeakedState(false);
+            OperandExtensions.SetLeakedState(this, false);
             if (_t.IsValueType)
             {
                 // no ctor for empty nullable? is unbox null better for nullable?

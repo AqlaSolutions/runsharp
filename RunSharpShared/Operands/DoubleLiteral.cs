@@ -52,7 +52,7 @@ namespace TriAxis.RunSharp.Operands
 
 		protected internal override void EmitGet(CodeGen g)  
         {
-		    this.SetLeakedState(false); 
+		    OperandExtensions.SetLeakedState(this, false); 
 			g.IL.Emit(OpCodes.Ldc_R8, _value);
 		}
 

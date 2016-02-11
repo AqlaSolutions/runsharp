@@ -54,7 +54,7 @@ namespace TriAxis.RunSharp.Operands
         protected override void ResetLeakedStateRecursively()
         {
             base.ResetLeakedStateRecursively();
-            _operands.SetLeakedState(false);
+            OperandExtensions.SetLeakedState(_operands, false);
         }
 
         public OverloadableOperation(Operator op, params Operand[] operands)
@@ -244,7 +244,7 @@ namespace TriAxis.RunSharp.Operands
 
         protected internal override void EmitGet(CodeGen g)  
         {
-            this.SetLeakedState(false);
+            OperandExtensions.SetLeakedState(this, false);
 
             foreach (LocalCache lc in _caches)
             {
@@ -311,7 +311,7 @@ namespace TriAxis.RunSharp.Operands
 
 		protected internal override void EmitBranch(CodeGen g, OptionalLabel labelTrue, OptionalLabel labelFalse)
 		{
-		    this.SetLeakedState(false);
+		    OperandExtensions.SetLeakedState(this, false);
 
             foreach (LocalCache lc in _caches)
             {

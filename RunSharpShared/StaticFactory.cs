@@ -70,7 +70,7 @@ namespace TriAxis.RunSharp
 
 	    public ContextualOperand Field(Type type, string name)
 		{
-			return new ContextualOperand(new Field((FieldInfo)_typeMapper.TypeInfo.FindField(type, name, true).Member, null), _typeMapper).SetLeakedState(true);
+			return OperandExtensions.SetLeakedState(new ContextualOperand(new Field((FieldInfo)_typeMapper.TypeInfo.FindField(type, name, true).Member, null), _typeMapper), true);
 		}
 
 #if FEAT_IKVM
@@ -95,7 +95,7 @@ namespace TriAxis.RunSharp
 
 	    public ContextualOperand Property(Type type, string name, params Operand[] indexes)
 		{
-			return new ContextualOperand(new Property(_typeMapper.TypeInfo.FindProperty(type, name, indexes, true), null, indexes), _typeMapper).SetLeakedState(true);
+			return OperandExtensions.SetLeakedState(new ContextualOperand(new Property(_typeMapper.TypeInfo.FindProperty(type, name, indexes, true), null, indexes), _typeMapper), true);
 		}
         
 	    public ContextualOperand Property<T>(string name, params Operand[] indexes)
@@ -130,12 +130,12 @@ namespace TriAxis.RunSharp
 
 	    public ContextualOperand Invoke(Type type, string name, params Operand[] args)
 		{
-			return new ContextualOperand(new Invocation(_typeMapper.TypeInfo.FindMethod(type, name, args, true), null, args), _typeMapper).SetLeakedState(true);
+			return OperandExtensions.SetLeakedState(new ContextualOperand(new Invocation(_typeMapper.TypeInfo.FindMethod(type, name, args, true), null, args), _typeMapper), true);
 		}
 
         public ContextualOperand Invoke(MethodInfo method, params Operand[] args)
 		{
-            return new ContextualOperand(new Invocation(_typeMapper.TypeInfo.FindMethod(method), null, args), _typeMapper).SetLeakedState(true);
+            return OperandExtensions.SetLeakedState(new ContextualOperand(new Invocation(_typeMapper.TypeInfo.FindMethod(method), null, args), _typeMapper), true);
 		}
 
 	    public ContextualOperand InvokeReferenceEquals(Operand a, Operand b)

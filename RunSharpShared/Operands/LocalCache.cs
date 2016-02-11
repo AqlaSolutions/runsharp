@@ -53,7 +53,7 @@ namespace TriAxis.RunSharp.Operands
         protected override void ResetLeakedStateRecursively()
         {
             base.ResetLeakedStateRecursively();
-            _internal.SetLeakedState(false);
+            OperandExtensions.SetLeakedState(_internal, false);
         }
 
 
@@ -69,7 +69,7 @@ namespace TriAxis.RunSharp.Operands
 
         protected internal override void EmitGet(CodeGen g)
         {
-            this.SetLeakedState(false);
+            OperandExtensions.SetLeakedState(this, false);
             if (ReferenceEquals(_local, null))
                 _local = g.Local(_internal);
 
@@ -78,7 +78,7 @@ namespace TriAxis.RunSharp.Operands
 
         protected internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
         {
-            this.SetLeakedState(false);
+            OperandExtensions.SetLeakedState(this, false);
             if (ReferenceEquals(_local, null))
                 _local = g.Local(GetReturnType(g.TypeMapper));
 
@@ -88,7 +88,7 @@ namespace TriAxis.RunSharp.Operands
 
         protected internal override void EmitBranch(CodeGen g, OptionalLabel labelTrue, OptionalLabel labelFalse)
         {
-            this.SetLeakedState(false);
+            OperandExtensions.SetLeakedState(this, false);
             if (ReferenceEquals(_local, null))
                 _local = g.Local(_internal);
             
@@ -97,7 +97,7 @@ namespace TriAxis.RunSharp.Operands
 
         protected internal override void EmitAddressOf(CodeGen g)
         {
-            this.SetLeakedState(false);
+            OperandExtensions.SetLeakedState(this, false);
             if (ReferenceEquals(_local, null))
                 _local = g.Local(_internal);
 

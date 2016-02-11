@@ -149,7 +149,7 @@ namespace TriAxis.RunSharp
 
 		protected internal override void EmitGet(CodeGen g)  
         {
-		    this.SetLeakedState(false); 
+		    OperandExtensions.SetLeakedState(this, false); 
 			if ((object)_handler == null)
 				throw new InvalidOperationException(Properties.Messages.ErrCustomEventFieldAccess);
 
@@ -158,7 +158,7 @@ namespace TriAxis.RunSharp
 
 		protected internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
 		{
-		    this.SetLeakedState(false);  
+		    OperandExtensions.SetLeakedState(this, false);  
 			if ((object)_handler == null)
 				throw new InvalidOperationException(Properties.Messages.ErrCustomEventFieldAccess);
 

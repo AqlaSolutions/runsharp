@@ -53,7 +53,7 @@ namespace TriAxis.RunSharp.Operands
 
 		protected internal override void EmitGet(CodeGen g)  
         {
-		    this.SetLeakedState(false); 
+		    OperandExtensions.SetLeakedState(this, false); 
 			int[] bits = decimal.GetBits(_value);
 			byte exponent = unchecked((byte)((bits[3] >> 16) & 0x1f));
 			bool sign = bits[3] < 0;

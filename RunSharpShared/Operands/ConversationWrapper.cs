@@ -61,7 +61,7 @@ namespace TriAxis.RunSharp.Operands
 
         protected internal override void EmitGet(CodeGen g)
         {
-            this.SetLeakedState(false);
+            OperandExtensions.SetLeakedState(this, false);
             if (_conv.RequiresAddress)
                 _op.EmitAddressOf(g);
             else

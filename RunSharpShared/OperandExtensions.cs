@@ -4,54 +4,55 @@ using TriAxis.RunSharp;
 
 namespace TriAxis.RunSharp
 {
+    // had to remove ExtensionAttribute because otherwise .NET 4.0 projects can't reference this dll
     static class OperandExtensions
     {
         [DebuggerStepThrough]
-        internal static void SetLeakedState(this Operand[] operands, bool state)
+        internal static void SetLeakedState(Operand[] operands, bool state)
         {
             if (operands != null)
             {
                 for (int i = 0; i < operands.Length; i++)
                 {
-                    operands[i].SetLeakedState(state);
+                    OperandExtensions.SetLeakedState(operands[i], state);
                 }
             }
         }
         [DebuggerStepThrough]
-        internal static void SetLeakedState(this ContextualOperand[] operands, bool state)
+        internal static void SetLeakedState(ContextualOperand[] operands, bool state)
         {
             if (operands != null)
             {
                 for (int i = 0; i < operands.Length; i++)
                 {
-                    operands[i].SetLeakedState(state);
+                    OperandExtensions.SetLeakedState(operands[i], state);
                 }
             }
         }
         [DebuggerStepThrough]
-        internal static void SetLeakedState(this Assignment[] operands, bool state)
+        internal static void SetLeakedState(Assignment[] operands, bool state)
         {
             if (operands != null)
             {
                 for (int i = 0; i < operands.Length; i++)
                 {
-                    operands[i].SetLeakedState(state);
+                    OperandExtensions.SetLeakedState(operands[i], state);
                 }
             }
         }
         [DebuggerStepThrough]
-        internal static void SetLeakedState(this ContextualAssignment[] operands, bool state)
+        internal static void SetLeakedState(ContextualAssignment[] operands, bool state)
         {
             if (operands != null)
             {
                 for (int i = 0; i < operands.Length; i++)
                 {
-                    operands[i].SetLeakedState(state);
+                    OperandExtensions.SetLeakedState(operands[i], state);
                 }
             }
         }
         [DebuggerStepThrough]
-        internal static Operand SetLeakedState(this Operand operand, bool state)
+        internal static Operand SetLeakedState(Operand operand, bool state)
         {
             if ((object)operand != null)
                 operand.LeakedState = state;
@@ -59,21 +60,21 @@ namespace TriAxis.RunSharp
         }
 
         [DebuggerStepThrough]
-        internal static ContextualOperand SetLeakedState(this ContextualOperand operand, bool state)
+        internal static ContextualOperand SetLeakedState(ContextualOperand operand, bool state)
         {
             if ((object)operand != null)
                 operand.LeakedState = state;
             return operand;
         }
         [DebuggerStepThrough]
-        internal static Assignment SetLeakedState(this Assignment operand, bool state)
+        internal static Assignment SetLeakedState(Assignment operand, bool state)
         {
             if ((object)operand != null)
                 operand.LeakedState = state;
             return operand;
         }
         [DebuggerStepThrough]
-        internal static ContextualAssignment SetLeakedState(this ContextualAssignment operand, bool state)
+        internal static ContextualAssignment SetLeakedState(ContextualAssignment operand, bool state)
         {
             if ((object)operand != null)
                 operand.LeakedState = state;
