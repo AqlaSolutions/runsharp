@@ -87,6 +87,7 @@ namespace TriAxis.RunSharp
 #if FEAT_IKVM
         internal static IKVM.Reflection.Type GetNullableUnderlyingType(IKVM.Reflection.Type type)
         {
+            if (type == null) return null;
             if (type.IsValueType && type.IsGenericType && type.GetGenericTypeDefinition().FullName == "System.Nullable`1")
             {
                 return type.GetGenericArguments()[0];
@@ -97,6 +98,7 @@ namespace TriAxis.RunSharp
 
         internal static System.Type GetNullableUnderlyingType(System.Type type)
         {
+            if (type == null) return null;
 #if NO_GENERICS
             return null; // never a Nullable<T>, so always returns null
 #else

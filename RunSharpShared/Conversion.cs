@@ -493,7 +493,7 @@ namespace TriAxis.RunSharp
 			Type from = Operand.GetType(op, typeMapper);
 
             Type toUnderlying = Helpers.GetNullableUnderlyingType(to);
-		    if (to.Equals(from) || toUnderlying == from)
+		    if (to.Equals(from))
 		        return new Direct(typeMapper);
 
             Type fromUnderlying = Helpers.GetNullableUnderlyingType(@from);
