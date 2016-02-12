@@ -99,30 +99,30 @@ namespace TriAxis.RunSharp
 
 #if FEAT_IKVM
 
-        public ContextualOperand NewArray(System.Type type, params Operand[] indexes)
+        public ContextualOperand NewArray(System.Type itemType, params Operand[] indexes)
         {
-            return NewArray(_typeMapper.MapType(type), indexes);
+            return NewArray(_typeMapper.MapType(itemType), indexes);
         }
         
 #endif
 
-        public ContextualOperand NewArray(Type type, params Operand[] indexes)
+        public ContextualOperand NewArray(Type itemType, params Operand[] indexes)
         {
-            return OperandExtensions.SetLeakedState(new ContextualOperand(new NewArray(type, indexes), _typeMapper), true);
+            return OperandExtensions.SetLeakedState(new ContextualOperand(new NewArray(itemType, indexes), _typeMapper), true);
         }
 
 #if FEAT_IKVM
 
-        public ContextualOperand NewInitializedArray(System.Type type, params Operand[] elements)
+        public ContextualOperand NewInitializedArray(System.Type itemType, params Operand[] elements)
         {
-            return NewInitializedArray(_typeMapper.MapType(type), elements);
+            return NewInitializedArray(_typeMapper.MapType(itemType), elements);
         }
 #endif
 
 
-        public ContextualOperand NewInitializedArray(Type type, params Operand[] elements)
+        public ContextualOperand NewInitializedArray(Type itemType, params Operand[] elements)
         {
-            return OperandExtensions.SetLeakedState(new ContextualOperand(new InitializedArray(type, elements), _typeMapper), true);
+            return OperandExtensions.SetLeakedState(new ContextualOperand(new InitializedArray(itemType, elements), _typeMapper), true);
         }
 
 #if FEAT_IKVM
