@@ -264,9 +264,15 @@ namespace TriAxis.RunSharp
             BeforeStatement();
 
             operand.EmitGet(this);
-            if (!_leaveNextReturnOnStack && !Helpers.AreTypesEqual(operand.GetReturnType(TypeMapper), typeof(void), TypeMapper))
-                IL.Emit(OpCodes.Pop);
-            _leaveNextReturnOnStack = false;
+            if (!Helpers.AreTypesEqual(operand.GetReturnType(TypeMapper), typeof(void), TypeMapper))
+            {
+                if (!_leaveNextReturnOnStack)
+                    IL.Emit(OpCodes.Pop);
+                else
+                    _leaveNextReturnOnStack = false;
+            }
+            else if (_leaveNextReturnOnStack)
+                throw new InvalidOperationException(nameof(LeaveNextReturnOnStack) + " called but operand " + operand.ToString() + " doesn't return a value");
         }
 
 
