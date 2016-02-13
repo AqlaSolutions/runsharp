@@ -60,7 +60,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Operands\InitializedArray.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Operands\IntLiteral.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Operands\Invocation.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Operands\IsInst.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Operands\IsInstanceOf.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Operands\LocalCache.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Operands\LongLiteral.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Operands\NewArray.cs" />
@@ -70,6 +70,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Operands\PostfixOperation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Operands\PrefixOperation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Operands\Property.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Operands\SafeCast.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Operands\SimpleOperation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Operands\StringLiteral.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Operands\TypeLiteral.cs" />

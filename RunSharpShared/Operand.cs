@@ -677,14 +677,13 @@ namespace TriAxis.RunSharp
 
 	    public Operand As(Type type)
 	    {
-	        if (type.IsValueType && Helpers.GetNullableUnderlyingType(type) == null) return null;
-	        return OperandExtensions.SetLeakedState(new IsInst(this, type), true);
+	        return OperandExtensions.SetLeakedState(new SafeCast(this, type), true);
 	    }
 
 	    public Operand Is(Type type)
 	    {
-	        return As(type) != null;
-	    }
+            return OperandExtensions.SetLeakedState(new IsInstanceOf(this, type), true);
+        }
 
         public ContextualOperand InvokeGetType(ITypeMapper typeMapper)
         {

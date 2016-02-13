@@ -43,7 +43,7 @@ using System.Reflection.Emit;
 
 namespace TriAxis.RunSharp.Operands
 {
-    class IsInst : Operand
+    class IsInstanceOf : Operand
     {
         readonly Operand _op;
         readonly Type _t;
@@ -54,7 +54,7 @@ namespace TriAxis.RunSharp.Operands
             base.ResetLeakedStateRecursively();
         }
 
-        public IsInst(Operand op, Type t)
+        public IsInstanceOf(Operand op, Type t)
         {
             _op = op;
             _t = t;
@@ -63,10 +63,20 @@ namespace TriAxis.RunSharp.Operands
         protected internal override void EmitGet(CodeGen g)  
         {
             OperandExtensions.SetLeakedState(this, false);
-            _op.EmitGet(g);
-            g.IL.Emit(OpCodes.Isinst, _t);
+            if (_t.IsValueType)
+            {
+                _op.EmitGet(g);
+                g.IL.Emit(OpCodes.Isinst, _t);
+                g.IL.Emit(OpCodes.Ldnull);
+                g.IL.Emit(OpCodes.Cgt_Un);
+            }
+            else
+            {
+                (_op.As(_t) != null).EmitGet(g);
+            }
+
         }
 
-        public override Type GetReturnType(ITypeMapper typeMapper) => _t;
+        public override Type GetReturnType(ITypeMapper typeMapper) => typeMapper.MapType(typeof(bool));
     }
 }

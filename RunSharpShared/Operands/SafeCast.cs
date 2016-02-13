@@ -39,47 +39,42 @@ using BindingFlags = IKVM.Reflection.BindingFlags;
 #else
 using System.Reflection;
 using System.Reflection.Emit;
-#endif
 
+#endif
 
 namespace TriAxis.RunSharp.Operands
 {
-    class DefaultValue : Operand
+    class SafeCast : Operand
     {
+        readonly Operand _op;
         readonly Type _t;
-        
-        public DefaultValue(Type t)
+
+        protected override void ResetLeakedStateRecursively()
         {
-            _t = t;
+            OperandExtensions.SetLeakedState(_op, false);
+            base.ResetLeakedStateRecursively();
         }
 
-        protected internal override bool TrivialAccess => !_t.IsValueType;
+        readonly Operand _conditional;
 
-        protected internal override void EmitGet(CodeGen g)  
+        public SafeCast(Operand op, Type t)
+        {
+            _op = op;
+            _t = t;
+            if (t.IsValueType)
+                _conditional = _op.Is(_t).Conditional(_op.Cast(_t), new DefaultValue(_t));
+        }
+
+        protected internal override void EmitGet(CodeGen g)
         {
             OperandExtensions.SetLeakedState(this, false);
             if (_t.IsValueType)
             {
-                if (_t == g.TypeMapper.MapType(typeof(int)))
-                {
-                    g.EmitI4Helper(0);
-                    return;
-                }
-                else if (_t == g.TypeMapper.MapType(typeof(bool)))
-                {
-                    g.EmitI4Helper(0);
-                    return;
-                }
-                // no ctor for empty nullable? is unbox null better for nullable?
-                // new Cast(null, nullableReturnType)
-
-                // TODO cache for locals
-                var l = g.Local(_t);
-                g.InitObj(l);
-                g.EmitGetHelper(l, _t, false);
+                _conditional.EmitGet(g);
+                return;
             }
-            else
-                g.EmitGetHelper(null, _t, false);
+            _op.EmitGet(g);
+            g.IL.Emit(OpCodes.Isinst, _t);
         }
 
         public override Type GetReturnType(ITypeMapper typeMapper) => _t;
