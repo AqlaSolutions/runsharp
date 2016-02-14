@@ -364,6 +364,11 @@ namespace TriAxis.RunSharp
 			Invoke(TypeMapper.MapType(typeof(System.Diagnostics.Debug)), "Assert", condition);
 		}
 
+        public void DebugWriteLine(Operand message)
+		{
+			Invoke(TypeMapper.MapType(typeof(System.Diagnostics.Debug)), "WriteLine", message);
+		}
+
         public void DebugAssert(Operand condition, Operand message)
 		{
 			Invoke(TypeMapper.MapType(typeof(System.Diagnostics.Debug)), "Assert", condition, message);

@@ -375,6 +375,30 @@ namespace TriAxis.RunSharp
             return InvokeGetType();
         }
 
+        public ContextualOperand InvokeToString()
+        {
+            return base.InvokeToString(TypeMapper);
+        }
+        
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        [Obsolete("Don't pass typeMapper", true)]
+        public new Operand InvokeToString(ITypeMapper typeMapper)
+        {
+            return InvokeToString();
+        }
+
+        public ContextualOperand InvokeGetHashCode()
+        {
+            return base.InvokeGetHashCode(TypeMapper);
+        }
+        
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        [Obsolete("Don't pass typeMapper", true)]
+        public new Operand InvokeGetHashCode(ITypeMapper typeMapper)
+        {
+            return InvokeGetHashCode();
+        }
+
         public new ContextualOperand ArrayLength()
         {
             return OperandExtensions.SetLeakedState(new ContextualOperand(base.ArrayLength(), TypeMapper), true);

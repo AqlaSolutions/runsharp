@@ -690,6 +690,16 @@ namespace TriAxis.RunSharp
             return Invoke("GetType", typeMapper);
         }
 
+        public ContextualOperand InvokeToString(ITypeMapper typeMapper)
+        {
+            return Invoke("ToString", typeMapper);
+        }
+
+        public ContextualOperand InvokeGetHashCode(ITypeMapper typeMapper)
+        {
+            return Invoke("GetHashCode", typeMapper);
+        }
+
         #endregion
 
         #region Member access
