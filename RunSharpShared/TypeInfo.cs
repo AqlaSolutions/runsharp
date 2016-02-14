@@ -26,6 +26,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 #if FEAT_IKVM
 using IKVM.Reflection;
@@ -415,6 +416,10 @@ namespace TriAxis.RunSharp
                 {
                     yield return @interface;
                 }
+                foreach (Type baseType in SearchBaseTypes(TypeMapper.MapType(typeof(object))))
+                {
+                    yield return baseType;
+                }
             }
             else
             {
@@ -487,7 +492,9 @@ namespace TriAxis.RunSharp
                 if (af != null)
                     return af;
             }
-
+#if DEBUG
+            Debugger.Break();
+#endif
             var sb = new StringBuilder();
             
             sb.Append(" " + t.Name + "." + name);

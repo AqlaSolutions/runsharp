@@ -72,8 +72,33 @@ namespace TriAxis.RunSharp
 #endif
 
         bool _chainCalled;
-		bool _reachable = true;
-		bool _hasRetVar, _hasRetLabel;
+	    bool _isReachable = true;
+	    StackTrace _unreachableFrom;
+
+	    public bool IsReachable
+	    {
+	        get
+	        {
+	            return _isReachable;
+	        }
+	        private set
+	        {
+	            _isReachable = value;
+	            _unreachableFrom = value ? null :
+#if !SILVERLIGHT
+                    new StackTrace(1, true);
+#else
+                    new StackTrace();
+#endif
+            }
+	    }
+
+	    public void ForceResetUnreachableState()
+	    {
+            _isReachable = true;
+	    }
+
+	    bool _hasRetVar, _hasRetLabel;
 		LocalBuilder _retVar;
 		Label _retLabel;
 	    readonly Stack<Block> _blocks = new Stack<Block>();
@@ -243,14 +268,14 @@ namespace TriAxis.RunSharp
 			_hasRetVar = true;
 		}
 
-		public bool IsCompleted => _blocks.Count == 0 && (!_isOwner || !_reachable) && _hasRetVar == _hasRetLabel;
+		public bool IsCompleted => _blocks.Count == 0 && (!_isOwner || !IsReachable) && _hasRetVar == _hasRetLabel;
 
 	    internal void Complete()
 		{
 			if (_blocks.Count > 0)
 				throw new InvalidOperationException(Properties.Messages.ErrOpenBlocksRemaining);
 
-			if (_reachable)
+			if (IsReachable)
 			{
 				if (HasReturnValue)
 					throw new InvalidOperationException(string.Format(null, Properties.Messages.ErrMethodMustReturnValue, Context));
@@ -567,7 +592,7 @@ namespace TriAxis.RunSharp
 	        IL.Emit(OpCodes.Br, label);
 	    }
 
-	    #region Context explicit delegation
+#region Context explicit delegation
 
 	    MemberInfo IMemberInfo.Member { get { return Context.Member; } }
 
@@ -616,7 +641,7 @@ namespace TriAxis.RunSharp
 
 	    bool ICodeGenContext.SupportsScopes { get { return Context.SupportsScopes; } }
 
-	    #endregion
+#endregion
 
 	}
 }

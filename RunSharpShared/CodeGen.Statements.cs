@@ -237,8 +237,10 @@ namespace TriAxis.RunSharp
 
         void BeforeStatement()
 		{
-			if (!_reachable)
-				throw new InvalidOperationException(Properties.Messages.ErrCodeNotReachable);
+            if (!IsReachable)
+            {
+                throw new InvalidOperationException(Properties.Messages.ErrCodeNotReachable + ", \r\n set unreachable at \r\n" + _unreachableFrom);
+            }
 #if !PHONE8
             if (_cg != null && !_chainCalled && !_cg.Type.TypeBuilder.IsValueType)
 				InvokeBase();
@@ -474,7 +476,7 @@ namespace TriAxis.RunSharp
 				if (brkBlock != null)
 				{
 					IL.Emit(useLeave ? OpCodes.Leave : OpCodes.Br, brkBlock.GetBreakTarget());
-					_reachable = false;
+					IsReachable = false;
 					return;
 				}
 			}
@@ -505,7 +507,7 @@ namespace TriAxis.RunSharp
 				if (cntBlock != null)
 				{
 					IL.Emit(useLeave ? OpCodes.Leave : OpCodes.Br, cntBlock.GetContinueTarget());
-					_reachable = false;
+					IsReachable = false;
 					return;
 				}
 			}
@@ -538,7 +540,7 @@ namespace TriAxis.RunSharp
 				IL.Emit(OpCodes.Leave, _retLabel);
 			}
 
-			_reachable = false;
+			IsReachable = false;
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "'Operand' required as type to use provided implicit conversions")]
@@ -569,7 +571,7 @@ namespace TriAxis.RunSharp
 				IL.Emit(OpCodes.Stloc, _retVar);
 				IL.Emit(OpCodes.Leave, _retLabel);
 			}
-			_reachable = false;
+			IsReachable = false;
 		}
 
 		public void Throw()
@@ -577,7 +579,7 @@ namespace TriAxis.RunSharp
 			BeforeStatement();
 
 			IL.Emit(OpCodes.Rethrow);
-			_reachable = false;
+			IsReachable = false;
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "'Operand' required as type to use provided implicit conversions")]
@@ -587,7 +589,7 @@ namespace TriAxis.RunSharp
 
 			EmitGetHelper(exception, TypeMapper.MapType(typeof(Exception)), false);
 			IL.Emit(OpCodes.Throw);
-			_reachable = false;
+			IsReachable = false;
 		}
 
 		public void For(IStatement init, Operand test, IStatement iterator)
@@ -835,7 +837,7 @@ namespace TriAxis.RunSharp
 			protected override void EndImpl()
 			{
 				G.IL.MarkLabel(_lbSkip);
-				G._reachable = true;
+				G.IsReachable = true;
 			}
 		}
 
@@ -852,7 +854,7 @@ namespace TriAxis.RunSharp
 
 			protected override void BeginImpl()
 			{
-				if (_canSkip = G._reachable)
+				if (_canSkip = G.IsReachable)
 				{
 					_lbSkip = G.IL.DefineLabel();
 					G.IL.Emit(OpCodes.Br, _lbSkip);
@@ -865,7 +867,7 @@ namespace TriAxis.RunSharp
 				if (_canSkip)
 				{
 					G.IL.MarkLabel(_lbSkip);
-					G._reachable = true;
+					G.IsReachable = true;
 				}
 			}
 		}
@@ -934,7 +936,7 @@ namespace TriAxis.RunSharp
 			    if (lbFalse.IsLabelExist)
 			        G.IL.MarkLabel(lbFalse.Value);
                 
-				G._reachable = true;
+				G.IsReachable = true;
 			}
 
 			public Label GetBreakTarget()
@@ -1009,7 +1011,7 @@ namespace TriAxis.RunSharp
 				if (_endUsed)
 					G.IL.MarkLabel(_lbEnd); 
 				
-				G._reachable = true;
+				G.IsReachable = true;
 			}
 
 			public Label GetBreakTarget()
@@ -1048,24 +1050,24 @@ namespace TriAxis.RunSharp
 			{
 				EndScope();
 
-				if (G._reachable)
+				if (G.IsReachable)
 					_endReachable = true;
 				G.IL.BeginCatchBlock(_typeMapper.MapType(typeof(object)));
 				G.IL.Emit(OpCodes.Pop);
-				G._reachable = true;
+				G.IsReachable = true;
 			}
 
 			public Operand BeginCatch(Type t)
 			{
 				EndScope();
 
-				if (G._reachable)
+				if (G.IsReachable)
 					_endReachable = true;
 
 				G.IL.BeginCatchBlock(t);
 				LocalBuilder lb = G.IL.DeclareLocal(t);
 				G.IL.Emit(OpCodes.Stloc, lb);
-				G._reachable = true;
+				G.IsReachable = true;
 
 				return new _Local(G, lb);
 			}
@@ -1075,7 +1077,7 @@ namespace TriAxis.RunSharp
 				EndScope();
 
 				G.IL.BeginFaultBlock();
-				G._reachable = true;
+				G.IsReachable = true;
 				IsFinally = true;
 			}
 
@@ -1084,14 +1086,14 @@ namespace TriAxis.RunSharp
 				EndScope();
 
 				G.IL.BeginFinallyBlock();
-				G._reachable = true;
+				G.IsReachable = true;
 				IsFinally = true;
 			}
 
 			protected override void EndImpl()
 			{
 				G.IL.EndExceptionBlock();
-				G._reachable = _endReachable;
+				G.IsReachable = _endReachable;
 			}
 
 			public bool IsFinally { get; set; }
@@ -1178,7 +1180,7 @@ namespace TriAxis.RunSharp
 			    _exp = G.IL.DeclareLocal(_govType);
 				G.IL.Emit(OpCodes.Stloc, _exp);
 				G.IL.Emit(OpCodes.Br, _lbDecision);
-				G._reachable = false;
+				G.IsReachable = false;
 			}
 
 			public void Case(IConvertible value)
@@ -1196,7 +1198,7 @@ namespace TriAxis.RunSharp
 				if (duplicate)
 					throw new InvalidOperationException(Properties.Messages.ErrDuplicateCase);
 
-				if (G._reachable)
+				if (G.IsReachable)
 					G.IL.Emit(OpCodes.Br, _lbEnd);
 
 				EndScope();
@@ -1211,7 +1213,7 @@ namespace TriAxis.RunSharp
 				{
 					_cases[val] = lb;
 				}
-				G._reachable = true;
+				G.IsReachable = true;
 			}
 
 			static int Diff(IConvertible val1, IConvertible val2)
@@ -1276,7 +1278,7 @@ namespace TriAxis.RunSharp
 
 			protected override void EndImpl()
 			{
-				if (G._reachable)
+				if (G.IsReachable)
 				{
 					G.IL.Emit(OpCodes.Br, _lbEnd);
 					_endReachable = true;
@@ -1334,7 +1336,7 @@ namespace TriAxis.RunSharp
 				if (_lbDefault != _lbEnd)
 					G.IL.Emit(OpCodes.Br, _lbDefault);
 				G.IL.MarkLabel(_lbEnd);
-				G._reachable = _endReachable;
+				G.IsReachable = _endReachable;
 			}
 
 			public Label GetBreakTarget()
