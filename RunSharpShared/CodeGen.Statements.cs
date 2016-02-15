@@ -239,7 +239,10 @@ namespace TriAxis.RunSharp
 		{
             if (!IsReachable)
             {
-                throw new InvalidOperationException(Properties.Messages.ErrCodeNotReachable + ", \r\n set unreachable at \r\n" + _unreachableFrom);
+                var msg = ", \r\n set unreachable at \r\n" + _unreachableFrom;
+                if (_unreachableFrom == null)
+                    msg = ", enable " + nameof(RunSharpDebug) + "." + nameof(RunSharpDebug.CaptureStackOnUnreachable) + " for capturing stack on unreachable";
+                throw new InvalidOperationException(Properties.Messages.ErrCodeNotReachable + msg);
             }
 #if !PHONE8
             if (_cg != null && !_chainCalled && !_cg.Type.TypeBuilder.IsValueType)

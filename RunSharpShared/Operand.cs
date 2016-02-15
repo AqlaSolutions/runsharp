@@ -830,7 +830,7 @@ namespace TriAxis.RunSharp
                 string message = "RunSharp: a possible leak of operand " + ((this as ContextualOperand)?.GetInternalOperandType() ?? this.GetType()).Name
                                  + " detected, see Operand.SetNotLeaked() if it's not the case. " +
                                  "Operand creation stack trace "
-                                 + (_leakedStateStack != null ? "\r\n" + _leakedStateStack : " may be enabled with RunSharpDebug.StoreLeakingStackTrace = LeakingDetectionMode.Minimal");
+                                 + (_leakedStateStack != null ? "\r\n" + _leakedStateStack : " may be enabled with RunSharpDebug.StoreLeakingStackTrace = LeakingDetectionMode.DetectAndCaptureStack");
                 throw new InvalidOperationException(message);
             }
         }

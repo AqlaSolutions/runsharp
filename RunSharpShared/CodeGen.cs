@@ -84,7 +84,8 @@ namespace TriAxis.RunSharp
 	        private set
 	        {
 	            _isReachable = value;
-	            _unreachableFrom = value ? null :
+	            _unreachableFrom = (value || !RunSharpDebug.CaptureStackOnUnreachable) 
+                    ? null :
 #if !SILVERLIGHT
                     new StackTrace(1, true);
 #else

@@ -55,10 +55,10 @@ namespace TriAxis.RunSharp.Operands
         {
 		    OperandExtensions.SetLeakedState(this, false); 
 			g.IL.Emit(OpCodes.Ldtoken, _t);
-			g.IL.Emit(OpCodes.Call, g.TypeMapper.MapType(typeof(Type)).GetMethod("GetTypeFromHandle"));
+			g.IL.Emit(OpCodes.Call, g.TypeMapper.MapType(typeof(System.Type)).GetMethod("GetTypeFromHandle"));
 		}
 
-	    public override Type GetReturnType(ITypeMapper typeMapper) => typeMapper.MapType(typeof(Type));
+	    public override Type GetReturnType(ITypeMapper typeMapper) => typeMapper.MapType(typeof(System.Type));
 
 	    protected internal override object ConstantValue => _t;
 	}

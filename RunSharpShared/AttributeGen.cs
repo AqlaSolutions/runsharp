@@ -120,7 +120,7 @@ namespace TriAxis.RunSharp
         
         static bool IsValidAttributeParamType(Type t)
 		{
-		    return t != null && (t.IsPrimitive || t.IsEnum || Helpers.IsAssignableFrom(typeof(Type), t) || t.FullName == typeof(string).FullName);
+		    return t != null && (t.IsPrimitive || t.IsEnum || Helpers.IsAssignableFrom(typeof(System.Type), t) || t.FullName == typeof(string).FullName);
 		}
 
 		static bool IsSingleDimensionalZeroBasedArray(Array a)
