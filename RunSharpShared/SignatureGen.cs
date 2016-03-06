@@ -52,14 +52,12 @@ namespace TriAxis.RunSharp
 
     public abstract class SignatureGen<T> : MemberGenBase<T>, ISignatureGen where T : SignatureGen<T>
     {
-        public ITypeMapper TypeMapper { get; }
         readonly ParameterGenCollection _parameters;
         internal readonly T TypedThis;
 
         internal SignatureGen(Type returnType, ITypeMapper typeMapper)
             : base(typeMapper)
         {
-            TypeMapper = typeMapper;
             _parameters = new ParameterGenCollection(typeMapper);
             TypedThis = (T)this;
             if (returnType != null)

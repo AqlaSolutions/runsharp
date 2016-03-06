@@ -45,7 +45,7 @@ using System.Reflection.Emit;
 
 namespace TriAxis.RunSharp.Operands
 {
-    public class ContextualAssignment : ContextualOperand, IAssignmentInternal
+    public class ContextualAssignment : ContextualOperand, IAssignment
     {
         protected override void ResetLeakedStateRecursively()
         {

@@ -43,7 +43,7 @@ using System.Reflection.Emit;
 
 namespace TriAxis.RunSharp.Operands
 {
-	public class Assignment : Operand, IAssignmentInternal
+	public class Assignment : Operand, IAssignment
     {
         protected override bool DetectsLeaking => false;
 
