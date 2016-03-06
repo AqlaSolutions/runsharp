@@ -225,7 +225,9 @@ namespace TriAxis.RunSharp
                 value = null;
                 return false;
             }
+
             private readonly Attribute _attribute;
+
             public ReflectionAttributeMap(Attribute attribute)
             {
                 _attribute = attribute;

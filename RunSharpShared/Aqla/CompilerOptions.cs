@@ -47,8 +47,6 @@ using System.Reflection;
 using System.Reflection.Emit;
 #endif
 
-using System;
-
 namespace TriAxis.RunSharp
 {
     /// <summary>
@@ -76,8 +74,6 @@ namespace TriAxis.RunSharp
             }
         }
 
-        private string _imageRuntimeVersion;
-        private int _metaDataVersion;
         /// <summary>
         /// The TargetFrameworkAttribute FrameworkName value to burn into the generated assembly
         /// </summary>
@@ -96,6 +92,10 @@ namespace TriAxis.RunSharp
         public string OutputPath { get; set; }
 
 #if FEAT_IKVM
+        
+        private string _imageRuntimeVersion;
+        private int _metaDataVersion;
+
         /// <summary>
         /// The name of the container that holds the key pair.
         /// </summary>

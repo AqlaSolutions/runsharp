@@ -331,27 +331,7 @@ namespace TriAxis.RunSharp
 					}
 				}
 
-				if (sx == null || tx == null)
-					return new Ambiguous(typeMapper);
-
-				UserDefined match = null;
-
-				for (int i = 0; i < collection.Count; i++)
-				{
-					UserDefined udc = collection[i];
-					if (udc._fromType == sx && udc._toType == tx)
-					{
-						if (match != null)
-							return new Ambiguous(typeMapper);	// ambiguous match
-						else
-							match = udc;
-					}
-				}
-
-				if (match == null)
-					return new Ambiguous(typeMapper);
-
-				return match;
+			    return FindConversation_Match(collection, sx, tx, typeMapper);
 			}
 
 			public static Conversion FindExplicit(List<UserDefined> collection, Type @from, Type to, ITypeMapper typeMapper)
@@ -438,28 +418,29 @@ namespace TriAxis.RunSharp
 					}
 				}
 
-				if (sx == null || tx == null)
-					return new Ambiguous(typeMapper);
-
-				UserDefined match = null;
-
-				for (int i = 0; i < collection.Count; i++)
-				{
-					UserDefined udc = collection[i];
-					if (udc._fromType == sx && udc._toType == tx)
-					{
-						if (match != null)
-							return new Ambiguous(typeMapper);	// ambiguous match
-						else
-							match = udc;
-					}
-				}
-
-				if (match == null)
-					return new Ambiguous(typeMapper);
-				
-				return match;
+			    return FindConversation_Match(collection, sx, tx, typeMapper);
 			}
+
+		    static Conversion FindConversation_Match(List<UserDefined> collection, Type sx, Type tx, ITypeMapper typeMapper)
+		    {
+		        if (sx == null || tx == null)
+		            return new Ambiguous(typeMapper);
+
+                Conversion match = null;
+
+                for (int i = 0; i < collection.Count; i++)
+		        {
+		            UserDefined udc = collection[i];
+		            if (udc._fromType == sx && udc._toType == tx)
+		            {
+		                if (match != null)
+		                    return new Ambiguous(typeMapper); // ambiguous match
+		                match = udc;
+		            }
+		        }
+                
+		        return match ?? new Ambiguous(typeMapper);
+		    }
 		}
 		#endregion
 

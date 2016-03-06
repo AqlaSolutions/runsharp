@@ -395,36 +395,34 @@ namespace TriAxis.RunSharp
 #endregion
 
 #region Event subscription
-		public void SubscribeEvent(Operand target, string eventName, Operand handler)
+
+	    public void SubscribeEvent(Operand target, string eventName, Operand handler)
+	    {
+	        SubscribeOrUnsubscribeEvent(target, eventName, handler, true);
+	    }
+        
+	    public void UnsubscribeEvent(Operand target, string eventName, Operand handler)
 		{
-			if ((object)target == null)
-				throw new ArgumentNullException(nameof(target));
-			if ((object)handler == null)
-				throw new ArgumentNullException(nameof(handler));
+            SubscribeOrUnsubscribeEvent(target, eventName, handler, false);
+        }
 
-			IMemberInfo evt = TypeMapper.TypeInfo.FindEvent(target.GetReturnType(TypeMapper), eventName, target.IsStaticTarget);
-			MethodInfo mi = ((EventInfo)evt.Member).GetAddMethod();
-			if (!target.IsStaticTarget)
-				target.EmitGet(this);
-			handler.EmitGet(this);
-			EmitCallHelper(mi, target);
-		}
+	    void SubscribeOrUnsubscribeEvent(Operand target, string eventName, Operand handler, bool subscribe)
+	    {
+	        if ((object)target == null)
+	            throw new ArgumentNullException(nameof(target));
+	        if ((object)handler == null)
+	            throw new ArgumentNullException(nameof(handler));
 
-		public void UnsubscribeEvent(Operand target, string eventName, Operand handler)
-		{
-			if ((object)target == null)
-				throw new ArgumentNullException(nameof(target));
-			if ((object)handler == null)
-				throw new ArgumentNullException(nameof(handler));
+	        IMemberInfo evt = TypeMapper.TypeInfo.FindEvent(target.GetReturnType(TypeMapper), eventName, target.IsStaticTarget);
+	        var eventInfo = (EventInfo)evt.Member;
+	        MethodInfo mi = subscribe ? eventInfo.GetAddMethod() : eventInfo.GetRemoveMethod();
+	        if (!target.IsStaticTarget)
+	            target.EmitGet(this);
+	        handler.EmitGet(this);
+	        EmitCallHelper(mi, target);
+	    }
 
-			IMemberInfo evt = TypeMapper.TypeInfo.FindEvent(target.GetReturnType(TypeMapper), eventName, target.IsStaticTarget);
-			MethodInfo mi = ((EventInfo)evt.Member).GetRemoveMethod();
-			if (!target.IsStaticTarget)
-				target.EmitGet(this);
-			handler.EmitGet(this);
-			EmitCallHelper(mi, target);
-		}
-#endregion
+	    #endregion
 
 		public void InitObj(Operand target)
 		{
@@ -458,36 +456,15 @@ namespace TriAxis.RunSharp
 
 		public void Break()
 		{
-			BeforeStatement();
-
-			bool useLeave = false;
-
-			foreach (Block blk in _blocks)
-			{
-				ExceptionBlock xb = blk as ExceptionBlock;
-
-				if (xb != null)
-				{
-					if (xb.IsFinally)
-						throw new InvalidOperationException(Properties.Messages.ErrInvalidFinallyBranch);
-
-					useLeave = true;
-				}
-
-				IBreakable brkBlock = blk as IBreakable;
-
-				if (brkBlock != null)
-				{
-					IL.Emit(useLeave ? OpCodes.Leave : OpCodes.Br, brkBlock.GetBreakTarget());
-					IsReachable = false;
-					return;
-				}
-			}
-
-			throw new InvalidOperationException(Properties.Messages.ErrInvalidBreak);
+            LeaveBlock(blk => (blk as IBreakable)?.GetBreakTarget());
 		}
 
-		public void Continue()
+	    public void Continue()
+	    {
+            LeaveBlock(blk => (blk as IContinuable)?.GetContinueTarget());
+        }
+
+	    void LeaveBlock(RunSharpFunc<Block, Label?> tryGetJumpLabel)
 		{
 			BeforeStatement();
 
@@ -505,11 +482,12 @@ namespace TriAxis.RunSharp
 					useLeave = true;
 				}
 
-				IContinuable cntBlock = blk as IContinuable;
 
-				if (cntBlock != null)
-				{
-					IL.Emit(useLeave ? OpCodes.Leave : OpCodes.Br, cntBlock.GetContinueTarget());
+			    Label? label = tryGetJumpLabel(blk);
+
+			    if (label != null)
+			    {
+			        IL.Emit(useLeave ? OpCodes.Leave : OpCodes.Br, label.Value);
 					IsReachable = false;
 					return;
 				}

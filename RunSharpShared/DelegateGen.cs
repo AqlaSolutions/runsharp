@@ -53,9 +53,7 @@ namespace TriAxis.RunSharp
 		TypeGen _delegateType;
 		List<AttributeGen> _customAttributes;
 	    readonly TypeGen _owner2;
-
-	    public ITypeMapper TypeMapper => _owner != null ? _owner.TypeMapper : _owner2.TypeMapper;
-
+        
 	    public DelegateGen(AssemblyGen owner, string name, Type returnType, TypeAttributes attrs)
 			: base(returnType, owner.TypeMapper)
 		{
