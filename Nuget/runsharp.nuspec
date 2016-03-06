@@ -3,7 +3,7 @@
   <metadata>
     <id>aqla.runsharp</id>
     <title>Aqla.RunSharp</title>
-    <version>0.2.0.5</version>
+    <version>1.0.0.15</version>
     <authors>Vladyslav Taranov</authors>
     <copyright>Vladyslav Taranov 2016, fork source from Stefan Simek 2009</copyright>
     <owners>Vladyslav Taranov</owners>
@@ -20,6 +20,7 @@ This package is a fork of TriAxis.RunSharp (the original is now abandoned).</des
     <tags>runsharp reflection reflection.emit compilation IKVM aqla aqlasolutions IL</tags>
     <language>en-US</language>
     <releaseNotes>
+* 1.0.0.15 - added nullables support, multiple improvements
 * 0.2.0.5 - operand leaking detection
 * 0.2.0.4 - added support for Silverlight 4
 * 0.2.0.3 - added support for Windows Phone 8
