@@ -701,37 +701,13 @@ namespace TriAxis.RunSharp
             ThrowIfOperandNull(left, right);
             return OperandExtensions.SetLeakedState(new ContextualOperand((Operand)left % (Operand)right, left?.TypeMapper ?? right.TypeMapper), true);
         }
-
-        public static ContextualOperand operator &(ContextualOperand left, Operand right)
-        {
-            ThrowIfOperandNull(left);
-            return OperandExtensions.SetLeakedState(new ContextualOperand((Operand)left & right, left.TypeMapper), true);
-        }
-
-        public static ContextualOperand operator &(Operand right, ContextualOperand left)
-        {
-            ThrowIfOperandNull(left);
-            return OperandExtensions.SetLeakedState(new ContextualOperand(right & (Operand)left, left.TypeMapper), true);
-        }
-
+        
         public static ContextualOperand operator &(ContextualOperand left, ContextualOperand right)
         {
             ThrowIfOperandNull(left, right);
             return OperandExtensions.SetLeakedState(new ContextualOperand((Operand)left & (Operand)right, left?.TypeMapper ?? right.TypeMapper), true);
         }
-
-        public static ContextualOperand operator |(ContextualOperand left, Operand right)
-        {
-            ThrowIfOperandNull(left);
-            return OperandExtensions.SetLeakedState(new ContextualOperand((Operand)left | right, left.TypeMapper), true);
-        }
-
-        public static ContextualOperand operator |(Operand right, ContextualOperand left)
-        {
-            ThrowIfOperandNull(left);
-            return OperandExtensions.SetLeakedState(new ContextualOperand(right | (Operand)left, left.TypeMapper), true);
-        }
-
+        
         public static ContextualOperand operator |(ContextualOperand left, ContextualOperand right)
         {
             ThrowIfOperandNull(left, right);
