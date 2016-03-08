@@ -82,9 +82,15 @@ namespace TriAxis.RunSharp.Operands
 				g.EmitLdelemHelper(GetReturnType(g.TypeMapper));
 			}
 			else
-			{
-				throw new NotImplementedException();
-			}
+            {
+                g.EmitCallHelper(
+                    (MethodBase)g.TypeMapper.TypeInfo.FindMethod(
+                        _array.GetReturnType(g.TypeMapper),
+                        "Get",
+                        _indexes,
+                        false).Method.Member,
+                    _array);
+            }
 		}
 
 	    protected internal override void EmitSet(CodeGen g, Operand value, bool allowExplicitConversion)
@@ -92,15 +98,22 @@ namespace TriAxis.RunSharp.Operands
 		    OperandExtensions.SetLeakedState(this, false); 
 			LoadArrayAndIndexes(g);
 
-			if (_indexes.Length == 1)
-			{
-				g.EmitStelemHelper(GetReturnType(g.TypeMapper), value, allowExplicitConversion);
-			}
-			else
-			{
-				throw new NotImplementedException();
-			}
-		}
+	        if (_indexes.Length == 1)
+	        {
+	            g.EmitStelemHelper(GetReturnType(g.TypeMapper), value, allowExplicitConversion);
+	        }
+	        else
+	        {
+                g.EmitGetHelper(value, GetReturnType(g.TypeMapper), allowExplicitConversion);
+	            g.EmitCallHelper(
+	                (MethodBase)g.TypeMapper.TypeInfo.FindMethod(
+	                    _array.GetReturnType(g.TypeMapper),
+	                    "Set",
+	                    ArrayUtils.Combine(_indexes, value),
+	                    false).Method.Member,
+	                _array);
+	        }
+	    }
 
 		protected internal override void EmitAddressOf(CodeGen g)
 		{

@@ -445,8 +445,9 @@ namespace TriAxis.RunSharp
             MethodInfo mi = mth as MethodInfo;
             if (mi != null)
             {
-                bool suppressVirtual = ((object)target != null && target.SuppressVirtual) || mi.IsStatic || (((object)target != null) && target.GetReturnType(TypeMapper).IsValueType && !mi.IsVirtual);
-
+                bool suppressVirtual = ((object)target != null && target.SuppressVirtual) || mi.IsStatic || (((object)target != null) 
+                    && (target.GetReturnType(TypeMapper).IsValueType|| target.GetReturnType(TypeMapper).IsArray) && !mi.IsVirtual);
+                
                 if (!suppressVirtual && (object)target != null && target.GetReturnType(TypeMapper).IsValueType && mi.IsVirtual)
                 {
                     IL.Emit(OpCodes.Constrained, target.GetReturnType(TypeMapper));
