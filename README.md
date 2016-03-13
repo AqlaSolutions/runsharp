@@ -47,4 +47,4 @@ For more examples please see tests.
 
 * .NET 2.0 and higher (also IKVM version available)
 * Windows Phone 8
-* Silverlight 4
+* Silverlight 5
