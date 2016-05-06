@@ -25,6 +25,8 @@
 
     <MSBuild Projects="@(ProjectToBuild)" Targets="Rebuild" Properties="Configuration=Release" BuildInParallel="true"/>
 
+    <Exec Command="tools\AOTCompatlyzer.exe &quot;RunSharp\bin\Release\RunSharp.dll&quot;"/>
+
    <ItemGroup>
      <Net20Files Include="RunSharp\bin\Release\RunSharp.*"/>
      <Net20Files Include="LICENSE"/>
@@ -40,8 +42,6 @@
      <PortableFiles Include="LICENSE"/>
    </ItemGroup>
       
-    <Exec Command="tools\AOTCompatlyzer.exe &quot;RunSharp\bin\Release\RunSharp.dll&quot;"/>
-
     <Copy SourceFiles="@(Net20Files)" DestinationFolder="$(NugetDirectory)\net20"/>
     <Copy SourceFiles="@(Net20Files)" DestinationFolder="$(ZipDirectory)\net20"/>
 
