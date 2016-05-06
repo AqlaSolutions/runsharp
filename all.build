@@ -28,7 +28,7 @@
    <ItemGroup>
      <Net20Files Include="RunSharp\bin\Release\RunSharp.*"/>
      <Net20Files Include="LICENSE"/>
-     <IKVMFiles Include="RunSharpIKVM\bin\Release\RunSharpIKVM.*"/>
+     <IKVMFiles Include="RunSharpIKVM\bin\Release\RunSharp.*"/>
      <IKVMFiles Include="RunSharpIKVM\bin\Release\IKVM.Reflection.*"/>
      <IKVMFiles Include="LICENSE"/>
      <IKVMFiles Include="lib\IKVM-LICENSE"/>
@@ -43,24 +43,22 @@
 
     <Copy SourceFiles="@(Net20Files)" DestinationFolder="$(NugetDirectory)\net20"/>
     <Copy SourceFiles="@(Net20Files)" DestinationFolder="$(ZipDirectory)\net20"/>
-    <Copy SourceFiles="@(IKVMFiles)" DestinationFolder="$(NugetDirectory)\net20"/>
-    <Copy SourceFiles="@(IKVMFiles)" DestinationFolder="$(ZipDirectory)\net20"/>
+
+    <Copy SourceFiles="@(IKVMFiles)" DestinationFolder="$(NugetDirectory)\ikvm-net20+"/>
+    <Copy SourceFiles="@(IKVMFiles)" DestinationFolder="$(ZipDirectory)\ikvm-net20+"/>
 
     <Copy SourceFiles="@(Net20Files)" DestinationFolder="$(NugetDirectory)\net30"/>
-    <Copy SourceFiles="@(IKVMFiles)" DestinationFolder="$(NugetDirectory)\net30"/>
-
     <Copy SourceFiles="@(Net20Files)" DestinationFolder="$(NugetDirectory)\net35"/>
-    <Copy SourceFiles="@(IKVMFiles)" DestinationFolder="$(NugetDirectory)\net35"/>
 
     <Copy SourceFiles="@(WP8Files)" DestinationFolder="$(NugetDirectory)\windowsphone8"/>
     <Copy SourceFiles="@(WP8Files)" DestinationFolder="$(ZipDirectory)\windowsphone8"/>
 
     <Copy SourceFiles="@(SilverlightFiles)" DestinationFolder="$(NugetDirectory)\sl5"/>
     <Copy SourceFiles="@(SilverlightFiles)" DestinationFolder="$(ZipDirectory)\sl5"/>
-
+<!-- 
     <Copy SourceFiles="@(PortableFiles)" DestinationFolder="$(NugetDirectory)\portable-sl5+net40+wp81+windows8+android+ios"/>
     <Copy SourceFiles="@(PortableFiles)" DestinationFolder="$(ZipDirectory)\portable-sl5+net40+wp81+windows8+android+ios"/>
-
+-->
 
     <Exec Command="packages\NuGet.CommandLine.2.0.40000\tools\NuGet.exe pack $(NugetDirectory)\..\runsharp.nuspec"/>
     
