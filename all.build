@@ -40,6 +40,7 @@
      <PortableFiles Include="LICENSE"/>
    </ItemGroup>
       
+    <Exec Command="tools\AOTCompatlyzer.exe &quot;RunSharp\bin\Release\RunSharp.dll&quot;"/>
 
     <Copy SourceFiles="@(Net20Files)" DestinationFolder="$(NugetDirectory)\net20"/>
     <Copy SourceFiles="@(Net20Files)" DestinationFolder="$(ZipDirectory)\net20"/>
