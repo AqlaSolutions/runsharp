@@ -12,6 +12,13 @@
 
 It's a layer above the standard .NET Reflection.Emit API, allowing to generate/compile dynamic code at runtime very quickly and efficiently (unlike using CodeDOM and invoking the C# compiler).
 
+Platforms:
+
+* .NET 2.0 and higher (also IKVM version available)
+* Windows Phone 8
+* Silverlight 5
+* Xamarin.Android
+
 The IKVM version has also an ability to emit NET 2.0 and .NET 4.0 assemblies (while running on, for example, .NET 3.0).
 
 This package is a fork of TriAxis.RunSharp (the original is now abandoned).</description>
