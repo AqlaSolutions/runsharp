@@ -36,7 +36,7 @@ public static class PEVerify
     {
         string sdkRootPath;
 #if ANDROID
-        sdkRootPath = Environment.GetEnvironmentVariable(Environment.Is64BitOperatingSystem ? "ProgramFiles" : "ProgramFiles(x86)");
+        sdkRootPath = Environment.GetEnvironmentVariable(!Environment.Is64BitOperatingSystem ? "ProgramFiles" : "ProgramFiles(x86)");
         sdkRootPath += @"\Microsoft SDKs\Windows\v8.1A";
 #else
         sdkRootPath = Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Microsoft SDKs\\Windows\\v8.1A", "InstallationFolder", null) as string;
