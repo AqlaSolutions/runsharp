@@ -4,20 +4,21 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D6F74455-A53E-4E64-92C9-60C3803FB02F}</ProjectGuid>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{6B5DE7F1-94F2-4AD6-8431-7188B1A142DD}</ProjectGuid>
+    <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RunSharp.Tests.WP8</RootNamespace>
-    <AssemblyName>RunSharp.Tests.WP8</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
+    <RootNamespace>RunSharp.Tests.Android</RootNamespace>
+    <AssemblyName>RunSharp.Tests.Android</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;PHONE8</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;ANDROID</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -25,54 +26,35 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;PHONE8</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="IKVM.Reflection">
-      <HintPath>..\lib\IKVM.Reflection.dll</HintPath>
-    </Reference>
     <Reference Include="nunit.framework, Version=2.6.2.12296, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Net" />
+    <Reference Include="mscorlib" />
+    <Reference Include="system" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\RunSharp.TestsShared\Infrastructure\ConsoleTester.cs">
-      <Link>ConsoleTester.cs</Link>
-    </Compile>
-    <Compile Include="..\RunSharp.TestsShared\Tests\DynamicMethodTest.cs">
-      <Link>DynamicMethodTest.cs</Link>
-    </Compile>
-    <Compile Include="..\RunSharp.TestsShared\Tests\TestBase.cs">
-      <Link>TestBase.cs</Link>
-    </Compile>
-    <Compile Include="..\RunSharp.TestsShared\Tests\TestResources.cs">
-      <Link>TestResources.cs</Link>
-    </Compile>
-    <Compile Include="..\RunSharp.TestsShared\Tests\TestSetup.cs">
-      <Link>TestSetup.cs</Link>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\RunSharpWP8\RunSharp_WP8.csproj">
-      <Project>{9fc6ca0f-d5d7-4c23-83a2-e910e5ba4f6f}</Project>
-      <Name>RunSharp_WP8</Name>
+    <ProjectReference Include="..\RunSharpAndroid\RunSharp_Android.csproj">
+      <Project>{00009fc6-0000-0000-0000-000000000000}</Project>
+      <Name>RunSharp_Android</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
+  <Import Project="..\RunSharp.TestsShared\RunSharp.Tests.projitems" Label="Shared" />
+  <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

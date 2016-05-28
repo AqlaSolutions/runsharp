@@ -38,8 +38,8 @@
      <WP8Files Include="LICENSE"/>
      <SilverlightFiles Include="RunSharpSilverlight\bin\Release\RunSharp.*"/>
      <SilverlightFiles Include="LICENSE"/>
-     <PortableFiles Include="RunSharpPortable\bin\Release\RunSharp.*"/>
-     <PortableFiles Include="LICENSE"/>
+     <AndroidFiles Include="RunSharpAndroid\bin\Release\RunSharp.*"/>
+     <AndroidFiles Include="LICENSE"/>
    </ItemGroup>
       
     <Copy SourceFiles="@(Net20Files)" DestinationFolder="$(NugetDirectory)\net20"/>
@@ -56,10 +56,9 @@
 
     <Copy SourceFiles="@(SilverlightFiles)" DestinationFolder="$(NugetDirectory)\sl5"/>
     <Copy SourceFiles="@(SilverlightFiles)" DestinationFolder="$(ZipDirectory)\sl5"/>
-<!-- 
-    <Copy SourceFiles="@(PortableFiles)" DestinationFolder="$(NugetDirectory)\portable-sl5+net40+wp81+windows8+android+ios"/>
-    <Copy SourceFiles="@(PortableFiles)" DestinationFolder="$(ZipDirectory)\portable-sl5+net40+wp81+windows8+android+ios"/>
--->
+
+    <Copy SourceFiles="@(AndroidFiles)" DestinationFolder="$(NugetDirectory)\Xamarin.Android"/>
+    <Copy SourceFiles="@(AndroidFiles)" DestinationFolder="$(ZipDirectory)\Xamarin.Android"/>
 
     <Exec Command="packages\NuGet.CommandLine.2.0.40000\tools\NuGet.exe pack $(NugetDirectory)\..\runsharp.nuspec"/>
     

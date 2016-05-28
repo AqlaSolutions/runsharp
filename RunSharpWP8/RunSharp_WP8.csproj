@@ -59,7 +59,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>Bin\x86\Debug</OutputPath>
-    <DefineConstants>TRACE;DEBUG;FEAT_SAFE SILVERLIGHT FEAT_COMPILER PLAT_BINARYFORMATTER PHONE8</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;FEAT_SAFE FEAT_COMPILER PLAT_BINARYFORMATTER PHONE8</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
@@ -71,7 +71,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>Bin\x86\Release\</OutputPath>
-    <DefineConstants>TRACE;FEAT_SAFE SILVERLIGHT FEAT_COMPILER PLAT_BINARYFORMATTER PHONE8</DefineConstants>
+    <DefineConstants>TRACE;FEAT_SAFE FEAT_COMPILER PLAT_BINARYFORMATTER PHONE8</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
@@ -84,7 +84,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>Bin\ARM\Debug</OutputPath>
-    <DefineConstants>DEBUG;TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;WINDOWS_PHONE</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
     <DocumentationFile>bin\ARM\Debug\RunSharp.XML</DocumentationFile>

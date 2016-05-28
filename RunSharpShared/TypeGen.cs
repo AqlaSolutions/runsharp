@@ -808,7 +808,8 @@ namespace TriAxis.RunSharp
 		{
 			foreach (InterfaceImplEntry iie in _implementations)
 			{
-				if (iie.InterfaceMethod.Member == methodDeclaration)
+				if (iie.InterfaceMethod.Member == methodDeclaration
+                    && iie.InterfaceType == methodDeclaration.DeclaringType)
 				{
 					iie.Bind(methodBody);
 					return;

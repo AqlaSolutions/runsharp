@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "RunSharpShared", "RunSharpShared\RunSharpShared.shproj", "{1BE6AC53-2C95-466E-B1D2-61E31493F169}"
 EndProject
@@ -26,11 +26,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunSharp_Silverlight", "Run
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunSharp.Tests.Silverlight", "RunSharp.Tests.Silverlight\RunSharp.Tests.Silverlight.csproj", "{D6F7CA55-853F-4E68-92C9-60C0804FB02D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunSharp_Android", "RunSharpAndroid\RunSharp_Android.csproj", "{00009FC6-0000-0000-0000-000000000000}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunSharp.Tests.Android", "RunSharp.Tests.Android\RunSharp.Tests.Android.csproj", "{6B5DE7F1-94F2-4AD6-8431-7188B1A142DD}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		RunSharp.TestsShared\RunSharp.Tests.projitems*{6b5d07f1-94f2-4add-8931-7188b3a142bd}*SharedItemsImports = 4
+		RunSharp.TestsShared\RunSharp.Tests.projitems*{6b5de7f1-94f2-4ad6-8431-7188b1a142dd}*SharedItemsImports = 4
 		RunSharpShared\RunSharpShared.projitems*{9fc6ca0f-d5d7-4c23-83a2-e910e5ba4f6f}*SharedItemsImports = 4
 		RunSharpShared\RunSharpShared.projitems*{35031fc5-65e0-4f14-8dbc-a3140e940c14}*SharedItemsImports = 4
+		RunSharpShared\RunSharpShared.projitems*{00009fc6-0000-0000-0000-000000000000}*SharedItemsImports = 4
 		RunSharp.TestsShared\RunSharp.Tests.projitems*{9225df43-7709-4522-afca-f01df2bf6e83}*SharedItemsImports = 13
 		RunSharp.TestsShared\RunSharp.Tests.projitems*{d6f7ce55-853f-4e64-92c9-60c380bfb02f}*SharedItemsImports = 4
 		RunSharp.TestsShared\RunSharp.Tests.projitems*{d6f7ca55-853f-4e68-92c9-60c0804fb02d}*SharedItemsImports = 4
@@ -143,6 +149,30 @@ Global
 		{D6F7CA55-853F-4E68-92C9-60C0804FB02D}.Release|ARM.Build.0 = Release|Any CPU
 		{D6F7CA55-853F-4E68-92C9-60C0804FB02D}.Release|x86.ActiveCfg = Release|Any CPU
 		{D6F7CA55-853F-4E68-92C9-60C0804FB02D}.Release|x86.Build.0 = Release|Any CPU
+		{00009FC6-0000-0000-0000-000000000000}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00009FC6-0000-0000-0000-000000000000}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00009FC6-0000-0000-0000-000000000000}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{00009FC6-0000-0000-0000-000000000000}.Debug|ARM.Build.0 = Debug|Any CPU
+		{00009FC6-0000-0000-0000-000000000000}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{00009FC6-0000-0000-0000-000000000000}.Debug|x86.Build.0 = Debug|Any CPU
+		{00009FC6-0000-0000-0000-000000000000}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00009FC6-0000-0000-0000-000000000000}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00009FC6-0000-0000-0000-000000000000}.Release|ARM.ActiveCfg = Release|Any CPU
+		{00009FC6-0000-0000-0000-000000000000}.Release|ARM.Build.0 = Release|Any CPU
+		{00009FC6-0000-0000-0000-000000000000}.Release|x86.ActiveCfg = Release|Any CPU
+		{00009FC6-0000-0000-0000-000000000000}.Release|x86.Build.0 = Release|Any CPU
+		{6B5DE7F1-94F2-4AD6-8431-7188B1A142DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B5DE7F1-94F2-4AD6-8431-7188B1A142DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B5DE7F1-94F2-4AD6-8431-7188B1A142DD}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{6B5DE7F1-94F2-4AD6-8431-7188B1A142DD}.Debug|ARM.Build.0 = Debug|Any CPU
+		{6B5DE7F1-94F2-4AD6-8431-7188B1A142DD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6B5DE7F1-94F2-4AD6-8431-7188B1A142DD}.Debug|x86.Build.0 = Debug|Any CPU
+		{6B5DE7F1-94F2-4AD6-8431-7188B1A142DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B5DE7F1-94F2-4AD6-8431-7188B1A142DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B5DE7F1-94F2-4AD6-8431-7188B1A142DD}.Release|ARM.ActiveCfg = Release|Any CPU
+		{6B5DE7F1-94F2-4AD6-8431-7188B1A142DD}.Release|ARM.Build.0 = Release|Any CPU
+		{6B5DE7F1-94F2-4AD6-8431-7188B1A142DD}.Release|x86.ActiveCfg = Release|Any CPU
+		{6B5DE7F1-94F2-4AD6-8431-7188B1A142DD}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -158,5 +188,7 @@ Global
 		{D6F74455-A53E-4E64-92C9-60C3803FB02F} = {387B3677-5A8B-4FB5-9FE3-2FD884DCF39D}
 		{35031FC5-65E0-4F14-8DBC-A3140E940C14} = {6348A303-6A2B-463E-A43F-C0C9617CCC37}
 		{D6F7CA55-853F-4E68-92C9-60C0804FB02D} = {387B3677-5A8B-4FB5-9FE3-2FD884DCF39D}
+		{00009FC6-0000-0000-0000-000000000000} = {6348A303-6A2B-463E-A43F-C0C9617CCC37}
+		{6B5DE7F1-94F2-4AD6-8431-7188B1A142DD} = {387B3677-5A8B-4FB5-9FE3-2FD884DCF39D}
 	EndGlobalSection
 EndGlobal
