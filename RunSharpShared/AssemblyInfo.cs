@@ -57,8 +57,8 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("1.0.0.18")]
-[assembly: AssemblyFileVersion("1.0.0.18")]
+[assembly: AssemblyVersion("1.0.0.19")]
+[assembly: AssemblyFileVersion("1.0.0.19")]
 
 //[assembly: CLSCompliant(true)]
 #if !PHONE8 && !SILVERLIGHT

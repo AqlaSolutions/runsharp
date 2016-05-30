@@ -25,7 +25,7 @@
 
     <MSBuild Projects="@(ProjectToBuild)" Targets="Rebuild" Properties="Configuration=Release" BuildInParallel="true"/>
 
-    <Exec Command="tools\AOTCompatlyzer.exe &quot;RunSharp\bin\Release\RunSharp.dll&quot;"/>
+    <Exec Command="tools\AOTCompatlyzer.exe &quot;RunSharp\bin\Release\RunSharp.dll&quot; &quot;RunSharp\runsharp_key.snk&quot;"/>
 
    <ItemGroup>
      <Net20Files Include="RunSharp\bin\Release\RunSharp.*"/>
