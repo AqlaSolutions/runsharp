@@ -10,7 +10,7 @@
     <DocumentationFile>o:\Dropbox\CodeProjects\RunSharp\src\RunSharp\RunSharp.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
-    <VersionPrefix>1.0.21</VersionPrefix>
+    <VersionPrefix>1.0.22</VersionPrefix>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
