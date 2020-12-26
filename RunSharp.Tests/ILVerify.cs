@@ -1,6 +1,8 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // adapted https://github.com/dotnet/runtime/blob/10381a2cdc33860f0dc649b24cbb703d23b9ea33/src/coreclr/tools/ILVerify/Program.cs
+
+#if NET5_0
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -210,3 +212,4 @@ namespace ILVerify
     }
 
 }
+#endif

@@ -10,7 +10,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RunSharp", "RunSharp\RunSha
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "RunSharp.TestsShared", "RunSharp.TestsShared\RunSharp.TestsShared.shproj", "{9225DF43-7709-4522-AFCA-F01DF2BF6E83}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunSharp.Tests.Standard", "RunSharp.Tests.Standard\RunSharp.Tests.Standard.csproj", "{6B5D07F1-94F2-4ADD-8931-7188B3A142BD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunSharp.Tests", "RunSharp.Tests\RunSharp.Tests.csproj", "{6B5D07F1-94F2-4ADD-8931-7188B3A142BD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunSharp.Tests.IKVM", "RunSharp.Tests.IKVM\RunSharp.Tests.IKVM.csproj", "{D6F7CE55-853F-4E64-92C9-60C380BFB02F}"
 EndProject
@@ -21,14 +21,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{6348
 		all.build = all.build
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RunSharp.Tests.Net5", "RunSharp.Tests.Net5\RunSharp.Tests.Net5.csproj", "{27C94B12-F7CD-48A4-98CC-5D7F4BBAE158}"
-EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		RunSharpShared\RunSharpShared.projitems*{08f134ae-48e8-4a35-9dc7-2f31eaf4a66f}*SharedItemsImports = 5
 		RunSharpShared\RunSharpShared.projitems*{1be6ac53-2c95-466e-b1d2-61e31493f169}*SharedItemsImports = 13
-		RunSharp.TestsShared\RunSharp.Tests.projitems*{27c94b12-f7cd-48a4-98cc-5d7f4bbae158}*SharedItemsImports = 5
-		RunSharp.TestsShared\RunSharp.Tests.projitems*{6b5d07f1-94f2-4add-8931-7188b3a142bd}*SharedItemsImports = 4
+		RunSharp.TestsShared\RunSharp.Tests.projitems*{6b5d07f1-94f2-4add-8931-7188b3a142bd}*SharedItemsImports = 5
 		RunSharp.TestsShared\RunSharp.Tests.projitems*{9225df43-7709-4522-afca-f01df2bf6e83}*SharedItemsImports = 13
 		RunSharpShared\RunSharpShared.projitems*{c835bb75-7955-4315-b52c-fa59e25219f4}*SharedItemsImports = 4
 		RunSharp.TestsShared\RunSharp.Tests.projitems*{d6f7ce55-853f-4e64-92c9-60c380bfb02f}*SharedItemsImports = 4
@@ -90,18 +87,6 @@ Global
 		{D6F7CE55-853F-4E64-92C9-60C380BFB02F}.Release|ARM.Build.0 = Release|Any CPU
 		{D6F7CE55-853F-4E64-92C9-60C380BFB02F}.Release|x86.ActiveCfg = Release|Any CPU
 		{D6F7CE55-853F-4E64-92C9-60C380BFB02F}.Release|x86.Build.0 = Release|Any CPU
-		{27C94B12-F7CD-48A4-98CC-5D7F4BBAE158}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{27C94B12-F7CD-48A4-98CC-5D7F4BBAE158}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{27C94B12-F7CD-48A4-98CC-5D7F4BBAE158}.Debug|ARM.ActiveCfg = Debug|Any CPU
-		{27C94B12-F7CD-48A4-98CC-5D7F4BBAE158}.Debug|ARM.Build.0 = Debug|Any CPU
-		{27C94B12-F7CD-48A4-98CC-5D7F4BBAE158}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{27C94B12-F7CD-48A4-98CC-5D7F4BBAE158}.Debug|x86.Build.0 = Debug|Any CPU
-		{27C94B12-F7CD-48A4-98CC-5D7F4BBAE158}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{27C94B12-F7CD-48A4-98CC-5D7F4BBAE158}.Release|Any CPU.Build.0 = Release|Any CPU
-		{27C94B12-F7CD-48A4-98CC-5D7F4BBAE158}.Release|ARM.ActiveCfg = Release|Any CPU
-		{27C94B12-F7CD-48A4-98CC-5D7F4BBAE158}.Release|ARM.Build.0 = Release|Any CPU
-		{27C94B12-F7CD-48A4-98CC-5D7F4BBAE158}.Release|x86.ActiveCfg = Release|Any CPU
-		{27C94B12-F7CD-48A4-98CC-5D7F4BBAE158}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -113,7 +98,6 @@ Global
 		{9225DF43-7709-4522-AFCA-F01DF2BF6E83} = {387B3677-5A8B-4FB5-9FE3-2FD884DCF39D}
 		{6B5D07F1-94F2-4ADD-8931-7188B3A142BD} = {387B3677-5A8B-4FB5-9FE3-2FD884DCF39D}
 		{D6F7CE55-853F-4E64-92C9-60C380BFB02F} = {387B3677-5A8B-4FB5-9FE3-2FD884DCF39D}
-		{27C94B12-F7CD-48A4-98CC-5D7F4BBAE158} = {387B3677-5A8B-4FB5-9FE3-2FD884DCF39D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {32E21FBF-9FCF-495A-B516-242725E24E21}

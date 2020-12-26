@@ -24,18 +24,13 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 using NUnit.Framework;
-#if NET5_0
-using SetUp = NUnit.Framework.OneTimeSetUpAttribute;
-#else
-using SetUp = NUnit.Framework.SetUpAttribute;
-#endif
 
 namespace TriAxis.RunSharp.Tests
 {
     [SetUpFixture]
     public class TestSetup
     {
-        [@SetUp]
+        [OneTimeSetUpAttribute]
         public void Setup()
         {
             ConsoleTester.Initialize();
