@@ -11,5 +11,6 @@
 
 /.vs/
 /Package
+/packages
 /nuget/lib
 /aqla.runsharp.*.nupkg

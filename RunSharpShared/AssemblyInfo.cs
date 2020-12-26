@@ -57,11 +57,11 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("1.0.0.19")]
-[assembly: AssemblyFileVersion("1.0.0.19")]
+[assembly: AssemblyVersion("1.0.0.20")]
+[assembly: AssemblyFileVersion("1.0.0.20")]
 
 //[assembly: CLSCompliant(true)]
-#if !PHONE8 && !SILVERLIGHT
+#if !PHONE8 && !SILVERLIGHT && !NET5_0 && !NETSTANDARD
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, Execution = true)]
 [assembly: ReflectionPermission(SecurityAction.RequestMinimum, ReflectionEmit = true)]
 #endif

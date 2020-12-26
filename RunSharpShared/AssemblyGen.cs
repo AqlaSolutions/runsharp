@@ -246,10 +246,15 @@ namespace TriAxis.RunSharp
         public AssemblyGen(string name, CompilerOptions options, ITypeMapper typeMapper = null)
         {
             Initialize(AppDomain.CurrentDomain, name,
+#if NET5_0 || NETSTANDARD
+                AssemblyBuilderAccess.RunAndCollect,
+#else
+
 #if !SILVERLIGHT
                 !Helpers.IsNullOrEmpty(options.OutputPath) ? AssemblyBuilderAccess.RunAndSave : 
 #endif
                 AssemblyBuilderAccess.Run, 
+#endif
                 options, typeMapper);
 
         }
@@ -300,6 +305,8 @@ namespace TriAxis.RunSharp
 
 #if SILVERLIGHT
             bool save = false;
+#elif NET5_0 || NETSTANDARD
+            bool save = options.OutputPath != null;
 #else
             bool save = (access & AssemblyBuilderAccess.Save) != 0;
 #endif
@@ -309,6 +316,7 @@ namespace TriAxis.RunSharp
             Universe = universe;
 
             TypeMapper = typeMapper;
+
             _access = access;
 
             if (Helpers.IsNullOrEmpty(assemblyName))
@@ -325,10 +333,14 @@ namespace TriAxis.RunSharp
             an.Name = assemblyName;
 
             AssemblyBuilder =
+#if NET5_0 || NETSTANDARD
+                System.Reflection.Emit.AssemblyBuilder.DefineDynamicAssembly(an, access);
+#else
 #if !SILVERLIGHT
                 path != null ? Universe.DefineDynamicAssembly(an, access, Path.GetDirectoryName(path)) :
 #endif
-                    Universe.DefineDynamicAssembly(an, access);
+            Universe.DefineDynamicAssembly(an, access);
+#endif
 #if FEAT_IKVM
             if (!Helpers.IsNullOrEmpty(options.KeyFile))
             {
@@ -348,16 +360,15 @@ namespace TriAxis.RunSharp
             }
             ModuleBuilder = AssemblyBuilder.DefineDynamicModule(moduleName, path, options.SymbolInfo);
 #else
+#if !NET5_0 && !SILVERLIGHT && !NETSTANDARD
             if (save)
             {
-#if !SILVERLIGHT
                 ModuleBuilder = AssemblyBuilder.DefineDynamicModule(moduleName, Path.GetFileName(path));
-#else
-                throw new NotSupportedException("Can't save on this platform");
-#endif
             }
             else
-                ModuleBuilder = AssemblyBuilder.DefineDynamicModule(moduleName);
+
+#endif
+            ModuleBuilder = AssemblyBuilder.DefineDynamicModule(moduleName);
 #endif
         }
 
@@ -365,7 +376,10 @@ namespace TriAxis.RunSharp
         public void Save()
 		{
 			Complete();
-#if !SILVERLIGHT
+#if NET5_0 || NETSTANDARD
+            new Lokad.ILPack.AssemblyGenerator().GenerateAssembly(AssemblyBuilder, _fileName);
+
+#elif !SILVERLIGHT
             if ((_access & AssemblyBuilderAccess.Save) != 0)
 #if FEAT_IKVM
                 AssemblyBuilder.Save(_fileName);

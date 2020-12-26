@@ -3,9 +3,9 @@
   <metadata>
     <title>Aqla.RunSharp IL generator</title>
     <id>aqla.runsharp</id>
-    <version>1.0.0.19</version>
+    <version>1.0.0.20</version>
     <authors>Vladyslav Taranov</authors>
-    <copyright>Vladyslav Taranov 2016, fork source from Stefan Simek 2009</copyright>
+    <copyright>Vladyslav Taranov 2020, fork source from Stefan Simek 2009</copyright>
     <owners>Vladyslav Taranov</owners>
     <summary>Runtime IL generator based on Reflection.Emit and IKVM which allows you to emit IL in a way similar to writing normal C# code.</summary>
     <description>RunSharp is a runtime IL generator based on Reflection.Emit and IKVM which allows you to emit IL in a way similar to writing normal C# code.
@@ -14,10 +14,10 @@ It's a layer above the standard .NET Reflection.Emit API, allowing to generate/c
 
 Platforms:
 
-* .NET 2.0 and higher (also IKVM version available)
+* .NET Standard 2.1 (including .NET Core 3 and .NET 5)
+* .NET 2.0 and higher including .NET 4 (also IKVM version available)
 * Windows Phone 8
 * Silverlight 5
-* Xamarin.Android
 
 The IKVM version has also an ability to emit NET 2.0 and .NET 4.0 assemblies (while running on, for example, .NET 3.0).
 
@@ -27,6 +27,7 @@ This package is a fork of TriAxis.RunSharp (the original is now abandoned).</des
     <tags>runsharp reflection reflection.emit compilation IKVM aqla aqlasolutions IL</tags>
     <language>en-US</language>
     <releaseNotes>
+* 1.0.0.20 - added .NET standard 2.1 support and .NET 5 tests, removed separate Xamarin.Android (use .NET Standard build instead)
 * 1.0.0.18 - fix for explicit interface implementation, added Android platform
 * 1.0.0.17 - IKVM reference won't be added for nuget installations
 * 1.0.0.16 - multidimensional array access, fix for AND/OR operands

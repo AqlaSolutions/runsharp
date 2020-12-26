@@ -827,11 +827,13 @@ namespace TriAxis.RunSharp
             // yes, we throw exception in finalizer because we need to alert
             if (LeakedState && _detectsLeaks)
             {
-                string message = "RunSharp: a possible leak of operand " + ((this as ContextualOperand)?.GetInternalOperandType() ?? this.GetType()).Name
+				string message = "RunSharp: a possible leak of operand " + ((this as ContextualOperand)?.GetInternalOperandType() ?? this.GetType()).Name
                                  + " detected, see Operand.SetNotLeaked() if it's not the case. " +
                                  "Operand creation stack trace "
                                  + (_leakedStateStack != null ? "\r\n" + _leakedStateStack : " may be enabled with RunSharpDebug.StoreLeakingStackTrace = LeakingDetectionMode.DetectAndCaptureStack");
-                throw new InvalidOperationException(message);
+                RunSharpDebug.StoreLeak(message);
+                if (RunSharpDebug.LeakingDetection != LeakingDetectionMode.StoreAndContinue)
+                    throw new InvalidOperationException(message);
             }
         }
 
@@ -862,7 +864,7 @@ namespace TriAxis.RunSharp
                 if (value)
                 {
                     _leakedState = true;
-                    if (_detectsLeaks && RunSharpDebug.LeakingDetection != LeakingDetectionMode.Minimal)
+                    if (_detectsLeaks && (RunSharpDebug.LeakingDetection == LeakingDetectionMode.DetectAndCaptureStack || RunSharpDebug.LeakingDetection == LeakingDetectionMode.DetectAndCaptureStackWithFiles))
 #if SILVERLIGHT
                         _leakedStateStack = new StackTrace();
 #else

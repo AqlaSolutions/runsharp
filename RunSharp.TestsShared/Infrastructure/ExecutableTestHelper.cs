@@ -36,6 +36,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading;
+using NUnit.Framework;
 #if FEAT_IKVM
 using IKVM.Reflection;
 #endif
@@ -62,6 +63,7 @@ namespace TriAxis.RunSharp
 
             Type declType = methodInfo.DeclaringType;
             var r = declType.Namespace + "." + declType.Name.TrimStart('_') + "." + methodInfo.Name;
+            r = r.Replace(">", "").Replace("<", "");
             return r.IndexOfAny(Path.GetInvalidPathChars()) == -1 ? r : declType.Namespace + "." + Guid.NewGuid();
         }
 
@@ -116,10 +118,15 @@ namespace TriAxis.RunSharp
             Console.WriteLine("=== RUN {0}", testName);
 
             string[] testArguments = GetTestArguments(test);
+
+            bool useReflectionEntryPoint = !exe;
+#if NET5_0
+            useReflectionEntryPoint = true;
+#endif
 #if !FEAT_IKVM
-            if (!exe)
+            if (useReflectionEntryPoint)
             {
-#if SILVERLIGHT
+#if SILVERLIGHT || NET5_0
                 Type entryType = asm.GetAssembly().DefinedTypes.First(t => t.GetMethod("Main", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic) != null);
 #else
                 Type entryType = ((TypeBuilder)asm.GetAssembly().EntryPoint.DeclaringType).CreateType();
@@ -138,7 +145,7 @@ namespace TriAxis.RunSharp
             {
                 try
                 {
-                    AppDomain.CurrentDomain.ExecuteAssembly(exeFilePath, null, testArguments);
+                    AppDomain.CurrentDomain.ExecuteAssembly(exeFilePath, testArguments);
                 }
                 catch (System.BadImageFormatException)
                 {

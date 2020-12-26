@@ -1,0 +1,500 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>RunSharp</name>
+    </assembly>
+    <members>
+        <member name="T:Properties.Messages">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrAmbiguousBinding">
+            <summary>
+              Looks up a localized string similar to Ambiguous binding.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrAmbiguousConversion">
+            <summary>
+              Looks up a localized string similar to Conversion from &apos;{0}&apos; to &apos;{1}&apos; is ambiguous.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrAmbiguousIndexerName">
+            <summary>
+              Looks up a localized string similar to Indexers for the type cannot have different names.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrAmbiguousSwitchExpression">
+            <summary>
+              Looks up a localized string similar to The switch type cannot be determined unambiguously.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrArgCountMismatch">
+            <summary>
+              Looks up a localized string similar to Argument count mismatch.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrArgIndexOutOfRange">
+            <summary>
+              Looks up a localized string similar to Index must be greater than 0 and less than the number of arguments.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrArgMustImplementIConvertible">
+            <summary>
+              Looks up a localized string similar to Argument must implement IConvertible.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrArrayOnly">
+            <summary>
+              Looks up a localized string similar to This method can be used only on an array operand.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrAsmMissingSaveFile">
+            <summary>
+              Looks up a localized string similar to File name must be set when assembly is configured for saving.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrAttributeMultiField">
+            <summary>
+              Looks up a localized string similar to Value for attribute field &apos;{0}&apos; has already been defined.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrAttributeMultiProperty">
+            <summary>
+              Looks up a localized string similar to Value for attribute property &apos;{0}&apos; has already been defined.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrAttributeReadOnlyProperty">
+            <summary>
+              Looks up a localized string similar to Cannot set value for read-only attribute property &apos;{0}&apos;.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrByRefTypeMismatch">
+            <summary>
+              Looks up a localized string similar to Argument passed by reference must have exactly the same type as the formal argument.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrCodeNotReachable">
+            <summary>
+              Looks up a localized string similar to Cannot emit unreachable code.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrCodeStaticThis">
+            <summary>
+              Looks up a localized string similar to Cannot use This() in a static method.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrConstructorAlreadyChained">
+            <summary>
+              Looks up a localized string similar to Specific chained constructor can be invoked only as the first statement in a constructor.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrConstructorOnlyCall">
+            <summary>
+              Looks up a localized string similar to This method can be called only for instance constructor code.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrCustomEventFieldAccess">
+            <summary>
+              Looks up a localized string similar to Event with custom accessors cannot be accessed as a field.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrDuplicateCase">
+            <summary>
+              Looks up a localized string similar to The case with same value has already been defined.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrDynamicMethodInstance">
+            <summary>
+              Looks up a localized string similar to This method cannot be used on an instance method DynamicMethodGen.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrDynamicMethodNoCustomAttrs">
+            <summary>
+              Looks up a localized string similar to Dynamic methods cannot have custom attributes.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrDynamicMethodNotCompleted">
+            <summary>
+              Looks up a localized string similar to The DynamicMethod hasn&apos;t been completed yet.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrDynamicMethodNotInstance">
+            <summary>
+              Looks up a localized string similar to This method can be used only on an instance method DynamicMethodGen.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrElseWithoutIf">
+            <summary>
+              Looks up a localized string similar to Else() called without a matching If().
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrIndexCountMismatch">
+            <summary>
+              Looks up a localized string similar to Index count mismatch.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrInterfaceNoConversion">
+            <summary>
+              Looks up a localized string similar to Interface cannot define conversion operators.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrInterfaceNoCtor">
+            <summary>
+              Looks up a localized string similar to Interface cannot define a constructor.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrInterfaceNoExplicitImpl">
+            <summary>
+              Looks up a localized string similar to Interface cannot contain explicit interface implementations.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrInterfaceNoField">
+            <summary>
+              Looks up a localized string similar to Interface cannot have fields.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrInterfaceNoNested">
+            <summary>
+              Looks up a localized string similar to Interface cannot contain nested types.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrInterfaceNotImplemented">
+            <summary>
+              Looks up a localized string similar to Method &apos;{1}&apos; of interface &apos;{0}&apos; is not implemented.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrInvalidBreak">
+            <summary>
+              Looks up a localized string similar to Break() called outside of a loop or switch.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrInvalidConditionalVariants">
+            <summary>
+              Looks up a localized string similar to ifTrue and ifFalse must be of the same type.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrInvalidContinue">
+            <summary>
+              Looks up a localized string similar to Continue() called outside of a loop.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrInvalidConversion">
+            <summary>
+              Looks up a localized string similar to Cannot convert type from &apos;{0}&apos; to &apos;{1}&apos;.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrInvalidDelegateType">
+            <summary>
+              Looks up a localized string similar to Invalid delegate type.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrInvalidEventAccessors">
+            <summary>
+              Looks up a localized string similar to Either none or both &apos;Add&apos; and &apos;Remove&apos; event accessors must be defined.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrInvalidExceptionStatement">
+            <summary>
+              Looks up a localized string similar to Statement can be used only in an exception block.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrInvalidFieldContext">
+            <summary>
+              Looks up a localized string similar to The field is accessed from an invalid context.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrInvalidFinallyBranch">
+            <summary>
+              Looks up a localized string similar to Cannot transfer control out of a finally handler.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrInvalidMethodBase">
+            <summary>
+              Looks up a localized string similar to The provided method must be either a MethodInfo or a ConstructorInfo.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrInvalidOperand">
+            <summary>
+              Looks up a localized string similar to Invalid operand.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrInvalidOperation">
+            <summary>
+              Looks up a localized string similar to Cannot apply operator &apos;{0}&apos; to operands of type &apos;{1}&apos;.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrInvalidPropertyContext">
+            <summary>
+              Looks up a localized string similar to The property is accessed from an invalid context.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrInvalidSwitchStatement">
+            <summary>
+              Looks up a localized string similar to Statement can be used only in a switch block.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrInvalidVariableContext">
+            <summary>
+              Looks up a localized string similar to The variable is accessed from an invalid context.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrInvalidVariableScope">
+            <summary>
+              Looks up a localized string similar to The variable is accessed from an invalid scope.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrMethodMustReturnValue">
+            <summary>
+              Looks up a localized string similar to Method must provide a return value: {0}.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrMissingConstructor">
+            <summary>
+              Looks up a localized string similar to Cannot find constructor.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrMissingDefaultProperty">
+            <summary>
+              Looks up a localized string similar to The target type doesn&apos;t have a default property.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrMissingEvent">
+            <summary>
+              Looks up a localized string similar to Cannot find event.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrMissingField">
+            <summary>
+              Looks up a localized string similar to Cannot find field.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrMissingMethod">
+            <summary>
+              Looks up a localized string similar to Cannot find method.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrMissingProperty">
+            <summary>
+              Looks up a localized string similar to Cannot find property.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrMissingPropertyIndex">
+            <summary>
+              Looks up a localized string similar to Cannot access indexed property without indexes.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrMultiAttribute">
+            <summary>
+              Looks up a localized string similar to Attribute &apos;{0}&apos; has already been set.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrMultiParamModifier">
+            <summary>
+              Looks up a localized string similar to Only one parameter modifier is allowed out of [Ref, Out, Params].
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrMultiVisibility">
+            <summary>
+              Looks up a localized string similar to Member visibility can be set only once.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrMultiVTable">
+            <summary>
+              Looks up a localized string similar to Member virtual type can be set only once.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrNoCodeAllowed">
+            <summary>
+              Looks up a localized string similar to Cannot emit code for an abstract or runtime-provided method.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrNoOpenBlocks">
+            <summary>
+              Looks up a localized string similar to There is no block that can be closed by this method.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrOpenBlocksRemaining">
+            <summary>
+              Looks up a localized string similar to Cannot complete code as there are some remaining opened blocks.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrOperandNotReadable">
+            <summary>
+              Looks up a localized string similar to Operand of type &apos;{0}&apos; cannot be read.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrOperandNotReferencible">
+            <summary>
+              Looks up a localized string similar to Address of operand of type &apos;{0}&apos; cannot be retrieved.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrOperandNotWritable">
+            <summary>
+              Looks up a localized string similar to Operand of type &apos;{0}&apos; cannot be written.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrParamArrayMustBeLast">
+            <summary>
+              Looks up a localized string similar to The parameter array must be the last parameter defined.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrParamArrayNotArray">
+            <summary>
+              Looks up a localized string similar to The parameter array must be defined using an array type.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrParamUnknown">
+            <summary>
+              Looks up a localized string similar to Unknown parameter: {0}.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrStructNoBaseCtor">
+            <summary>
+              Looks up a localized string similar to Value type constructor cannot invoke a base constructor.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrStructNoDefaultCtor">
+            <summary>
+              Looks up a localized string similar to Value types cannot have default constructors.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrTypeAlreadyCompleted">
+            <summary>
+              Looks up a localized string similar to Type is already completed.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrTypeMustBeDelegate">
+            <summary>
+              Looks up a localized string similar to The provided type must be a delegate type.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrTypeNotCompleted">
+            <summary>
+              Looks up a localized string similar to The type hasn&apos;t been completed yet.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrUninitializedVarAccess">
+            <summary>
+              Looks up a localized string similar to Variable used without having been initialized.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrUntypedVarAccess">
+            <summary>
+              Looks up a localized string similar to Variable accessed before it&apos;s type was defined.
+            </summary>
+        </member>
+        <member name="P:Properties.Messages.ErrVoidMethodReturningValue">
+            <summary>
+              Looks up a localized string similar to Cannot return value from a void method.
+            </summary>
+        </member>
+        <member name="T:TriAxis.RunSharp.CompilerOptions">
+            <summary>
+            Represents configuration options for compiling a model to 
+            a standalone assembly.
+            </summary>
+        </member>
+        <member name="M:TriAxis.RunSharp.CompilerOptions.SetFrameworkOptions(System.Type,TriAxis.RunSharp.ITypeMapper)">
+            <summary>
+            Import framework options from an existing type
+            </summary>
+        </member>
+        <member name="P:TriAxis.RunSharp.CompilerOptions.TargetFrameworkName">
+            <summary>
+            The TargetFrameworkAttribute FrameworkName value to burn into the generated assembly
+            </summary>
+        </member>
+        <member name="P:TriAxis.RunSharp.CompilerOptions.TargetFrameworkDisplayName">
+            <summary>
+            The TargetFrameworkAttribute FrameworkDisplayName value to burn into the generated assembly
+            </summary>
+        </member>
+        <member name="P:TriAxis.RunSharp.CompilerOptions.OutputPath">
+            <summary>
+            The path for the new dll
+            </summary>
+        </member>
+        <member name="M:TriAxis.RunSharp.ITypeMapper.MapType(System.Type,System.Boolean)">
+            <summary>
+            Translate a System.Type into the universe's type representation
+            </summary>
+        </member>
+        <member name="P:TriAxis.RunSharp.RunSharpDebug.LeakingDetection">
+            <summary>
+            Set to minimal to improve generation performance
+            </summary>
+        </member>
+        <member name="M:TriAxis.RunSharp.TypeMapper.MapType(System.Type,System.Boolean)">
+            <summary>
+            Translate a System.Type into the universe's type representation
+            </summary>
+        </member>
+        <member name="M:TriAxis.RunSharp.CodeGen.Arg(System.Int32)">
+            <summary>
+            ThisOffset is applied inside
+            </summary>
+            <param name="parameterIndex"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TriAxis.RunSharp.CodeGen.LeaveNextReturnOnStack">
+            <summary>
+            Applicable to Eval and Invoke. void is considered return value too.
+            </summary>
+        </member>
+        <member name="M:TriAxis.RunSharp.CodeGen.Eval(TriAxis.RunSharp.Operand)">
+            <summary>
+            Allows evaluation of <see cref="M:TriAxis.RunSharp.StaticFactory.Invoke(System.Type,System.String)"/>, <see cref="M:TriAxis.RunSharp.ExpressionFactory.New(System.Type)"/> and others. The result of the evaluation is discarded.
+            </summary>
+            <remarks>E.g. if you already have `exp.New(typeof(MyClass))` part you may wrap it with Eval: g.Eval(myExp).</remarks>
+        </member>
+        <member name="F:TriAxis.RunSharp.Operand._leakedState">
+            <summary>
+            This is set from internal things
+            </summary>
+        </member>
+        <member name="F:TriAxis.RunSharp.Operand._detectsLeaks">
+            <summary>
+            Set by ineritors, affects only final check
+            </summary>
+        </member>
+        <member name="P:TriAxis.RunSharp.Operand.DetectsLeaking">
+            <summary>
+            If false at construction, exception won't be throw in leak detection case
+            </summary>
+        </member>
+        <member name="M:TriAxis.RunSharp.Operand.SetNotLeaked">
+            <summary>
+            Set not leaked for this and *all used operands recursively*. Returns itself.
+            </summary>
+            <remarks>Usage: <br/>
+            <code>
+            var asStream = ag.ExpressionFactory.New(typeof(MemoryStream)).Cast(typeof(Stream)).SetNotLeaked(false)();
+            </code>
+            </remarks>
+        </member>
+        <member name="M:TriAxis.RunSharp.Operand.SetLeakedStateRecursively">
+            <summary>
+            Called even when leaking status ignored
+            </summary>
+        </member>
+        <member name="T:System.Collections.Generic.MonoSortedList`2">
+            <summary>
+             Represents a collection of associated keys and values
+             that are sorted by the keys and are accessible by key
+             and by index.
+            </summary>
+        </member>
+    </members>
+</doc>

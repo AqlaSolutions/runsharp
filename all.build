@@ -3,7 +3,7 @@
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <!-- See http://msbuildtasks.tigris.org -->
-  <Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets"/>
+  <Import Project="packages\MSBuildTasks.1.5.0.235\tools\MSBuild.Community.Tasks.Targets"/>
 
   <PropertyGroup>
     <NugetDirectory>Nuget\lib</NugetDirectory>
@@ -14,8 +14,7 @@
 <ItemGroup>
     <ProjectToBuild Include="RunSharp\runsharp.csproj"/>
     <ProjectToBuild Include="RunSharpIKVM\runsharp_IKVM.csproj"/>
-    <ProjectToBuild Include="RunSharpWP8\runsharp_WP8.csproj"/>
-    <ProjectToBuild Include="RunSharpSilverlight\runsharp_Silverlight.csproj"/>
+    <ProjectToBuild Include="RunSharp_NetStandard\RunSharp_NetStandard.csproj"/>
 </ItemGroup>
 
   <Target Name="BuildKit">
@@ -29,19 +28,22 @@
 
    <ItemGroup>
      <Net20Files Include="RunSharp\bin\Release\RunSharp.*"/>
-     <Net20Files Include="LICENSE"/>
+     <NetStandardFiles Include="RunSharp_NetStandard\bin\Release\netstandard2.1\RunSharp.*"/>
      <IKVMFiles Include="RunSharpIKVM\bin\Release\RunSharp.*"/>
      <IKVMFiles Include="RunSharpIKVM\bin\Release\IKVM.Reflection.*"/>
-     <IKVMFiles Include="LICENSE"/>
      <IKVMFiles Include="lib\IKVM-LICENSE"/>
-     <WP8Files Include="RunSharpWP8\bin\Release\RunSharp.*"/>
-     <WP8Files Include="LICENSE"/>
-     <SilverlightFiles Include="RunSharpSilverlight\bin\Release\RunSharp.*"/>
-     <SilverlightFiles Include="LICENSE"/>
-     <AndroidFiles Include="RunSharpAndroid\bin\Release\RunSharp.*"/>
-     <AndroidFiles Include="LICENSE"/>
+     <UnsupportedFiles Include="bin-unsupported\**\*"/>
    </ItemGroup>
       
+    <Copy SourceFiles="@(UnsupportedFiles)" DestinationFolder="$(NugetDirectory)\%(RecursiveDir)"/>
+    <Copy SourceFiles="@(UnsupportedFiles)" DestinationFolder="$(ZipDirectory)\%(RecursiveDir)"/>
+
+    <Copy SourceFiles="LICENSE" DestinationFolder="$(ZipDirectory)"/>
+    <Copy SourceFiles="LICENSE" DestinationFolder="$(NugetDirectory)\"/>
+
+    <Copy SourceFiles="@(Net20Files)" DestinationFolder="$(NugetDirectory)\net20"/>
+    <Copy SourceFiles="@(Net20Files)" DestinationFolder="$(ZipDirectory)\net20"/>
+
     <Copy SourceFiles="@(Net20Files)" DestinationFolder="$(NugetDirectory)\net20"/>
     <Copy SourceFiles="@(Net20Files)" DestinationFolder="$(ZipDirectory)\net20"/>
 
@@ -51,14 +53,8 @@
     <Copy SourceFiles="@(Net20Files)" DestinationFolder="$(NugetDirectory)\net30"/>
     <Copy SourceFiles="@(Net20Files)" DestinationFolder="$(NugetDirectory)\net35"/>
 
-    <Copy SourceFiles="@(WP8Files)" DestinationFolder="$(NugetDirectory)\windowsphone8"/>
-    <Copy SourceFiles="@(WP8Files)" DestinationFolder="$(ZipDirectory)\windowsphone8"/>
-
-    <Copy SourceFiles="@(SilverlightFiles)" DestinationFolder="$(NugetDirectory)\sl5"/>
-    <Copy SourceFiles="@(SilverlightFiles)" DestinationFolder="$(ZipDirectory)\sl5"/>
-
-    <Copy SourceFiles="@(AndroidFiles)" DestinationFolder="$(NugetDirectory)\Xamarin.Android"/>
-    <Copy SourceFiles="@(AndroidFiles)" DestinationFolder="$(ZipDirectory)\Xamarin.Android"/>
+    <Copy SourceFiles="@(NetStandardFiles)" DestinationFolder="$(NugetDirectory)\netstandard2.1"/>
+    <Copy SourceFiles="@(NetStandardFiles)" DestinationFolder="$(ZipDirectory)\netstandard2.1"/>
 
     <Exec Command="packages\NuGet.CommandLine.2.0.40000\tools\NuGet.exe pack $(NugetDirectory)\..\runsharp.nuspec"/>
     

@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using NUnit.Framework;
 
@@ -27,6 +28,17 @@ namespace TriAxis.RunSharp.Tests
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
         }
+
+#if NET5_0
+        static int _inited;
+
+        [SetUp]
+        public void InitNet5()
+        {
+            if (Interlocked.CompareExchange(ref _inited, 1, 0) == 0)
+                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        }
+#endif
 
         [SetUp]
         public void UnhandledExceptionRegistering()

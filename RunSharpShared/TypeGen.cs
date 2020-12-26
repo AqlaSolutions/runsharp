@@ -1023,7 +1023,7 @@ namespace TriAxis.RunSharp
 
 		internal void Register(MethodGen method)
 		{
-#if !SILVERLIGHT
+#if !SILVERLIGHT && !NET5_0 && !NETSTANDARD
             if (_owner.AssemblyBuilder.EntryPoint == null && method.Name == "Main" && method.IsStatic &&
 		        (
 		            method.ParameterCount == 0 ||
@@ -1033,7 +1033,7 @@ namespace TriAxis.RunSharp
 		        _owner.AssemblyBuilder.SetEntryPoint(method.GetMethodBuilder());
 		    }
 #endif
-		    // match explicit interface implementations
+			// match explicit interface implementations
 			if (method.ImplementedInterface != null)
 			{
 				foreach (IMemberInfo mi in _typeMapper.TypeInfo.Filter(_typeMapper.TypeInfo.GetMethods(method.ImplementedInterface), method.Name, false, false, true))

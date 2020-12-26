@@ -24,28 +24,32 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Text;
-using Microsoft.Win32;
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 
 public static class PEVerify
 {
-    public static bool AssertValid(string path)
+    public static void AssertValid(string path)
     {
-        string sdkRootPath;
-#if ANDROID
-        sdkRootPath = Environment.GetEnvironmentVariable(!Environment.Is64BitOperatingSystem ? "ProgramFiles" : "ProgramFiles(x86)");
-        sdkRootPath += @"\Microsoft SDKs\Windows\v8.1A";
-#else
-        sdkRootPath = Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Microsoft SDKs\\Windows\\v8.1A", "InstallationFolder", null) as string;
-        if (null == sdkRootPath)
-            throw new InvalidOperationException("Could not find Windows SDK 8.1A installation folder.");
+#if NET5_0
+        var references = Assembly.LoadFile(path).GetReferencedAssemblies().Select(x => x.CodeBase).Where(x => x != null).ToArray();
+        var errors = new ILVerify.ILVerify(path, references).Run().ToList();
+        Assert.IsEmpty(errors);
+        return;
 #endif
+        string sdkRootPath = Environment.GetEnvironmentVariable(!Environment.Is64BitOperatingSystem ? "ProgramFiles" : "ProgramFiles(x86)");
+        sdkRootPath += @"\Microsoft SDKs\Windows\v10.0A";
 
         // note; PEVerify can be found %ProgramFiles%\Microsoft SDKs\Windows\
         string exePath = Path.Combine(sdkRootPath, "bin", "NETFX 4.5.1 Tools", "PEVerify.exe");
+        if (!File.Exists(exePath))
+            exePath = Path.Combine(sdkRootPath, "bin", "NETFX 4.8 Tools", "PEVerify.exe");
         var startInfo = new ProcessStartInfo(exePath, '"' + path + '"');
         startInfo.WindowStyle = ProcessWindowStyle.Hidden;
         startInfo.RedirectStandardOutput = true;
@@ -59,7 +63,6 @@ public static class PEVerify
             if (ok)
             {
                 Assert.AreEqual(0, proc.ExitCode, path + "\r\n" + output);
-                return proc.ExitCode == 0;
             }
             else
             {
@@ -71,7 +74,6 @@ public static class PEVerify
                 {
                 }
                 Assert.Fail("PEVerify timeout: " + path + "\r\n" + output);
-                return false;
             }
         }
     }
