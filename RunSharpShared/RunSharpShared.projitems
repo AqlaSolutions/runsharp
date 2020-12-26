@@ -21,7 +21,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Aqla\TypeMapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ArrayUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AssemblyGen.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)AssemblyInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AttributeGen.cs">
       <SubType>Code</SubType>
     </Compile>

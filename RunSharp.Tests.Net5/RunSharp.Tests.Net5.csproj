@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RunSharp_NetStandard\RunSharp_NetStandard.csproj" />
+    <ProjectReference Include="..\RunSharp\RunSharp.csproj" />
   </ItemGroup>
 
   <Import Project="..\RunSharp.TestsShared\RunSharp.Tests.projitems" Label="Shared" />

@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <!--*-->
+    <id>Aqla.RunSharp.IKVM</id>
+    <!--*-->
+    <version>1.0.22</version>
+    <title>RunSharp.IKVM</title>
+    <!--*-->
+    <authors>Vladyslav Taranov</authors>
+    <owners>Vladyslav Taranov</owners>
+    <licenseUrl>https://github.com/AqlaSolutions/runsharp/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/AqlaSolutions/runsharp</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <!--*-->
+    <description>This is RunSharp package for IKVM users, if you don't need IKVM, please use the main aqla.runsharp package.
+
+RunSharp is a runtime IL generator based on Reflection.Emit and IKVM which allows you to emit IL in a way similar to writing normal C# code.
+
+It's a layer above the IKVM API, allowing to generate/compile dynamic code at runtime very quickly and efficiently (unlike using CodeDOM and invoking the C# compiler).
+
+This package is a fork of TriAxis.RunSharp (the original is now abandoned).</description>
+    <!--*-->
+    <releaseNotes>* 1.0.0.20 - added .NET standard 2.1 support and .NET 5 tests, removed separate Xamarin.Android (use .NET Standard build instead)
+* 1.0.0.18 - fix for explicit interface implementation, added Android platform
+* 1.0.0.17 - IKVM reference won't be added for nuget installations
+* 1.0.0.16 - multidimensional array access, fix for AND/OR operands
+* 1.0.0.15 - added nullables support, multiple improvements
+* 0.2.0.5 - operand leaking detection
+* 0.2.0.4 - added support for Silverlight 4
+* 0.2.0.3 - added support for Windows Phone 8
+* 0.2.0.0 - initial fork release:
+- added IKVM support
+- examples converted to tests
+- added peverify checks
+- fixed multiple bugs
+</releaseNotes>
+    <copyright>Copyright © 2007 Stefan Simek, Copyright © 2016 Vladyslav Taranov</copyright>
+    <tags>
+    </tags>
+    <dependencies>
+      <!--
+      <dependency id="SampleDependency" version="1.0" />
+-->
+    </dependencies>
+  </metadata>
+</package>

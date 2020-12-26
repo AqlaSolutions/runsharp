@@ -8,23 +8,18 @@
   <PropertyGroup>
     <NugetDirectory>Nuget\lib</NugetDirectory>
     <ZipDirectory>Package</ZipDirectory>
+    <SolutionDir>$(MSBuildThisFileDirectory)</SolutionDir>
   </PropertyGroup>
-
-
 <ItemGroup>
     <ProjectToBuild Include="RunSharp\runsharp.csproj"/>
     <ProjectToBuild Include="RunSharpIKVM\runsharp_IKVM.csproj"/>
-    <ProjectToBuild Include="RunSharp_NetStandard\RunSharp_NetStandard.csproj"/>
 </ItemGroup>
 
   <Target Name="BuildKit">
     
-    <RemoveDir Directories="$(NugetDirectory)"/>
     <RemoveDir Directories="$(ZipDirectory)"/>
 
     <MSBuild Projects="@(ProjectToBuild)" Targets="Rebuild" Properties="Configuration=Release" BuildInParallel="true"/>
-
-    <Exec Command="tools\AOTCompatlyzer.exe &quot;RunSharp\bin\Release\RunSharp.dll&quot; &quot;RunSharp\runsharp_key.snk&quot;"/>
 
    <ItemGroup>
      <Net20Files Include="RunSharp\bin\Release\RunSharp.*"/>
@@ -35,28 +30,13 @@
      <UnsupportedFiles Include="bin-unsupported\**\*"/>
    </ItemGroup>
       
-    <Copy SourceFiles="@(UnsupportedFiles)" DestinationFolder="$(NugetDirectory)\%(RecursiveDir)"/>
     <Copy SourceFiles="@(UnsupportedFiles)" DestinationFolder="$(ZipDirectory)\%(RecursiveDir)"/>
-
     <Copy SourceFiles="LICENSE" DestinationFolder="$(ZipDirectory)"/>
-    <Copy SourceFiles="LICENSE" DestinationFolder="$(NugetDirectory)\"/>
-
-    <Copy SourceFiles="@(Net20Files)" DestinationFolder="$(NugetDirectory)\net20"/>
     <Copy SourceFiles="@(Net20Files)" DestinationFolder="$(ZipDirectory)\net20"/>
-
-    <Copy SourceFiles="@(Net20Files)" DestinationFolder="$(NugetDirectory)\net20"/>
     <Copy SourceFiles="@(Net20Files)" DestinationFolder="$(ZipDirectory)\net20"/>
-
-    <Copy SourceFiles="@(IKVMFiles)" DestinationFolder="$(NugetDirectory)\ikvm-net20+"/>
     <Copy SourceFiles="@(IKVMFiles)" DestinationFolder="$(ZipDirectory)\ikvm-net20+"/>
-
-    <Copy SourceFiles="@(Net20Files)" DestinationFolder="$(NugetDirectory)\net30"/>
     <Copy SourceFiles="@(Net20Files)" DestinationFolder="$(NugetDirectory)\net35"/>
-
-    <Copy SourceFiles="@(NetStandardFiles)" DestinationFolder="$(NugetDirectory)\netstandard2.1"/>
     <Copy SourceFiles="@(NetStandardFiles)" DestinationFolder="$(ZipDirectory)\netstandard2.1"/>
-
-    <Exec Command="packages\NuGet.CommandLine.2.0.40000\tools\NuGet.exe pack $(NugetDirectory)\..\runsharp.nuspec"/>
     
     <ItemGroup>
       <ZipFiles Include="$(ZipDirectory)\**\*"/>

@@ -33,7 +33,7 @@
     <DefineConstants>TRACE;DEBUG;FEAT_IKVM</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\RunSharp.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\RunSharp.xml</DocumentationFile>
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -44,8 +44,11 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DebugSymbols>true</DebugSymbols>
-    <DocumentationFile>bin\Release\RunSharp.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\RunSharp.xml</DocumentationFile>
     <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
@@ -60,6 +63,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Messages.Designer.cs">
       <DependentUpon>Messages.resx</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -77,9 +81,19 @@
       <Link>LICENSE</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="package.nuspec" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\lib\IKVM*">
+      <PackagePath>lib\net20\</PackagePath>
+      <Pack>true</Pack>
+    </Content>
   </ItemGroup>
   <Import Project="..\RunSharpShared\RunSharpShared.projitems" Label="Shared" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>"$(MSBuildProjectDirectory)\..\tools\AOTCompatlyzer.exe" "$(TargetDir)$(TargetFileName)"</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

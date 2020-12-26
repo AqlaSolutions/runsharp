@@ -47,13 +47,14 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\RunSharp\RunSharp.csproj">
       <Project>{08f134ae-48e8-4a35-9dc7-2f31eaf4a66f}</Project>
       <Name>RunSharp</Name>
+      <SetTargetFramework>TargetFramework=net35</SetTargetFramework>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <Import Project="..\RunSharp.TestsShared\RunSharp.Tests.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
