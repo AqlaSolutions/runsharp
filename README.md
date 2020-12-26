@@ -8,10 +8,12 @@ The IKVM version has also an ability to emit NET 2.0 and .NET 4.0 assemblies (wh
 
 It is a fork of RunSharp from Google Code: https://code.google.com/p/runsharp/
 
-- added IKVM support
+- added IKVM support (nuget: Aqla.RunSharp.IKVM)
 - examples converted to tests
 - added peverify checks
 - fixed multiple bugs
+
+nuget: aqla.runsharp
 
 # Example
 
