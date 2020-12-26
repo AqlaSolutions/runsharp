@@ -45,8 +45,8 @@ For more examples please see tests.
 
 # Platforms
 
-* .NET 2.0 and higher (also IKVM version available)
+* .NET Standard 2.1 (including .NET Core 3 and .NET 5)
+* .NET 2.0 and higher including .NET 4 (also IKVM version available)
 * Windows Phone 8
 * Silverlight 5
 * Xamarin.Android
-
