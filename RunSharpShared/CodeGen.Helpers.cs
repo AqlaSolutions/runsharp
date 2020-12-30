@@ -401,12 +401,39 @@ namespace TriAxis.RunSharp
 
         internal void EmitGetHelper(Operand op, Type desiredType, Conversion conv, Type from = null)
         {
+            if (desiredType.IsPrimitive && op.ConstantValue != null)
+            {
+                var opType = op.GetReturnType(TypeMapper);
+                if (opType.IsPrimitive && opType != desiredType)
+                {
+                    // hot swap literals
+                    var c = op.ConstantValue;
+
+                    object converted = null;
+                    try
+                    {
+                        converted = Convert.ChangeType(c, System.Type.GetType(desiredType.FullName));
+                    }
+                    catch
+                    {
+                    }
+
+                    if (converted != null)
+                    {
+                        Operand.FromObject(converted).EmitGet(this);
+                        return;
+                    }
+                }
+
+            }
+
+
             if (conv == null)
             {
                 EmitGetHelper(op, desiredType, false);
                 return;
             }
-
+            
             EmitGetHelper_Conversion(op, desiredType.IsByRef ? desiredType.GetElementType() : desiredType, conv, from);
             if (desiredType.IsByRef)
                 EmitGetHelper_Ref(op, desiredType);

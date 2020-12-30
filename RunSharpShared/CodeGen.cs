@@ -361,7 +361,7 @@ namespace TriAxis.RunSharp
 		    protected internal override bool TrivialAccess => true;
 		}
 
-		internal class _Local : Operand
+		public class _Local : Operand
 		{
             protected override bool DetectsLeaking => false;
 
@@ -370,12 +370,12 @@ namespace TriAxis.RunSharp
 		    readonly Block _scope;
 			Type _t, _tHint;
 
-			public _Local(CodeGen owner)
+			internal _Local(CodeGen owner)
 			{
 				_owner = owner;
 				_scope = owner.GetBlockForVariable();
 			}
-			public _Local(CodeGen owner, Type t)
+            internal _Local(CodeGen owner, Type t)
 			{
 				_owner = owner; _t = t;
 				_scope = owner.GetBlockForVariable();

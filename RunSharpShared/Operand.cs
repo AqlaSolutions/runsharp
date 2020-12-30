@@ -67,6 +67,8 @@ namespace TriAxis.RunSharp
         
 	    protected internal static readonly Operand[] EmptyArray = { };
 
+        public void _ManualEmitGet(CodeGen g) => EmitGet(g);
+
 		#region Virtual methods
 		protected internal virtual void EmitGet(CodeGen g)
 		{
@@ -789,6 +791,14 @@ namespace TriAxis.RunSharp
 		{
 			return OperandExtensions.SetLeakedState(new ArrayLength(this, true), true);
 		}
+
+        public Operand UnwrapNullableValue(ITypeMapper typeMapper)
+        {
+            Type t = Helpers.GetNullableUnderlyingType(GetReturnType(typeMapper));
+            if (t == null) return this;
+            return Cast(t);
+        }
+
 		#endregion
 
 		public Operand Ref()
@@ -880,15 +890,15 @@ namespace TriAxis.RunSharp
             }
 	    }
 
-        /// <summary>
-        /// Set not leaked for this and *all used operands recursively*. Returns itself.
-        /// </summary>
-        /// <remarks>Usage: <br/>
-        /// <code>
-        /// var asStream = ag.ExpressionFactory.New(typeof(MemoryStream)).Cast(typeof(Stream)).SetNotLeaked(false)();
-        /// </code>
-        /// </remarks>
-        public Operand SetNotLeaked()
+		/// <summary>
+		/// Set not leaked for this and *all used operands recursively*. Returns itself.
+		/// </summary>
+		/// <remarks>Usage: <br/>
+		/// <code>
+		/// var asStream = ag.ExpressionFactory.New(typeof(MemoryStream)).Cast(typeof(Stream)).SetNotLeaked(false)();
+		/// </code>
+		/// </remarks>
+		public Operand SetNotLeaked()
         {
             LeakedState = false;
             return this;

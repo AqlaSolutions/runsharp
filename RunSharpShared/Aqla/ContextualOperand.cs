@@ -409,6 +409,11 @@ namespace TriAxis.RunSharp
             return OperandExtensions.SetLeakedState(new ContextualOperand(base.LongArrayLength(), TypeMapper), true);
         }
 
+        public new Operand ValueFromNullable()
+        {
+            return UnwrapNullableValue(TypeMapper);
+        }
+
         public new ContextualOperand Ref()
         {
             return new ContextualOperand(base.Ref(), TypeMapper);

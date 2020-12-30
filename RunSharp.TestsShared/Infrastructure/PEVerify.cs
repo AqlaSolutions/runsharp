@@ -38,9 +38,9 @@ public static class PEVerify
     public static void AssertValid(string path)
     {
 #if NET5_0
-        var references = Assembly.LoadFile(path).GetReferencedAssemblies().Select(x => x.CodeBase).Where(x => x != null).ToArray();
+        var references = Assembly.LoadFile(Path.GetFullPath(path)).GetReferencedAssemblies().Select(x => x.CodeBase).Where(x => x != null).ToArray();
         var errors = new ILVerify.ILVerify(path, references).Run().ToList();
-        Assert.IsEmpty(errors);
+        Assert.IsEmpty(errors, "Checking "+ path);
         return;
 #endif
         string sdkRootPath = Environment.GetEnvironmentVariable(!Environment.Is64BitOperatingSystem ? "ProgramFiles" : "ProgramFiles(x86)");

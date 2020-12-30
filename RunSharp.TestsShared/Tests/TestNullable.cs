@@ -319,5 +319,23 @@ namespace TriAxis.RunSharp.Tests
             g.Assign(boxed, nullable);
             g.ThrowAssert(boxed == null, "null");
         }
+
+
+        [Test]
+        public void IncrementNullableNonInt()
+        {
+            TestingFacade.RunMethodTest(ExecuteIncrementNullableNonInt);
+        }
+
+        public static void ExecuteIncrementNullableNonInt(MethodGen mg)
+        {
+            var g = mg.GetCode();
+            var nullable = g.Local(typeof(ulong?));
+            g.Assign(nullable, (ulong)0);
+            g.Increment(nullable);
+            g.ThrowAssert(nullable == 1);
+
+
+        }
     }
 }

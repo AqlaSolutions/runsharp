@@ -44,314 +44,333 @@ using System.Reflection.Emit;
 
 namespace TriAxis.RunSharp
 {
-	public interface IDelayedDefinition
-	{
-		void EndDefinition();
-	}
+    public interface IDelayedDefinition
+    {
+        void EndDefinition();
+    }
 
-	public interface IDelayedCompletion
-	{
-		void Complete();
-	}
+    public interface IDelayedCompletion
+    {
+        void Complete();
+    }
 
 #if !PHONE8
 
     public class TypeGen : MemberGenBase<TypeGen>, ITypeInfoProvider, ICodeGenBasicContext
-	{
-		class InterfaceImplEntry
-		{
-		    public InterfaceImplEntry(IMemberInfo interfaceMethod)
-			{
-				InterfaceMethod = interfaceMethod;
-			}
+    {
+        class InterfaceImplEntry
+        {
+            public InterfaceImplEntry(IMemberInfo interfaceMethod)
+            {
+                InterfaceMethod = interfaceMethod;
+            }
 
-			public bool Match(MethodGen candidate)
-			{
-				return candidate.Name == InterfaceMethod.Name &&
-						candidate.ReturnType == InterfaceMethod.ReturnType &&
-						ArrayUtils.Equals(candidate.ParameterTypes, InterfaceMethod.ParameterTypes);
-			}
+            public bool Match(MethodGen candidate)
+            {
+                return candidate.Name == InterfaceMethod.Name &&
+                        candidate.ReturnType == InterfaceMethod.ReturnType &&
+                        ArrayUtils.Equals(candidate.ParameterTypes, InterfaceMethod.ParameterTypes);
+            }
 
-			public IMemberInfo InterfaceMethod { get; }
-		    public Type InterfaceType => InterfaceMethod.Member.DeclaringType;
-		    public MethodGen BoundMethod { get; set; }
+            public IMemberInfo InterfaceMethod { get; }
+            public Type InterfaceType => InterfaceMethod.Member.DeclaringType;
+            public MethodGen BoundMethod { get; set; }
 
-		    public bool IsBound => BoundMethod != null;
+            public bool IsBound => BoundMethod != null;
 
-		    public void Bind(MethodGen implementation)
-			{
-				BoundMethod = implementation;
-			}
-		}
+            public void Bind(MethodGen implementation)
+            {
+                BoundMethod = implementation;
+            }
+        }
 
-	    readonly AssemblyGen _owner;
+        readonly AssemblyGen _owner;
         
-	    public ExpressionFactory ExpressionFactory => _owner.ExpressionFactory;
-	    public StaticFactory StaticFactory => _owner.StaticFactory;
-	    Type[] _interfaces;
-	    readonly ITypeMapper _typeMapper;
-	    Type _type;
-		MethodGen _commonCtor;
-		ConstructorGen _staticCtor;
-	    readonly List<IDelayedDefinition> _definitionQueue = new List<IDelayedDefinition>();
-	    readonly List<IDelayedCompletion> _completionQueue = new List<IDelayedCompletion>();
-	    readonly List<TypeGen> _nestedTypes = new List<TypeGen>();
-	    readonly List<InterfaceImplEntry> _implementations = new List<InterfaceImplEntry>();
-	    readonly List<IMemberInfo> _constructors = new List<IMemberInfo>();
-	    readonly List<IMemberInfo> _fields = new List<IMemberInfo>();
-	    readonly List<IMemberInfo> _properties = new List<IMemberInfo>();
-	    readonly List<IMemberInfo> _events = new List<IMemberInfo>();
-	    readonly List<IMemberInfo> _methods = new List<IMemberInfo>();
-		List<AttributeGen> _customAttributes = new List<AttributeGen>();
-		string _indexerName;
+        public ExpressionFactory ExpressionFactory => _owner?.ExpressionFactory ?? _ownExpressionFactory;
+        public StaticFactory StaticFactory => _owner?.StaticFactory ?? _ownStaticFactory;
+        StaticFactory _ownStaticFactory;
+        ExpressionFactory _ownExpressionFactory;
+        Type[] _interfaces;
+        readonly ITypeMapper _typeMapper;
+        Type _type;
+        MethodGen _commonCtor;
+        ConstructorGen _staticCtor;
+        readonly List<IDelayedDefinition> _definitionQueue = new List<IDelayedDefinition>();
+        readonly List<IDelayedCompletion> _completionQueue = new List<IDelayedCompletion>();
+        readonly List<TypeGen> _nestedTypes = new List<TypeGen>();
+        readonly List<InterfaceImplEntry> _implementations = new List<InterfaceImplEntry>();
+        readonly List<IMemberInfo> _constructors = new List<IMemberInfo>();
+        readonly List<IMemberInfo> _fields = new List<IMemberInfo>();
+        readonly List<IMemberInfo> _properties = new List<IMemberInfo>();
+        readonly List<IMemberInfo> _events = new List<IMemberInfo>();
+        readonly List<IMemberInfo> _methods = new List<IMemberInfo>();
+        List<AttributeGen> _customAttributes = new List<AttributeGen>();
+        string _indexerName;
 
         internal AssemblyBuilder AssemblyBuilder => _owner.AssemblyBuilder;
-		internal TypeBuilder TypeBuilder { get; }
-	    internal Type BaseType { get; }
+        internal TypeBuilder TypeBuilder { get; }
+        internal Type BaseType { get; }
 
-	    public string Name { get; }
+        public string Name { get; }
 
-	    internal TypeGen(AssemblyGen owner, string name, TypeAttributes attrs, Type baseType, Type[] interfaces, ITypeMapper typeMapper)
-	        : base(typeMapper)
-	    {
+        public TypeGen(TypeBuilder typeBuilder, ITypeMapper typeMapper)
+            :base(typeMapper)
+        {
+            Name = typeBuilder.Name;
+            BaseType = typeBuilder.BaseType;
+            _interfaces = typeBuilder.GetInterfaces();
+            _typeMapper = typeMapper;
+
+            _ownExpressionFactory = new ExpressionFactory(typeMapper);
+            _ownStaticFactory = new StaticFactory(TypeMapper);
+
+            TypeBuilder = typeBuilder;
+            typeMapper.TypeInfo.RegisterProvider(TypeBuilder, this);
+
+            ResetAttrs();
+        }
+
+        internal TypeGen(AssemblyGen owner, string name, TypeAttributes attrs, Type baseType, Type[] interfaces, ITypeMapper typeMapper)
+            : base(typeMapper)
+        {
             _owner = owner;
-			Name = name;
-			BaseType = baseType;
-			_interfaces = interfaces;
-	        _typeMapper = typeMapper;
+            Name = name;
+            BaseType = baseType;
+            _interfaces = interfaces;
+            _typeMapper = typeMapper;
 
-	        TypeBuilder = owner.ModuleBuilder.DefineType(name, attrs, baseType, interfaces);
-			owner.AddType(this);
-			ScanMethodsToImplement(interfaces);
-
-			typeMapper.TypeInfo.RegisterProvider(TypeBuilder, this);
-			ResetAttrs();
-		}
-
-		internal TypeGen(TypeGen owner, string name, TypeAttributes attrs, Type baseType, Type[] interfaces, ITypeMapper typeMapper)
-		    : base(typeMapper)
-		{
-		    _owner = owner._owner;
-			Name = name;
-			BaseType = baseType;
-			_interfaces = interfaces;
-		    _typeMapper = typeMapper;
-
-		    TypeBuilder = owner.TypeBuilder.DefineNestedType(name, attrs, baseType, interfaces);
-			owner._nestedTypes.Add(this);
-			ScanMethodsToImplement(interfaces);
+            TypeBuilder = owner.ModuleBuilder.DefineType(name, attrs, baseType, interfaces);
+            owner.AddType(this);
+            ScanMethodsToImplement(interfaces);
 
             typeMapper.TypeInfo.RegisterProvider(TypeBuilder, this);
-		}
+            ResetAttrs();
+        }
 
-		void ScanMethodsToImplement(Type[] interfaces)
-		{
-			if (interfaces == null)
-				return;
+        internal TypeGen(TypeGen owner, string name, TypeAttributes attrs, Type baseType, Type[] interfaces, ITypeMapper typeMapper)
+            : base(typeMapper)
+        {
+            _owner = owner._owner;
+            Name = name;
+            BaseType = baseType;
+            _interfaces = interfaces;
+            _typeMapper = typeMapper;
 
-			foreach (Type t in interfaces)
-			{
+            TypeBuilder = owner.TypeBuilder.DefineNestedType(name, attrs, baseType, interfaces);
+            owner._nestedTypes.Add(this);
+            ScanMethodsToImplement(interfaces);
+
+            typeMapper.TypeInfo.RegisterProvider(TypeBuilder, this);
+        }
+
+        void ScanMethodsToImplement(Type[] interfaces)
+        {
+            if (interfaces == null)
+                return;
+
+            foreach (Type t in interfaces)
+            {
                 foreach (Type @interface in _typeMapper.TypeInfo.SearchInterfaces(t))
-			    {
+                {
                     foreach (IMemberInfo mi in _typeMapper.TypeInfo.GetMethods(@interface))
                         _implementations.Add(new InterfaceImplEntry(mi));
-			    }
-			}
-		}
+                }
+            }
+        }
 
-		internal MethodAttributes PreprocessAttributes(MethodGen mg, MethodAttributes attrs)
-		{
-			bool requireVirtual = false;
+        internal MethodAttributes PreprocessAttributes(MethodGen mg, MethodAttributes attrs)
+        {
+            bool requireVirtual = false;
 
-			foreach (InterfaceImplEntry implEntry in _implementations)
-			{
-				if (!implEntry.IsBound && implEntry.Match(mg))
-				{
-					implEntry.Bind(mg);
-					requireVirtual = true;
-				}
-			}
+            foreach (InterfaceImplEntry implEntry in _implementations)
+            {
+                if (!implEntry.IsBound && implEntry.Match(mg))
+                {
+                    implEntry.Bind(mg);
+                    requireVirtual = true;
+                }
+            }
 
-			if (requireVirtual && ((attrs & MethodAttributes.Virtual) == 0))
-				// create an exclusive VTable entry for the method
-				attrs |= MethodAttributes.Virtual | MethodAttributes.NewSlot | MethodAttributes.Final;
+            if (requireVirtual && ((attrs & MethodAttributes.Virtual) == 0))
+                // create an exclusive VTable entry for the method
+                attrs |= MethodAttributes.Virtual | MethodAttributes.NewSlot | MethodAttributes.Final;
 
-			return attrs;
-		}
+            return attrs;
+        }
 
-		internal void RegisterForCompletion(ICodeGenContext routine)
-		{
-			_definitionQueue.Add(routine);
-			_completionQueue.Add(routine);
-		}
+        internal void RegisterForCompletion(ICodeGenContext routine)
+        {
+            _definitionQueue.Add(routine);
+            _completionQueue.Add(routine);
+        }
 
-		internal void RegisterForCompletion(IDelayedCompletion completion)
-		{
-			_completionQueue.Add(completion);
-		}
+        internal void RegisterForCompletion(IDelayedCompletion completion)
+        {
+            _completionQueue.Add(completion);
+        }
 
     #region Modifiers
-		MethodAttributes _mthVis, _mthFlags, _mthVirt;
-		FieldAttributes _fldVis, _fldFlags;
-		TypeAttributes _typeVis, _typeFlags, _typeVirt;
-		MethodImplAttributes _implFlags;
+        MethodAttributes _mthVis, _mthFlags, _mthVirt;
+        FieldAttributes _fldVis, _fldFlags;
+        TypeAttributes _typeVis, _typeFlags, _typeVirt;
+        MethodImplAttributes _implFlags;
 
-		void SetVisibility(MethodAttributes mthVis, FieldAttributes fldVis, TypeAttributes typeVis)
-		{
-			if (_mthVis != 0)
-				throw new InvalidOperationException(Properties.Messages.ErrMultiVisibility);
+        void SetVisibility(MethodAttributes mthVis, FieldAttributes fldVis, TypeAttributes typeVis)
+        {
+            if (_mthVis != 0)
+                throw new InvalidOperationException(Properties.Messages.ErrMultiVisibility);
 
-			_mthVis = mthVis;
-			_fldVis = fldVis;
-			_typeVis = typeVis;
-		}
+            _mthVis = mthVis;
+            _fldVis = fldVis;
+            _typeVis = typeVis;
+        }
 
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		public TypeGen Public { get { SetVisibility(MethodAttributes.Public, FieldAttributes.Public, TypeAttributes.NestedPublic); return this; } }
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		public TypeGen Private { get { SetVisibility(MethodAttributes.Private, FieldAttributes.Private, TypeAttributes.NestedPrivate); return this; } }
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		public TypeGen Protected { get { SetVisibility(MethodAttributes.Family, FieldAttributes.Family, TypeAttributes.NestedFamily); return this; } }
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		public TypeGen Internal { get { SetVisibility(MethodAttributes.Assembly, FieldAttributes.Assembly, TypeAttributes.NestedAssembly); return this; } }
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		public TypeGen ProtectedOrInternal { get { SetVisibility(MethodAttributes.FamORAssem, FieldAttributes.FamORAssem, TypeAttributes.NestedFamORAssem); return this; } }
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		public TypeGen ProtectedAndInternal { get { SetVisibility(MethodAttributes.FamANDAssem, FieldAttributes.FamANDAssem, TypeAttributes.NestedFamANDAssem); return this; } }
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        public TypeGen Public { get { SetVisibility(MethodAttributes.Public, FieldAttributes.Public, TypeAttributes.NestedPublic); return this; } }
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        public TypeGen Private { get { SetVisibility(MethodAttributes.Private, FieldAttributes.Private, TypeAttributes.NestedPrivate); return this; } }
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        public TypeGen Protected { get { SetVisibility(MethodAttributes.Family, FieldAttributes.Family, TypeAttributes.NestedFamily); return this; } }
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        public TypeGen Internal { get { SetVisibility(MethodAttributes.Assembly, FieldAttributes.Assembly, TypeAttributes.NestedAssembly); return this; } }
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        public TypeGen ProtectedOrInternal { get { SetVisibility(MethodAttributes.FamORAssem, FieldAttributes.FamORAssem, TypeAttributes.NestedFamORAssem); return this; } }
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        public TypeGen ProtectedAndInternal { get { SetVisibility(MethodAttributes.FamANDAssem, FieldAttributes.FamANDAssem, TypeAttributes.NestedFamANDAssem); return this; } }
 
-		void SetVirtual(MethodAttributes mthVirt, TypeAttributes typeVirt)
-		{
-			if (_mthVirt != 0)
-				throw new InvalidOperationException(Properties.Messages.ErrMultiVTable);
+        void SetVirtual(MethodAttributes mthVirt, TypeAttributes typeVirt)
+        {
+            if (_mthVirt != 0)
+                throw new InvalidOperationException(Properties.Messages.ErrMultiVTable);
 
-			_mthVirt = mthVirt;
-			_typeVirt = typeVirt;
-		}
+            _mthVirt = mthVirt;
+            _typeVirt = typeVirt;
+        }
 
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		public TypeGen Sealed { get { SetVirtual(MethodAttributes.Virtual | MethodAttributes.Final, TypeAttributes.Sealed); return this; } }
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		public TypeGen Virtual { get { SetVirtual(MethodAttributes.Virtual | MethodAttributes.NewSlot, 0); return this; } }
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		public TypeGen Override { get { SetVirtual(MethodAttributes.Virtual, 0); return this; } }
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		public TypeGen Abstract { get { SetVirtual(MethodAttributes.Virtual | MethodAttributes.Abstract, TypeAttributes.Abstract); return this; } }
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        public TypeGen Sealed { get { SetVirtual(MethodAttributes.Virtual | MethodAttributes.Final, TypeAttributes.Sealed); return this; } }
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        public TypeGen Virtual { get { SetVirtual(MethodAttributes.Virtual | MethodAttributes.NewSlot, 0); return this; } }
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        public TypeGen Override { get { SetVirtual(MethodAttributes.Virtual, 0); return this; } }
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        public TypeGen Abstract { get { SetVirtual(MethodAttributes.Virtual | MethodAttributes.Abstract, TypeAttributes.Abstract); return this; } }
 
-		void SetFlag(MethodAttributes mthFlag, FieldAttributes fldFlag, TypeAttributes typeFlag)
-		{
-			if ((_mthFlags & mthFlag) != 0 ||
-				(_fldFlags & fldFlag) != 0 ||
-				(_typeFlags & typeFlag) != 0)
-				throw new InvalidOperationException(string.Format(null, Properties.Messages.ErrMultiAttribute, mthFlag));
+        void SetFlag(MethodAttributes mthFlag, FieldAttributes fldFlag, TypeAttributes typeFlag)
+        {
+            if ((_mthFlags & mthFlag) != 0 ||
+                (_fldFlags & fldFlag) != 0 ||
+                (_typeFlags & typeFlag) != 0)
+                throw new InvalidOperationException(string.Format(null, Properties.Messages.ErrMultiAttribute, mthFlag));
 
-			_mthFlags |= mthFlag;
-			_fldFlags |= fldFlag;
-			_typeFlags |= typeFlag;
-		}
+            _mthFlags |= mthFlag;
+            _fldFlags |= fldFlag;
+            _typeFlags |= typeFlag;
+        }
 
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		public TypeGen Static { get { SetFlag(MethodAttributes.Static, FieldAttributes.Static, TypeAttributes.Sealed | TypeAttributes.Abstract); return this; } }
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		public TypeGen ReadOnly { get { SetFlag(0, FieldAttributes.InitOnly, 0); return this; } }
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		public TypeGen NoBeforeFieldInit { get { SetFlag(0, 0, TypeAttributes.BeforeFieldInit); return this; } }
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        public TypeGen Static { get { SetFlag(MethodAttributes.Static, FieldAttributes.Static, TypeAttributes.Sealed | TypeAttributes.Abstract); return this; } }
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        public TypeGen ReadOnly { get { SetFlag(0, FieldAttributes.InitOnly, 0); return this; } }
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        public TypeGen NoBeforeFieldInit { get { SetFlag(0, 0, TypeAttributes.BeforeFieldInit); return this; } }
 
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		internal TypeGen RuntimeImpl { get { _implFlags |= MethodImplAttributes.Runtime | MethodImplAttributes.Managed; return this; } }
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        internal TypeGen RuntimeImpl { get { _implFlags |= MethodImplAttributes.Runtime | MethodImplAttributes.Managed; return this; } }
 
-		void ResetAttrs()
-		{
-			if (TypeBuilder.IsInterface)
-			{
-				_mthVis = MethodAttributes.Public;
-				_mthVirt = MethodAttributes.Virtual | MethodAttributes.NewSlot | MethodAttributes.Abstract;
-				_mthFlags = 0;
-			}
-			else
-				_mthVis = _mthVirt = _mthFlags = 0;
+        void ResetAttrs()
+        {
+            if (TypeBuilder.IsInterface)
+            {
+                _mthVis = MethodAttributes.Public;
+                _mthVirt = MethodAttributes.Virtual | MethodAttributes.NewSlot | MethodAttributes.Abstract;
+                _mthFlags = 0;
+            }
+            else
+                _mthVis = _mthVirt = _mthFlags = 0;
 
-			_fldVis = _fldFlags = 0;
-			_typeVis = _typeVirt = _typeFlags = 0;
-			_implFlags = 0;
-		}
+            _fldVis = _fldFlags = 0;
+            _typeVis = _typeVirt = _typeFlags = 0;
+            _implFlags = 0;
+        }
     #endregion
 
     #region Custom Attributes
         
 
         public override TypeGen Attribute(AttributeType type)
-		{
-			BeginAttribute(type);
-			return this;
-		}
+        {
+            BeginAttribute(type);
+            return this;
+        }
         
 
         public override TypeGen Attribute(AttributeType type, params object[] args)
-		{
-			BeginAttribute(type, args);
-			return this;
-		}
+        {
+            BeginAttribute(type, args);
+            return this;
+        }
         
 
         public override AttributeGen<TypeGen> BeginAttribute(AttributeType type)
-		{
-			return BeginAttribute(type, EmptyArray<object>.Instance);
-		}
+        {
+            return BeginAttribute(type, EmptyArray<object>.Instance);
+        }
         
         public override AttributeGen<TypeGen> BeginAttribute(AttributeType type, params object[] args)
-		{
-			AttributeTargets target = AttributeTargets.Class;
+        {
+            AttributeTargets target = AttributeTargets.Class;
 
-			if (BaseType == null)
-				target = AttributeTargets.Interface;
-			else if (BaseType == TypeMapper.MapType(typeof(ValueType)))
-				target = AttributeTargets.Struct;
-			else
-				target = AttributeTargets.Class;
+            if (BaseType == null)
+                target = AttributeTargets.Interface;
+            else if (BaseType == TypeMapper.MapType(typeof(ValueType)))
+                target = AttributeTargets.Struct;
+            else
+                target = AttributeTargets.Class;
 
-			return AttributeGen<TypeGen>.CreateAndAdd(this, ref _customAttributes, target, type, args, TypeMapper);
-		}
+            return AttributeGen<TypeGen>.CreateAndAdd(this, ref _customAttributes, target, type, args, TypeMapper);
+        }
 
     #endregion
 
     #region Members
-		public MethodGen CommonConstructor()
-		{
-			if (TypeBuilder.IsValueType)
-				throw new InvalidOperationException(Properties.Messages.ErrStructNoDefaultCtor);
-			if (TypeBuilder.IsInterface)
-				throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoCtor);
+        public MethodGen CommonConstructor()
+        {
+            if (TypeBuilder.IsValueType)
+                throw new InvalidOperationException(Properties.Messages.ErrStructNoDefaultCtor);
+            if (TypeBuilder.IsInterface)
+                throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoCtor);
 
-			if (_commonCtor == null)
-			{
-				_commonCtor = new MethodGen(this, "$$ctor", 0, TypeMapper.MapType(typeof(void)), 0).LockSignature();
-			}
+            if (_commonCtor == null)
+            {
+                _commonCtor = new MethodGen(this, "$$ctor", 0, TypeMapper.MapType(typeof(void)), 0).LockSignature();
+            }
 
-			return _commonCtor;
-		}
+            return _commonCtor;
+        }
 
-		public ConstructorGen Constructor()
-		{
-			if (TypeBuilder.IsInterface)
-				throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoCtor);
+        public ConstructorGen Constructor()
+        {
+            if (TypeBuilder.IsInterface)
+                throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoCtor);
 
-			ConstructorGen cg = new ConstructorGen(this, _mthVis, _implFlags);
-			ResetAttrs();
-			return cg;
-		}
+            ConstructorGen cg = new ConstructorGen(this, _mthVis, _implFlags);
+            ResetAttrs();
+            return cg;
+        }
 
-		public ConstructorGen StaticConstructor()
-		{
-			if (TypeBuilder.IsInterface)
-				throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoCtor);
-			
-			if (_staticCtor == null)
-			{
-				_staticCtor = new ConstructorGen(this, MethodAttributes.Static, 0).LockSignature();
-			}
+        public ConstructorGen StaticConstructor()
+        {
+            if (TypeBuilder.IsInterface)
+                throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoCtor);
+            
+            if (_staticCtor == null)
+            {
+                _staticCtor = new ConstructorGen(this, MethodAttributes.Static, 0).LockSignature();
+            }
 
-			return _staticCtor;
-		}
+            return _staticCtor;
+        }
 
 #if FEAT_IKVM
 
@@ -363,18 +382,18 @@ namespace TriAxis.RunSharp
 #endif
 
         public FieldGen Field(Type type, string name)
-		{
-			if (TypeBuilder.IsInterface)
-				throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoField);
+        {
+            if (TypeBuilder.IsInterface)
+                throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoField);
 
-			if (_fldVis == 0)
-				_fldVis |= FieldAttributes.Private;
+            if (_fldVis == 0)
+                _fldVis |= FieldAttributes.Private;
 
-			FieldGen fld = new FieldGen(this, name, type, _fldVis | _fldFlags);
-			_fields.Add(fld);
-			ResetAttrs();
-			return fld;
-		}
+            FieldGen fld = new FieldGen(this, name, type, _fldVis | _fldFlags);
+            _fields.Add(fld);
+            ResetAttrs();
+            return fld;
+        }
 
 #if FEAT_IKVM
 
@@ -386,13 +405,13 @@ namespace TriAxis.RunSharp
 #endif
 
         public FieldGen Field(Type type, string name, Operand initialValue)
-		{
-			FieldGen fld = Field(type, name);
+        {
+            FieldGen fld = Field(type, name);
 
-			CodeGen initCode = fld.IsStatic ? StaticConstructor().GetCode(): CommonConstructor().GetCode();
-			initCode.Assign(fld, initialValue);
-			return fld;
-		}
+            CodeGen initCode = fld.IsStatic ? StaticConstructor().GetCode(): CommonConstructor().GetCode();
+            initCode.Assign(fld, initialValue);
+            return fld;
+        }
 
 #if FEAT_IKVM
 
@@ -404,19 +423,19 @@ namespace TriAxis.RunSharp
 #endif
 
         public PropertyGen Property(Type type, string name)
-		{
-			if (_mthVis == 0)
-				_mthVis |= MethodAttributes.Private;
+        {
+            if (_mthVis == 0)
+                _mthVis |= MethodAttributes.Private;
 
-			if (TypeBuilder.IsInterface)
-				_mthVirt |= MethodAttributes.Virtual | MethodAttributes.Abstract;
+            if (TypeBuilder.IsInterface)
+                _mthVirt |= MethodAttributes.Virtual | MethodAttributes.Abstract;
 
-			PropertyGen pg = new PropertyGen(this, _mthVis | _mthVirt | _mthFlags, type, name);
-			_properties.Add(pg);
-			ResetAttrs();
+            PropertyGen pg = new PropertyGen(this, _mthVis | _mthVirt | _mthFlags, type, name);
+            _properties.Add(pg);
+            ResetAttrs();
 
-			return pg;
-		}
+            return pg;
+        }
 
 #if FEAT_IKVM
 
@@ -428,9 +447,9 @@ namespace TriAxis.RunSharp
 #endif
 
         public PropertyGen Indexer(Type type)
-		{
-			return Indexer(type, "Item");
-		}
+        {
+            return Indexer(type, "Item");
+        }
 
 #if FEAT_IKVM
 
@@ -442,26 +461,26 @@ namespace TriAxis.RunSharp
 #endif
 
         public PropertyGen Indexer(Type type, string name)
-		{
-			if (_indexerName != null && _indexerName != name)
-				throw new InvalidOperationException(Properties.Messages.ErrAmbiguousIndexerName);
+        {
+            if (_indexerName != null && _indexerName != name)
+                throw new InvalidOperationException(Properties.Messages.ErrAmbiguousIndexerName);
 
-			PropertyGen pg = Property(type, name);
-			_indexerName = name;
-			return pg;
-		}
+            PropertyGen pg = Property(type, name);
+            _indexerName = name;
+            return pg;
+        }
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "It is invalid to use anything else than a Field as a base for SimpleProperty")]
-		public PropertyGen SimpleProperty(FieldGen field, string name)
-		{
-			if ((object)field == null)
-				throw new ArgumentNullException(nameof(field));
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "It is invalid to use anything else than a Field as a base for SimpleProperty")]
+        public PropertyGen SimpleProperty(FieldGen field, string name)
+        {
+            if ((object)field == null)
+                throw new ArgumentNullException(nameof(field));
 
-			PropertyGen pg = Property(field.GetReturnType(_typeMapper), name);
-			pg.Getter().GetCode().Return(field);
-			pg.Setter().GetCode().Assign(field, pg.Setter().GetCode().PropertyValue());
-			return pg;
-		}
+            PropertyGen pg = Property(field.GetReturnType(_typeMapper), name);
+            pg.Getter().GetCode().Return(field);
+            pg.Setter().GetCode().Assign(field, pg.Setter().GetCode().PropertyValue());
+            return pg;
+        }
 
 #if FEAT_IKVM
 
@@ -473,9 +492,9 @@ namespace TriAxis.RunSharp
 #endif
 
         public EventGen Event(Type handlerType, string name)
-		{
-			return CustomEvent(handlerType, name).WithStandardImplementation();
-		}
+        {
+            return CustomEvent(handlerType, name).WithStandardImplementation();
+        }
 
 #if FEAT_IKVM
 
@@ -487,13 +506,13 @@ namespace TriAxis.RunSharp
 #endif
 
         public EventGen CustomEvent(Type handlerType, string name)
-		{
-			EventGen eg = new EventGen(this, name, handlerType, _mthVis | _mthVirt | _mthFlags);
-			_events.Add(eg);
-			ResetAttrs();
+        {
+            EventGen eg = new EventGen(this, name, handlerType, _mthVis | _mthVirt | _mthFlags);
+            _events.Add(eg);
+            ResetAttrs();
 
-			return eg;
-		}
+            return eg;
+        }
 
 #if FEAT_IKVM
         public MethodGen Method(System.Type returnType, string name)
@@ -503,16 +522,16 @@ namespace TriAxis.RunSharp
 #endif
 
         public MethodGen Method(Type returnType, string name)
-		{
-			if (_mthVis == 0)
-				_mthVis |= MethodAttributes.Private;
-			if (TypeBuilder.IsInterface)
-				_mthVirt |= MethodAttributes.Virtual | MethodAttributes.Abstract;
+        {
+            if (_mthVis == 0)
+                _mthVis |= MethodAttributes.Private;
+            if (TypeBuilder.IsInterface)
+                _mthVirt |= MethodAttributes.Virtual | MethodAttributes.Abstract;
 
-			MethodGen mg = new MethodGen(this, name, _mthVis | _mthVirt | _mthFlags, returnType, _implFlags);
+            MethodGen mg = new MethodGen(this, name, _mthVis | _mthVirt | _mthFlags, returnType, _implFlags);
             ResetAttrs();
             return mg;
-		}
+        }
 
 #if FEAT_IKVM
 
@@ -524,9 +543,9 @@ namespace TriAxis.RunSharp
 #endif
 
         public MethodGen ImplicitConversionFrom(Type fromType)
-		{
-			return ImplicitConversionFrom(fromType, "value");
-		}
+        {
+            return ImplicitConversionFrom(fromType, "value");
+        }
 
 #if FEAT_IKVM
         public MethodGen ImplicitConversionFrom(System.Type fromType, string parameterName)
@@ -536,15 +555,15 @@ namespace TriAxis.RunSharp
         
 #endif
         public MethodGen ImplicitConversionFrom(Type fromType, string parameterName)
-		{
-			if (TypeBuilder.IsInterface)
-				throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoConversion);
+        {
+            if (TypeBuilder.IsInterface)
+                throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoConversion);
 
-			ResetAttrs();
-			_mthFlags = MethodAttributes.SpecialName | MethodAttributes.Static;
-			_mthVis = MethodAttributes.Public;
-			return Method(TypeBuilder, "op_Implicit").Parameter(fromType, parameterName);
-		}
+            ResetAttrs();
+            _mthFlags = MethodAttributes.SpecialName | MethodAttributes.Static;
+            _mthVis = MethodAttributes.Public;
+            return Method(TypeBuilder, "op_Implicit").Parameter(fromType, parameterName);
+        }
 
 #if FEAT_IKVM
 
@@ -556,9 +575,9 @@ namespace TriAxis.RunSharp
 #endif
 
         public MethodGen ImplicitConversionTo(Type toType)
-		{
-			return ImplicitConversionTo(toType, "value");
-		}
+        {
+            return ImplicitConversionTo(toType, "value");
+        }
 
 #if FEAT_IKVM
 
@@ -570,15 +589,15 @@ namespace TriAxis.RunSharp
 #endif
 
         public MethodGen ImplicitConversionTo(Type toType, string parameterName)
-		{
-			if (TypeBuilder.IsInterface)
-				throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoConversion);
+        {
+            if (TypeBuilder.IsInterface)
+                throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoConversion);
 
-			ResetAttrs();
-			_mthFlags = MethodAttributes.SpecialName | MethodAttributes.Static;
-			_mthVis = MethodAttributes.Public;
-			return Method(toType, "op_Implicit").Parameter(TypeBuilder, parameterName);
-		}
+            ResetAttrs();
+            _mthFlags = MethodAttributes.SpecialName | MethodAttributes.Static;
+            _mthVis = MethodAttributes.Public;
+            return Method(toType, "op_Implicit").Parameter(TypeBuilder, parameterName);
+        }
 
 #if FEAT_IKVM
 
@@ -590,9 +609,9 @@ namespace TriAxis.RunSharp
 #endif
 
         public MethodGen ExplicitConversionFrom(Type fromType)
-		{
-			return ExplicitConversionFrom(fromType, "value");
-		}
+        {
+            return ExplicitConversionFrom(fromType, "value");
+        }
 
 #if FEAT_IKVM
 
@@ -601,17 +620,17 @@ namespace TriAxis.RunSharp
             return ExplicitConversionFrom(TypeMapper.MapType(fromType), parameterName);
         }
 #endif
-	
+    
         public MethodGen ExplicitConversionFrom(Type fromType, string parameterName)
-		{
-			if (TypeBuilder.IsInterface)
-				throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoConversion);
+        {
+            if (TypeBuilder.IsInterface)
+                throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoConversion);
 
-			ResetAttrs();
-			_mthFlags = MethodAttributes.SpecialName | MethodAttributes.Static;
-			_mthVis = MethodAttributes.Public;
-			return Method(TypeBuilder, "op_Explicit").Parameter(fromType, parameterName);
-		}
+            ResetAttrs();
+            _mthFlags = MethodAttributes.SpecialName | MethodAttributes.Static;
+            _mthVis = MethodAttributes.Public;
+            return Method(TypeBuilder, "op_Explicit").Parameter(fromType, parameterName);
+        }
 
 #if FEAT_IKVM
 
@@ -623,9 +642,9 @@ namespace TriAxis.RunSharp
 #endif
 
         public MethodGen ExplicitConversionTo(Type toType)
-		{
-			return ExplicitConversionTo(toType, "value");
-		}
+        {
+            return ExplicitConversionTo(toType, "value");
+        }
 
 #if FEAT_IKVM
         public MethodGen ExplicitConversionTo(System.Type toType, string parameterName)
@@ -636,15 +655,15 @@ namespace TriAxis.RunSharp
 #endif
 
         public MethodGen ExplicitConversionTo(Type toType, string parameterName)
-		{
-			if (TypeBuilder.IsInterface)
-				throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoConversion);
+        {
+            if (TypeBuilder.IsInterface)
+                throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoConversion);
 
-			ResetAttrs();
-			_mthFlags = MethodAttributes.SpecialName | MethodAttributes.Static;
-			_mthVis = MethodAttributes.Public;
-			return Method(toType, "op_Explicit").Parameter(TypeBuilder, parameterName);
-		}
+            ResetAttrs();
+            _mthFlags = MethodAttributes.SpecialName | MethodAttributes.Static;
+            _mthVis = MethodAttributes.Public;
+            return Method(toType, "op_Explicit").Parameter(TypeBuilder, parameterName);
+        }
 
 #if FEAT_IKVM
 
@@ -656,9 +675,9 @@ namespace TriAxis.RunSharp
 #endif
 
         public MethodGen Operator(Operator op, Type returnType, Type operandType)
-		{
-			return Operator(op, returnType, operandType, "operand");
-		}
+        {
+            return Operator(op, returnType, operandType, "operand");
+        }
 
 #if FEAT_IKVM
 
@@ -680,15 +699,15 @@ namespace TriAxis.RunSharp
 #endif
 
         public MethodGen Operator(Operator op, Type returnType, Type operandType, string operandName)
-		{
-			if (op == null)
-				throw new ArgumentNullException(nameof(op));
+        {
+            if (op == null)
+                throw new ArgumentNullException(nameof(op));
 
-			ResetAttrs();
-			_mthFlags = MethodAttributes.SpecialName | MethodAttributes.Static;
-			_mthVis = MethodAttributes.Public;
-			return Method(returnType, "op_" + op.MethodName).Parameter(operandType, operandName);
-		}
+            ResetAttrs();
+            _mthFlags = MethodAttributes.SpecialName | MethodAttributes.Static;
+            _mthVis = MethodAttributes.Public;
+            return Method(returnType, "op_" + op.MethodName).Parameter(operandType, operandName);
+        }
 
 #if FEAT_IKVM
 
@@ -700,9 +719,9 @@ namespace TriAxis.RunSharp
 
 
         public MethodGen Operator(Operator op, Type returnType, Type leftType, Type rightType)
-		{
-			return Operator(op, returnType, leftType, "left", rightType, "right");
-		}
+        {
+            return Operator(op, returnType, leftType, "left", rightType, "right");
+        }
 
 #if FEAT_IKVM
 
@@ -714,23 +733,23 @@ namespace TriAxis.RunSharp
 #endif
 
         public MethodGen Operator(Operator op, Type returnType, Type leftType, string leftName, Type rightType, string rightName)
-		{
-			if (op == null)
-				throw new ArgumentNullException(nameof(op));
+        {
+            if (op == null)
+                throw new ArgumentNullException(nameof(op));
 
-			ResetAttrs();
-			_mthFlags = MethodAttributes.SpecialName | MethodAttributes.Static;
-			_mthVis = MethodAttributes.Public;
-			return Method(returnType, "op_" + op.MethodName)
-				.Parameter(leftType, leftName)
-				.Parameter(rightType, rightName)
-				;
-		}
+            ResetAttrs();
+            _mthFlags = MethodAttributes.SpecialName | MethodAttributes.Static;
+            _mthVis = MethodAttributes.Public;
+            return Method(returnType, "op_" + op.MethodName)
+                .Parameter(leftType, leftName)
+                .Parameter(rightType, rightName)
+                ;
+        }
 
-		public TypeGen Class(string name)
-		{
-			return Class(name, TypeMapper.MapType(typeof(object)), Type.EmptyTypes);
-		}
+        public TypeGen Class(string name)
+        {
+            return Class(name, TypeMapper.MapType(typeof(object)), Type.EmptyTypes);
+        }
 
 #if FEAT_IKVM
 
@@ -742,9 +761,9 @@ namespace TriAxis.RunSharp
 #endif
 
         public TypeGen Class(string name, Type baseType)
-		{
-			return Class(name, baseType, Type.EmptyTypes);
-		}
+        {
+            return Class(name, baseType, Type.EmptyTypes);
+        }
 
 #if FEAT_IKVM
 
@@ -756,35 +775,35 @@ namespace TriAxis.RunSharp
 #endif
 
         public TypeGen Class(string name, Type baseType, params Type[] interfaces)
-		{
-			if (TypeBuilder.IsInterface)
-				throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoNested);
+        {
+            if (TypeBuilder.IsInterface)
+                throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoNested);
 
-			if (_typeVis == 0)
-				_typeVis |= TypeAttributes.NestedPrivate;
+            if (_typeVis == 0)
+                _typeVis |= TypeAttributes.NestedPrivate;
 
-			TypeGen tg = new TypeGen(this, name, (_typeVis | _typeVirt | _typeFlags | TypeAttributes.Class) ^ TypeAttributes.BeforeFieldInit, baseType, interfaces, _typeMapper);
-			ResetAttrs();
-			return tg;
-		}
+            TypeGen tg = new TypeGen(this, name, (_typeVis | _typeVirt | _typeFlags | TypeAttributes.Class) ^ TypeAttributes.BeforeFieldInit, baseType, interfaces, _typeMapper);
+            ResetAttrs();
+            return tg;
+        }
 
-		public TypeGen Struct(string name)
-		{
-			return Struct(name, Type.EmptyTypes);
-		}
+        public TypeGen Struct(string name)
+        {
+            return Struct(name, Type.EmptyTypes);
+        }
 
-		public TypeGen Struct(string name, params Type[] interfaces)
-		{
-			if (TypeBuilder.IsInterface)
-				throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoNested);
+        public TypeGen Struct(string name, params Type[] interfaces)
+        {
+            if (TypeBuilder.IsInterface)
+                throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoNested);
 
-			if (_typeVis == 0)
-				_typeVis |= TypeAttributes.NestedPrivate;
+            if (_typeVis == 0)
+                _typeVis |= TypeAttributes.NestedPrivate;
 
-			TypeGen tg = new TypeGen(this, name, (_typeVis | _typeVirt | _typeFlags | TypeAttributes.Sealed | TypeAttributes.SequentialLayout) ^ TypeAttributes.BeforeFieldInit, TypeMapper.MapType(typeof(ValueType)), interfaces, _typeMapper);
-			ResetAttrs();
-			return tg;
-		}
+            TypeGen tg = new TypeGen(this, name, (_typeVis | _typeVirt | _typeFlags | TypeAttributes.Sealed | TypeAttributes.SequentialLayout) ^ TypeAttributes.BeforeFieldInit, TypeMapper.MapType(typeof(ValueType)), interfaces, _typeMapper);
+            ResetAttrs();
+            return tg;
+        }
 
 #if FEAT_IKVM
 
@@ -804,18 +823,18 @@ namespace TriAxis.RunSharp
     #endregion
 
     #region Interface implementations
-		void DefineMethodOverride(MethodGen methodBody, MethodInfo methodDeclaration)
-		{
-			foreach (InterfaceImplEntry iie in _implementations)
-			{
-				if (iie.InterfaceMethod.Member == methodDeclaration
+        void DefineMethodOverride(MethodGen methodBody, MethodInfo methodDeclaration)
+        {
+            foreach (InterfaceImplEntry iie in _implementations)
+            {
+                if (iie.InterfaceMethod.Member == methodDeclaration
                     && iie.InterfaceType == methodDeclaration.DeclaringType)
-				{
-					iie.Bind(methodBody);
-					return;
-				}
-			}
-		}
+                {
+                    iie.Bind(methodBody);
+                    return;
+                }
+            }
+        }
 
 #if FEAT_IKVM
 
@@ -837,16 +856,16 @@ namespace TriAxis.RunSharp
 #endif
 
         public MethodGen MethodImplementation(Type interfaceType, Type returnType, string name)
-		{
-			if (TypeBuilder.IsInterface)
-				throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoExplicitImpl);
+        {
+            if (TypeBuilder.IsInterface)
+                throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoExplicitImpl);
 
-			MethodGen mg = new MethodGen(this, name,
-				MethodAttributes.Private | MethodAttributes.NewSlot | MethodAttributes.Virtual | MethodAttributes.Final,
-				returnType, 0);
-			mg.ImplementedInterface = interfaceType;
-			return mg;
-		}
+            MethodGen mg = new MethodGen(this, name,
+                MethodAttributes.Private | MethodAttributes.NewSlot | MethodAttributes.Virtual | MethodAttributes.Final,
+                returnType, 0);
+            mg.ImplementedInterface = interfaceType;
+            return mg;
+        }
 
 #if FEAT_IKVM
 
@@ -858,16 +877,16 @@ namespace TriAxis.RunSharp
 
 
         public PropertyGen PropertyImplementation(Type interfaceType, Type type, string name)
-		{
-			if (TypeBuilder.IsInterface)
-				throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoExplicitImpl);
+        {
+            if (TypeBuilder.IsInterface)
+                throw new InvalidOperationException(Properties.Messages.ErrInterfaceNoExplicitImpl);
 
-			PropertyGen pg = new PropertyGen(this,
-				MethodAttributes.Private | MethodAttributes.NewSlot | MethodAttributes.Virtual | MethodAttributes.Final,
-				type, name);
-			pg.ImplementedInterface = interfaceType;
-			return pg;
-		}
+            PropertyGen pg = new PropertyGen(this,
+                MethodAttributes.Private | MethodAttributes.NewSlot | MethodAttributes.Virtual | MethodAttributes.Final,
+                type, name);
+            pg.ImplementedInterface = interfaceType;
+            return pg;
+        }
 
 #if FEAT_IKVM
 
@@ -891,200 +910,203 @@ namespace TriAxis.RunSharp
 
     #endregion
 
-		public Type GetCompletedType()
-		{
-			return GetCompletedType(false);
-		}
+        public Type GetCompletedType()
+        {
+            return GetCompletedType(false);
+        }
 
-		public Type GetCompletedType(bool completeIfNeeded)
-		{
-			if (_type != null)
-				return _type;
+        public Type GetCompletedType(bool completeIfNeeded)
+        {
+            if (_type != null)
+                return _type;
 
-			if (completeIfNeeded)
-			{
-				Complete();
-				return _type;
-			}
+            if (completeIfNeeded)
+            {
+                Complete();
+                return _type;
+            }
 
-			throw new InvalidOperationException(Properties.Messages.ErrTypeNotCompleted);
-		}
+            throw new InvalidOperationException(Properties.Messages.ErrTypeNotCompleted);
+        }
 
-		public bool IsCompleted => _type != null;
+        public bool IsCompleted => _type != null;
 
-	    void FlushDefinitionQueue()
-		{
-			// cannot use foreach, because it is possible that new objects
-			// will be appended while completing the existing ones
-			for (int i = 0; i < _definitionQueue.Count; i++)
-			{
-				_definitionQueue[i].EndDefinition();
-			}
-			_definitionQueue.Clear();
-		}
+        void FlushDefinitionQueue()
+        {
+            // cannot use foreach, because it is possible that new objects
+            // will be appended while completing the existing ones
+            for (int i = 0; i < _definitionQueue.Count; i++)
+            {
+                _definitionQueue[i].EndDefinition();
+            }
+            _definitionQueue.Clear();
+        }
 
-		void FlushCompletionQueue()
-		{
-			// cannot use foreach, because it is possible that new objects
-			// will be appended while completing the existing ones
-			for (int i = 0; i < _completionQueue.Count; i++)
-			{
-				_completionQueue[i].Complete();
-			}
-			_completionQueue.Clear();
-		}
+        void FlushCompletionQueue()
+        {
+            // cannot use foreach, because it is possible that new objects
+            // will be appended while completing the existing ones
+            for (int i = 0; i < _completionQueue.Count; i++)
+            {
+                _completionQueue[i].Complete();
+            }
+            _completionQueue.Clear();
+        }
 
-		public void Complete()
-		{
-			if (_type != null)
-				return;
+        public void Complete()
+        {
+            if (_type != null)
+                return;
 
-		    if (TypeBuilder.IsValueType)
-		    {
-		        if (_fields.Count == 0 && _properties.Count == 0)
-		        {
+            if (_owner != null && TypeBuilder.IsValueType)
+            {
+                if (_fields.Count == 0 && _properties.Count == 0)
+                {
                     // otherwise  "Value class has neither fields nor size parameter."
                     Private.ReadOnly.Field(_typeMapper.MapType(typeof(int)), "_____");
-		        }
-		    }
+                }
+            }
 
-			foreach (TypeGen nested in _nestedTypes)
-				nested.Complete();
+            foreach (TypeGen nested in _nestedTypes)
+                nested.Complete();
 
-			// ensure creation of default constructor
-			EnsureDefaultConstructor();
+            if (_owner != null)
+            {
+                // ensure creation of default constructor
+                EnsureDefaultConstructor();
+            }
 
-			FlushDefinitionQueue();
-			FlushCompletionQueue();
+            FlushDefinitionQueue();
+            FlushCompletionQueue();
 
-			// implement all interfaces
-			foreach (InterfaceImplEntry iie in _implementations)
-			{
-				if (!iie.IsBound)
-					throw new NotImplementedException(string.Format(null, Properties.Messages.ErrInterfaceNotImplemented,
-						iie.InterfaceType, iie.InterfaceMethod.Member));
+            // implement all interfaces
+            foreach (InterfaceImplEntry iie in _implementations)
+            {
+                if (!iie.IsBound)
+                    throw new NotImplementedException(string.Format(null, Properties.Messages.ErrInterfaceNotImplemented,
+                        iie.InterfaceType, iie.InterfaceMethod.Member));
 
-				TypeBuilder.DefineMethodOverride(iie.BoundMethod.GetMethodBuilder(), (MethodInfo) iie.InterfaceMethod.Member);
-			}
+                TypeBuilder.DefineMethodOverride(iie.BoundMethod.GetMethodBuilder(), (MethodInfo) iie.InterfaceMethod.Member);
+            }
 
-			// set indexer name
-			if (_indexerName != null)
-			{
-				CustomAttributeBuilder cab = new CustomAttributeBuilder(
+            // set indexer name
+            if (_indexerName != null)
+            {
+                CustomAttributeBuilder cab = new CustomAttributeBuilder(
                     TypeMapper.MapType(typeof(DefaultMemberAttribute)).GetConstructor(new Type[] { TypeMapper.MapType(typeof(string)) }),
-					new object[] { _indexerName });
-				TypeBuilder.SetCustomAttribute(cab);
-			}
+                    new object[] { _indexerName });
+                TypeBuilder.SetCustomAttribute(cab);
+            }
 
-			AttributeGen.ApplyList(ref _customAttributes, TypeBuilder.SetCustomAttribute);
+            AttributeGen.ApplyList(ref _customAttributes, TypeBuilder.SetCustomAttribute);
 
-			_type = TypeBuilder.CreateType();
+            _type = TypeBuilder.CreateType();
 
             _typeMapper.TypeInfo.UnregisterProvider(TypeBuilder);
-		}
+        }
 
-		public static implicit operator Type(TypeGen tg)
-		{
-			if (tg == null)
-				return null;
+        public static implicit operator Type(TypeGen tg)
+        {
+            if (tg == null)
+                return null;
 
-			if (tg._type != null)
-				return tg._type;
+            if (tg._type != null)
+                return tg._type;
 
-			return tg.TypeBuilder;
-		}
+            return tg.TypeBuilder;
+        }
 
-		public override string ToString()
-		{
-			return TypeBuilder.FullName;
-		}
+        public override string ToString()
+        {
+            return TypeBuilder.FullName;
+        }
 
-		void EnsureDefaultConstructor()
-		{
-			if (_constructors.Count == 0 && TypeBuilder.IsClass)
-			{
-				// create default constructor
-				ResetAttrs();
-				Public.Constructor().LockSignature();
-			}
-		}
+        void EnsureDefaultConstructor()
+        {
+            if (_constructors.Count == 0 && TypeBuilder.IsClass)
+            {
+                // create default constructor
+                ResetAttrs();
+                Public.Constructor().LockSignature();
+            }
+        }
 
     #region Member registration
-		internal void Register(ConstructorGen constructor)
-		{
-			if (constructor.IsStatic)
-				return;
-			
-			if (constructor.ParameterCount == 0 && TypeBuilder.IsValueType)
-				throw new InvalidOperationException(Properties.Messages.ErrStructNoDefaultCtor);
+        internal void Register(ConstructorGen constructor)
+        {
+            if (constructor.IsStatic)
+                return;
+            
+            if (constructor.ParameterCount == 0 && TypeBuilder.IsValueType)
+                throw new InvalidOperationException(Properties.Messages.ErrStructNoDefaultCtor);
 
-			_constructors.Add(constructor);
-		}
+            _constructors.Add(constructor);
+        }
 
-		internal void Register(MethodGen method)
-		{
+        internal void Register(MethodGen method)
+        {
 #if !SILVERLIGHT && !NET5_0 && !NETSTANDARD
-            if (_owner.AssemblyBuilder.EntryPoint == null && method.Name == "Main" && method.IsStatic &&
-		        (
-		            method.ParameterCount == 0 ||
-		            (method.ParameterCount == 1 &&
-		             method.ParameterTypes[0] == TypeMapper.MapType(typeof(string[])))))
-		    {
-		        _owner.AssemblyBuilder.SetEntryPoint(method.GetMethodBuilder());
-		    }
+            if (_owner != null && _owner.AssemblyBuilder.EntryPoint == null && method.Name == "Main" && method.IsStatic &&
+                (
+                    method.ParameterCount == 0 ||
+                    (method.ParameterCount == 1 &&
+                     method.ParameterTypes[0] == TypeMapper.MapType(typeof(string[])))))
+            {
+                _owner.AssemblyBuilder.SetEntryPoint(method.GetMethodBuilder());
+            }
 #endif
-			// match explicit interface implementations
-			if (method.ImplementedInterface != null)
-			{
-				foreach (IMemberInfo mi in _typeMapper.TypeInfo.Filter(_typeMapper.TypeInfo.GetMethods(method.ImplementedInterface), method.Name, false, false, true))
-				{
-					if (ArrayUtils.Equals(mi.ParameterTypes, method.ParameterTypes))
-					{
-						DefineMethodOverride(method, (MethodInfo)mi.Member);
-						return;
-					}
-				}
+            // match explicit interface implementations
+            if (method.ImplementedInterface != null)
+            {
+                foreach (IMemberInfo mi in _typeMapper.TypeInfo.Filter(_typeMapper.TypeInfo.GetMethods(method.ImplementedInterface), method.Name, false, false, true))
+                {
+                    if (ArrayUtils.Equals(mi.ParameterTypes, method.ParameterTypes))
+                    {
+                        DefineMethodOverride(method, (MethodInfo)mi.Member);
+                        return;
+                    }
+                }
 
-				throw new MissingMethodException(Properties.Messages.ErrMissingMethod);
-			}
-	
-			_methods.Add(method);
-		}
+                throw new MissingMethodException(Properties.Messages.ErrMissingMethod);
+            }
+    
+            _methods.Add(method);
+        }
     #endregion
 
     #region ITypeInfoProvider implementation
-		IEnumerable<IMemberInfo> ITypeInfoProvider.GetConstructors()
-		{
-			EnsureDefaultConstructor();
-			FlushDefinitionQueue();
-			return _constructors;
-		}
+        IEnumerable<IMemberInfo> ITypeInfoProvider.GetConstructors()
+        {
+            EnsureDefaultConstructor();
+            FlushDefinitionQueue();
+            return _constructors;
+        }
 
-		IEnumerable<IMemberInfo> ITypeInfoProvider.GetFields()
-		{
-			FlushDefinitionQueue();
-			return _fields;
-		}
+        IEnumerable<IMemberInfo> ITypeInfoProvider.GetFields()
+        {
+            FlushDefinitionQueue();
+            return _fields;
+        }
 
-		IEnumerable<IMemberInfo> ITypeInfoProvider.GetProperties()
-		{
-			FlushDefinitionQueue();
-			return _properties;
-		}
+        IEnumerable<IMemberInfo> ITypeInfoProvider.GetProperties()
+        {
+            FlushDefinitionQueue();
+            return _properties;
+        }
 
-		IEnumerable<IMemberInfo> ITypeInfoProvider.GetEvents()
-		{
-			FlushDefinitionQueue();
-			return _events;
-		}
+        IEnumerable<IMemberInfo> ITypeInfoProvider.GetEvents()
+        {
+            FlushDefinitionQueue();
+            return _events;
+        }
 
-		IEnumerable<IMemberInfo> ITypeInfoProvider.GetMethods()
-		{
-			FlushDefinitionQueue();
-			return _methods;
-		}
+        IEnumerable<IMemberInfo> ITypeInfoProvider.GetMethods()
+        {
+            FlushDefinitionQueue();
+            return _methods;
+        }
 
-		string ITypeInfoProvider.DefaultMember => _indexerName;
+        string ITypeInfoProvider.DefaultMember => _indexerName;
 
     #endregion
     }

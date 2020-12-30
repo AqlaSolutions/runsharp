@@ -178,17 +178,44 @@ namespace TriAxis.RunSharp.Operands
 	                return;
 	            }
 	            else if (_operands.Length == 1)
-	            {
-	                // convert increment/decrement to binary operators
-	                if (_op.OpCode == OpCodes.Add)
+                {
+					// choose type for "1"
+                    Operand second;
+                    var t = _operands[0].GetReturnType(typeMapper);
+                    var inner = Helpers.GetNullableUnderlyingType(t);
+					t = inner ?? t;
+                    if (t.FullName == typeof(int).FullName) 
+                        second = (int) 1;
+                    else if (t.FullName == typeof(long).FullName) 
+                        second = (long) 1;
+					else if (t.FullName == typeof(ulong).FullName)
+                        second = (ulong)1;
+					else if (t.FullName == typeof(uint).FullName)
+                        second = (uint)1;
+					else if (t.FullName == typeof(short).FullName)
+                        second = (short)1;
+					else if (t.FullName == typeof(ushort).FullName)
+                        second = (ushort)1;
+					else if (t.FullName == typeof(double).FullName)
+                        second = (double)1;
+					else if (t.FullName == typeof(decimal).FullName)
+                        second = (decimal)1;
+					else if (t.FullName == typeof(byte).FullName)
+                        second = (byte)1;
+					else if (t.FullName == typeof(sbyte).FullName)
+                        second = (sbyte) 1;
+                    else throw new InvalidOperationException("Can't apply increment on  type " + t);
+
+					// convert increment/decrement to binary operators
+					if (_op.OpCode == OpCodes.Add)
 	                {
-	                    _afInterceptor = _operands[0] + 1;
+	                    _afInterceptor = _operands[0] + second;
 	                    _returnType = _afInterceptor.GetReturnType(typeMapper);
 	                    return;
 	                }
 	                if (_op.OpCode == OpCodes.Sub)
 	                {
-	                    _afInterceptor = _operands[0] - 1;
+	                    _afInterceptor = _operands[0] - second;
 	                    _returnType = _afInterceptor.GetReturnType(typeMapper);
 	                    return;
 	                }
