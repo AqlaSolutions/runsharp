@@ -10,7 +10,7 @@
     <DocumentationFile>o:\Dropbox\CodeProjects\RunSharp\src\RunSharp\RunSharp.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
-    <VersionPrefix>1.0.22</VersionPrefix>
+    <VersionPrefix>1.0.23</VersionPrefix>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
@@ -57,8 +57,8 @@
   </PropertyGroup> 
   <PropertyGroup>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
-    <AssemblyVersion>1.0.22.0</AssemblyVersion>
-    <FileVersion>1.0.22.0</FileVersion>
+    <AssemblyVersion>1.0.23.0</AssemblyVersion>
+    <FileVersion>1.0.23.0</FileVersion>
   </PropertyGroup>
   <Import Project="..\RunSharpShared\RunSharpShared.projitems" Label="Shared" />
   <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.1'">

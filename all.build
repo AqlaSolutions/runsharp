@@ -6,7 +6,6 @@
   <Import Project="packages\MSBuildTasks.1.5.0.235\tools\MSBuild.Community.Tasks.Targets"/>
 
   <PropertyGroup>
-    <NugetDirectory>Nuget\lib</NugetDirectory>
     <ZipDirectory>Package</ZipDirectory>
     <SolutionDir>$(MSBuildThisFileDirectory)</SolutionDir>
   </PropertyGroup>
@@ -35,7 +34,6 @@
     <Copy SourceFiles="@(Net20Files)" DestinationFolder="$(ZipDirectory)\net20"/>
     <Copy SourceFiles="@(Net20Files)" DestinationFolder="$(ZipDirectory)\net20"/>
     <Copy SourceFiles="@(IKVMFiles)" DestinationFolder="$(ZipDirectory)\ikvm-net20+"/>
-    <Copy SourceFiles="@(Net20Files)" DestinationFolder="$(NugetDirectory)\net35"/>
     <Copy SourceFiles="@(NetStandardFiles)" DestinationFolder="$(ZipDirectory)\netstandard2.1"/>
     
     <ItemGroup>
