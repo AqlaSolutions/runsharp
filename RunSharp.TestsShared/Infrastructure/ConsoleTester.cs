@@ -41,7 +41,7 @@ namespace TriAxis.RunSharp
         {
             string c = CapturedContent;
             if (data != null)
-                Assert.That(c, Is.EqualTo(data));
+                Assert.That(c.Replace("\r\n", "\n"), Is.EqualTo(data.Replace("\r\n", "\n")));
             Clear();
         }
 
